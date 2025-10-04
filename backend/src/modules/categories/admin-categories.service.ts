@@ -1,0 +1,107 @@
+import { Injectable } from '@nestjs/common';
+import { Category, Prisma, User } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
+import { AuditService } from '../../common/audit/audit.service';
+import { ErrorCode } from '../../common/errors/error-code';
+import {
+  BadRequestDomainException,
+  ConflictDomainException,
+  NotFoundDomainException,
+} from '../../common/errors/problem.dto';
+import { AppConfigService } from '../../config/app-config.service';
+import { PrismaService } from '../../infra/prisma/prisma.service';
+import { S3Service } from '../../infra/s3/s3.service';
+import { JobsProducer } from '../jobs/jobs.producer';
+import { CategoriesService } from './categories.service';
+import { AdminCategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto/admin-category.dto';
+
+const ICON_MAX_BYTES = 256 * 1024;
+
+@Injectable()
+export class AdminCategoriesService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly s3: S3Service,
+    private readonly producer: JobsProducer,
+    private readonly audit: AuditService,
+    private readonly categories: CategoriesService,
+    private readonly config: AppConfigService,
+  ) {}
+
+  async list(): Promise<AdminCategoryDto[]> {
+    const rows = await this.prisma.category.findMany({
+      orderBy: [{ isActive: 'desc' }, { sortOrder: 'asc' }],
+      include: { _count: { select: { assets: true } } },
+    });
+    return Promise.all(rows.map((r) => this.toDto(r)));
+  }
+
+  async create(admin: User, dto: CreateCategoryDto): Promise<AdminCategoryDto> {
+    const existing = await this.prisma.category.findUnique({ where: { slug: dto.slug } });
+    if (existing) {
+      throw new ConflictDomainException(
+        ErrorCode.CATEGORY_IN_USE,
+        `Category slug "${dto.slug}" already exists.`,
+      );
+    }
+    const row = await this.prisma.category.create({
+      data: {
+        slug: dto.slug,
+        name: dto.name as Prisma.InputJsonValue,
+        iconKey: dto.iconKey,
+        sortOrder: dto.sortOrder ?? 999,
+        isActive: dto.isActive ?? true,
+      },
+      include: { _count: { select: { assets: true } } },
+    });
+    await this.categories.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'category.create',
+      subjectType: 'Category',
+      subjectId: row.id,
+      metadata: { slug: dto.slug },
+    });
+    return this.toDto(row);
+  }
+
+  async update(id: string, admin: User, dto: UpdateCategoryDto): Promise<AdminCategoryDto> {
+    const existing = await this.prisma.category.findUnique({ where: { id } });
+    if (!existing) {
+      throw new NotFoundDomainException(ErrorCode.CATEGORY_NOT_FOUND, `Category ${id} not found.`);
+    }
+    if (dto.slug && dto.slug !== existing.slug) {
+      const collision = await this.prisma.category.findUnique({ where: { slug: dto.slug } });
+      if (collision) {
+        throw new ConflictDomainException(
+          ErrorCode.CATEGORY_IN_USE,
+          `Slug "${dto.slug}" is taken.`,
+        );
+      }
+    }
+    const mergedName =
+      dto.name == null
+        ? (existing.name as Prisma.InputJsonValue)
+        : ({
+            ...((existing.name as Record<string, string>) ?? {}),
+            ...dto.name,
+          } as Prisma.InputJsonValue);
+    const row = await this.prisma.category.update({
+      where: { id },
+      data: {
+        slug: dto.slug ?? existing.slug,
+        name: mergedName,
+        iconKey: dto.iconKey ?? existing.iconKey,
+        sortOrder: dto.sortOrder ?? existing.sortOrder,
+        isActive: dto.isActive ?? existing.isActive,
+      },
+      include: { _count: { select: { assets: true } } },
+    });
+    await this.categories.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'category.update',
+      subjectType: 'Category',
+      subjectId: id,
+      metadata: { changes: dto },
+    });
