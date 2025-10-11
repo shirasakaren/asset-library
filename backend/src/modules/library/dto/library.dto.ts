@@ -1,0 +1,31 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { AssetEngine } from '@prisma/client';
+import { Transform } from 'class-transformer';
+import { IsArray, IsBoolean, IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
+import { ListQueryDto } from '../../../common/pagination/list-query.dto';
+import { AssetSummaryDto } from '../../assets/dto/asset.dto';
+
+const LIBRARY_SORTS = ['savedAt', 'alphabetical', 'recentlyUpdated'] as const;
+type LibrarySort = (typeof LIBRARY_SORTS)[number];
+const HIDDEN_MODES = ['true', 'false', 'all'] as const;
+
+const asArray = ({ value }: { value: unknown }): string[] | undefined => {
+  if (value == null || value === '') return undefined;
+  return Array.isArray(value)
+    ? value.map(String)
+    : String(value)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+};
+
+export class ListLibraryQueryDto extends ListQueryDto {
+  @ApiPropertyOptional() @IsOptional() @IsString() q?: string;
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
+  @IsArray()
+  categoryIds?: string[];
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
