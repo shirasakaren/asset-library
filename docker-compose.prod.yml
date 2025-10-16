@@ -1,0 +1,54 @@
+# =============================================================================
+# MGM Asset Library — production stack (monorepo).
+#
+# Runs the three prebuilt images (API, worker, web). Postgres, Mongo, Redis,
+# Meilisearch, and object storage are managed externally (separate compose
+# stacks or managed services). SWAG terminates TLS at the edge.
+# =============================================================================
+
+services:
+  api:
+    image: ${API_IMAGE:-ghcr.io/mgm-laboratory/mgm-asset-library-api:latest}
+    env_file: backend/.env
+    environment:
+      PROCESS_ROLE: api
+    ports:
+      - '${API_PORT:-4000}:4000'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:${API_PORT:-4000}/healthz || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  worker:
+    image: ${WORKER_IMAGE:-ghcr.io/mgm-laboratory/mgm-asset-library-worker:latest}
+    env_file: backend/.env
+    environment:
+      PROCESS_ROLE: worker
+      PORT: '4001'
+    ports:
+      - '4001:4001'
+    restart: unless-stopped
+    tmpfs:
+      - /tmp/mgm-analyze:size=4g
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:4001/healthz || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  web:
+    image: ${WEB_IMAGE:-ghcr.io/mgm-laboratory/mgm-asset-library-web:latest}
+    env_file: frontend/.env.local
+    ports:
+      - '${WEB_PORT:-3000}:3000'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:3000/health || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

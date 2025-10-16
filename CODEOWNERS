@@ -1,0 +1,6 @@
+# Default owner for the monorepo
+* @shirasakaren
+
+# CI/CD and Docker need an explicit review from the same owner
+/.github/ @shirasakaren
+docker-compose*.yml @shirasakaren
