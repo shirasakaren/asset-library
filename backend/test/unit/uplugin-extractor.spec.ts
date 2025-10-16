@@ -1,0 +1,41 @@
+import { writeFile, mkdir, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import {
+  extractUPlugin,
+  extractUProject,
+} from '../../src/modules/jobs/processors/analyze/extractors/unreal.extractor';
+
+describe('Unreal extractors', () => {
+  let dir: string;
+  beforeAll(async () => {
+    dir = join(tmpdir(), `mgm-test-${Date.now()}`);
+    await mkdir(dir, { recursive: true });
+  });
+  afterAll(async () => {
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  it('reads .uplugin JSON', async () => {
+    const path = join(dir, 'a.uplugin');
+    await writeFile(
+      path,
+      JSON.stringify({
+        FriendlyName: 'My Plugin',
+        VersionName: '1.0.2',
+        EngineVersion: '5.4',
+        Modules: [{ Name: 'Runtime' }, { Name: 'Editor' }],
+        Plugins: [
+          { Name: 'OnlineSubsystem', Enabled: true },
+          { Name: 'Legacy', Enabled: false },
+        ],
+      }),
+    );
+    const meta = await extractUPlugin(path);
+    expect(meta).toMatchObject({
+      friendlyName: 'My Plugin',
+      versionName: '1.0.2',
+      modules: ['Runtime', 'Editor'],
+      plugins: [
+        { name: 'OnlineSubsystem', enabled: true },
+        { name: 'Legacy', enabled: false },
