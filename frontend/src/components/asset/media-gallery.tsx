@@ -1,0 +1,134 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { X, FileBox, Image as ImageIcon, Music, Video as VideoIcon, EyeOff } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { ThumbnailImage } from './thumbnail-image';
+import {
+  Modal,
+  ModalPortal,
+  ModalOverlay,
+} from '@/components/ui/modal';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/empty-state';
+
+// Dynamically import model-viewer panel so the web-component bundle only
+// downloads when there's actually a 3D asset to show.
+const ModelViewerPanel = dynamic(
+  () => import('./model-viewer').then((m) => m.ModelViewerPanel),
+  { ssr: false, loading: () => <div className="absolute inset-0 skeleton" /> },
+);
+
+interface MediaItem {
+  id: string;
+  kind: 'image' | 'video' | 'audio' | '3d';
+  url: string;
+  /** Full-resolution URL opened in the lightbox (falls back to `url`). */
+  fullUrl?: string;
+  thumb?: string | null;
+  label?: string;
+  /** Sensitive media: blurred until the viewer clicks to reveal. */
+  blur?: boolean;
+  warning?: string;
+  meta?: { animations?: string[] };
+}
+
+interface MediaGalleryProps {
+  thumbnailUrl?: string | null;
+  thumbnailFallback?: string | null;
+  items: MediaItem[];
+  assetTitle: string;
+}
+
+function classifyKind(kind: string): MediaItem['kind'] | null {
+  const k = kind.toUpperCase();
+  if (k === 'GLB') return '3d';
+  if (k.includes('AUDIO')) return 'audio';
+  if (k.includes('VIDEO')) return 'video';
+  if (k.includes('TEXTURE') || k === 'SPRITE' || k.includes('IMAGE')) return 'image';
+  return null;
+}
+
+export function classifyFiles(
+  files: { id: string; relativePath: string; kind: string; meta?: Record<string, unknown> | null }[],
+): MediaItem[] {
+  return files
+    .map((f): MediaItem | null => {
+      const kind = classifyKind(f.kind);
+      if (!kind) return null;
+      const meta = (f.meta ?? {}) as Record<string, unknown>;
+      // The backend attaches a signed `viewUrl` to viewable media via the
+      // editor-media flow (90-day signed GETs) and to derived GLB previews
+      // via the converter. Without one, we can't render a preview at all
+      // — skip the entry so the gallery doesn't show a broken tile.
+      const viewUrl = typeof meta.viewUrl === 'string' ? (meta.viewUrl as string) : null;
+      if (!viewUrl) return null;
+      const thumbUrl = typeof meta.thumbUrl === 'string' ? (meta.thumbUrl as string) : null;
+      const animations = Array.isArray(meta.animations) ? (meta.animations as string[]) : undefined;
+      return {
+        id: f.id,
+        kind,
+        url: viewUrl,
+        thumb: thumbUrl,
+        label: f.relativePath.split('/').pop() ?? f.relativePath,
+        meta: animations ? { animations } : undefined,
+      };
+    })
+    .filter((m): m is MediaItem => m !== null);
+}
+
+const kindIcon = {
+  image: ImageIcon,
+  video: VideoIcon,
+  audio: Music,
+  '3d': FileBox,
+} as const;
+
+export function MediaGallery({
+  thumbnailUrl,
+  thumbnailFallback,
+  items,
+  assetTitle,
+}: MediaGalleryProps) {
+  const t = useTranslations('asset.viewer');
+  const [activeId, setActiveId] = useState<string | null>(items[0]?.id ?? null);
+  const [lightbox, setLightbox] = useState<MediaItem | null>(null);
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
+
+  const active = useMemo(() => items.find((i) => i.id === activeId) ?? items[0] ?? null, [activeId, items]);
+  const activeHidden = !!active?.blur && !revealed.has(active.id);
+  const reveal = (id: string) => setRevealed((s) => new Set(s).add(id));
+
+  if (items.length === 0) {
+    return (
+      <div className="relative aspect-[16/9] rounded-[24px] border border-line overflow-hidden bg-surface-muted">
+        <ThumbnailImage
+          src={thumbnailUrl}
+          fallback={thumbnailFallback}
+          alt={assetTitle}
+          className="!rounded-[24px]"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="relative aspect-[16/9] rounded-[24px] overflow-hidden border border-line bg-surface-muted">
+        {active?.kind === 'image' ? (
+          <button
+            type="button"
+            onClick={() => (activeHidden ? reveal(active.id) : setLightbox(active))}
+            className="absolute inset-0 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+            aria-label={`${active.label ?? assetTitle} — open lightbox`}
+          >
+            <Image
+              src={active.url}
+              alt={active.label ?? assetTitle}
+              fill
+              priority
+              sizes="(min-width: 1024px) 800px, 100vw"
+              className={cn('object-contain transition', activeHidden && 'blur-2xl scale-110')}
