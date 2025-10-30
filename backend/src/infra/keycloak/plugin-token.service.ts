@@ -51,3 +51,42 @@ export class PluginTokenService {
         expiresAt: this.newExpiry(),
       },
     });
+    return { deviceId: record.id, token, expiresAt: record.expiresAt };
+  }
+
+  /**
+   * Verify-and-touch: returns the (user, token-row) tuple when the token is
+   * active. Updates `lastUsedAt` opportunistically; does NOT slide the expiry
+   * (refresh is an explicit endpoint).
+   */
+  async verifyAndTouch(token: string): Promise<{ user: User; record: PluginDeviceToken } | null> {
+    const record = await this.prisma.pluginDeviceToken.findUnique({
+      where: { tokenHash: this.hash(token) },
+      include: { user: true },
+    });
+    if (!record || record.revokedAt || record.expiresAt < new Date()) return null;
+    if (!record.lastUsedAt || Date.now() - record.lastUsedAt.getTime() > 60_000) {
+      // Avoid hammering Postgres on every single request — only persist
+      // lastUsedAt once a minute per device.
+      await this.prisma.pluginDeviceToken
+        .update({ where: { id: record.id }, data: { lastUsedAt: new Date() } })
+        .catch(() => undefined);
+    }
+    return { user: record.user, record };
+  }
+
+  async refreshExpiry(token: string): Promise<Date | null> {
+    const tokenHash = this.hash(token);
+    const record = await this.prisma.pluginDeviceToken.findUnique({ where: { tokenHash } });
+    if (!record || record.revokedAt || record.expiresAt < new Date()) return null;
+    const updated = await this.prisma.pluginDeviceToken.update({
+      where: { tokenHash },
+      data: { expiresAt: this.newExpiry(), lastUsedAt: new Date() },
+    });
+    return updated.expiresAt;
+  }
+
+  async revokeByDeviceId(userId: string, deviceId: string): Promise<boolean> {
+    const result = await this.prisma.pluginDeviceToken.updateMany({
+      where: { id: deviceId, userId, revokedAt: null },
+      data: { revokedAt: new Date() },
