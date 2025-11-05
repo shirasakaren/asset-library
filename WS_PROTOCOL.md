@@ -43,3 +43,10 @@ Every server-emitted application message uses the same envelope:
   "ts": 1716192000000,
   "payload": { ... }
 }
+```
+
+`type` values currently in use:
+
+| `type`                  | When                                                                  |
+| ----------------------- | --------------------------------------------------------------------- |
+| `hello`                 | Sent once after successful handshake.                                 |
