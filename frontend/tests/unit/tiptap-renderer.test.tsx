@@ -1,0 +1,48 @@
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { TipTapRenderer } from '@/components/rich-text/tiptap-renderer';
+import type { TipTapDoc } from '@/lib/api/types';
+
+describe('TipTapRenderer', () => {
+  it('renders text marks for bold/italic/code/link', () => {
+    const doc: TipTapDoc = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'Hello ' },
+            { type: 'text', text: 'bold', marks: [{ type: 'bold' }] },
+            { type: 'text', text: ' & ' },
+            { type: 'text', text: 'italic', marks: [{ type: 'italic' }] },
+            { type: 'text', text: ' & ' },
+            { type: 'text', text: 'code()', marks: [{ type: 'code' }] },
+            { type: 'text', text: ' ' },
+            {
+              type: 'text',
+              text: 'link',
+              marks: [{ type: 'link', attrs: { href: 'https://example.com' } }],
+            },
+          ],
+        },
+      ],
+    };
+    render(<TipTapRenderer doc={doc} />);
+    expect(screen.getByText('bold').tagName).toBe('STRONG');
+    expect(screen.getByText('italic').tagName).toBe('EM');
+    expect(screen.getByText('code()').tagName).toBe('CODE');
+    const link = screen.getByText('link') as HTMLAnchorElement;
+    expect(link.tagName).toBe('A');
+    expect(link.href).toContain('https://example.com');
+    expect(link.rel).toContain('noopener');
+    expect(link.target).toBe('_blank');
+  });
+
+  it('renders headings, lists, and code blocks', () => {
+    const doc: TipTapDoc = {
+      type: 'doc',
+      content: [
+        {
+          type: 'heading',
+          attrs: { level: 2 },
+          content: [{ type: 'text', text: 'Section' }],
