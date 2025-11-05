@@ -37,34 +37,3 @@ export class KeycloakAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) return true;
-
-    const req = context.switchToHttp().getRequest<FastifyRequest>();
-    const token = this.extractBearer(req);
-    if (!token) {
-      throw new UnauthorizedException('Missing bearer token.');
-    }
-
-    let claims: KeycloakClaims;
-    try {
-      claims = await this.jwks.verify(token);
-    } catch (err) {
-      this.logger.debug(`Token verification failed: ${(err as Error).message}`);
-      throw new UnauthorizedException('Invalid or expired token.');
-    }
-
-    const resolved = await this.principals.resolvePrincipal(claims);
-
-    (req as FastifyRequest & { user?: AuthenticatedRequestUser }).user = {
-      user: resolved.user,
-      role: resolved.role,
-      claims,
-    };
-    return true;
-  }
-
-  private extractBearer(req: FastifyRequest): string | null {
