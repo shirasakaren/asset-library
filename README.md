@@ -293,3 +293,39 @@ manual reindexing is reserved for cold-start and disaster recovery.
 `?pluginToken=<deviceToken>`. The message envelope is specified in
 [WS_PROTOCOL.md](./WS_PROTOCOL.md), shared by both workspace members.
 
+### 5.4 Plugin device tokens
+
+Unity/Unreal clients exchange a Keycloak token for a long-lived device
+token (`POST /auth/plugin/exchange`) and slide/revoke it via
+`/auth/plugin/{refresh,devices,revoke}`. `PLUGIN_TOKEN_PEPPER` is required
+in production.
+
+---
+
+## 6. Environment reference
+
+Both apps validate their environment at boot and fail fast with an
+aggregated error. Canonical, commented lists live in
+[`backend/.env.example`](./backend/.env.example) and
+[`frontend/.env.example`](./frontend/.env.example). Highlights:
+
+| Group              | App      | Notes                                                                  |
+| ------------------ | -------- | ---------------------------------------------------------------------- |
+| Runtime            | backend  | `NODE_ENV`, `PROCESS_ROLE`, `PORT`, `PUBLIC_BASE_URL`, `CORS_ORIGINS`.  |
+| Postgres / Mongo   | backend  | Compose defaults work out of the box.                                  |
+| Redis              | backend  | BullMQ + JWKS cache + `ws:fanout`.                                      |
+| Keycloak           | both     | Issuer URL, audience, JWKS URI; client credentials on the frontend.    |
+| S3                 | backend  | Local: MinIO at `http://minio:9000`; production: AWS S3 (endpoint blank). |
+| Meilisearch        | backend  | Master key optional in dev.                                            |
+| SMTP / n8n         | backend  | Blank host/URL makes each integration a no-op.                         |
+| Sentry             | both     | Blank DSN disables telemetry.                                          |
+| Public URLs        | frontend | `NEXT_PUBLIC_*` values are inlined at build time.                      |
+| Auth               | frontend | `NEXTAUTH_*`, `KEYCLOAK_*`, `SESSION_MAX_AGE_SECONDS`.                 |
+| Feature flags      | backend  | `FEATURE_SWAGGER_PUBLIC`, `FEATURE_QUEUE_DASHBOARD`.                   |
+
+The authoritative backend shape lives in `backend/src/config/env.schema.ts`;
+the frontend's in `frontend/src/lib/env.ts`.
+
+---
+
+## 7. Scripts
