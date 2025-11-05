@@ -34,3 +34,19 @@ export class HealthController {
   liveness(): { status: 'ok' } {
     return { status: 'ok' };
   }
+
+  /**
+   * Readiness probe. 200 only if every external dependency is reachable;
+   * returns a per-check breakdown so ops can identify which subsystem is down.
+   */
+  @Public()
+  @Get('readyz')
+  async readiness(): Promise<ReadinessReport> {
+    const [postgres, redis, mongo, meilisearch, s3] = await Promise.all([
+      this.prisma.ping(),
+      this.redis.ping(),
+      this.mongo.ping(),
+      this.meili.ping(),
+      this.s3.ping(),
+    ]);
+    const checks = { postgres, redis, mongo, meilisearch, s3 };

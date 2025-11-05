@@ -79,3 +79,38 @@ import { WsModule } from './modules/ws/ws.module';
     N8nModule,
     KeycloakModule,
     GuardsModule,
+    AuditCoreModule,
+    IdempotencyModule,
+    RateLimitModule,
+
+    // ── Health ──────────────────────────────────────────────────────────────
+    HealthModule,
+
+    // ── Active feature modules (Part 1) ─────────────────────────────────────
+    UsersModule,
+    AuthModule,
+
+    // ── Stubbed feature modules (Parts 2/3/4) ───────────────────────────────
+    AssetsModule,
+    VersionsModule,
+    FilesModule,
+    GifsModule,
+    DownloadsModule,
+    CategoriesModule,
+    TagsModule,
+    LicensesModule,
+    LibraryModule,
+    CommentsModule,
+    IssuesModule,
+    ReportsModule,
+    RequestsModule,
+    FeaturedModule,
+    NotificationsModule,
+    AnalyticsModule,
+    AdminModule,
+    AuditModule,
+    SearchModule,
+    JobsModule,
+    MetricsModule,
+    MeModule,
+    WsModule,
