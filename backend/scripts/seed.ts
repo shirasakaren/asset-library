@@ -130,6 +130,3 @@ const LICENSES: LicenseSeed[] = [
     },
     sortOrder: 70,
   },
-];
-
-async function seedAdmin(): Promise<void> {
