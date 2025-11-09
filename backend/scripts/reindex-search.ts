@@ -44,10 +44,3 @@ async function main(): Promise<void> {
     'status',
   ]);
   await assets.updateSortableAttributes([
-    'publishedAt',
-    'createdAt',
-    'totalDownloads',
-    'totalSaves',
-    'title',
-  ]);
-
