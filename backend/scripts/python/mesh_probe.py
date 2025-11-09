@@ -64,14 +64,3 @@ def probe(path: str) -> Dict[str, Any]:
         has_skeleton = False
         for anim in scene.animations:
             try:
-                # FPS may be 0 in some FBX exports; fall back to 30.
-                ticks_per_sec = anim.ticks_per_second if anim.ticks_per_second and anim.ticks_per_second > 0 else 30
-                length_sec = float(anim.duration) / float(ticks_per_sec)
-            except Exception:
-                length_sec = 0.0
-            has_root_motion = False
-            try:
-                if anim.channels:
-                    first = anim.channels[0]
-                    if first.position_keys and len(first.position_keys) > 1:
-                        first_p = first.position_keys[0].value
