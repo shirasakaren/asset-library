@@ -47,3 +47,12 @@ export class AdminTagsController {
   @ApiOperation({ summary: 'Rename a tag (slug + display name).' })
   @ApiOkResponse({ type: AdminTagDto })
   update(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateTagDto,
+  ): Promise<AdminTagDto> {
+    return this.admin.update(id, principal.user, dto);
+  }
+
+  @Delete(':id')
+  @AuditAction({ action: 'tag.delete_request', subjectType: 'Tag' })
