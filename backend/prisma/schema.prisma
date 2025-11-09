@@ -385,3 +385,54 @@ model Tag {
 }
 
 /// M:N join between Asset and Tag.
+model AssetTag {
+  assetId String
+  tagId   String
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([assetId, tagId])
+  @@index([tagId])
+  @@map("asset_tags")
+}
+
+/// Admin-managed license template (MIT, CC0, Commercial, …).
+model License {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  /// `{ en, id }` short description.
+  description Json
+  /// `{ en, id }` full legal text.
+  fullText    Json
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assets Asset[]
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("licenses")
+}
+
+// -----------------------------------------------------------------------------
+// LibraryItem / Download
+// -----------------------------------------------------------------------------
+
+/// A user's saved-library entry. Auto-created on first download.
+model LibraryItem {
+  id      String   @id @default(cuid())
+  userId  String
+  assetId String
+  hidden  Boolean  @default(false)
+  addedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, assetId])
+  @@index([userId])
+  @@index([assetId])
