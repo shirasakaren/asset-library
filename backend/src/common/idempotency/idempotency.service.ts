@@ -46,3 +46,8 @@ export class IdempotencyService {
     const record = JSON.parse(raw) as IdempotencyRecord;
     if (record.bodyHash !== this.hashBody(body)) {
       throw new ConflictDomainException(
+        ErrorCode.IDEMPOTENCY_KEY_REUSED,
+        'Idempotency-Key has been used with a different request body.',
+      );
+    }
+    return record;
