@@ -72,3 +72,36 @@ export class TagsService {
     const cappedLimit = Math.min(Math.max(limit ?? POPULAR_DEFAULT_LIMIT, 1), POPULAR_MAX_LIMIT);
     return this.cached.getOrFetch<TagDto[]>(
       POPULAR_CACHE_KEY(cappedLimit),
+      POPULAR_CACHE_TTL_SECONDS,
+      () => this.computePopular(cappedLimit),
+    );
+  }
+
+  private async computePopular(limit: number): Promise<TagDto[]> {
+    const rows = await this.prisma.tag.findMany({
+      where: { usage: { is: { usageCount: { gt: 0 } } } },
+      include: { usage: true },
+      orderBy: [{ usage: { usageCount: 'desc' } }, { displayName: 'asc' }],
+      take: limit,
+    });
+    return rows.map((t) => ({
+      id: t.id,
+      slug: t.slug,
+      displayName: t.displayName,
+      usageCount: t.usage?.usageCount ?? 0,
+    }));
+  }
+
+  /**
+   * Drops the cached popular-tag listings. Iterates the (small, bounded)
+   * range of supported limit values rather than relying on a Redis SCAN.
+   */
+  async invalidatePopularCache(): Promise<void> {
+    const keys: string[] = [];
+    for (let n = 1; n <= POPULAR_MAX_LIMIT; n++) keys.push(POPULAR_CACHE_KEY(n));
+    await this.cached.invalidate(...keys);
+  }
+
+  /** Upserts a set of display names into Tag rows, returning the persisted rows. */
+  async upsertMany(displayNames: string[], tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
