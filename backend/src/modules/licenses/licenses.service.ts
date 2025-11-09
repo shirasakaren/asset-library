@@ -46,3 +46,14 @@ export class LicensesService {
   }
 
   async getDetail(id: string, locale: Locale): Promise<LicenseDetailDto> {
+    const row = await this.findByIdOrThrow(id);
+    const summary = this.toSummary(row, locale);
+    return {
+      ...summary,
+      fullText: resolveLocalized(row.fullText as LocalizedJson, locale) ?? '',
+    };
+  }
+
+  /** Drops the cached listings — call after admin mutations. */
+  async invalidateCache(): Promise<void> {
+    await this.cached.invalidate(LIST_CACHE_KEY('en'), LIST_CACHE_KEY('id'));
