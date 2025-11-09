@@ -83,3 +83,16 @@ export class AuthService {
       },
     });
     return this.pluginTokens.issue(user, deviceLabel);
+  }
+
+  async refreshPluginToken(token: string): Promise<Date> {
+    const next = await this.pluginTokens.refreshExpiry(token);
+    if (!next) throw new UnauthorizedException('Plugin token invalid, expired, or revoked.');
+    return next;
+  }
+
+  async revokePluginDevice(userId: string, deviceId: string): Promise<void> {
+    await this.pluginTokens.revokeByDeviceId(userId, deviceId);
+  }
+
+  async listPluginDevices(userId: string): Promise<PluginDeviceDto[]> {
