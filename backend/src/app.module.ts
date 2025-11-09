@@ -62,3 +62,32 @@ import { WsModule } from './modules/ws/ws.module';
           transport: config.isDevelopment
             ? { target: 'pino-pretty', options: { singleLine: true } }
             : undefined,
+          redact: ['req.headers.authorization', 'req.headers.cookie'],
+          customProps: (req) => ({ reqId: (req as unknown as { id?: string }).id }),
+        },
+      }),
+    }),
+
+    // ── Infra (shared connectors) ───────────────────────────────────────────
+    SentryModule,
+    PrismaModule,
+    MongoModule,
+    RedisModule,
+    S3Module,
+    MeilisearchModule,
+    MailerModule,
+    N8nModule,
+    KeycloakModule,
+    GuardsModule,
+    AuditCoreModule,
+    IdempotencyModule,
+    RateLimitModule,
+
+    // ── Health ──────────────────────────────────────────────────────────────
+    HealthModule,
+
+    // ── Active feature modules (Part 1) ─────────────────────────────────────
+    UsersModule,
+    AuthModule,
+
+    // ── Stubbed feature modules (Parts 2/3/4) ───────────────────────────────
