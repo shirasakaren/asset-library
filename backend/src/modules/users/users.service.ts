@@ -65,3 +65,6 @@ export class UsersService {
       where: { id },
       include: { _count: { select: { assetsOwned: { where: { status: 'PUBLISHED' } } } } },
     });
+    if (!user || user.deletedAt) {
+      throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${id} not found.`);
+    }
