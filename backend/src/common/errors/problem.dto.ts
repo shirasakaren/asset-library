@@ -49,10 +49,3 @@ export class ProblemDto {
  * problem+json. Carrying the stable `code` separately from the HTTP status
  * lets us evolve messages without breaking clients.
  */
-export class DomainException extends HttpException {
-  constructor(
-    status: HttpStatus,
-    public readonly code: ErrorCodeValue,
-    detail: string,
-    public readonly fields?: ProblemFieldDto[],
-  ) {
