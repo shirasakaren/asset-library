@@ -74,3 +74,21 @@ export class AdminCategoriesController {
   }
 
   @Delete(':id')
+  @AuditAction({ action: 'category.delete_request', subjectType: 'Category' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a category. Rejected if any asset references it.' })
+  remove(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
+    return this.admin.remove(id, principal.user);
+  }
+
+  @Post('reorder')
+  @AuditAction({
+    action: 'category.reorder_request',
+    subjectType: 'Category',
+    subjectParam: 'body.orderedIds.0',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Replace the sortOrder sequence.' })
+  reorder(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: ReorderCategoriesDto,
