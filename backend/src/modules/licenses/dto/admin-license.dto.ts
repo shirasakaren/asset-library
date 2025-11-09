@@ -43,3 +43,37 @@ export class CreateLicenseDto {
   @IsBoolean()
   isActive?: boolean;
 }
+
+export class UpdateLicenseDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(140)
+  name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  description?: { en?: string; id?: string };
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  fullText?: { en?: string; id?: string };
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  sortOrder?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+export class AdminLicenseDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() name!: string;
