@@ -75,3 +75,7 @@ def probe(path: str) -> dict:
 
     return {
         "triangles": triangles,
+        "quads": quads,
+        "vertices": vertices_total,
+        "materials": len(materials),
+        "hasSkeleton": has_skeleton,
