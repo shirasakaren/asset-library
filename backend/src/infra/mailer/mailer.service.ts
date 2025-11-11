@@ -45,10 +45,3 @@ export class MailerService implements OnModuleDestroy {
       this.logger.debug(`[mail-noop] to=${opts.to} subject=${opts.subject}`);
       return;
     }
-    await this.transporter.sendMail({
-      from: this.from,
-      to: opts.to,
-      subject: opts.subject,
-      html: opts.html,
-      text: opts.text,
-    });
