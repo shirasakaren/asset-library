@@ -54,9 +54,3 @@ export class KeycloakJwksProvider {
     const { payload } = await jwtVerify(token, this.jwks, {
       issuer: this.issuer,
       algorithms: this.algorithms,
-      clockTolerance: this.clockToleranceSec,
-    });
-    if (!payload.sub) {
-      throw new Error('Keycloak token is missing the `sub` claim.');
-    }
-    const audiences = Array.isArray(payload.aud) ? payload.aud : payload.aud ? [payload.aud] : [];
