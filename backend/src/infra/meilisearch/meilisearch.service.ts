@@ -44,3 +44,8 @@ export class MeilisearchService implements OnModuleInit {
     await index.updateSearchableAttributes([
       'title',
       'shortDescription_en',
+      'shortDescription_id',
+      'tags',
+      'ownerDisplayName',
+    ]);
+    await index.updateFilterableAttributes([
