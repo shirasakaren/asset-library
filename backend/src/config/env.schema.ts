@@ -76,3 +76,17 @@ export const envSchema = z
     // ─────────── Mail (Mailtrap) ────────────────────────────────────────────
     SMTP_HOST: z.string().optional().default(''),
     SMTP_PORT: portNumber.default(587),
+    SMTP_USER: z.string().optional().default(''),
+    SMTP_PASS: z.string().optional().default(''),
+    SMTP_FROM: z.string().default('MGM Asset Library <no-reply@labmgm.org>'),
+
+    // ─────────── n8n ────────────────────────────────────────────────────────
+    N8N_WEBHOOK_URL: z.string().optional().default(''),
+    N8N_WEBHOOK_SECRET: z.string().optional().default(''),
+
+    // ─────────── GIF providers (comment composer) ───────────────────────────
+    // Server-side keys for the /gifs proxy. Empty disables that provider.
+    GIPHY_API_KEY: z.string().optional().default(''),
+    TENOR_API_KEY: z.string().optional().default(''),
+
+    // ─────────── Sentry ─────────────────────────────────────────────────────
