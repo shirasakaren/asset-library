@@ -37,34 +37,3 @@ export class UsersService {
   }
 
   /** Admin-only typeahead used by the "promote another admin" picker. */
-  async searchUsers(q: string, limit = 20): Promise<UserSearchResultDto[]> {
-    const needle = q.trim();
-    if (needle.length < 2) return [];
-    const where: Prisma.UserWhereInput = {
-      deletedAt: null,
-      OR: [
-        { email: { contains: needle, mode: 'insensitive' } },
-        { displayName: { contains: needle, mode: 'insensitive' } },
-      ],
-    };
-    const rows = await this.prisma.user.findMany({
-      where,
-      take: Math.min(limit, 20),
-      orderBy: [{ isAdmin: 'desc' }, { displayName: 'asc' }],
-      select: { id: true, email: true, displayName: true, isAdmin: true },
-    });
-    return rows;
-  }
-
-  /**
-   * Public profile shape. Email is exposed only when the requester is the
-   * user themselves or an admin.
-   */
-  async getPublicProfile(id: string, requester: User | null): Promise<UserPublicProfileDto> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      include: { _count: { select: { assetsOwned: { where: { status: 'PUBLISHED' } } } } },
-    });
-    if (!user || user.deletedAt) {
-      throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${id} not found.`);
-    }
