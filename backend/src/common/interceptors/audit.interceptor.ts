@@ -56,3 +56,33 @@ function resolveSubjectId(req: FastifyRequest, path = 'params.id'): string | nul
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
   constructor(
+    private readonly reflector: Reflector,
+    private readonly audit: AuditService,
+  ) {}
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const config = this.reflector.getAllAndOverride<AuditActionConfig | undefined>(
+      AUDIT_ACTION_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+    if (!config) return next.handle();
+
+    const req = context.switchToHttp().getRequest<
+      FastifyRequest & {
+        user?: AuthenticatedRequestUser;
+        body?: Record<string, unknown>;
+        params?: Record<string, unknown>;
+      }
+    >();
+
+    return next.handle().pipe(
+      tap({
+        next: () => {
+          const subjectId = resolveSubjectId(req, config.subjectParam) ?? 'unknown';
+          const metadata = this.buildMetadata(req);
+          void this.audit.record({
+            actorId: req.user?.user.id,
+            action: config.action,
+            subjectType: config.subjectType,
+            subjectId,
+            metadata,
