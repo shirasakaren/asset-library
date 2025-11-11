@@ -54,3 +54,14 @@ export class PrincipalResolverService {
     private readonly redis: RedisService,
   ) {}
 
+  static cacheKey(sub: string): string {
+    return `authz:principal:${sub}`;
+  }
+
+  /**
+   * Caching the resolution — not the verification — keeps token expiry strictly
+   * enforced by the caller. Cache reads/writes are best-effort: a Redis failure
+   * falls back to the Postgres upsert + role query.
+   */
+  async resolvePrincipal(claims: KeycloakClaims): Promise<{ user: User; role: AppRole }> {
+    const cacheKey = PrincipalResolverService.cacheKey(claims.sub);
