@@ -107,3 +107,8 @@ export class AdminAssetsModerationService {
       subjectId: id,
       metadata: { previousStatus: asset.status, reason },
     });
+  }
+
+  /**
+   * Immediate hard delete — bypasses the 30-day archive clock. Used only for
+   * legal takedowns / catastrophic content. Guarded by `@RequireConfirmation()`
