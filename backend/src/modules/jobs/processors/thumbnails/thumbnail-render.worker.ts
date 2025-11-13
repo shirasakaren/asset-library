@@ -79,3 +79,8 @@ export class ThumbnailRenderWorker extends JobWorkerBase<ThumbnailRenderJob> {
       const baseKey = `${version.s3Prefix}__derived__/thumbnails/auto`;
       await this.s3.client.send(
         new PutObjectCommand({
+          Bucket: this.s3.bucketFor('assets'),
+          Key: `${baseKey}.webp`,
+          Body: webp1x,
+          ContentType: 'image/webp',
+        }),
