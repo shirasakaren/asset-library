@@ -93,3 +93,8 @@ export class EmailRendererService {
     `.trim();
 
     const compiled = await mjml2html(mjml, { validationLevel: 'soft' });
+    if (compiled.errors.length) {
+      this.logger.warn(
+        `MJML warnings for ${type}/${locale}: ${compiled.errors.map((e: { message: string }) => e.message).join('; ')}`,
+      );
+    }
