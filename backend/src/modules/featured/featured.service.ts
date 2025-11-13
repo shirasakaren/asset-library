@@ -144,28 +144,3 @@ export class FeaturedService {
     if (!row)
       throw new NotFoundDomainException(
         ErrorCode.ASSET_NOT_FOUND,
-        `Featured slot ${id} not found.`,
-      );
-    await this.prisma.featuredSlot.delete({ where: { id } });
-    await this.discover.invalidate();
-    await this.audit.record({
-      actorId: admin.id,
-      action: 'featured.delete',
-      subjectType: 'FeaturedSlot',
-      subjectId: id,
-    });
-  }
-
-  /**
-   * Re-numbers `sortOrder` to match the supplied id sequence. Done in a
-   * single transaction so the unique constraint never trips mid-update.
-   */
-  async reorder(orderedIds: string[], admin: User): Promise<void> {
-    const rows = await this.prisma.featuredSlot.findMany({
-      where: { id: { in: orderedIds } },
-      select: { id: true },
-    });
-    if (rows.length !== orderedIds.length) {
-      throw new NotFoundDomainException(
-        ErrorCode.ASSET_NOT_FOUND,
-        'One or more featured slot ids could not be found.',
