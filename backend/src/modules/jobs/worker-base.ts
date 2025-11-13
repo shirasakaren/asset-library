@@ -40,3 +40,4 @@ export abstract class JobWorkerBase<TPayload> implements OnModuleInit, OnModuleD
           this.logger.error(
             `job=${job.id} name=${job.name} failed: ${(err as Error).message}`,
             (err as Error).stack,
+          );
