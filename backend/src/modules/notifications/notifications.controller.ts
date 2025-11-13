@@ -51,3 +51,8 @@ export class NotificationsController {
   }
 
   @Post(':id/read')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Mark a single notification as read.' })
+  async markRead(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string) {
+    const row = await this.notifications.markRead(principal.user, id);
+    // Fan out to other tabs/devices so they also dim the badge.
