@@ -148,3 +148,36 @@ export class UpdateAssetDto {
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(24)
+  previewMedia?: PreviewMediaInputDto[];
+}
+
+export class PreviewMediaInputDto {
+  @ApiProperty() @IsString() id!: string;
+  @ApiProperty({ enum: ['image', 'video', 'audio', '3d'] })
+  @IsString()
+  kind!: 'image' | 'video' | 'audio' | '3d';
+  /** Full-resolution / original object key. */
+  @ApiProperty() @IsString() key!: string;
+  /** Compressed display variant key (images only). */
+  @ApiPropertyOptional() @IsOptional() @IsString() displayKey?: string;
+  @ApiProperty() @IsString() label!: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() mime?: string;
+  /** visible (default) | blur (NSFW, click to reveal) | hidden. */
+  @ApiPropertyOptional({ enum: ['visible', 'blur', 'hidden'] })
+  @IsOptional()
+  @IsIn(['visible', 'blur', 'hidden'])
+  visibility?: 'visible' | 'blur' | 'hidden';
+  /** Optional warning label shown over a blurred item. */
+  @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(120) warning?: string;
+}
+
+export class PublishAssetDto {}
+
+export class PreviewMediaItemDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ enum: ['image', 'video', 'audio', '3d'] })
+  kind!: 'image' | 'video' | 'audio' | '3d';
+  @ApiProperty() key!: string;
+  @ApiPropertyOptional() displayKey?: string;
+  @ApiProperty() label!: string;
+  /** Fast display URL (compressed variant if present, else the original). */
