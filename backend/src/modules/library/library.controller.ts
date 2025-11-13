@@ -50,3 +50,7 @@ export class LibraryController {
     @AuthUser() principal: AuthenticatedRequestUser,
     @Body() dto: AddLibraryItemDto,
   ): Promise<void> {
+    return this.library.add(principal.user, dto.assetId);
+  }
+
+  @Delete('items/:assetId')
