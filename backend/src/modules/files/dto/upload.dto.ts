@@ -80,15 +80,3 @@ export class CompleteMultipartDto {
 }
 
 export class AbortMultipartDto {
-  @ApiProperty() @IsString() uploadId!: string;
-}
-
-export class InitiateThumbnailDto {
-  @ApiProperty() @IsString() assetId!: string;
-  @ApiProperty({ maxLength: 100 }) @IsString() @MaxLength(100) contentType!: string;
-  @ApiProperty() @IsInt() @Min(0) bytes!: number;
-}
-
-export class InitiateThumbnailResponseDto {
-  @ApiProperty() putUrl!: string;
-  @ApiProperty() key!: string;
