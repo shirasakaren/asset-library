@@ -64,34 +64,3 @@ export class UpdateCategoryDto {
   @IsOptional()
   @IsInt()
   @Min(0)
-  sortOrder?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-}
-
-export class ReorderCategoriesDto {
-  @ApiProperty({ type: [String] })
-  @IsArray()
-  @ArrayMinSize(1)
-  @IsString({ each: true })
-  orderedIds!: string[];
-}
-
-export class CategoryIconInitiateDto {
-  @ApiProperty({ maxLength: 100 })
-  @IsString()
-  @MaxLength(100)
-  contentType!: string;
-
-  @ApiProperty()
-  @IsInt()
-  @Min(0)
-  @MaxLength(256_000 as unknown as number) // doc-only — real limit lives in service
-  bytes!: number;
-}
-
-export class AdminCategoryDto {
-  @ApiProperty() id!: string;
