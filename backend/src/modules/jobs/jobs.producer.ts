@@ -130,3 +130,7 @@ export class JobsProducer implements OnModuleInit, OnModuleDestroy {
 
   private async scheduleSearchIndexBatch(): Promise<void> {
     const queue = this.queue(QUEUE.SEARCH_INDEX_BATCH);
+    await queue.add(
+      'batch',
+      { triggeredAt: new Date().toISOString() } satisfies SearchIndexBatchJob,
+      {
