@@ -45,7 +45,3 @@ const EXT_TO_KIND: Record<string, AssetFileKind> = {
   cs: AssetFileKind.SCRIPT_CS,
   cpp: AssetFileKind.SCRIPT_CPP,
   cc: AssetFileKind.SCRIPT_CPP,
-  h: AssetFileKind.SCRIPT_CPP,
-  hpp: AssetFileKind.SCRIPT_CPP,
-  py: AssetFileKind.SCRIPT_PY,
-  txt: AssetFileKind.DOCUMENT,
