@@ -81,35 +81,3 @@ export class AdminLicensesService {
         isActive: dto.isActive ?? existing.isActive,
       },
       include: { _count: { select: { assets: true } } },
-    });
-    await this.licenses.invalidateCache();
-    await this.audit.record({
-      actorId: admin.id,
-      action: 'license.update',
-      subjectType: 'License',
-      subjectId: id,
-      metadata: { changes: dto },
-    });
-    return this.toDto(row);
-  }
-
-  async remove(id: string, admin: User): Promise<void> {
-    const usage = await this.prisma.asset.count({ where: { licenseId: id } });
-    if (usage > 0) {
-      throw new ConflictDomainException(
-        ErrorCode.LICENSE_IN_USE,
-        `License is referenced by ${usage} asset(s) — reassign first.`,
-      );
-    }
-    const row = await this.prisma.license.findUnique({ where: { id } });
-    if (!row)
-      throw new NotFoundDomainException(ErrorCode.LICENSE_NOT_FOUND, `License ${id} not found.`);
-    await this.prisma.license.delete({ where: { id } });
-    await this.licenses.invalidateCache();
-    await this.audit.record({
-      actorId: admin.id,
-      action: 'license.delete',
-      subjectType: 'License',
-      subjectId: id,
-      metadata: { slug: row.slug },
-    });
