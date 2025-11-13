@@ -61,12 +61,3 @@ export class AnalyzeWorker extends JobWorkerBase<AnalyzeFileJob> {
         },
       });
       await this.decrementAndMaybeRollup(versionId);
-      throw err;
-    }
-
-    await this.prisma.$transaction(async (tx) => {
-      await tx.assetFile.update({
-        where: { id: fileId },
-        data: {
-          kind: analyzed.kind,
-          mimeType: analyzed.mimeType,
