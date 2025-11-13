@@ -75,3 +75,8 @@ export class AnalyticsController {
       totalSaves: r.totalSaves,
       last7dDownloads: r.last7dDownloads,
       last30dDownloads: r.last30dDownloads,
+    }));
+  }
+
+  @Get('admin/analytics/users')
+  @UseGuards(AdminGuard)
