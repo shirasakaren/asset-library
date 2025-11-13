@@ -54,17 +54,3 @@ export class AdminStorageController {
   async assets(@Query('date') date?: string, @Query('limit') limit?: string) {
     const targetDate = await this.resolveDate(date, 'asset');
     const take = Math.min(Math.max(Number(limit ?? '50'), 1), 200);
-    if (!targetDate) return { date: null, items: [] };
-    const rows = await this.prisma.storageAssetDaily.findMany({
-      where: { date: targetDate },
-      orderBy: { bytes: 'desc' },
-      take,
-    });
-    const ids = rows.map((r) => r.assetId);
-    const assets = await this.prisma.asset.findMany({
-      where: { id: { in: ids } },
-      select: { id: true, slug: true, title: true, ownerId: true, status: true },
-    });
-    const byId = new Map(assets.map((a) => [a.id, a]));
-    return {
-      date: targetDate.toISOString().slice(0, 10),
