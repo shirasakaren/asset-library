@@ -101,3 +101,5 @@ export class StorageRollupWorker extends JobWorkerBase<StorageRollupJob> impleme
         });
       }
     }
+
+    for (const [userId, c] of perUser) {
