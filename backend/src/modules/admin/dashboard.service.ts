@@ -171,3 +171,14 @@ export class DashboardService {
 
     const toSeries = (rows: Array<{ date: Date; count: bigint }>): SeriesPoint[] =>
       rows.map((r) => ({ date: r.date.toISOString().slice(0, 10), count: Number(r.count) }));
+
+    return {
+      downloads30d: toSeries(downloads),
+      publishes30d: toSeries(publishes),
+      newUsers30d: toSeries(newUsers),
+    };
+  }
+
+  private async loadTopAssets(): Promise<TopAssetRow[]> {
+    const since = new Date(Date.now() - 7 * 86_400_000);
+    const rows = await this.prisma.$queryRaw<
