@@ -316,34 +316,3 @@ export class AssetsService {
     const violations = await this.publishChecklist.evaluate(asset);
     const hardErrors = violations.filter((v) => v.severity === 'error');
 
-    if (hardErrors.length > 0) {
-      throw new BadRequestDomainException(
-        ErrorCode.ASSET_PUBLISH_BLOCKED,
-        'Publish blocked by checklist failures.',
-        hardErrors.map((v) => ({ path: v.field, code: v.code, message: v.message })),
-      );
-    }
-
-    const latest = await this.prisma.assetVersion.findFirst({
-      where: { assetId: id },
-      orderBy: { createdAt: 'desc' },
-    });
-    await this.prisma.$transaction([
-      this.prisma.asset.update({
-        where: { id },
-        data: { status: 'PUBLISHED', publishedAt: new Date() },
-      }),
-      ...(latest && !latest.publishedAt
-        ? [
-            this.prisma.assetVersion.update({
-              where: { id: latest.id },
-              data: { publishedAt: new Date() },
-            }),
-          ]
-        : []),
-    ]);
-
-    await this.categories.invalidateCache();
-    await this.jobs.enqueueSearchIndex({ reason: 'asset.publish', assetId: id });
-    return [];
-  }
