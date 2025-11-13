@@ -52,3 +52,12 @@ export class AuthService {
   /**
    * Verifies a Keycloak access token (the plugin obtained it via the loopback
    * OAuth flow), upserts the matching User row if needed, and mints a long-
+   * lived device token.
+   */
+  async exchangePluginToken(
+    keycloakAccessToken: string,
+    deviceLabel: string,
+  ): Promise<IssuedPluginToken> {
+    const claims = await this.jwks.verify(keycloakAccessToken).catch(() => null);
+    if (!claims) {
+      throw new UnauthorizedException('Invalid Keycloak token.');
