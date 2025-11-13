@@ -35,25 +35,3 @@ export class CategoriesService {
     return this.cached.getOrFetch<CategoryDto[]>(CACHE_KEY(locale), CACHE_TTL_SECONDS, () =>
       this.computeList(locale),
     );
-  }
-
-  private async computeList(locale: Locale): Promise<CategoryDto[]> {
-    const rows = await this.prisma.category.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: 'asc' },
-    });
-    const counts = await this.prisma.asset.groupBy({
-      by: ['categoryId'],
-      where: { status: 'PUBLISHED' },
-      _count: { _all: true },
-    });
-    const countByCategory = new Map(counts.map((c) => [c.categoryId, c._count._all]));
-
-    return rows.map((row) => ({
-      id: row.id,
-      slug: row.slug,
-      name: resolveLocalized(row.name as LocalizedJson, locale) ?? row.slug,
-      iconKey: row.iconKey ?? undefined,
-      sortOrder: row.sortOrder,
-      assetCount: countByCategory.get(row.id) ?? 0,
-    }));
