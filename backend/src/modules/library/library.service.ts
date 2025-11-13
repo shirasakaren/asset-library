@@ -82,16 +82,3 @@ export class LibraryService {
       take: limit + 1,
       orderBy,
       ...(cursor ? { skip: 1, cursor: { id: cursor.id } } : {}),
-    });
-    const hasMore = rows.length > limit;
-    const itemsRaw = rows.slice(0, limit);
-    const assetSummaries = await this.mapper.toSummaryMany(
-      itemsRaw.map((row) => row.asset),
-      locale,
-    );
-    const items: LibraryItemDto[] = itemsRaw.map((row, i) => ({
-      addedAt: row.addedAt.toISOString(),
-      hidden: row.hidden,
-      asset: assetSummaries[i],
-    }));
-    const last = itemsRaw[itemsRaw.length - 1];
