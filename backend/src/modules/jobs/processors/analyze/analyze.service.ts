@@ -85,22 +85,3 @@ export class AnalyzeService {
         const video = await extractVideo(filePath, this.config.get('FFPROBE_BIN'), timeoutMs);
         return { ...base, meta: (video ?? {}) as Record<string, unknown> };
       }
-      case AssetFileKind.FBX:
-      case AssetFileKind.OBJ:
-      case AssetFileKind.GLB:
-      case AssetFileKind.GLTF: {
-        const mesh = await extractMesh(filePath, {
-          venvBin: this.config.get('PYANALYZE_VENV') + '/bin',
-          timeoutMs,
-        });
-        return { ...base, meta: (mesh ?? {}) as Record<string, unknown> };
-      }
-      case AssetFileKind.BLEND: {
-        const mesh = await extractBlendViaBlender(filePath, {
-          blenderBin: this.config.get('BLENDER_BIN'),
-          timeoutMs,
-        });
-        return { ...base, meta: (mesh ?? {}) as Record<string, unknown> };
-      }
-      case AssetFileKind.UNITYPACKAGE: {
-        const pkg = await extractUnityPackage(filePath);
