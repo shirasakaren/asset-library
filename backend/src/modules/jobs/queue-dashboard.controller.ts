@@ -47,3 +47,4 @@ export class QueueDashboardController {
    */
   @Get('admin/queues')
   @ApiOperation({ summary: 'Operational dashboard for BullMQ queues (admin only).' })
+  async dashboard(
