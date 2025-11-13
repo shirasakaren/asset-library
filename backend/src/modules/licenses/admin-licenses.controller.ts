@@ -57,11 +57,3 @@ export class AdminLicensesController {
   @AuditAction({ action: 'license.update_request', subjectType: 'License' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AdminLicenseDto })
-  update(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Param('id') id: string,
-    @Body() dto: UpdateLicenseDto,
-  ): Promise<AdminLicenseDto> {
-    return this.admin.update(id, principal.user, dto);
-  }
-
