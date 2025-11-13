@@ -63,3 +63,5 @@ function parseCidr(raw: string): ParsedCidr | null {
   const family = isIP(ip);
   if (family !== 4 && family !== 6) return null;
   const bits = Number(prefix ?? (family === 4 ? 32 : 128));
+  if (!Number.isInteger(bits) || bits < 0 || bits > (family === 4 ? 32 : 128)) return null;
+  const ipBig = ipToBigInt(ip, family);
