@@ -77,3 +77,33 @@ export class AdminAssetsController {
     @AuthUser() principal: AuthenticatedRequestUser,
     @Param('id') id: string,
   ): Promise<AssetDetailDto> {
+    return this.assets.getDetail(id, principal.user, principal.user.locale);
+  }
+
+  @Patch(':id')
+  @AuditAction({ action: 'asset.admin_edit', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Admin edit on behalf of contributor (bypasses owner check).' })
+  @ApiNoContentResponse()
+  async edit(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateAssetDto,
+  ): Promise<void> {
+    await this.assets.update(id, dto, principal.user);
+  }
+
+  @Post(':id/archive')
+  @AuditAction({ action: 'asset.admin_archive_request', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Admin-forced archive with mandatory reason.' })
+  archive(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminAssetActionDto,
+  ): Promise<void> {
+    return this.moderation.archive(id, principal.user, dto.reason);
+  }
+
+  @Post(':id/restore')
+  @AuditAction({ action: 'asset.admin_restore_request', subjectType: 'Asset' })
