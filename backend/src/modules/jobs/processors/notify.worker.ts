@@ -77,3 +77,23 @@ export class NotifyWorker extends JobWorkerBase<NotifyJob> {
             payload: data.payload,
           })
           .catch((err) =>
+            this.sentry.captureException(err, { channel: 'webhook', userId: recipient.id }),
+          );
+
+    await Promise.all([inAppPromise, wsPromise, emailPromise, webhookPromise]);
+  }
+
+  private async publishWs(userId: string, data: NotifyJob): Promise<void> {
+    const envelope = this.notifications.newWsEnvelope('notification:new', {
+      type: data.type,
+      payload: data.payload,
+    });
+    await this.wsFanout.publish({ userId, ...envelope });
+  }
+
+  private async sendEmail(recipient: User, data: NotifyJob): Promise<void> {
+    const rendered = await this.emails.render(data.type, recipient.locale, {
+      ...data.payload,
+      recipient: { id: recipient.id, displayName: recipient.displayName, email: recipient.email },
+      links: this.buildLinks(data),
+    });
