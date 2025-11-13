@@ -34,16 +34,3 @@ export async function extractUPlugin(filePath: string): Promise<UPluginMeta | nu
     const raw = await readFile(filePath, 'utf8');
     const parsed = JSON.parse(raw) as UPluginFile;
     return {
-      friendlyName: parsed.FriendlyName,
-      versionName: parsed.VersionName,
-      engineVersion: parsed.EngineVersion,
-      modules: (parsed.Modules ?? []).map((m) => m.Name ?? '').filter(Boolean),
-      plugins: (parsed.Plugins ?? [])
-        .map((p) => ({ name: p.Name ?? '', enabled: !!p.Enabled }))
-        .filter((p) => p.name),
-    };
-  } catch {
-    return null;
-  }
-}
-
