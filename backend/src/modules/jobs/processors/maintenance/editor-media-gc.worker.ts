@@ -79,3 +79,26 @@ export class EditorMediaGcWorker extends JobWorkerBase<EditorMediaGcJob> impleme
     const editorBucket = this.s3.bucketFor('editor');
     const translations = await this.prisma.assetTranslation.findMany({
       select: { longDescription: true },
+    });
+    for (const t of translations) {
+      walkTipTap(t.longDescription as Prisma.JsonValue, (key) => referenced.add(key), editorBucket);
+    }
+    return referenced;
+  }
+}
+
+function walkTipTap(
+  node: Prisma.JsonValue,
+  collect: (key: string) => void,
+  editorBucket: string,
+): void {
+  if (!node) return;
+  if (Array.isArray(node)) {
+    for (const child of node) walkTipTap(child, collect, editorBucket);
+    return;
+  }
+  if (typeof node !== 'object') return;
+  const obj = node as Record<string, Prisma.JsonValue>;
+  const attrs = obj.attrs as Record<string, unknown> | undefined;
+  if (attrs) {
+    for (const field of ['src', 'href']) {
