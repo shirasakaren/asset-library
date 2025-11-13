@@ -200,3 +200,4 @@ export class CommentsService {
       await this.jobs.enqueueNotify({
         recipientUserId: asset.ownerId,
         type:
+          effectiveKind === 'ISSUE'
