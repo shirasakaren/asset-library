@@ -41,19 +41,3 @@ export class LicensesService {
     const rows = await this.prisma.license.findMany({
       where: { isActive: true },
       orderBy: { sortOrder: 'asc' },
-    });
-    return rows.map((row) => this.toSummary(row, locale));
-  }
-
-  async getDetail(id: string, locale: Locale): Promise<LicenseDetailDto> {
-    const row = await this.findByIdOrThrow(id);
-    const summary = this.toSummary(row, locale);
-    return {
-      ...summary,
-      fullText: resolveLocalized(row.fullText as LocalizedJson, locale) ?? '',
-    };
-  }
-
-  /** Drops the cached listings — call after admin mutations. */
-  async invalidateCache(): Promise<void> {
-    await this.cached.invalidate(LIST_CACHE_KEY('en'), LIST_CACHE_KEY('id'));
