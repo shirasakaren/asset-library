@@ -42,6 +42,3 @@ export async function extractMesh(
 }
 
 /**
- * The `.blend` format is opaque to pyassimp; this calls Blender headless to
- * export a temp glTF + read its stats via the same probe.
- */
