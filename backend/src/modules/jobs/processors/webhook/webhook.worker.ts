@@ -66,20 +66,3 @@ export class WebhookWorker extends JobWorkerBase<WebhookDeliveryJob> implements 
       ? `sha256=${createHmac('sha256', this.secret).update(body).digest('hex')}`
       : '';
 
-    const start = Date.now();
-    let httpStatus: number | undefined;
-    let responseBody = '';
-    let error: string | undefined;
-    let success = false;
-    try {
-      const res = await fetch(this.url, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-mgm-signature': signature,
-          'x-mgm-delivery-id': deliveryId,
-          'x-mgm-attempt': attempt.toString(),
-        },
-        body,
-      });
-      httpStatus = res.status;
