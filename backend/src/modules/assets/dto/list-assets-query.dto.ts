@@ -40,4 +40,3 @@ export class ListAssetsQueryDto extends ListQueryDto {
   tags?: string[];
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
-  @Transform(asArray)
