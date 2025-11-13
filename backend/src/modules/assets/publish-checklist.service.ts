@@ -76,8 +76,3 @@ export class PublishChecklistService {
     if (!SEMVER_REGEX.test(latest.semver)) {
       violations.push({
         field: 'version.semver',
-        code: 'semver.invalid',
-        message: `Version ${latest.semver} is not valid semver (MAJOR.MINOR.PATCH).`,
-        severity: 'error',
-      });
-    }
