@@ -93,6 +93,3 @@ export class GltfConvertWorker extends JobWorkerBase<GltfConvertJob> {
     } catch (err) {
       this.logger.warn(`GLTF convert failed for ${fileId}: ${(err as Error).message}`);
       await this.markSkipped(fileId, (err as Error).message);
-      throw err;
-    } finally {
-      await scratch.cleanup();
