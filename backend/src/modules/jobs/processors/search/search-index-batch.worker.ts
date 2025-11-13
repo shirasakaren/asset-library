@@ -111,38 +111,3 @@ export class SearchIndexBatchWorker
     });
     if (!asset) return [];
     if (asset.status !== 'PUBLISHED') return [];
-
-    const latest = asset.versions
-      .slice()
-      .sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0))[0];
-    const renderPipelines = Array.from(
-      new Set(latest?.compatibility.flatMap((c) => c.renderPipelines) ?? []),
-    );
-    const targets = Array.from(new Set(latest?.compatibility.flatMap((c) => c.targets) ?? []));
-    const fileKinds = Array.from(new Set(latest?.files.map((f) => f.kind) ?? []));
-    const thumbnailUrl = asset.thumbnailKey
-      ? await this.s3.presignGet('thumbs', asset.thumbnailKey)
-      : '';
-
-    const baseDoc = {
-      assetId: asset.id,
-      slug: asset.slug,
-      title: asset.title,
-      tags: asset.tags.map((t) => t.tag.slug),
-      tagsDisplay: asset.tags.map((t) => t.tag.displayName),
-      engine: asset.engine,
-      categoryId: asset.categoryId,
-      categorySlug: asset.category.slug,
-      licenseId: asset.licenseId,
-      licenseSlug: asset.license.slug,
-      ownerId: asset.ownerId,
-      ownerDisplayName: asset.owner.displayName,
-      renderPipelines,
-      targets,
-      fileKinds,
-      publishedAt: Math.floor((asset.publishedAt?.getTime() ?? 0) / 1000),
-      createdAt: Math.floor(asset.createdAt.getTime() / 1000),
-      updatedAt: Math.floor(asset.updatedAt.getTime() / 1000),
-      totalDownloads: asset.stats?.totalDownloads ?? 0,
-      totalSaves: asset.stats?.totalSaves ?? 0,
-      thumbnailUrl,
