@@ -50,3 +50,15 @@ export class AdminCategoriesController {
     subjectType: 'Category',
     subjectParam: 'body.slug',
   })
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new category.' })
+  @ApiCreatedResponse({ type: AdminCategoryDto })
+  create(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CreateCategoryDto,
+  ): Promise<AdminCategoryDto> {
+    return this.admin.create(principal.user, dto);
+  }
+
+  @Patch(':id')
+  @AuditAction({ action: 'category.update_request', subjectType: 'Category' })
