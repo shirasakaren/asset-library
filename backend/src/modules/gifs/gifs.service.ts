@@ -76,3 +76,5 @@ export class GifsService {
       return (json.results ?? []).flatMap((r) => {
         const full = r.media_formats?.gif ?? r.media_formats?.tinygif;
         const preview = r.media_formats?.tinygif ?? full;
+        if (!full || !preview) return [];
+        return [
