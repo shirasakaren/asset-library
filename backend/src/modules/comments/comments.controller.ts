@@ -62,3 +62,13 @@ export class CommentsController {
     @Param('assetId') assetId: string,
     @Body() dto: CreateCommentDto,
   ): Promise<{ id: string }> {
+    return this.comments.create(assetId, dto, principal.user);
+  }
+
+  @Patch('comments/:id')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Author edit; sets editedAt.' })
+  edit(
+    @AuthUser() principal: AuthenticatedRequestUser,
