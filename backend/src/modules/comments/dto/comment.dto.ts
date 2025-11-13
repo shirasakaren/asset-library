@@ -50,3 +50,4 @@ export class UpdateIssueStatusDto {
 
 export class CommentAuthorDto {
   @ApiProperty() id!: string;
+  @ApiProperty() displayName!: string;
