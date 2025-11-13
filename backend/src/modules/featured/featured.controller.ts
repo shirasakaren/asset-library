@@ -61,3 +61,15 @@ export class AdminFeaturedController {
     return this.featured.create(principal.user, dto);
   }
 
+  @Patch(':id')
+  @AuditAction({ action: 'featured.update_request', subjectType: 'FeaturedSlot' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Partial update — active flag, sort order, overrides.' })
+  @ApiOkResponse({ type: AdminFeaturedSlotDto })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateFeaturedSlotDto,
+  ): Promise<AdminFeaturedSlotDto> {
+    return this.featured.update(id, principal.user, dto);
+  }
