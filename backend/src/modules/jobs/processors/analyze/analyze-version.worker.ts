@@ -78,15 +78,3 @@ export class AnalyzeVersionWorker extends JobWorkerBase<AnalyzeVersionJob> {
       },
       { upsert: true, new: true },
     );
-
-    // Fan out conversion jobs for any 3D source files.
-    for (const file of version.files) {
-      const convertible: AssetFileKind[] = [
-        AssetFileKind.FBX,
-        AssetFileKind.OBJ,
-        AssetFileKind.BLEND,
-        AssetFileKind.GLTF,
-      ];
-      if (convertible.includes(file.kind)) {
-        const hasDerivedGlb = version.files.some(
-          (f) =>
