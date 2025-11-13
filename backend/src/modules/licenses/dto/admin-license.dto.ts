@@ -42,3 +42,12 @@ export class CreateLicenseDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+}
+
+export class UpdateLicenseDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(140)
+  name?: string;
+
