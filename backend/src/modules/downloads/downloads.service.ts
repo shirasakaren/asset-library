@@ -121,16 +121,3 @@ export class DownloadsService {
           ipHash,
           userAgent: truncatedUa,
           source,
-        })),
-      }),
-      this.prisma.libraryItem.upsert({
-        where: { userId_assetId: { userId: requester.id, assetId } },
-        create: { userId: requester.id, assetId },
-        // Don't touch hidden — the user may have intentionally hidden it.
-        update: {},
-      }),
-    ]);
-
-    // Debounced stats reindex (Part 3 worker batches these).
-    await this.jobs.enqueueSearchIndex({ reason: 'asset.stats', assetId });
-
