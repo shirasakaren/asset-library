@@ -39,3 +39,6 @@ describe('Unreal extractors', () => {
       plugins: [
         { name: 'OnlineSubsystem', enabled: true },
         { name: 'Legacy', enabled: false },
+      ],
+    });
+  });
