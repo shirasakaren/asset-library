@@ -49,6 +49,3 @@ describe('E2E [08] featured slot active cap', () => {
           categoryId: category.id,
           licenseId: license.id,
           engine: 'UNITY',
-          status: 'PUBLISHED',
-          publishedAt: new Date(),
-        },
