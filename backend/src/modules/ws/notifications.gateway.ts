@@ -114,3 +114,11 @@ export class NotificationsGateway
           userId,
           serverTime: new Date().toISOString(),
         }),
+      ),
+    );
+  }
+
+  handleDisconnect(socket: AuthedSocket): void {
+    if (socket.userId) this.registry.remove(socket.userId, socket);
+  }
+
