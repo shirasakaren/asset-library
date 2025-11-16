@@ -357,3 +357,56 @@ export class FilesService {
         ErrorCode.ASSET_NOT_FOUND,
         `Asset ${dto.assetId} not found.`,
       );
+    this.assets.assertCanEdit(asset, requester);
+    const key = `thumbs/${dto.assetId}/${randomUUID()}`;
+    const presigned = await this.s3.presignPut('thumbs', key, dto.contentType);
+    return { putUrl: presigned.url, key, expiresAt: this.expiresAt() };
+  }
+
+  async completeThumbnail(assetId: string, key: string, requester: User): Promise<void> {
+    const asset = await this.prisma.asset.findUnique({ where: { id: assetId } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${assetId} not found.`);
+    this.assets.assertCanEdit(asset, requester);
+    if (!key.startsWith(`thumbs/${assetId}/`)) {
+      throw new ForbiddenDomainException(
+        ErrorCode.AUTH_FORBIDDEN,
+        "Thumbnail key is not in this asset's prefix.",
+      );
+    }
+    await this.prisma.asset.update({ where: { id: assetId }, data: { thumbnailKey: key } });
+    await this.jobs.enqueueThumbProcess({ assetId, thumbnailKey: key });
+  }
+
+  // ─── Editor media (TipTap embeds) ───────────────────────────────────────
+
+  async initiateEditorMedia(
+    dto: InitiateEditorMediaDto,
+    requester: User,
+  ): Promise<InitiateEditorMediaResponseDto> {
+    const key = `editor/${requester.id}/${randomUUID()}`;
+    const [presigned, viewUrl] = await Promise.all([
+      this.s3.presignPut('editor', key, dto.contentType),
+      this.s3.presignLongLivedGet('editor', key, this.editorMediaTtlSec),
+    ]);
+    return { putUrl: presigned.url, key, viewUrl, expiresAt: this.expiresAt() };
+  }
+
+  async refreshEditorMedia(
+    key: string,
+    _requester: User,
+  ): Promise<{ viewUrl: string; expiresAt: string }> {
+    if (!key.startsWith('editor/')) {
+      throw new BadRequestDomainException(
+        ErrorCode.FILE_UPLOAD_INIT_FAILED,
+        'Editor-media key must live under the editor/ prefix.',
+      );
+    }
+    if (key.includes('..')) {
+      throw new ForbiddenDomainException(
+        ErrorCode.AUTH_FORBIDDEN,
+        'Editor-media key contains illegal segments.',
+      );
+    }
+    const viewUrl = await this.s3.presignLongLivedGet('editor', key, this.editorMediaTtlSec);
+    return { viewUrl, expiresAt: this.expiresAt() };
