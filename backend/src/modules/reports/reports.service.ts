@@ -139,4 +139,3 @@ export class ReportsService {
     }
     await this.prisma.report.update({ where: { id }, data: { status: 'REVIEWING' } });
     await this.audit.record({
-      actorId: admin.id,
