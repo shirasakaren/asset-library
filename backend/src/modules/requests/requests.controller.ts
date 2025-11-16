@@ -43,7 +43,3 @@ export class RequestsController {
   @ApiCreatedResponse()
   create(
     @AuthUser() principal: AuthenticatedRequestUser,
-    @Body() dto: CreateAssetRequestDto,
-  ): Promise<{ id: string }> {
-    return this.requests.create(dto, principal.user);
-  }
