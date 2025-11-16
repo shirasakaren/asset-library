@@ -99,21 +99,3 @@ export const EMAIL_SPECS: Record<NotificationType, EmailSpec> = {
     title: { en: 'Your asset request was updated', id: 'Permintaan aset Anda diperbarui' },
     body: {
       en: 'Status: {{newStatus}}.\n{{adminComment}}',
-      id: 'Status: {{newStatus}}.\n{{adminComment}}',
-    },
-    cta: { label: { en: 'View request', id: 'Lihat permintaan' }, href: '{{links.requestUrl}}' },
-  },
-  [NotificationType.REPORT_CREATED]: {
-    subject: { en: 'New report on “{{assetTitle}}”', id: 'Laporan baru pada “{{assetTitle}}”' },
-    eyebrow: { en: 'New report', id: 'Laporan baru' },
-    title: { en: 'A new report needs moderation', id: 'Laporan baru perlu moderasi' },
-    body: {
-      en: '{{reporter.displayName}} filed a {{category}} report on “{{assetTitle}}”.',
-      id: '{{reporter.displayName}} melaporkan {{category}} pada “{{assetTitle}}”.',
-    },
-    cta: {
-      label: { en: 'Open in moderation queue', id: 'Buka di antrean moderasi' },
-      href: '{{links.adminReportUrl}}',
-    },
-  },
-  [NotificationType.REPORT_RECEIVED_FOR_YOUR_ASSET]: {
