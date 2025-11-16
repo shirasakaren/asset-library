@@ -44,8 +44,3 @@ export class SearchAssetsQueryDto {
   @Transform(asArray)
   @IsArray()
   targets?: string[];
-  @ApiPropertyOptional() @IsOptional() @IsString() licenseSlug?: string;
-  @ApiPropertyOptional({ minimum: 1, maximum: 100 })
-  @IsOptional()
-  @Transform(({ value }) => Number(value))
-  @IsInt()
