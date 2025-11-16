@@ -40,21 +40,3 @@ export class MergeTagsDto {
   @ApiProperty()
   @IsString()
   intoTagId!: string;
-}
-
-export class UpdateTagDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @Matches(SLUG_REGEX)
-  @MaxLength(80)
-  slug?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(80)
-  displayName?: string;
-}
-
-export class AdminTagDto {
