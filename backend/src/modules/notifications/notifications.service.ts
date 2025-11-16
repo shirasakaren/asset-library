@@ -56,22 +56,3 @@ export class NotificationsService {
     const slice = rows.slice(0, limit);
     return {
       items: slice.map((r) => this.toDto(r)),
-      pageInfo: {
-        nextCursor:
-          hasMore && slice.length
-            ? encodeCursor({
-                id: slice[slice.length - 1].id,
-                createdAt: slice[slice.length - 1].createdAt.toISOString(),
-              })
-            : null,
-        hasMore,
-      },
-    };
-  }
-
-  async unreadCount(user: User): Promise<number> {
-    return this.prisma.notification.count({ where: { userId: user.id, readAt: null } });
-  }
-
-  async markRead(user: User, id: string): Promise<NotificationDto> {
-    const row = await this.prisma.notification.findUnique({ where: { id } });
