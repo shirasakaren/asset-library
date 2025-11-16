@@ -56,4 +56,3 @@ export class ActionReportDto {
   @IsString()
   confirmedAt?: string;
 }
-
