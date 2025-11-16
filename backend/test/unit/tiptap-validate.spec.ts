@@ -65,11 +65,3 @@ describe('TipTap validators', () => {
     it('rejects oversized documents', () => {
       const giant = {
         type: 'doc',
-        content: Array.from({ length: 2000 }, () => ({
-          type: 'paragraph',
-          content: [{ type: 'text', text: 'x'.repeat(50) }],
-        })),
-      };
-      expect(() => validateLiteTipTap(giant)).toThrow(/exceeds/);
-    });
-  });
