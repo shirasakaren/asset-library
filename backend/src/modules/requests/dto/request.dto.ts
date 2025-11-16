@@ -52,8 +52,3 @@ export class AssetRequestDto {
   @ApiProperty() assetLink!: string;
   @ApiProperty() assetType!: string;
   @ApiProperty() intendedUse!: string;
-  @ApiPropertyOptional() price?: number | null;
-  @ApiPropertyOptional() notes?: string | null;
-  @ApiProperty({ enum: AssetRequestStatus }) status!: AssetRequestStatus;
-  @ApiPropertyOptional() adminComment?: string | null;
-  @ApiProperty() createdAt!: string;
