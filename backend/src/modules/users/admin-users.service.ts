@@ -101,16 +101,3 @@ export class AdminUsersService {
       throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${id} not found.`);
     if (!target.isAdmin) return;
     if (target.email.toLowerCase() === this.config.get('ADMIN_BOOTSTRAP_EMAIL').toLowerCase()) {
-      throw new ConflictDomainException(
-        ErrorCode.ADMIN_CANNOT_DEMOTE_BOOTSTRAP,
-        'Cannot demote the bootstrap admin.',
-      );
-    }
-    const remainingAdmins = await this.prisma.user.count({
-      where: { isAdmin: true, deletedAt: null, NOT: { id } },
-    });
-    if (remainingAdmins === 0) {
-      throw new ConflictDomainException(
-        ErrorCode.ADMIN_CANNOT_REMOVE_LAST_ADMIN,
-        'Refusing to demote — this would leave the system with zero admins.',
-      );
