@@ -53,10 +53,3 @@ export interface RequestStatusChangedPayload {
   newStatus: 'SENT' | 'IN_REVIEW' | 'PENDING' | 'APPROVED' | 'REJECTED';
   adminComment?: string;
 }
-
-export interface ReportCreatedPayload extends AssetRef {
-  reportId: string;
-  category: 'MALICIOUS_FILE' | 'BROKEN_ASSET';
-  reporter: UserRef;
-}
-
