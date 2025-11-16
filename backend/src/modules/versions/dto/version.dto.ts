@@ -54,14 +54,3 @@ export class CompatibilityRowDto {
 }
 
 export class SetCompatibilityDto {
-  @ApiProperty({ type: CompatibilityRowDto, isArray: true })
-  @IsArray()
-  @ArrayMaxSize(20)
-  @ValidateNested({ each: true })
-  @Type(() => CompatibilityRowDto)
-  rows!: CompatibilityRowDto[];
-}
-
-export class VersionSummaryDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() semver!: string;
