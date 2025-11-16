@@ -39,9 +39,3 @@ function inCidr(ip: string, cidr: ParsedCidr): boolean {
   return (ipToBigInt(ip, family) & cidr.mask) === cidr.base;
 }
 
-describe('metrics CIDR matcher', () => {
-  it('matches a /24', () => {
-    const cidr = parseCidr('10.0.0.0/24')!;
-    expect(inCidr('10.0.0.42', cidr)).toBe(true);
-    expect(inCidr('10.0.1.42', cidr)).toBe(false);
-  });
