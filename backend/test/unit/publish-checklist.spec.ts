@@ -42,6 +42,3 @@ describe('PublishChecklistService', () => {
         'translations.empty',
         'version.missing',
       ]),
-    );
-  });
-
