@@ -49,14 +49,3 @@ export function DataTable<T extends { id: string }>({
                   col.className,
                 )}
               >
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr
-              key={row.id}
-              className={cn(
-                'border-t border-line transition-colors duration-120',
