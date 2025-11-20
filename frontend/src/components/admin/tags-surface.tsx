@@ -224,3 +224,16 @@ function RenameTagModal({
         <ModalFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
+          </Button>
+          <Button loading={busy} onClick={submit}>
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+function MergeTagsModal({
+  onOpenChange,
+  onDone,
