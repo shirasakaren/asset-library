@@ -152,9 +152,3 @@ function Problem() {
     <section className="border-t border-line">
       <Container size="2xl">
         <div className="py-24 lg:py-32 max-w-[920px]">
-          <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
-            Why this matters
-          </p>
-          <h2 className="display-lg text-ink mb-6">
-            Lab assets live in five Slack threads and three USB drives.
-          </h2>
