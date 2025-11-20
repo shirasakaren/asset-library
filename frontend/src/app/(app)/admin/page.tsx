@@ -91,3 +91,29 @@ export default async function AdminDashboardPage() {
 
       <section className="mt-10">
         <div className="flex items-baseline justify-between mb-4">
+          <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">Top assets · last 7 days</h2>
+          <NextLink
+            href="/admin/assets?sort=mostDownloaded"
+            className="inline-flex items-center gap-1 text-caption text-brand-blue hover:underline"
+          >
+            View leaderboard
+            <ArrowRight className="h-3 w-3" strokeWidth={2.25} />
+          </NextLink>
+        </div>
+        <DataTable
+          rows={(data?.topAssets7d ?? []).map((a) => ({ ...a, id: a.id }))}
+          columns={[
+            {
+              key: 'title',
+              header: 'Title',
+              cell: (r) => (
+                <NextLink href={`/assets/${r.slug || r.id}`} className="font-medium text-ink hover:underline">
+                  {r.title}
+                </NextLink>
+              ),
+            },
+            { key: 'owner', header: 'Owner', cell: (r) => r.ownerDisplayName },
+            {
+              key: 'downloads',
+              header: 'Downloads',
+              align: 'right',
