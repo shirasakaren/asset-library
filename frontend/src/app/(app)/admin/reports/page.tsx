@@ -78,13 +78,3 @@ export default function AdminReportsPage() {
           );
         })}
       </div>
-
-      <DataTable
-        rows={rows as (AdminReport & { id: string })[]}
-        empty="No reports."
-        onRowClick={(r) => {
-          window.location.href = `/admin/reports/${r.id}`;
-        }}
-        columns={[
-          { key: 'reporter', header: 'Reporter', cell: (r) => r.reporter.displayName },
-          {
