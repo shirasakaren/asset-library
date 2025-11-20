@@ -86,3 +86,10 @@ export function AdminSidebar() {
   const pathname = usePathname() ?? '';
   const { data: session } = useSession();
 
+  const openWithToken = (baseHref: string) => {
+    const token = session?.accessToken;
+    if (!token) {
+      toast.error('Sign-in token missing', {
+        description: 'Reload the page and try again.',
+      });
+      return;
