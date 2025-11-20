@@ -33,3 +33,5 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
       {trend ? (
         <p
           className={cn(
+            'mt-2 inline-flex items-center gap-1 text-caption font-medium geist-tnum',
+            trend.delta >= 0 ? 'text-brand-green' : 'text-brand-red',
