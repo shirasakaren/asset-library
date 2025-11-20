@@ -74,4 +74,3 @@ export default async function AdminUserPage({ params }: PageProps) {
               {formatNumber(user.publishedAssetCount, locale)} published assets
             </p>
           </div>
-        </Card>
