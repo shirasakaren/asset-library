@@ -43,16 +43,3 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           </p>
           <h1 style={{ fontSize: 32, lineHeight: 1.15, margin: '12px 0 12px' }}>
             We hit a serious issue
-          </h1>
-          <p style={{ color: '#3b4150', fontSize: 16, lineHeight: 1.6 }}>
-            Reload the page to try again. If the issue persists, contact support.
-          </p>
-          {error.digest ? (
-            <p
-              style={{
-                marginTop: 16,
-                padding: '8px 12px',
-                background: '#f7f7f5',
-                border: '1px solid #ececea',
-                borderRadius: 12,
-                fontFamily: 'ui-monospace, monospace',
