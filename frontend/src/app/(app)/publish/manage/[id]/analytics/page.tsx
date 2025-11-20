@@ -47,7 +47,3 @@ export default async function AnalyticsPage({ params }: PageProps) {
         />
         <div className="mt-3 flex items-center gap-3">
           <h1 className="font-display text-display-lg text-ink tracking-[-0.02em]">{t('title')}</h1>
-          <NextLink
-            href="/publish/manage"
-            className="inline-flex items-center gap-1 text-caption text-brand-blue hover:underline"
-          >
