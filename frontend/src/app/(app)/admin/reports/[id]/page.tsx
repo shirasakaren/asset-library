@@ -63,3 +63,13 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
             <NextLink
               href={`/assets/${report.assetSlug || report.assetId}`}
               className="font-display text-h2 text-ink tracking-[-0.01em] hover:underline"
+            >
+              {report.assetTitle}
+            </NextLink>
+            <p className="text-caption text-ink-3 font-mono">{report.assetSlug}</p>
+          </Card>
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
+              Category: {report.category === 'MALICIOUS_FILE' ? 'Malicious file / security' : 'Broken / non-functional'}
+            </p>
+            <p className="text-body text-ink-2 whitespace-pre-wrap">{report.notes}</p>
