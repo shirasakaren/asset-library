@@ -59,4 +59,3 @@ export function RequestDecisionForm({ request }: Props) {
                   name="req-status"
                   checked={active}
                   onChange={() => setStatus(s)}
-                  className="h-4 w-4 accent-ink"
