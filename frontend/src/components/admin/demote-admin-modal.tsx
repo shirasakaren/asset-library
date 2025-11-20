@@ -40,21 +40,3 @@ export function DemoteAdminModal({ user, onOpenChange, onDone }: Props) {
       toast.success(`${user.displayName} demoted to user`);
       onDone();
     } catch (err) {
-      if (ApiError.isApiError(err) && err.code === 'admin.cannot_remove_last_admin') {
-        setLastAdminError(true);
-        return;
-      }
-      toast.error('Demotion failed', { description: err instanceof Error ? err.message : String(err) });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Modal open onOpenChange={onOpenChange}>
-      <ModalContent size="sm">
-        <ModalHeader>
-          <ModalTitle>Demote {user.displayName}?</ModalTitle>
-        </ModalHeader>
-        {lastAdminError ? (
-          <Alert variant="danger" className="mb-3">
