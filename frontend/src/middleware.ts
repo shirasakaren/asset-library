@@ -42,3 +42,4 @@ export async function middleware(req: NextRequest) {
 
   // Set the NEXT_LOCALE cookie if missing or drifted from negotiation.
   const negotiated = negotiateLocale(req);
+  if (req.cookies.get('NEXT_LOCALE')?.value !== negotiated) {
