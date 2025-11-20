@@ -36,8 +36,3 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
             <div>
               <h1 className="display-lg text-ink">{t('boundaryTitle')}</h1>
               <p className="text-body text-ink-2 mt-3 max-w-prose">{t('boundaryBody')}</p>
-              {error.digest ? (
-                <Alert variant="warning" className="mt-6" title={t('requestIdLabel')}>
-                  <code className="font-mono text-[12.5px] text-ink-2">{error.digest}</code>
-                </Alert>
-              ) : null}
