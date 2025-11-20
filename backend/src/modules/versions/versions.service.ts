@@ -103,34 +103,3 @@ export class VersionsService {
       );
     }
 
-    const releaseNotes = dto.releaseNotes ? this.validateReleaseNotes(dto.releaseNotes) : {};
-
-    const created = await this.prisma.assetVersion.create({
-      data: {
-        assetId,
-        semver: dto.semver,
-        releaseNotes: releaseNotes as unknown as Prisma.InputJsonValue,
-        s3Prefix: `assets/${assetId}/v${dto.semver}/`,
-      },
-      select: { id: true },
-    });
-    return created;
-  }
-
-  async update(versionId: string, dto: UpdateVersionDto, requester: User): Promise<void> {
-    const version = await this.prisma.assetVersion.findUnique({
-      where: { id: versionId },
-      include: { asset: true },
-    });
-    if (!version)
-      throw new NotFoundDomainException(
-        ErrorCode.VERSION_NOT_FOUND,
-        `Version ${versionId} not found.`,
-      );
-    this.assets.assertCanEdit(version.asset, requester);
-
-    if (dto.releaseNotes) {
-      const releaseNotes = this.validateReleaseNotes(dto.releaseNotes);
-      await this.prisma.assetVersion.update({
-        where: { id: versionId },
-        data: { releaseNotes: releaseNotes as unknown as Prisma.InputJsonValue },
