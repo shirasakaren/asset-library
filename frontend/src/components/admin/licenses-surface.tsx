@@ -118,3 +118,14 @@ export function AdminLicensesSurface() {
           onDone={() => {
             setEditing(null);
             setCreating(false);
+            void list.refetch();
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function LicenseEditModal({
+  license,
+  onOpenChange,
