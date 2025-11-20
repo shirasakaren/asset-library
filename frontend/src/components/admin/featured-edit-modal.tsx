@@ -175,3 +175,37 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
               ) : null}
             </div>
           ) : (
+            <>
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search a published asset by title or slug"
+              />
+              {candidateAssets.data?.items && candidateAssets.data.items.length > 0 ? (
+                <ul className="mt-2 max-h-[180px] overflow-y-auto rounded-[12px] border border-line bg-surface">
+                  {candidateAssets.data.items.map((a) => (
+                    <li key={a.id}>
+                      <button
+                        type="button"
+                        onClick={() => setPicked(a)}
+                        className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-muted/60 transition-colors"
+                      >
+                        {a.thumbnailUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={a.thumbnailUrl} alt="" className="h-9 w-14 object-cover rounded-[6px]" />
+                        ) : (
+                          <span className="h-9 w-14 rounded-[6px] bg-surface-muted" />
+                        )}
+                        <span>
+                          <span className="block text-[14px] font-medium text-ink truncate">{a.title}</span>
+                          <span className="block text-caption text-ink-3 font-mono">{a.slug}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </>
+          )}
+        </Field>
+
