@@ -129,7 +129,3 @@ export default function AdminUsersPage() {
                 size={32}
               />
             ),
-          },
-          {
-            key: 'name',
-            header: 'Name',
