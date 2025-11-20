@@ -121,3 +121,26 @@ export function AdminCategoriesSurface() {
             <Card padding="none">
               <ul className="divide-y divide-line">
                 {(list.data ?? []).map((cat) => (
+                  <SortableRow
+                    key={cat.id}
+                    cat={cat}
+                    onEdit={() => setEditing(cat)}
+                    onToggle={(next) => toggle.mutate({ id: cat.id, isActive: next })}
+                    onDelete={() => remove.mutate(cat.id)}
+                  />
+                ))}
+              </ul>
+            </Card>
+          </SortableContext>
+        </DndContext>
+      )}
+
+      {(editing || creating) ? (
+        <CategoryEditModal
+          category={editing}
+          onOpenChange={(o) => {
+            if (!o) {
+              setEditing(null);
+              setCreating(false);
+            }
+          }}
