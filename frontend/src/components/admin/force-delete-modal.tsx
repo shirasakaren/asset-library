@@ -66,3 +66,6 @@ export function AdminForceDeleteModal({ asset, onOpenChange, onDone }: Props) {
 
         <Alert variant="danger" icon={<ShieldAlert className="h-5 w-5 text-brand-red" strokeWidth={2.25} />}>
           {asset.ownerDisplayName} will lose every file associated with this asset.
+        </Alert>
+
+        <div className="space-y-4 mt-4">
