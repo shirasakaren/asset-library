@@ -86,4 +86,3 @@ export default async function PublishLandingPage() {
           <section className="mb-12">
             <h2 className="font-display text-h1 text-ink tracking-[-0.015em] mb-4 inline-flex items-center gap-3">
               {t('draftsHeading')}
-              <Badge variant="warning">{drafts.length}</Badge>
