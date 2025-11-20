@@ -94,3 +94,8 @@ export function DashboardCharts({ downloads, publishes, newUsers, storage }: Das
         <ResponsiveContainer>
           <AreaChart data={newUsers}>
             <defs>
+              <linearGradient id="grad-usr" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={COLOR.yellow} stopOpacity={0.35} />
+                <stop offset="100%" stopColor={COLOR.yellow} stopOpacity={0} />
+              </linearGradient>
+            </defs>
