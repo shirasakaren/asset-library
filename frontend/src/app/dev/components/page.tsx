@@ -163,3 +163,9 @@ export default function ComponentsPlaygroundPage() {
 
         {/* Section: Loading */}
         <Section title="Loading" eyebrow="06">
+          <div className="flex items-center gap-4">
+            <Spinner size={16} />
+            <Spinner size={20} />
+            <Spinner size={24} />
+          </div>
+          <div className="mt-6 grid md:grid-cols-2 gap-6 max-w-[640px]">
