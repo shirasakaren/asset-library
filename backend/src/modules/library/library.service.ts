@@ -82,3 +82,34 @@ export class LibraryService {
       take: limit + 1,
       orderBy,
       ...(cursor ? { skip: 1, cursor: { id: cursor.id } } : {}),
+    });
+    const hasMore = rows.length > limit;
+    const itemsRaw = rows.slice(0, limit);
+    const assetSummaries = await this.mapper.toSummaryMany(
+      itemsRaw.map((row) => row.asset),
+      locale,
+    );
+    const items: LibraryItemDto[] = itemsRaw.map((row, i) => ({
+      addedAt: row.addedAt.toISOString(),
+      hidden: row.hidden,
+      asset: assetSummaries[i],
+    }));
+    const last = itemsRaw[itemsRaw.length - 1];
+    const nextCursor =
+      hasMore && last ? encodeCursor({ id: last.id, createdAt: last.addedAt.toISOString() }) : null;
+    return { items, pageInfo: { nextCursor, hasMore } };
+  }
+
+  async add(user: User, assetId: string): Promise<void> {
+    const asset = await this.prisma.asset.findUnique({ where: { id: assetId } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${assetId} not found.`);
+    await this.prisma.libraryItem.upsert({
+      where: { userId_assetId: { userId: user.id, assetId } },
+      create: { userId: user.id, assetId },
+      update: { hidden: false },
+    });
+  }
+
+  async remove(user: User, assetId: string): Promise<void> {
+    await this.prisma.libraryItem.deleteMany({ where: { userId: user.id, assetId } });
