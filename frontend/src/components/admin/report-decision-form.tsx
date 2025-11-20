@@ -88,8 +88,3 @@ export function ReportDecisionForm({ report }: Props) {
       toast.error('Decision failed', { description: err instanceof Error ? err.message : String(err) });
     } finally {
       setBusy(false);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
