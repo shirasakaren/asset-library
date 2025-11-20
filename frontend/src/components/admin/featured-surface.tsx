@@ -150,3 +150,64 @@ export function AdminFeaturedSurface() {
         <details className="mt-8">
           <summary className="cursor-pointer text-caption text-ink-3 hover:text-ink">
             Inactive slots ({inactive.length})
+          </summary>
+          <div className="mt-3 grid sm:grid-cols-2 gap-4">
+            {inactive.map((slot) => (
+              <SlotCard
+                key={slot.id}
+                slot={slot}
+                onEdit={() => setEditing(slot)}
+                onToggle={(next) => {
+                  if (next && active.length >= MAX_ACTIVE) {
+                    toast.error('Featured slot cap is 5.');
+                    return;
+                  }
+                  toggleActive.mutate({ id: slot.id, isActive: next });
+                }}
+                onDelete={() => remove.mutate(slot.id)}
+              />
+            ))}
+          </div>
+        </details>
+      ) : null}
+
+      {(editing || creating) ? (
+        <FeaturedEditModal
+          slot={editing}
+          onOpenChange={(o) => {
+            if (!o) {
+              setEditing(null);
+              setCreating(false);
+            }
+          }}
+          onDone={() => {
+            setEditing(null);
+            setCreating(false);
+            void list.refetch();
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function SortableSlot({
+  slot,
+  onEdit,
+  onToggle,
+  onDelete,
+}: {
+  slot: AdminFeaturedSlot;
+  onEdit: () => void;
+  onToggle: (next: boolean) => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: slot.id,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(isDragging && 'opacity-70')}
+    >
