@@ -86,3 +86,5 @@ export default function AdminWebhooksPage() {
         onRowClick={(r) => setActive(r)}
         columns={[
           {
+            key: 'time',
+            header: 'Time',
