@@ -65,5 +65,3 @@ export default function AdminRequestsPage() {
           const active = status === s.value;
           return (
             <button
-              key={s.value}
-              type="button"
