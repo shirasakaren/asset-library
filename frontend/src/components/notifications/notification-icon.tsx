@@ -59,3 +59,8 @@ export function NotificationIcon({ type, className }: { type: string; className?
 }
 
 export function notificationLink(type: string, payload: Record<string, unknown>): string {
+  const t = (type as NotificationType) ?? 'COMMENT_CREATED';
+  const slug = String(payload.assetSlug ?? '');
+  const commentId = String(payload.commentId ?? '');
+  switch (t) {
+    case 'COMMENT_CREATED':
