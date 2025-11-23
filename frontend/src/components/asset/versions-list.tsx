@@ -42,10 +42,3 @@ export function VersionsList({ versions, onDownload }: VersionsListProps) {
                     ? t('publishedAt', { when: formatDate(v.publishedAt, locale, { dateStyle: 'medium' }) })
                     : null}
                 </span>
-              </div>
-              <div className="flex items-center gap-3 text-caption text-ink-3 geist-tnum">
-                <span>{v.fileCount} files</span>
-                <span aria-hidden>·</span>
-                <span>{formatBytes(v.bytesTotal, locale)}</span>
-                <Button size="sm" variant="secondary" onClick={() => onDownload(v.id)}>
-                  {t('downloadThis')}
