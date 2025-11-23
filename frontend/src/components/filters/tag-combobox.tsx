@@ -73,3 +73,9 @@ export function TagCombobox({ values, onChange, placeholder }: TagComboboxProps)
           onFocus={() => setFocused(true)}
           onBlur={() => setTimeout(() => setFocused(false), 150)}
           placeholder={placeholder}
+          className="flex-1 min-w-[120px] bg-transparent outline-none text-[13.5px] placeholder:text-ink-4"
+        />
+      </div>
+      {focused && debouncedQuery && (suggestions.data?.length ?? 0) > 0 ? (
+        <ul
+          role="listbox"
