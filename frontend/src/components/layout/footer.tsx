@@ -61,3 +61,16 @@ export async function Footer() {
             <Logo size="md" href="/" />
             <p className="mt-4 max-w-[280px] text-body-sm text-ink-3">{t('tagline')}</p>
           </div>
+          {cols.map((col) => (
+            <nav key={col.heading} aria-label={col.heading} className="text-body-sm">
+              <h3 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
+                {col.heading}
+              </h3>
+              <ul className="flex flex-col gap-2.5">
+                {col.links.map((link) => (
+                  <li key={`${col.heading}-${link.label}`}>
+                    {'external' in link && link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
