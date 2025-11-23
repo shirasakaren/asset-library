@@ -72,12 +72,3 @@ export function CommentComposer({
             autoFocus={autoFocus}
             placeholder="Share what you think…"
             minHeight={92}
-            maxHeight={240}
-          />
-        </div>
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <fieldset className="inline-flex items-center gap-3">
-          <legend className="sr-only">{t('kindLabel')}</legend>
-          <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
