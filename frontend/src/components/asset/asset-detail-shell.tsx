@@ -191,3 +191,12 @@ export function AssetDetailShell({
                       onClick={() => setReportOpen(true)}
                       aria-label={t('report')}
                       className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                    >
+                      <Flag className="h-4 w-4" strokeWidth={2.25} />
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="mt-5">
+                  <AssetMeta
+                    engine={asset.engine}
