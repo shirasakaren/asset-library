@@ -173,3 +173,9 @@ export function SearchFilterSidebar() {
         <select
           value={licenseSlug}
           onChange={(e) => setParams({ licenseSlug: e.target.value || null })}
+          className="w-full h-10 rounded-[10px] border border-line bg-surface text-[13.5px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        >
+          <option value="">Any license</option>
+          {(licensesQuery.data ?? []).map((l) => (
+            <option key={l.slug} value={l.slug}>
+              {l.name}
