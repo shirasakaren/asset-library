@@ -123,26 +123,3 @@ export function PackageTree({ files }: PackageTreeProps) {
           </ul>
         </div>
       )}
-    </div>
-  );
-}
-
-interface TreeRowProps {
-  node: TreeNode;
-  depth: number;
-  defaultOpen?: boolean;
-}
-
-function TreeRow({ node, depth, defaultOpen }: TreeRowProps) {
-  const [open, setOpen] = useState(defaultOpen ?? depth < 1);
-  const locale = useLocale() as LocaleCode;
-
-  if (node.kind === 'folder') {
-    const FolderIcon = open ? FolderOpen : Folder;
-    return (
-      <li role="treeitem" aria-expanded={open}>
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          className="flex w-full items-center gap-2 px-3 h-9 text-left hover:bg-surface-muted/60 transition-colors duration-120"
-          style={{ paddingLeft: 12 + depth * 16 }}
