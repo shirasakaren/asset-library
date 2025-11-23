@@ -132,3 +132,37 @@ export function MediaGallery({
               priority
               sizes="(min-width: 1024px) 800px, 100vw"
               className={cn('object-contain transition', activeHidden && 'blur-2xl scale-110')}
+              unoptimized
+            />
+            {activeHidden ? (
+              <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-6 bg-ink/30">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-ink/80 text-white">
+                  <EyeOff className="h-5 w-5" strokeWidth={2.25} />
+                </span>
+                <span className="text-[14px] font-semibold text-white drop-shadow">
+                  {active.warning?.trim() || 'Sensitive content'}
+                </span>
+                <span className="text-[12px] text-white/85">Click to reveal</span>
+              </span>
+            ) : null}
+          </button>
+        ) : active?.kind === 'video' ? (
+          <video
+            key={active.url}
+            controls
+            preload="metadata"
+            poster={active.thumb ?? undefined}
+            className="absolute inset-0 h-full w-full object-contain bg-black"
+          >
+            <source src={active.url} />
+          </video>
+        ) : active?.kind === 'audio' ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-8">
+            <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-brand-blue-50 text-brand-blue">
+              <Music className="h-8 w-8" strokeWidth={2.25} />
+            </div>
+            <p className="text-h3 font-display text-ink tracking-[-0.005em]">{active.label}</p>
+            <audio controls src={active.url} className="w-full max-w-[420px]" />
+          </div>
+        ) : active?.kind === '3d' ? (
+          <ModelViewerPanel
