@@ -93,4 +93,3 @@ export function NotificationBell({ initialUnreadCount }: NotificationBellProps) 
               {unread > 99 ? '99+' : unread}
             </span>
           ) : null}
-        </button>
