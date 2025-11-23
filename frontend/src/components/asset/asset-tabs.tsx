@@ -49,8 +49,3 @@ export function AssetTabs({ asset, activeVersion, onDownloadVersion }: AssetTabs
       <Tabs value={value} onValueChange={handleChange}>
         <TabsList className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsTrigger value="description">{t('description')}</TabsTrigger>
-          <TabsTrigger value="package">{t('package')}</TabsTrigger>
-          <TabsTrigger value="compatibility">{t('compatibility')}</TabsTrigger>
-          <TabsTrigger value="versions">{t('versions')}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="description" className="pt-6">
