@@ -93,4 +93,3 @@ export function LibraryFilters() {
             </label>
           ))}
         </div>
-      </FilterSection>
