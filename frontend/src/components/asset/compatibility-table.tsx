@@ -38,3 +38,12 @@ export function CompatibilityTable({ rows, requiresEmptyProject }: Compatibility
           </thead>
           <tbody>
             {rows.map((row, i) => (
+              <tr key={i} className="border-t border-line">
+                <td className="px-4 py-3 align-top font-mono text-[13px] text-ink">
+                  {row.engineVersion}
+                </td>
+                <td className="px-4 py-3 align-top">
+                  <div className="flex flex-wrap gap-1.5">
+                    {row.renderPipelines.length === 0 ? (
+                      <span className="text-ink-3 text-caption">—</span>
+                    ) : (
