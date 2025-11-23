@@ -55,4 +55,3 @@ export function CommunityDropdown() {
         sideOffset={4}
         className="min-w-[320px] p-2"
         onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
