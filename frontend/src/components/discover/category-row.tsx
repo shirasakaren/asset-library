@@ -62,3 +62,33 @@ export function CategoryRow({
           href={`/search?categoryIds=${categoryId}`}
           className="inline-flex items-center gap-1 text-[14px] text-ink-2 hover:text-ink font-medium transition-colors duration-120"
         >
+          {t('categorySeeAll')}
+          <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.25} />
+        </NextLink>
+      </div>
+      <div className="relative group">
+        <div
+          ref={scrollerRef}
+          className={cn(
+            'flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth',
+            '[-ms-overflow-style:none] [scrollbar-width:none]',
+            '[&::-webkit-scrollbar]:hidden',
+            '-mx-1 px-1 py-1',
+          )}
+        >
+          {assets.map((asset) => (
+            <div key={asset.id} className="snap-start">
+              <AssetCard
+                variant="compact"
+                asset={asset}
+                isSaved={savedIds.has(asset.id)}
+                isOwner={ownAssetIds.has(asset.id)}
+              />
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          aria-label={t('scrollLeft')}
+          onClick={() => scrollBy(-1)}
