@@ -265,3 +265,22 @@ export function DownloadPopup({
                   <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
                   {tCommon('loading')}
                 </div>
+              ) : versionsQuery.isError && needsLatestLookup ? (
+                <Alert variant="danger" title={t('failedTitle')}>
+                  {t('failedBody')}
+                </Alert>
+              ) : options.isPending ? (
+                <div className="py-10 text-center text-ink-3 inline-flex items-center justify-center w-full gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                  {tCommon('loading')}
+                </div>
+              ) : options.isError ? (
+                <Alert variant="danger" title={t('failedTitle')}>
+                  {t('failedBody')}
+                </Alert>
+              ) : !options.data || options.data.files.length === 0 ? (
+                <p className="py-8 text-center text-body-sm text-ink-3">{t('noFiles')}</p>
+              ) : (
+                <div className="space-y-5">
+                  {filesGrouped.map(([groupName, files]) => (
+                    <div key={groupName}>
