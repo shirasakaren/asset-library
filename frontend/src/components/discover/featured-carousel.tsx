@@ -106,5 +106,3 @@ export function FeaturedCarousel({ slots, className }: FeaturedCarouselProps) {
           />
         </div>
         <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-tr from-[rgba(14,17,22,0.85)] via-[rgba(14,17,22,0.45)] to-transparent"
