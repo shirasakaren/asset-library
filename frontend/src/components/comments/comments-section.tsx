@@ -167,3 +167,11 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
                       active
                         ? 'bg-ink text-white border-ink'
                         : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </TabsContent>
