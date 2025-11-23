@@ -63,11 +63,3 @@ export function SaveButton({
           hideUntilHover && !optimistic ? 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100' : '',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
           className,
-        )}
-        disabled={isPending}
-      >
-        {isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
-        ) : (
-          <Icon className="h-4 w-4" strokeWidth={2.25} fill={optimistic ? 'currentColor' : 'none'} />
-        )}
