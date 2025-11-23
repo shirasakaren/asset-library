@@ -30,9 +30,3 @@ export function Logo({
       height={px}
       priority={priority}
       className="select-none"
-    />
-  );
-  const content = (
-    <span className={cn('inline-flex items-center gap-2.5', className)}>
-      {mark}
-      {withWordmark ? (
