@@ -50,17 +50,3 @@ export async function Navbar({ user }: NavbarProps) {
           <div className="ml-auto flex items-center gap-1">
             <SearchBar />
             <div className="hidden md:block mx-1 h-6 w-px bg-line" aria-hidden />
-            <LocaleSwitcher />
-            <NotificationBell initialUnreadCount={user.unreadNotifications} />
-            <AdminModePill isAdmin={user.isAdmin} />
-            <div className="ml-1">
-              <ProfileMenu user={user} />
-            </div>
-          </div>
-        </div>
-      </Container>
-    </ScrollAwareShell>
-  );
-}
-
-/** Stripped navbar used on the marketing /about route. */
