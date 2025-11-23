@@ -75,5 +75,3 @@ export function ThumbnailImage({
         url.startsWith('blob:') || url.startsWith('data:') || unoptimized ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={url}
-            alt={alt}
