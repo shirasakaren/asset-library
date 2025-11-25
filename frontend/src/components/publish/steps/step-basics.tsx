@@ -152,3 +152,8 @@ export function StepBasics() {
           <p className="mt-2 text-caption text-ink-3 max-w-prose">{license.description}</p>
         ) : null}
       </Field>
+
+      <Field id="semver" label={t('semver')} helper={t('semverHelper')} required>
+        <Input
+          id="semver"
+          defaultValue={wiz.latestVersion?.semver ?? ''}
