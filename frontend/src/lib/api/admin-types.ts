@@ -160,32 +160,3 @@ export interface AdminReport {
   adminNotes: string | null;
   createdAt: string;
   resolvedAt: string | null;
-}
-
-export interface AdminReportPage {
-  items: AdminReport[];
-  pageInfo: PageInfo;
-}
-
-export type AdminAssetRequest = AssetRequest;
-
-export interface AdminAssetRequestPage {
-  items: AdminAssetRequest[];
-  pageInfo: PageInfo;
-}
-
-export interface AdminStorageUserRow {
-  userId: string;
-  displayName: string;
-  email: string;
-  bytes: number;
-  spark: { date: string; bytes: number }[];
-}
-
-export interface AdminStorageAssetRow {
-  assetId: string;
-  slug: string;
-  title: string;
-  ownerDisplayName: string;
-  bytes: number;
-  spark: { date: string; bytes: number }[];
