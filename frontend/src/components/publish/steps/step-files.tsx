@@ -409,25 +409,3 @@ function TaskRow({
   onCancel: () => void;
   onRetry: () => void;
 }) {
-  const pct = task.totalBytes
-    ? Math.min(100, Math.round((task.bytesUploaded / task.totalBytes) * 100))
-    : 0;
-  const isDone = task.status === 'analyzing' || task.status === 'ready';
-  const isFailed = task.status === 'failed' || task.status === 'cancelled';
-  return (
-    <li className="flex items-center gap-3 p-3">
-      <div className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-surface-muted text-ink-2">
-        <FileBox className="h-4 w-4" strokeWidth={2.25} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-3">
-          <span className="truncate text-[13.5px] font-medium text-ink">
-            {task.input.relativePath}
-          </span>
-          <span className="geist-tnum shrink-0 text-caption text-ink-3">
-            {formatBytes(task.totalBytes, locale)}
-            {task.status === 'uploading' ? ` · ${pct}%` : ''}
-          </span>
-        </div>
-        <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-line">
-          <div
