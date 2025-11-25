@@ -328,3 +328,7 @@ export function StepMedia() {
             </DndContext>
             <p className="mt-2 text-caption text-ink-3">
               Drag tiles to reorder slides. Use the gear to blur or hide sensitive media.
+            </p>
+          </>
+        )}
+      </section>
