@@ -64,18 +64,3 @@ export interface ButtonProps
   iconOnly?: boolean;
   leadingIcon?: React.ReactNode;
   trailingIcon?: React.ReactNode;
-}
-
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      fullWidth,
-      asChild,
-      loading,
-      disabled,
-      iconOnly,
-      leadingIcon,
-      trailingIcon,
