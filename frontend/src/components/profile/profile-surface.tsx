@@ -100,9 +100,3 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
                   Revoke
                 </Button>
               </li>
-            ))
-          )}
-        </ul>
-      </Card>
-
-      <Card padding="lg" className="mt-6">
