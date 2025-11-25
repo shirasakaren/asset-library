@@ -112,11 +112,3 @@ export async function apiFetch<T = unknown>(path: string, init: ApiFetchInit = {
   // Keycloak access-token TTL even with periodic session polling, because the
   // upload's `complete` call can land microseconds after expiry. When the
   // caller supplied a refresher, force a session refetch and try once more.
-  // Capped at one retry so a bad refresh token can't infinite-loop.
-  if (response.status === 401 && tokenRefresher) {
-    const refreshed = await tokenRefresher().catch(() => undefined);
-    if (refreshed && refreshed !== accessToken) {
-      response = await doRequest(refreshed);
-    }
-  }
-
