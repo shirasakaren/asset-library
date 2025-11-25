@@ -177,27 +177,3 @@ function applyMark(mark: TipTapMark, child: ReactNode): ReactNode {
       return <span style={style}>{child}</span>;
     }
     case 'link': {
-      const href = typeof mark.attrs?.href === 'string' ? (mark.attrs.href as string) : '#';
-      const safe = sanitizeUrl(href);
-      const isExternal = /^https?:\/\//.test(safe);
-      return (
-        <a
-          href={safe}
-          className="link-inline"
-          {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        >
-          {child}
-        </a>
-      );
-    }
-    default:
-      return <Fragment>{child}</Fragment>;
-  }
-}
-
-function clampHeadingLevel(value: unknown): 1 | 2 | 3 {
-  const n = typeof value === 'number' ? value : 1;
-  if (n >= 3) return 3;
-  if (n === 2) return 2;
-  return 1;
-}
