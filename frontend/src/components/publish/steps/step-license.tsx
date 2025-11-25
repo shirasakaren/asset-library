@@ -70,3 +70,6 @@ export function StepLicense() {
               <option key={l.id} value={l.id}>
                 {l.name}
               </option>
+            ))}
+          </select>
+        </Field>
