@@ -68,7 +68,3 @@ export const ModalContent = forwardRef<
         >
           <X className="h-4 w-4" strokeWidth={2.25} />
         </DialogPrimitive.Close>
-      ) : null}
-    </DialogPrimitive.Content>
-  </ModalPortal>
-));
