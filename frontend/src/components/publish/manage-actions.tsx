@@ -94,17 +94,3 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
           <DropdownMenuItem asChild>
             <NextLink href={`/publish/${asset.id}/versions/new`}>
               <Plus className="h-3.5 w-3.5" strokeWidth={2.25} />
-              {t('newVersion')}
-            </NextLink>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <NextLink href={`/assets/${asset.slug || asset.id}`}>
-              <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.25} />
-              {t('viewPublic')}
-            </NextLink>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <NextLink href={`/publish/manage/${asset.id}/analytics`}>
-              <BarChart3 className="h-3.5 w-3.5" strokeWidth={2.25} />
-              {t('analyticsLink')}
-            </NextLink>
