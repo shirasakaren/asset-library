@@ -123,34 +123,3 @@ export function StepCompatibility() {
             <li key={idx} className="rounded-[14px] border border-line p-4 bg-surface">
               <div className="flex flex-wrap gap-4">
                 <Field id={`ev-${idx}`} label={versionLabel} className="flex-1 min-w-[200px]">
-                  <Input
-                    id={`ev-${idx}`}
-                    list={`engine-${wiz.asset.engine}`}
-                    value={row.engineVersion}
-                    onChange={(e) => {
-                      const next = rows.map((r, i) =>
-                        i === idx ? { ...r, engineVersion: e.target.value } : r,
-                      );
-                      setRows(next);
-                    }}
-                    onBlur={() => persist(rows)}
-                  />
-                  <datalist id={`engine-${wiz.asset.engine}`}>
-                    {suggested.map((s) => (
-                      <option key={s} value={s} />
-                    ))}
-                  </datalist>
-                </Field>
-
-                {RENDER_PIPELINES_BY_ENGINE[wiz.asset.engine]?.length ? (
-                  <Field label={t('renderPipelines')} className="flex-[1.6] min-w-[260px]">
-                    <ChipFilter
-                      options={RENDER_PIPELINES_BY_ENGINE[wiz.asset.engine].map((rp) => ({
-                        label: tSearch(`renderPipeline.${rp}`),
-                        value: rp,
-                      }))}
-                      values={row.renderPipelines}
-                      onChange={(next) => {
-                        const updated = rows.map((r, i) =>
-                          i === idx ? { ...r, renderPipelines: next as RenderPipeline[] } : r,
-                        );
