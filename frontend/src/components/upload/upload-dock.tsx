@@ -167,4 +167,3 @@ export function UploadDock() {
       </div>
     </div>
   );
-}
