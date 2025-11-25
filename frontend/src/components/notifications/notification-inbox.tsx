@@ -106,3 +106,14 @@ export function NotificationInbox({ initial, initialCursor }: Props) {
       ) : (
         <div className="space-y-8">
           {grouped.map((group) => (
+            <section key={group.key}>
+              <h2 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
+                {t(`group.${group.key}` as 'group.today')}
+              </h2>
+              <ul className="rounded-[14px] border border-line bg-surface overflow-hidden divide-y divide-line">
+                {group.items.map((item) => (
+                  <li key={item.id}>
+                    <NotificationRow item={item} onActivate={handleActivate} />
+                  </li>
+                ))}
+              </ul>
