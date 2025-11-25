@@ -145,8 +145,3 @@ export function WizardProvider({ initialAsset, locale, children }: WizardProvide
           err: err instanceof Error ? err.message : String(err),
         });
         // Re-queue so a manual retry / next change re-attempts.
-        queueRef.current = { ...payload, ...queueRef.current };
-        setSaving('error');
-      } finally {
-        inflight.current = null;
-      }
