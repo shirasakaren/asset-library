@@ -44,3 +44,29 @@ export class SearchAssetsQueryDto {
   @Transform(asArray)
   @IsArray()
   targets?: string[];
+  @ApiPropertyOptional() @IsOptional() @IsString() licenseSlug?: string;
+  @ApiPropertyOptional({ minimum: 1, maximum: 100 })
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number = 24;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
+  @IsInt()
+  @Min(0)
+  offset?: number = 0;
+  @ApiPropertyOptional({ enum: ['en', 'id'] }) @IsOptional() @IsString() locale?: 'en' | 'id';
+}
+
+export class SearchAssetHitDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() title!: string;
+  @ApiProperty() shortDescription!: string;
+  @ApiPropertyOptional() thumbnailUrl?: string;
+  @ApiProperty() engine!: string;
+  @ApiProperty() categoryName!: string;
+  @ApiProperty() ownerName!: string;

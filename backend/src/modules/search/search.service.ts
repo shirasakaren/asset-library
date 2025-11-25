@@ -126,3 +126,25 @@ export class SearchService {
     const idTranslation = asset.translations.find((t) => t.locale === 'id');
     return {
       id: asset.id,
+      slug: asset.slug,
+      title: asset.title,
+      shortDescription_en: enTranslation?.shortDescription,
+      shortDescription_id: idTranslation?.shortDescription,
+      thumbnailKey: asset.thumbnailKey ?? undefined,
+      engine: asset.engine,
+      categoryId: asset.categoryId,
+      categoryName_en: resolveLocalized(asset.category.name as LocalizedJson, 'en') ?? undefined,
+      categoryName_id: resolveLocalized(asset.category.name as LocalizedJson, 'id') ?? undefined,
+      licenseId: asset.licenseId,
+      tags: asset.tags.map((t) => t.tag.slug),
+      renderPipelines: Array.from(
+        new Set(latest?.compatibility.flatMap((c) => c.renderPipelines) ?? []),
+      ),
+      targets: Array.from(new Set(latest?.compatibility.flatMap((c) => c.targets) ?? [])),
+      fileKinds: Array.from(new Set(latest?.files.map((f) => f.kind) ?? [])),
+      ownerDisplayName: asset.owner.displayName,
+      publishedAt: asset.publishedAt?.getTime() ?? 0,
+      createdAt: asset.createdAt.getTime(),
+      totalDownloads: asset._count.downloads,
+      totalSaves: asset._count.libraryItems,
+    };
