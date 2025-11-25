@@ -129,3 +129,15 @@ export function RequestSurface({ me, initial }: Props) {
             <Card padding="lg">
               <div className="flex items-center gap-2 mb-3">
                 <Badge variant={STATUS_VARIANT[selected.status]}>
+                  {t(`status.${selected.status}` as 'status.SENT')}
+                </Badge>
+                <span className="text-caption text-ink-3 geist-tnum">
+                  {formatRelative(selected.createdAt, locale)}
+                </span>
+              </div>
+              <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">{selected.assetType}</h2>
+              <a
+                href={selected.assetLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1 link-inline break-all"
