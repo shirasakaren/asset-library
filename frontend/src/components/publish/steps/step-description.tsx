@@ -89,7 +89,3 @@ export function StepDescription() {
               aria-selected={active}
               onClick={() => setActiveLocale(l.code)}
               className={cn(
-                'relative h-10 px-3 text-[14px] font-medium',
-                active ? 'text-ink' : 'text-ink-3 hover:text-ink',
-                'after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px]',
-                active ? 'after:bg-brand-blue' : 'after:bg-transparent',
