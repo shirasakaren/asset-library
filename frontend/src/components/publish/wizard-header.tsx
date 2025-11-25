@@ -107,3 +107,7 @@ export function WizardHeader({ variant = 'edit' }: WizardHeaderProps) {
             >
               {publishing
                 ? isPublished
+                  ? t('updatingCta')
+                  : t('publishingCta')
+                : isPublished
+                  ? t('updateCta')
