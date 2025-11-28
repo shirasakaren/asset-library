@@ -33,3 +33,13 @@ export function useSaveToggle() {
       }
       return { assetId, nextSaved };
     },
+    onMutate: async ({ assetId, nextSaved }) => {
+      logEvent('asset.save_toggle', { assetId, nextSaved });
+      // Optimistically flip isSaved on any cached asset detail and library page.
+      const previousDetails = new Map<string, unknown>();
+      queryClient
+        .getQueriesData<{ id: string; isSaved: boolean }>({ queryKey: ['asset'] })
+        .forEach(([key, data]) => {
+          if (data && data.id === assetId) {
+            previousDetails.set(JSON.stringify(key), data);
+            queryClient.setQueryData(key, { ...data, isSaved: nextSaved });
