@@ -29,15 +29,3 @@ export class PluginTokenGuard implements CanActivate {
     ]);
     if (isPublic) return true;
     const req = context.switchToHttp().getRequest<FastifyRequest>();
-    const token = extractPluginToken(req);
-    if (!token) {
-      throw new UnauthorizedException('Missing plugin token.');
-    }
-    const verified = await this.pluginTokens.verifyAndTouch(token);
-    if (!verified) {
-      throw new DomainException(
-        HttpStatus.UNAUTHORIZED,
-        ErrorCode.AUTH_PLUGIN_TOKEN_INVALID,
-        'Plugin token is invalid, expired, or revoked.',
-      );
-    }
