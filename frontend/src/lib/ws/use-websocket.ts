@@ -64,3 +64,22 @@ export function useWebSocket({ token, enabled = true }: UseWebSocketOptions) {
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
         scheduleReconnect();
+        return;
+      }
+      socketRef.current = ws;
+
+      ws.onopen = () => {
+        setStatus('open');
+        setError(null);
+        resetAttempts();
+        resetLiveness();
+        logger.info('ws:open');
+      };
+
+      ws.onmessage = (ev) => {
+        resetLiveness();
+        try {
+          const msg = JSON.parse(typeof ev.data === 'string' ? ev.data : '');
+          if (msg && typeof msg.type === 'string') {
+            dispatch(msg);
+          }
