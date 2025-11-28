@@ -41,7 +41,3 @@ export class MailerService implements OnModuleDestroy {
     html: string;
     text?: string;
   }): Promise<void> {
-    if (!this.transporter) {
-      this.logger.debug(`[mail-noop] to=${opts.to} subject=${opts.subject}`);
-      return;
-    }
