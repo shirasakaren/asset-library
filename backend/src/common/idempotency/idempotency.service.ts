@@ -48,6 +48,3 @@ export class IdempotencyService {
       throw new ConflictDomainException(
         ErrorCode.IDEMPOTENCY_KEY_REUSED,
         'Idempotency-Key has been used with a different request body.',
-      );
-    }
-    return record;
