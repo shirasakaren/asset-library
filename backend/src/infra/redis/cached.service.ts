@@ -45,4 +45,3 @@ export class CachedService {
     // turn into a 500 for the user.
     void this.redis.client.set(key, JSON.stringify(value), 'EX', ttlSeconds).catch((err) => {
       this.logger.warn(`Cache SET failed for ${key}: ${(err as Error).message}`);
-    });
