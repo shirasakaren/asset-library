@@ -49,3 +49,28 @@ export class MeilisearchService implements OnModuleInit {
       'ownerDisplayName',
     ]);
     await index.updateFilterableAttributes([
+      'engine',
+      'categoryId',
+      'licenseId',
+      'tags',
+      'renderPipelines',
+      'targets',
+      'fileKinds',
+      'status',
+    ]);
+    await index.updateSortableAttributes([
+      'publishedAt',
+      'createdAt',
+      'totalDownloads',
+      'totalSaves',
+      'title',
+    ]);
+  }
+
+  private async ensureTagsIndex(): Promise<void> {
+    const index = this.client.index(MEILI_INDEX_TAGS);
+    await this.client.createIndex(MEILI_INDEX_TAGS, { primaryKey: 'id' }).catch(() => undefined);
+    await index.updateSearchableAttributes(['slug', 'displayName']);
+    await index.updateSortableAttributes(['usageCount', 'displayName']);
+  }
+
