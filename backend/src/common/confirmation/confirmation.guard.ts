@@ -36,3 +36,7 @@ export class ConfirmationGuard implements CanActivate {
         ErrorCode.CONFIRMATION_REQUIRED,
         `Confirmation phrase missing — set body.confirm to "${CONFIRMATION_PHRASE}".`,
       );
+    }
+    if (!body.confirmedAt) {
+      throw new BadRequestDomainException(
+        ErrorCode.CONFIRMATION_REQUIRED,
