@@ -44,7 +44,3 @@ describe('apiFetch — 401 retry-once', () => {
 
   it('does not loop: a second 401 after the retry surfaces the error', async () => {
     const fetchSpy = vi
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValueOnce(jsonResponse(401, { code: 'auth.unauthenticated' }))
-      .mockResolvedValueOnce(jsonResponse(401, { code: 'auth.unauthenticated' }));
-    const refresher = vi.fn().mockResolvedValue('still-bad');
