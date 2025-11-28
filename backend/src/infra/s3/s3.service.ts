@@ -158,17 +158,3 @@ export class S3Service {
         UploadId: uploadId,
         MultipartUpload: {
           Parts: parts
-            .sort((a, b) => a.partNumber - b.partNumber)
-            .map((p) => ({ PartNumber: p.partNumber, ETag: p.etag })),
-        },
-      }),
-    );
-  }
-
-  /**
-   * Lists the parts S3 actually received for an in-flight multipart upload,
-   * returning their authoritative ETags. We complete from these instead of
-   * client-reported ETags because the browser can only read the `ETag`
-   * response header when the bucket CORS exposes it — relying on that made
-   * CompleteMultipartUpload fail with "the specified entity tag may not match".
-   * Handles pagination (>1000 parts) via PartNumberMarker.
