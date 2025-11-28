@@ -28,5 +28,3 @@ interface WsState {
 }
 
 export const useWsStore = create<WsState>((set, get) => ({
-  status: 'idle',
-  lastMessage: null,
