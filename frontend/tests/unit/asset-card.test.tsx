@@ -51,4 +51,3 @@ describe('AssetCard (compact)', () => {
     expect(screen.getByText(/1\.2k/)).toBeInTheDocument();
   });
 });
-
