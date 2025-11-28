@@ -78,16 +78,3 @@ import { WsModule } from './modules/ws/ws.module';
     MailerModule,
     N8nModule,
     KeycloakModule,
-    GuardsModule,
-    AuditCoreModule,
-    IdempotencyModule,
-    RateLimitModule,
-
-    // ── Health ──────────────────────────────────────────────────────────────
-    HealthModule,
-
-    // ── Active feature modules (Part 1) ─────────────────────────────────────
-    UsersModule,
-    AuthModule,
-
-    // ── Stubbed feature modules (Parts 2/3/4) ───────────────────────────────
