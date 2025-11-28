@@ -67,12 +67,3 @@ def setup_camera(min_v: Vector, max_v: Vector) -> None:
     el = math.radians(15)
     cam_obj.location = center + Vector((
         math.cos(el) * math.cos(az) * distance,
-        math.cos(el) * math.sin(az) * distance,
-        math.sin(el) * distance,
-    ))
-    direction = (center - cam_obj.location)
-    cam_obj.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
-    bpy.context.scene.camera = cam_obj
-
-
-def setup_eevee(out_path: str) -> None:
