@@ -37,3 +37,14 @@ describe('stripDisallowedLiteNodes', () => {
         // supports inline image + GIF embeds.
         { type: 'image', attrs: { src: '/x' } },
         { type: 'table', content: [] },
+      ],
+    };
+    const cleaned = stripDisallowedLiteNodes(doc);
+    expect(cleaned.content?.map((n) => n.type)).toEqual(['paragraph', 'image']);
+  });
+
+  it('strips disallowed marks (underline, highlight, textStyle)', () => {
+    const doc: TipTapDoc = {
+      type: 'doc',
+      content: [
+        {
