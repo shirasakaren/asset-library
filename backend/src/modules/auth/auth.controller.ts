@@ -63,31 +63,3 @@ export class AuthController {
   // /exchange, and refresh/revoke/devices identify the caller by the
   // already-issued device token.
 
-  @Public()
-  @RateLimit({ windowSec: 60, max: 20, scope: 'ip', name: 'auth.plugin_exchange' })
-  @Post('plugin/exchange')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({
-    summary: 'Exchange a Keycloak access token for a long-lived plugin device token.',
-  })
-  @ApiOkResponse({ type: PluginExchangeResponseDto })
-  async exchangePlugin(@Body() body: PluginExchangeDto): Promise<PluginExchangeResponseDto> {
-    const issued = await this.auth.exchangePluginToken(body.keycloakAccessToken, body.deviceLabel);
-    return {
-      deviceToken: issued.token,
-      deviceId: issued.deviceId,
-      expiresAt: issued.expiresAt.toISOString(),
-    };
-  }
-
-  @Public()
-  @Post('plugin/refresh')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Slide the expiry of an existing plugin device token.' })
-  @ApiOkResponse({ type: PluginRefreshResponseDto })
-  async refreshPlugin(@Body() body: PluginRefreshDto): Promise<PluginRefreshResponseDto> {
-    const next = await this.auth.refreshPluginToken(body.deviceToken);
-    return { expiresAt: next.toISOString() };
-  }
-
-  @Post('plugin/revoke')
