@@ -42,3 +42,6 @@ export class KeycloakAuthGuard implements CanActivate {
       context.getClass(),
     ]);
     if (isPublic) return true;
+
+    const req = context.switchToHttp().getRequest<FastifyRequest>();
+    const token = this.extractBearer(req);
