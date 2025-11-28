@@ -36,5 +36,3 @@ export class HealthController {
   }
 
   /**
-   * Readiness probe. 200 only if every external dependency is reachable;
-   * returns a per-check breakdown so ops can identify which subsystem is down.
