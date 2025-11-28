@@ -38,5 +38,3 @@ export class ListAssetsQueryDto extends ListQueryDto {
   @Transform(asArray)
   @IsArray()
   tags?: string[];
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
