@@ -52,5 +52,3 @@ export class AdminStorageController {
   @ApiQuery({ name: 'limit', required: false })
   @ApiOkResponse()
   async assets(@Query('date') date?: string, @Query('limit') limit?: string) {
-    const targetDate = await this.resolveDate(date, 'asset');
-    const take = Math.min(Math.max(Number(limit ?? '50'), 1), 200);
