@@ -64,3 +64,4 @@ export class AdminAuditController {
   @ApiOperation({ summary: 'Full audit entry detail incl. metadata payload.' })
   @ApiOkResponse({ type: AuditEntryDto })
   async detail(@Param('id') id: string): Promise<AuditEntryDto> {
+    const row = await this.prisma.auditLog.findUnique({ where: { id }, include: { actor: true } });
