@@ -92,3 +92,4 @@ export class AllExceptionsFilter implements ExceptionFilter {
       };
     }
 
+    return {
