@@ -112,3 +112,14 @@ export class AdminAssetsModerationService {
   /**
    * Immediate hard delete — bypasses the 30-day archive clock. Used only for
    * legal takedowns / catastrophic content. Guarded by `@RequireConfirmation()`
+   * at the controller.
+   */
+  async forceDelete(id: string, admin: User, reason: string): Promise<void> {
+    const asset = await this.findOrThrow(id);
+    await this.deleteS3Prefix('assets', `assets/${asset.id}/`);
+    await this.deleteS3Prefix('thumbs', `thumbs/${asset.id}/`);
+    if (asset.thumbnailKey && !asset.thumbnailKey.startsWith(`thumbs/${asset.id}/`)) {
+      await this.s3.deleteObject('thumbs', asset.thumbnailKey).catch(() => undefined);
+    }
+    await this.prisma.asset.delete({ where: { id } });
+    await this.meili.client
