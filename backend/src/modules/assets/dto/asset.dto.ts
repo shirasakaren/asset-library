@@ -181,3 +181,23 @@ export class PreviewMediaItemDto {
   @ApiPropertyOptional() displayKey?: string;
   @ApiProperty() label!: string;
   /** Fast display URL (compressed variant if present, else the original). */
+  @ApiProperty() viewUrl!: string;
+  /** Full-resolution URL — used when the viewer clicks to enlarge. */
+  @ApiProperty() originalUrl!: string;
+  @ApiPropertyOptional() mime?: string;
+  @ApiPropertyOptional({ enum: ['visible', 'blur', 'hidden'] })
+  visibility?: 'visible' | 'blur' | 'hidden';
+  @ApiPropertyOptional() warning?: string;
+}
+
+export class AssetSummaryDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() title!: string;
+  @ApiProperty() shortDescription!: string;
+  @ApiProperty({ enum: AssetEngine }) engine!: AssetEngine;
+  @ApiProperty({ enum: AssetStatus }) status!: AssetStatus;
+  @ApiPropertyOptional() thumbnailUrl?: string;
+  @ApiProperty() ownerDisplayName!: string;
+  @ApiProperty() categoryName!: string;
+  @ApiProperty() totalDownloads!: number;
