@@ -39,8 +39,3 @@ async function main(): Promise<void> {
     'licenseId',
     'tags',
     'renderPipelines',
-    'targets',
-    'fileKinds',
-    'status',
-  ]);
-  await assets.updateSortableAttributes([
