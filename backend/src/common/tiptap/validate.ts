@@ -153,3 +153,13 @@ function walk(node: TipTapNode | TipTapDoc, path: string, state: WalkState): Tip
       const filtered: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(typedNode.attrs)) {
         if (allowedAttrs.has(k)) filtered[k] = v;
+      }
+      if (Object.keys(filtered).length > 0) out.attrs = filtered;
+    }
+  }
+  if (typedNode.marks) {
+    const safeMarks: TipTapNode['marks'] = [];
+    for (const [i, mark] of typedNode.marks.entries()) {
+      if (!state.allowlist.marks.has(mark.type)) {
+        state.violations.push({
+          path: `${path}.marks[${i}]`,
