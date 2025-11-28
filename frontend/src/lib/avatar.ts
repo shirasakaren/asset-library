@@ -42,5 +42,3 @@ export function getAvatarTokens(input: {
 // Convert a server-provided semantic color name ("brand-blue") to a hex.
 const NAME_TO_HEX: Record<string, string> = {
   'brand-blue': '#3a6dc5',
-  'brand-yellow': '#f7bf33',
-  'brand-red': '#f94141',
