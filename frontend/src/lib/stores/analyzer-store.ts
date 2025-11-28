@@ -33,3 +33,8 @@ export const useAnalyzerStore = create<AnalyzerState>((set) => ({
   versions: {},
   applyAnalyzeProgress: (versionId, fileId, status) =>
     set((state) => {
+      const v = ensureVersion(state, versionId);
+      return {
+        versions: {
+          ...state.versions,
+          [versionId]: {
