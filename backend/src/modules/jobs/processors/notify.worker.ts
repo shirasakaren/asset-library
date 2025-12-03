@@ -84,16 +84,3 @@ export class NotifyWorker extends JobWorkerBase<NotifyJob> {
   }
 
   private async publishWs(userId: string, data: NotifyJob): Promise<void> {
-    const envelope = this.notifications.newWsEnvelope('notification:new', {
-      type: data.type,
-      payload: data.payload,
-    });
-    await this.wsFanout.publish({ userId, ...envelope });
-  }
-
-  private async sendEmail(recipient: User, data: NotifyJob): Promise<void> {
-    const rendered = await this.emails.render(data.type, recipient.locale, {
-      ...data.payload,
-      recipient: { id: recipient.id, displayName: recipient.displayName, email: recipient.email },
-      links: this.buildLinks(data),
-    });
