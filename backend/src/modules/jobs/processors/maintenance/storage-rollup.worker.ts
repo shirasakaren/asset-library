@@ -83,23 +83,3 @@ export class StorageRollupWorker extends JobWorkerBase<StorageRollupJob> impleme
                 bytes: 0n,
                 assetCount: 0,
                 ids: new Set<string>(),
-              };
-              entry.bytes += bytes;
-              entry.ids.add(assetId);
-              entry.assetCount = entry.ids.size;
-              perUser.set(ownerId, entry);
-            }
-          }
-        }
-      }
-
-      for (const [prefix, c] of counters) {
-        await this.prisma.storageDaily.upsert({
-          where: { date_bucket_prefix: { date, bucket: bucketName, prefix } },
-          create: { date, bucket: bucketName, prefix, bytes: c.bytes, objectCount: c.count },
-          update: { bytes: c.bytes, objectCount: c.count },
-        });
-      }
-    }
-
-    for (const [userId, c] of perUser) {
