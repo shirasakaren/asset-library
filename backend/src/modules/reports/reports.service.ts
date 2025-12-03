@@ -139,3 +139,81 @@ export class ReportsService {
     }
     await this.prisma.report.update({ where: { id }, data: { status: 'REVIEWING' } });
     await this.audit.record({
+      actorId: admin.id,
+      action: 'report.start_review',
+      subjectType: 'Report',
+      subjectId: id,
+    });
+  }
+
+  async action(id: string, admin: User, dto: ActionReportDto): Promise<void> {
+    const row = await this.prisma.report.findUnique({ where: { id }, include: { asset: true } });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Report ${id} not found.`);
+
+    if (dto.action === 'FORCE_DELETE_ASSET') {
+      if (dto.confirm !== CONFIRMATION_PHRASE || !dto.confirmedAt) {
+        throw new BadRequestDomainException(
+          ErrorCode.CONFIRMATION_REQUIRED,
+          'FORCE_DELETE_ASSET requires confirm/confirmedAt body fields.',
+        );
+      }
+      const ts = Date.parse(dto.confirmedAt);
+      if (!Number.isFinite(ts) || Date.now() - ts > 60_000) {
+        throw new BadRequestDomainException(
+          ErrorCode.CONFIRMATION_EXPIRED,
+          'Confirmation expired — re-confirm within the last 60 seconds.',
+        );
+      }
+    }
+
+    await this.applyAction(dto.action, row.asset.id, admin, dto.adminNotes, id);
+
+    await this.prisma.report.update({
+      where: { id },
+      data: { status: 'ACTIONED', adminNotes: dto.adminNotes, resolvedAt: new Date() },
+    });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'report.action',
+      subjectType: 'Report',
+      subjectId: id,
+      metadata: { action: dto.action, assetId: row.asset.id, adminNotes: dto.adminNotes },
+    });
+  }
+
+  async dismiss(id: string, admin: User, dto: DismissReportDto): Promise<void> {
+    const row = await this.prisma.report.findUnique({ where: { id } });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Report ${id} not found.`);
+    await this.prisma.report.update({
+      where: { id },
+      data: { status: 'DISMISSED', adminNotes: dto.adminNotes, resolvedAt: new Date() },
+    });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'report.dismiss',
+      subjectType: 'Report',
+      subjectId: id,
+      metadata: { adminNotes: dto.adminNotes },
+    });
+  }
+
+  private async applyAction(
+    kind: ReportActionKind,
+    assetId: string,
+    admin: User,
+    adminNotes: string,
+    reportId: string,
+  ): Promise<void> {
+    const reason = `report:${reportId} — ${adminNotes.slice(0, 200)}`;
+    switch (kind) {
+      case 'NOTHING':
+        return;
+      case 'ARCHIVE_ASSET':
+        return this.moderation.archive(assetId, admin, reason);
+      case 'DELETE_ASSET':
+        return this.moderation.softDelete(assetId, admin, reason);
+      case 'FORCE_DELETE_ASSET':
+        return this.moderation.forceDelete(assetId, admin, reason);
+    }
