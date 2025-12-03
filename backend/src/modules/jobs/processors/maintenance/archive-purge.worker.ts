@@ -88,18 +88,3 @@ export class ArchivePurgeWorker extends JobWorkerBase<ArchivePurgeJob> implement
     }
 
     await this.prisma.$transaction(async (tx) => {
-      await tx.auditLog.create({
-        data: {
-          action: 'archive.purged',
-          subjectType: 'Asset',
-          subjectId: asset.id,
-          metadata: { previousStatus: asset.status, slug: asset.slug },
-        },
-      });
-      // Cascade-delete the row — Prisma onDelete: Cascade on the schema handles
-      // versions, files, library items, comments, etc.
-      await tx.asset.delete({ where: { id: asset.id } });
-    });
-
-    await this.meili.client
-      .index(MEILI_INDEX_ASSETS)
