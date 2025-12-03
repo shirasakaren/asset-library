@@ -33,3 +33,22 @@ export class AdminRequestsController {
   @ApiOkResponse()
   list(@AuthUser() principal: AuthenticatedRequestUser, @Query() query: ListAssetRequestsQueryDto) {
     return this.requests.list(query, principal.user);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Fetch a single asset request by id (admin view).' })
+  @ApiOkResponse({ type: AssetRequestDto })
+  getOne(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+  ): Promise<AssetRequestDto> {
+    return this.requests.get(id, principal.user);
+  }
+
+  @Patch(':id')
+  @AuditAction({ action: 'asset_request.status_change_request', subjectType: 'AssetRequest' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Admin transition: IN_REVIEW | PENDING | APPROVED | REJECTED.' })
+  @ApiOkResponse({ type: AssetRequestDto })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
