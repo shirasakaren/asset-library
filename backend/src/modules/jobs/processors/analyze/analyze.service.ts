@@ -79,9 +79,3 @@ export class AnalyzeService {
       }
       case AssetFileKind.AUDIO: {
         const audio = await extractAudio(filePath, this.config.get('FFPROBE_BIN'), timeoutMs);
-        return { ...base, meta: (audio ?? {}) as Record<string, unknown> };
-      }
-      case AssetFileKind.VIDEO: {
-        const video = await extractVideo(filePath, this.config.get('FFPROBE_BIN'), timeoutMs);
-        return { ...base, meta: (video ?? {}) as Record<string, unknown> };
-      }
