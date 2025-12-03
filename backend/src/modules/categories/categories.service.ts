@@ -35,3 +35,8 @@ export class CategoriesService {
     return this.cached.getOrFetch<CategoryDto[]>(CACHE_KEY(locale), CACHE_TTL_SECONDS, () =>
       this.computeList(locale),
     );
+  }
+
+  private async computeList(locale: Locale): Promise<CategoryDto[]> {
+    const rows = await this.prisma.category.findMany({
+      where: { isActive: true },
