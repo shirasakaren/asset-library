@@ -93,3 +93,17 @@ export class GltfConvertWorker extends JobWorkerBase<GltfConvertJob> {
     } catch (err) {
       this.logger.warn(`GLTF convert failed for ${fileId}: ${(err as Error).message}`);
       await this.markSkipped(fileId, (err as Error).message);
+      throw err;
+    } finally {
+      await scratch.cleanup();
+      await rm(outGlbRaw, { force: true });
+      await rm(outGlbPacked, { force: true });
+    }
+  }
+
+  private async runBlenderConvert(
+    input: string,
+    output: string,
+    kind: GltfConvertJob['sourceKind'],
+    timeoutMs: number,
+  ): Promise<void> {
