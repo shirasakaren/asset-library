@@ -90,15 +90,3 @@ export class EditorMediaGcWorker extends JobWorkerBase<EditorMediaGcJob> impleme
 function walkTipTap(
   node: Prisma.JsonValue,
   collect: (key: string) => void,
-  editorBucket: string,
-): void {
-  if (!node) return;
-  if (Array.isArray(node)) {
-    for (const child of node) walkTipTap(child, collect, editorBucket);
-    return;
-  }
-  if (typeof node !== 'object') return;
-  const obj = node as Record<string, Prisma.JsonValue>;
-  const attrs = obj.attrs as Record<string, unknown> | undefined;
-  if (attrs) {
-    for (const field of ['src', 'href']) {
