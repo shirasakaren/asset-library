@@ -61,3 +61,35 @@ export class AnalyzeWorker extends JobWorkerBase<AnalyzeFileJob> {
         },
       });
       await this.decrementAndMaybeRollup(versionId);
+      throw err;
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.assetFile.update({
+        where: { id: fileId },
+        data: {
+          kind: analyzed.kind,
+          mimeType: analyzed.mimeType,
+          bytes: BigInt(analyzed.bytes),
+          meta: analyzed.meta as unknown as Prisma.InputJsonValue,
+        },
+      });
+      if (analyzed.dependencies?.length) {
+        // Replace previous dependency rows so reruns don't duplicate.
+        await tx.assetDependency.deleteMany({
+          where: {
+            versionId,
+            source: { in: Array.from(new Set(analyzed.dependencies.map((d) => d.source))) },
+          },
+        });
+        await tx.assetDependency.createMany({
+          data: analyzed.dependencies.map((d) => ({
+            versionId,
+            name: d.name,
+            version: d.version ?? null,
+            source: d.source,
+          })),
+        });
+      }
+      if (analyzed.requiresEmptyProject) {
+        const version = await tx.assetVersion.findUnique({
