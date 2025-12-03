@@ -33,4 +33,3 @@ export async function extractUPlugin(filePath: string): Promise<UPluginMeta | nu
   try {
     const raw = await readFile(filePath, 'utf8');
     const parsed = JSON.parse(raw) as UPluginFile;
-    return {
