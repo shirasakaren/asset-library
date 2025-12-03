@@ -62,3 +62,13 @@ export class AdminCategoriesController {
 
   @Patch(':id')
   @AuditAction({ action: 'category.update_request', subjectType: 'Category' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Partial update; reindexes affected assets.' })
+  @ApiOkResponse({ type: AdminCategoryDto })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateCategoryDto,
+  ): Promise<AdminCategoryDto> {
+    return this.admin.update(id, principal.user, dto);
+  }
