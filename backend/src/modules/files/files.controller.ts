@@ -84,3 +84,10 @@ export class FilesController {
   @Post('uploads/multipart/complete')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Finalize a multipart upload (calls CompleteMultipartUpload on S3).' })
+  completeMultipart(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CompleteMultipartDto,
+  ): Promise<void> {
+    return this.files.completeMultipart(dto, principal.user);
+  }
+
