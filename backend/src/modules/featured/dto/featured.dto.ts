@@ -49,18 +49,3 @@ export class UpdateFeaturedSlotDto {
 }
 
 export class ReorderFeaturedSlotsDto {
-  @ApiProperty({ type: [String] })
-  @IsArray()
-  @ArrayMinSize(1)
-  @IsString({ each: true })
-  orderedIds!: string[];
-}
-
-export class FeaturedBannerInitiateDto {
-  @ApiProperty({ maxLength: 100 }) @IsString() @MaxLength(100) contentType!: string;
-  @ApiProperty() @IsInt() @Min(0) bytes!: number;
-}
-
-export class FeaturedBannerInitiateResponseDto {
-  @ApiProperty() putUrl!: string;
-  @ApiProperty() key!: string;
