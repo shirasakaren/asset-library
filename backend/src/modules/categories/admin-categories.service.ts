@@ -111,3 +111,38 @@ export class AdminCategoriesService {
     return this.toDto(row);
   }
 
+  async remove(id: string, admin: User): Promise<void> {
+    const usage = await this.prisma.asset.count({ where: { categoryId: id } });
+    if (usage > 0) {
+      throw new ConflictDomainException(
+        ErrorCode.CATEGORY_IN_USE,
+        `Category has ${usage} asset(s) — reassign them before deleting.`,
+      );
+    }
+    const row = await this.prisma.category.findUnique({ where: { id } });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.CATEGORY_NOT_FOUND, `Category ${id} not found.`);
+    await this.prisma.category.delete({ where: { id } });
+    await this.categories.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'category.delete',
+      subjectType: 'Category',
+      subjectId: id,
+      metadata: { slug: row.slug },
+    });
+  }
+
+  async reorder(orderedIds: string[], admin: User): Promise<void> {
+    await this.prisma.$transaction(
+      orderedIds.map((id, idx) =>
+        this.prisma.category.update({ where: { id }, data: { sortOrder: idx } }),
+      ),
+    );
+    await this.categories.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'category.reorder',
+      subjectType: 'Category',
+      subjectId: 'reorder',
+      metadata: { orderedIds },
