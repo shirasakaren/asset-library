@@ -93,3 +93,72 @@ export class RequestsService {
             ? encodeCursor({
                 id: itemsRaw[itemsRaw.length - 1].id,
                 createdAt: itemsRaw[itemsRaw.length - 1].createdAt.toISOString(),
+              })
+            : null,
+        hasMore,
+      },
+    };
+  }
+
+  async get(id: string, requester: User): Promise<AssetRequestDto> {
+    const row = await this.prisma.assetRequest.findUnique({
+      where: { id },
+      include: { requester: true },
+    });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Request ${id} not found.`);
+    if (!requester.isAdmin && row.requesterId !== requester.id) {
+      throw new ForbiddenDomainException(ErrorCode.AUTH_FORBIDDEN, 'You do not own this request.');
+    }
+    return this.toDto(row);
+  }
+
+  /**
+   * Admin transitions a request through its review lifecycle. Reject requires
+   * a non-empty `adminComment`; every transition fires REQUEST_STATUS_CHANGED
+   * to the requester and writes an audit row.
+   */
+  async adminUpdate(
+    id: string,
+    admin: User,
+    dto: AdminUpdateAssetRequestDto,
+  ): Promise<AssetRequestDto> {
+    if (
+      dto.status === AssetRequestStatus.REJECTED &&
+      (!dto.adminComment || dto.adminComment.trim().length === 0)
+    ) {
+      throw new BadRequestDomainException(
+        ErrorCode.REQUEST_NOT_FOUND,
+        'Rejecting requires a non-empty adminComment so the requester understands why.',
+      );
+    }
+    const row = await this.prisma.assetRequest.findUnique({
+      where: { id },
+      include: { requester: true },
+    });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Request ${id} not found.`);
+
+    const updated = await this.prisma.assetRequest.update({
+      where: { id },
+      data: { status: dto.status, adminComment: dto.adminComment ?? row.adminComment },
+      include: { requester: true },
+    });
+    await this.jobs.enqueueNotify({
+      recipientUserId: row.requesterId,
+      type: NotificationType.REQUEST_STATUS_CHANGED,
+      payload: {
+        requestId: id,
+        newStatus: dto.status,
+        adminComment: dto.adminComment ?? row.adminComment ?? '',
+      },
+      actor: { id: admin.id, displayName: admin.displayName, email: admin.email },
+    });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'asset_request.status_change',
+      subjectType: 'AssetRequest',
+      subjectId: id,
+      metadata: { from: row.status, to: dto.status, adminComment: dto.adminComment },
+    });
+    return this.toDto(updated);
