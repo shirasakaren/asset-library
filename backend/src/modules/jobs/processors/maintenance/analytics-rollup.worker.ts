@@ -94,9 +94,3 @@ export class AnalyticsRollupWorker
       SELECT a.id AS "assetId",
              (SELECT COUNT(*) FROM downloads d WHERE d."assetId" = a.id)::int AS "totalDownloads",
              (SELECT COUNT(*) FROM library_items li WHERE li."assetId" = a.id)::int AS "totalSaves",
-             (SELECT COUNT(*) FROM downloads d WHERE d."assetId" = a.id AND d."createdAt" >= NOW() - INTERVAL '7 days')::int AS "last7dDownloads",
-             (SELECT COUNT(*) FROM downloads d WHERE d."assetId" = a.id AND d."createdAt" >= NOW() - INTERVAL '30 days')::int AS "last30dDownloads"
-      FROM assets a
-    `);
-    for (const t of totals) {
-      await this.prisma.assetStats.upsert({
