@@ -61,3 +61,17 @@ export class AuthService {
     const claims = await this.jwks.verify(keycloakAccessToken).catch(() => null);
     if (!claims) {
       throw new UnauthorizedException('Invalid Keycloak token.');
+    }
+    if (!claims.email) {
+      throw new UnauthorizedException('Keycloak token has no email claim.');
+    }
+    const email = claims.email.toLowerCase();
+    const displayName = claims.name ?? claims.preferred_username ?? email.split('@')[0];
+    const isBootstrapAdmin = email === this.config.get('ADMIN_BOOTSTRAP_EMAIL').toLowerCase();
+    const user = await this.prisma.user.upsert({
+      where: { keycloakSub: claims.sub },
+      create: {
+        keycloakSub: claims.sub,
+        email,
+        displayName,
+        isAdmin: isBootstrapAdmin,
