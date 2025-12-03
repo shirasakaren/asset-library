@@ -122,25 +122,3 @@ export class FeaturedService {
         customShortDescription:
           dto.customShortDescription === undefined
             ? (row.customShortDescription ?? Prisma.JsonNull)
-            : (dto.customShortDescription as Prisma.InputJsonValue),
-        isActive: dto.isActive ?? row.isActive,
-        sortOrder: dto.sortOrder ?? row.sortOrder,
-      },
-      include: { asset: true },
-    });
-    await this.discover.invalidate();
-    await this.audit.record({
-      actorId: admin.id,
-      action: 'featured.update',
-      subjectType: 'FeaturedSlot',
-      subjectId: id,
-      metadata: { changes: dto },
-    });
-    return this.toDto(updated);
-  }
-
-  async remove(id: string, admin: User): Promise<void> {
-    const row = await this.prisma.featuredSlot.findUnique({ where: { id } });
-    if (!row)
-      throw new NotFoundDomainException(
-        ErrorCode.ASSET_NOT_FOUND,
