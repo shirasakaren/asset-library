@@ -71,3 +71,4 @@ export async function extractUnityPackage(
         } else if (isProjectVersion) {
           const m = text.match(/m_EditorVersion:\s*([\w.]+)/);
           if (m) meta.unityVersion = m[1];
+        } else if (isManifest) {
