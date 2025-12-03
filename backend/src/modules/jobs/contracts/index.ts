@@ -50,3 +50,8 @@ export interface SearchIndexJob {
   reason: SearchIndexReason;
 }
 
+/** Batch trigger — payload is empty because the worker reads from Redis SET. */
+export interface SearchIndexBatchJob {
+  triggeredAt: string;
+}
+
