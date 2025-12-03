@@ -78,3 +78,6 @@ export class GifsService {
         const preview = r.media_formats?.tinygif ?? full;
         if (!full || !preview) return [];
         return [
+          {
+            id: r.id,
+            url: full.url,
