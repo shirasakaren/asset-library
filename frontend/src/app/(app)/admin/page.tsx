@@ -117,3 +117,9 @@ export default async function AdminDashboardPage() {
               key: 'downloads',
               header: 'Downloads',
               align: 'right',
+              cell: (r) => <span className="geist-tnum">{formatNumber(r.downloads, locale)}</span>,
+            },
+            {
+              key: 'saves',
+              header: 'Saves',
+              align: 'right',
