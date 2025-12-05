@@ -45,12 +45,3 @@ export class CompatibilityRowDto {
   @IsArray()
   @IsString({ each: true })
   renderPipelines?: string[];
-
-  @ApiProperty({ type: [String], description: 'Platform targets (WINDOWS|MAC|...).' })
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsString({ each: true })
-  targets!: string[];
-}
-
-export class SetCompatibilityDto {
