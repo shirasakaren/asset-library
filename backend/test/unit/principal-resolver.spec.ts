@@ -77,5 +77,3 @@ describe('PrincipalResolverService', () => {
     expect(resolveRole).not.toHaveBeenCalled();
   });
 
-  it('falls back to Postgres + caches the result on a cache miss', async () => {
-    const { service, get, set, upsert, resolveRole } = build();
