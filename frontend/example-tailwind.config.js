@@ -42,14 +42,3 @@ module.exports = {
         "body-sm": ["0.9375rem", { lineHeight: "1.55" }],
         "caption": ["0.8125rem", { lineHeight: "1.50", letterSpacing: "0.005em", fontWeight: 500 }],
         "eyebrow": ["0.75rem", { lineHeight: "1.40", letterSpacing: "0.12em", fontWeight: 600 }],
-      },
-      borderRadius: {
-        sm: "8px",
-        DEFAULT: "12px",
-        lg: "20px",
-        xl: "28px",
-      },
-      boxShadow: {
-        "1": "0 1px 2px rgba(14,17,22,0.04), 0 1px 1px rgba(14,17,22,0.03)",
-        "2": "0 6px 24px -8px rgba(14,17,22,0.10), 0 2px 6px -2px rgba(14,17,22,0.05)",
-        "3": "0 24px 60px -20px rgba(14,17,22,0.18), 0 4px 12px -4px rgba(14,17,22,0.06)",
