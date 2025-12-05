@@ -119,3 +119,22 @@ export class ReportsService {
 
   async get(id: string): Promise<ReportDto> {
     const row = await this.prisma.report.findUnique({
+      where: { id },
+      include: { reporter: true, asset: true },
+    });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Report ${id} not found.`);
+    return this.toDto(row);
+  }
+
+  async startReview(id: string, admin: User): Promise<void> {
+    const row = await this.prisma.report.findUnique({ where: { id } });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Report ${id} not found.`);
+    if (row.status !== 'OPEN') {
+      throw new BadRequestDomainException(
+        ErrorCode.ASSET_ARCHIVE_BLOCKED,
+        `Report is in ${row.status}, not OPEN.`,
+      );
+    }
+    await this.prisma.report.update({ where: { id }, data: { status: 'REVIEWING' } });
