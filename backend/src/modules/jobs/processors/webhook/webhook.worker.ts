@@ -58,11 +58,3 @@ export class WebhookWorker extends JobWorkerBase<WebhookDeliveryJob> implements 
       type: job.data.event,
       createdAt: new Date().toISOString(),
       actor: job.data.actor,
-      recipient: job.data.recipient,
-      payload: job.data.payload,
-    };
-    const body = JSON.stringify(envelope);
-    const signature = this.secret
-      ? `sha256=${createHmac('sha256', this.secret).update(body).digest('hex')}`
-      : '';
-
