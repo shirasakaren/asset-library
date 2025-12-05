@@ -42,3 +42,11 @@ describe('PublishChecklistService', () => {
         'translations.empty',
         'version.missing',
       ]),
+    );
+  });
+
+  it('requires compatibility for engine-specific assets', async () => {
+    const prisma = {
+      assetTranslation: { count: jest.fn().mockResolvedValue(1) },
+      assetVersion: {
+        findFirst: jest.fn().mockResolvedValue({
