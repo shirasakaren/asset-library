@@ -81,3 +81,15 @@ export class AdminLicensesService {
         isActive: dto.isActive ?? existing.isActive,
       },
       include: { _count: { select: { assets: true } } },
+    });
+    await this.licenses.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'license.update',
+      subjectType: 'License',
+      subjectId: id,
+      metadata: { changes: dto },
+    });
+    return this.toDto(row);
+  }
+
