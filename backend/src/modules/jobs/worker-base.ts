@@ -41,3 +41,7 @@ export abstract class JobWorkerBase<TPayload> implements OnModuleInit, OnModuleD
             `job=${job.id} name=${job.name} failed: ${(err as Error).message}`,
             (err as Error).stack,
           );
+          this.sentry.captureException(err, {
+            queue: this.queueName,
+            jobId: job.id,
+            data: job.data as unknown as Record<string, unknown>,
