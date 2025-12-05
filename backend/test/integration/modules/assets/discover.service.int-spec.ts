@@ -162,3 +162,12 @@ describe('DiscoverService (integration: batched rows)', () => {
 
       // publishedAt DESC: each subsequent asset has timestamp <= previous.
       const timestamps = row.assets.map((a) => new Date(a.publishedAt ?? 0).getTime());
+      const sorted = [...timestamps].sort((a, b) => b - a);
+      expect(timestamps).toEqual(sorted);
+    }
+  });
+
+  it('drops categories with no published assets and preserves order for the rest', async () => {
+    const categories = makeCategories(4);
+    const byCat = new Map<string, AssetRow[]>();
+    // cat-0 and cat-2 have data; cat-1 and cat-3 are empty.
