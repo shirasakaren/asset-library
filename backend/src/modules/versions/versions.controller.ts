@@ -54,3 +54,16 @@ export class VersionsController {
   @ApiCreatedResponse()
   create(
     @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('assetId') assetId: string,
+    @Body() dto: CreateVersionDto,
+  ): Promise<{ id: string }> {
+    return this.versions.create(assetId, dto, principal.user);
+  }
+
+  @Patch(':vid')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Update release notes; semver is immutable post-publish.' })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
