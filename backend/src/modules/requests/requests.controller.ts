@@ -41,21 +41,3 @@ export class RequestsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Submit a new asset-sourcing request.' })
   @ApiCreatedResponse()
-  create(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Body() dto: CreateAssetRequestDto,
-  ): Promise<{ id: string }> {
-    return this.requests.create(dto, principal.user);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'List requests — admins see all; others see only their own.' })
-  @ApiOkResponse()
-  list(@AuthUser() principal: AuthenticatedRequestUser, @Query() query: ListAssetRequestsQueryDto) {
-    return this.requests.list(query, principal.user);
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Single request — owner or admin only.' })
-  @ApiOkResponse({ type: AssetRequestDto })
-  get(
