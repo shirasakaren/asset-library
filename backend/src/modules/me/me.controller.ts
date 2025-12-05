@@ -53,3 +53,4 @@ export class MeController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
+    summary: "Logout side-effect: audit row + WS broadcast to the user's open tabs.",
