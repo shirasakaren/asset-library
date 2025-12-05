@@ -49,3 +49,16 @@ export default async function AdminRequestDetailPage({ params }: PageProps) {
           <NextLink href="/admin/requests" className="inline-flex items-center gap-1 text-caption text-brand-blue hover:underline">
             <ArrowLeft className="h-3 w-3" strokeWidth={2.25} />
             Back to requests
+          </NextLink>
+        }
+      />
+      <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
+        <div className="space-y-4">
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-1">Asset link</p>
+            <a
+              href={req.assetLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 link-inline break-all"
+            >
