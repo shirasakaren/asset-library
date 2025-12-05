@@ -71,3 +71,18 @@ const config: Config = {
         'in-out-soft': 'cubic-bezier(0.65, 0, 0.35, 1)',
         spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
       },
+      transitionDuration: {
+        120: '120ms',
+        200: '200ms',
+        320: '320ms',
+        520: '520ms',
+        800: '800ms',
+      },
+      maxWidth: {
+        prose: '640px',
+        container: '1280px',
+      },
+      keyframes: {
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        'scale-in': {
+          from: { opacity: '0', transform: 'scale(0.96)' },
