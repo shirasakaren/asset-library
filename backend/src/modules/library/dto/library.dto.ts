@@ -32,23 +32,3 @@ export class ListLibraryQueryDto extends ListQueryDto {
   @IsArray()
   tags?: string[];
   @ApiPropertyOptional({ enum: AssetEngine })
-  @IsOptional()
-  @IsEnum(AssetEngine)
-  engine?: AssetEngine;
-  @ApiPropertyOptional({ enum: HIDDEN_MODES })
-  @IsOptional()
-  @IsIn(HIDDEN_MODES as unknown as string[])
-  hidden?: 'true' | 'false' | 'all';
-  @ApiPropertyOptional({ enum: LIBRARY_SORTS })
-  @IsOptional()
-  @IsIn(LIBRARY_SORTS as unknown as string[])
-  sort?: LibrarySort;
-}
-
-export class LibraryItemDto {
-  @ApiProperty() addedAt!: string;
-  @ApiProperty() hidden!: boolean;
-  @ApiProperty({ type: AssetSummaryDto }) asset!: AssetSummaryDto;
-}
-
-export class AddLibraryItemDto {
