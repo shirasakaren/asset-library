@@ -48,3 +48,10 @@ export class QueueDashboardController {
   @Get('admin/queues')
   @ApiOperation({ summary: 'Operational dashboard for BullMQ queues (admin only).' })
   async dashboard(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply,
+  ): Promise<void> {
+    if (!principal.user.isAdmin) throw new ForbiddenException('Admins only.');
+    if (!this.adapter) {
+      void res.status(404).send({ message: 'Queue dashboard disabled.' });
