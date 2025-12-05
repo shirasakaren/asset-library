@@ -103,11 +103,3 @@ Load from Google Fonts / Vercel:
 
 > ⚠️ Do **not** use Inter, Roboto, Arial, Helvetica, Poppins, Montserrat, or system-default UI fonts. They flatten the brand.
 
-### 3.2 Type scale
-
-A modular, slightly compressed scale. All values use `rem` (1rem = 16px).
-
-| Token         | Size              | Line-height | Tracking | Weight  | Use                               |
-| ------------- | ----------------- | ----------- | -------- | ------- | --------------------------------- |
-| `display-2xl` | 4.5rem (72px)     | 1.02        | -0.03em  | 600     | Marketing hero                    |
-| `display-xl`  | 3.5rem (56px)     | 1.05        | -0.025em | 600     | Sub-hero, section opener          |
