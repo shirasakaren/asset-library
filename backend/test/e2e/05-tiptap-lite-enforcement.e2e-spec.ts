@@ -38,3 +38,12 @@ describe('E2E [15] TipTap lite enforcement on comments', () => {
         slug: `tt-asset-${Date.now()}`,
         title: 'Lite TipTap fixture',
         ownerId: owner.id,
+        categoryId: category.id,
+        licenseId: license.id,
+        engine: 'UNITY',
+        status: 'PUBLISHED',
+        publishedAt: new Date(),
+        translations: { create: { locale: 'en', shortDescription: 'x', longDescription: {} } },
+      },
+    });
+    assetId = asset.id;
