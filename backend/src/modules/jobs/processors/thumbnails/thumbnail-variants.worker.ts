@@ -44,3 +44,7 @@ export class ThumbnailVariantsWorker extends JobWorkerBase<ThumbnailVariantsJob>
   }
 
   async process(job: Job<ThumbnailVariantsJob>): Promise<void> {
+    const { assetId, sourceKey } = job.data;
+    const source = await this.s3.client.send(
+      new GetObjectCommand({ Bucket: this.s3.bucketFor('thumbs'), Key: sourceKey }),
+    );
