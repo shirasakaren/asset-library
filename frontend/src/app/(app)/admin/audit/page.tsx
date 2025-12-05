@@ -59,5 +59,3 @@ export default function AdminAuditPage() {
       <AdminPageHeader
         title="Audit log"
         description="Every privileged action is logged. Retention is 30 days."
-      />
-      <Alert variant="neutral" className="mb-4">
