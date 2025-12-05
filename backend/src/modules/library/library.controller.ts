@@ -39,31 +39,3 @@ export class LibraryController {
   ): Promise<{
     items: LibraryItemDto[];
     pageInfo: { nextCursor: string | null; hasMore: boolean };
-  }> {
-    return this.library.list(principal.user, query, query.locale ?? principal.user.locale);
-  }
-
-  @Post('items')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: "Add an asset to the current user's library (idempotent)." })
-  add(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Body() dto: AddLibraryItemDto,
-  ): Promise<void> {
-    return this.library.add(principal.user, dto.assetId);
-  }
-
-  @Delete('items/:assetId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: "Remove an asset from the current user's library." })
-  remove(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Param('assetId') assetId: string,
-  ): Promise<void> {
-    return this.library.remove(principal.user, assetId);
-  }
-
-  @Patch('items/:assetId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Toggle the `hidden` flag on a library entry.' })
-  setHidden(
