@@ -41,18 +41,3 @@ export class NotificationsController {
       cursor,
       limit: limit ? Number(limit) : undefined,
       unreadOnly: unreadOnly === 'true',
-    });
-  }
-
-  @Get('unread-count')
-  @ApiOperation({ summary: 'Cheap unread counter for the bell badge.' })
-  async unreadCount(@AuthUser() principal: AuthenticatedRequestUser): Promise<{ count: number }> {
-    return { count: await this.notifications.unreadCount(principal.user) };
-  }
-
-  @Post(':id/read')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Mark a single notification as read.' })
-  async markRead(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string) {
-    const row = await this.notifications.markRead(principal.user, id);
-    // Fan out to other tabs/devices so they also dim the badge.
