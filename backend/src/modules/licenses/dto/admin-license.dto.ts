@@ -51,3 +51,14 @@ export class UpdateLicenseDto {
   @MaxLength(140)
   name?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  description?: { en?: string; id?: string };
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  fullText?: { en?: string; id?: string };
+
+  @ApiPropertyOptional()
