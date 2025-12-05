@@ -38,3 +38,13 @@ export class AdminTagsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Merge several source tags into one target tag.' })
   merge(@AuthUser() principal: AuthenticatedRequestUser, @Body() dto: MergeTagsDto): Promise<void> {
+    return this.admin.merge(principal.user, dto);
+  }
+
+  @Patch(':id')
+  @AuditAction({ action: 'tag.update_request', subjectType: 'Tag' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Rename a tag (slug + display name).' })
+  @ApiOkResponse({ type: AdminTagDto })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
