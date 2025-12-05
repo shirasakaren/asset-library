@@ -62,11 +62,3 @@ export class SearchAssetsQueryDto {
 }
 
 export class SearchAssetHitDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() slug!: string;
-  @ApiProperty() title!: string;
-  @ApiProperty() shortDescription!: string;
-  @ApiPropertyOptional() thumbnailUrl?: string;
-  @ApiProperty() engine!: string;
-  @ApiProperty() categoryName!: string;
-  @ApiProperty() ownerName!: string;
