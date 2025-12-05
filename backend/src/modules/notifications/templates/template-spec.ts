@@ -99,3 +99,34 @@ export const EMAIL_SPECS: Record<NotificationType, EmailSpec> = {
     title: { en: 'Your asset request was updated', id: 'Permintaan aset Anda diperbarui' },
     body: {
       en: 'Status: {{newStatus}}.\n{{adminComment}}',
+      id: 'Status: {{newStatus}}.\n{{adminComment}}',
+    },
+    cta: { label: { en: 'View request', id: 'Lihat permintaan' }, href: '{{links.requestUrl}}' },
+  },
+  [NotificationType.REPORT_CREATED]: {
+    subject: { en: 'New report on “{{assetTitle}}”', id: 'Laporan baru pada “{{assetTitle}}”' },
+    eyebrow: { en: 'New report', id: 'Laporan baru' },
+    title: { en: 'A new report needs moderation', id: 'Laporan baru perlu moderasi' },
+    body: {
+      en: '{{reporter.displayName}} filed a {{category}} report on “{{assetTitle}}”.',
+      id: '{{reporter.displayName}} melaporkan {{category}} pada “{{assetTitle}}”.',
+    },
+    cta: {
+      label: { en: 'Open in moderation queue', id: 'Buka di antrean moderasi' },
+      href: '{{links.adminReportUrl}}',
+    },
+  },
+  [NotificationType.REPORT_RECEIVED_FOR_YOUR_ASSET]: {
+    subject: { en: 'Your asset was reported', id: 'Aset Anda dilaporkan' },
+    eyebrow: { en: 'Asset reported', id: 'Aset dilaporkan' },
+    title: { en: 'Someone filed a report on your asset', id: 'Seseorang melaporkan aset Anda' },
+    body: {
+      en: 'A {{category}} report was filed on “{{assetTitle}}”. Admins will follow up if needed.',
+      id: 'Laporan {{category}} diajukan pada “{{assetTitle}}”. Admin akan menindaklanjuti jika perlu.',
+    },
+    cta: { label: { en: 'Open asset', id: 'Buka aset' }, href: '{{links.assetUrl}}' },
+  },
+  [NotificationType.FEATURED_FEATURED]: {
+    subject: { en: '“{{assetTitle}}” is featured!', id: '“{{assetTitle}}” telah ditampilkan!' },
+    eyebrow: { en: "You're featured", id: 'Anda ditampilkan' },
+    title: {
