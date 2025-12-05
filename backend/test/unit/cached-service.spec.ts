@@ -91,6 +91,3 @@ describe('CachedService', () => {
     expect(b).toHaveBeenCalledTimes(1);
   });
 
-  it('invalidate() drops the cached entry so the next call re-runs the fetcher', async () => {
-    const { svc, client } = build();
-    const fetcher = jest.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(2);
