@@ -86,15 +86,3 @@ export class EmailRendererService {
               </mj-text>
             </mj-column>
           </mj-section>
-          ${cta}
-          ${FOOTER_MJML}
-        </mj-body>
-      </mjml>
-    `.trim();
-
-    const compiled = await mjml2html(mjml, { validationLevel: 'soft' });
-    if (compiled.errors.length) {
-      this.logger.warn(
-        `MJML warnings for ${type}/${locale}: ${compiled.errors.map((e: { message: string }) => e.message).join('; ')}`,
-      );
-    }
