@@ -103,39 +103,3 @@ export class AdminTagsService {
       Array.from(touchedAssets).map((id) =>
         this.producer.enqueueSearchIndex({ reason: 'asset.update', assetId: id }),
       ),
-    );
-    await this.tags.invalidatePopularCache();
-    await this.audit.record({
-      actorId: admin.id,
-      action: 'tag.merge',
-      subjectType: 'Tag',
-      subjectId: target.id,
-      metadata: { fromTagIds: dto.fromTagIds, touched: touchedAssets.size },
-    });
-  }
-
-  async update(id: string, admin: User, dto: UpdateTagDto): Promise<AdminTagDto> {
-    const row = await this.prisma.tag.findUnique({ where: { id } });
-    if (!row) throw new NotFoundDomainException(ErrorCode.TAG_IN_USE, `Tag ${id} not found.`);
-    if (dto.slug && dto.slug !== row.slug) {
-      const collision = await this.prisma.tag.findUnique({ where: { slug: dto.slug } });
-      if (collision) {
-        throw new ConflictDomainException(
-          ErrorCode.TAG_IN_USE,
-          `Slug "${dto.slug}" is already in use.`,
-        );
-      }
-    }
-    const updated = await this.prisma.tag.update({
-      where: { id },
-      data: {
-        slug: dto.slug ?? row.slug,
-        displayName: dto.displayName ?? row.displayName,
-      },
-      include: { usage: true },
-    });
-    // Tag rename → ripple every asset using it through the search indexer.
-    const assets = await this.prisma.assetTag.findMany({
-      where: { tagId: id },
-      select: { assetId: true },
-    });
