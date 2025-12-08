@@ -83,8 +83,3 @@ export function ReportDecisionForm({ report }: Props) {
         },
       });
       toast.success('Decision submitted');
-      router.push('/admin/reports');
-    } catch (err) {
-      toast.error('Decision failed', { description: err instanceof Error ? err.message : String(err) });
-    } finally {
-      setBusy(false);
