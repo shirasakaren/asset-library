@@ -86,3 +86,12 @@ export default async function PublishLandingPage() {
           <section className="mb-12">
             <h2 className="font-display text-h1 text-ink tracking-[-0.015em] mb-4 inline-flex items-center gap-3">
               {t('draftsHeading')}
+              <Badge variant="warning">{drafts.length}</Badge>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {drafts.map((asset) => (
+                <DraftCard key={asset.id} asset={asset} />
+              ))}
+            </div>
+          </section>
+        ) : null}
