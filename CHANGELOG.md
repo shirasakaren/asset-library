@@ -39,3 +39,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - WebSocket bearer authentication reuses the HTTP principal cache.
+
+## [0.8.0] - 2026-04-01
+
+### Added
+
+- Frontend code splitting for heavy bundles, link prefetching, and deferred
+  WebSocket connect.
+- Single client-side saved-IDs hook replacing three server fetches.
+
+### Changed
+
+- Presigned S3 thumbnails bypass the Next.js image optimizer.
+- Shared pages moved from `force-dynamic` to `revalidate`.
+- Per-domain TanStack Query `staleTime` defaults; SessionProvider polling
+  removed.
