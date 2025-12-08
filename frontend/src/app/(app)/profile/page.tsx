@@ -34,3 +34,12 @@ export default async function ProfilePage() {
     });
   } catch {
     /* non-fatal */
+  }
+
+  const roleLabel =
+    me.role === 'admin' ? 'Admin' : me.role === 'contributor' ? 'Contributor' : 'User';
+  const roleVariant: 'info' | 'success' | 'neutral' =
+    me.role === 'admin' ? 'info' : me.role === 'contributor' ? 'success' : 'neutral';
+
+  return (
+    <Container size="lg">
