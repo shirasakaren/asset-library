@@ -73,12 +73,3 @@ export function PromoteAdminModal({ onOpenChange, onDone }: Props) {
               <ul className="mt-2 max-h-[200px] overflow-y-auto rounded-[12px] border border-line bg-surface">
                 {candidates.data.items
                   .filter((u) => !u.isAdmin)
-                  .map((u) => (
-                    <li key={u.id}>
-                      <button
-                        type="button"
-                        onClick={() => setPicked(u)}
-                        className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-muted/60 transition-colors"
-                      >
-                        <Avatar
-                          data={
