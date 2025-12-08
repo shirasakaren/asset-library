@@ -237,3 +237,13 @@ function RenameTagModal({
 function MergeTagsModal({
   onOpenChange,
   onDone,
+}: {
+  onOpenChange: (o: boolean) => void;
+  onDone: () => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const [query, setQuery] = useState('');
+  const debounced = useDebouncedValue(query, 200);
+  const [from, setFrom] = useState<Tag[]>([]);
+  const [into, setInto] = useState<Tag | null>(null);
+  const [busy, setBusy] = useState(false);
