@@ -111,15 +111,3 @@ export function PackageTree({ files }: PackageTreeProps) {
           onChange={(e) => setQuery(e.target.value)}
           className="max-w-[280px]"
         />
-      </div>
-      {filtered.length === 0 ? (
-        <p className="text-body-sm text-ink-3">{t('emptyMatch', { query })}</p>
-      ) : (
-        <div className="rounded-[14px] border border-line bg-surface overflow-hidden">
-          <ul role="tree" className="text-[13.5px]">
-            {Array.from(tree.children?.values() ?? []).map((node) => (
-              <TreeRow key={node.path} node={node} depth={0} defaultOpen={!!query} />
-            ))}
-          </ul>
-        </div>
-      )}
