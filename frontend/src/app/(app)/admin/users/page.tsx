@@ -129,3 +129,19 @@ export default function AdminUsersPage() {
                 size={32}
               />
             ),
+          },
+          {
+            key: 'name',
+            header: 'Name',
+            cell: (r) => (
+              <NextLink href={`/admin/users/${r.id}`} className="font-medium text-ink hover:underline">
+                {r.displayName}
+              </NextLink>
+            ),
+          },
+          {
+            key: 'email',
+            header: 'Email',
+            cell: (r) => <code className="font-mono text-[12.5px] text-ink-2">{r.email}</code>,
+          },
+          {
