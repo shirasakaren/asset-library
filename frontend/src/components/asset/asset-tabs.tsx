@@ -48,4 +48,3 @@ export function AssetTabs({ asset, activeVersion, onDownloadVersion }: AssetTabs
     <div id="asset-tabs" className="scroll-mt-24">
       <Tabs value={value} onValueChange={handleChange}>
         <TabsList className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <TabsTrigger value="description">{t('description')}</TabsTrigger>
