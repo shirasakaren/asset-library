@@ -88,3 +88,17 @@ export default function AdminWebhooksPage() {
           {
             key: 'time',
             header: 'Time',
+            cell: (r) => <span className="text-caption text-ink-3 geist-tnum">{formatRelative(r.createdAt, locale)}</span>,
+          },
+          { key: 'type', header: 'Type', cell: (r) => <code className="font-mono text-[12.5px]">{r.type}</code> },
+          {
+            key: 'status',
+            header: 'Status',
+            cell: (r) => <Badge variant={STATUS_TONE[r.status]}>{r.status}</Badge>,
+          },
+          { key: 'recipient', header: 'Recipient', cell: (r) => <code className="font-mono text-[12px] truncate inline-block max-w-[200px]">{r.recipient}</code> },
+          { key: 'attempt', header: 'Attempt', align: 'right', cell: (r) => <span className="geist-tnum">{r.attempt}</span> },
+        ]}
+      />
+      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
+        {list.isFetchingNextPage ? 'Loading…' : null}
