@@ -211,3 +211,5 @@ function SortableSlot({
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(isDragging && 'opacity-70')}
     >
+      <SlotCard
+        slot={slot}
