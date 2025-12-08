@@ -152,3 +152,69 @@ function Problem() {
     <section className="border-t border-line">
       <Container size="2xl">
         <div className="py-24 lg:py-32 max-w-[920px]">
+          <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
+            Why this matters
+          </p>
+          <h2 className="display-lg text-ink mb-6">
+            Lab assets live in five Slack threads and three USB drives.
+          </h2>
+          {/* TODO: replace PROBLEM_COPY */}
+          <div className="grid md:grid-cols-2 gap-x-12 gap-y-4 text-body-lg text-ink-2 leading-[1.7]">
+            <p>
+              Without a library, every new project starts the same way — someone DMs a half-remembered
+              link, someone else re-imports a model with the wrong scale, and the original is lost the
+              moment the laptop is reformatted.
+            </p>
+            <p>
+              We want the lab’s best tools to compound. That only happens when there’s one trustworthy
+              place to put them, one search that finds them, and one click that installs them.
+            </p>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/* =====================================================================
+ * Solution — 3-up card grid (DS §4.4 forbids 4-up)
+ * ===================================================================== */
+function Solution() {
+  const offerings = [
+    {
+      icon: Library,
+      title: 'Centralized asset library',
+      // TODO: replace OFFERING_1_BODY
+      body:
+        'Discover, save, and download Unity, Unreal, and engine-agnostic assets. Versioned, searchable, and license-stamped.',
+    },
+    {
+      icon: Plug,
+      title: 'In-engine plugins',
+      // TODO: replace OFFERING_2_BODY
+      body:
+        'Pull any saved asset into your Unity or Unreal project directly — same account, same library, two clicks.',
+    },
+    {
+      icon: GitBranch,
+      title: 'Versioned + searchable',
+      // TODO: replace OFFERING_3_BODY
+      body:
+        'Every version is preserved. Search by tag, engine, target platform, or license. Old work doesn’t disappear.',
+    },
+  ];
+  return (
+    <section id="whats-inside" className="border-t border-line bg-surface-muted">
+      <Container size="2xl">
+        <div className="py-24 lg:py-32">
+          <div className="max-w-[760px]">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">What’s inside</p>
+            <h2 className="display-lg text-ink mb-12">Three surfaces, one library.</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {offerings.map(({ icon: Icon, title, body }) => (
+              <Card key={title} variant="outlined" padding="lg">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] bg-brand-blue-50 text-brand-blue">
+                  <Icon className="h-5 w-5" strokeWidth={2.25} />
+                </span>
+                <h3 className="mt-5 font-display text-h2 text-ink tracking-[-0.01em]">{title}</h3>
