@@ -39,7 +39,3 @@ const MOCK = (process.env.NEXT_PUBLIC_AUTH_MOCK ?? 'false') === 'true';
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
   const response = NextResponse.next();
-
-  // Set the NEXT_LOCALE cookie if missing or drifted from negotiation.
-  const negotiated = negotiateLocale(req);
-  if (req.cookies.get('NEXT_LOCALE')?.value !== negotiated) {
