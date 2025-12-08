@@ -169,3 +169,13 @@ export default function ComponentsPlaygroundPage() {
             <Spinner size={24} />
           </div>
           <div className="mt-6 grid md:grid-cols-2 gap-6 max-w-[640px]">
+            <div>
+              <Skeleton className="h-32 w-full mb-3" />
+              <SkeletonText lines={3} />
+            </div>
+            <div>
+              <Skeleton className="h-32 w-full mb-3" />
+              <SkeletonText lines={2} />
+            </div>
+          </div>
+        </Section>
