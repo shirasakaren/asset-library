@@ -71,19 +71,3 @@ export function ReportModal({ open, onOpenChange, assetId, assetTitle }: ReportM
       toast.error(t('intro'), { description: err instanceof Error ? err.message : String(err) });
     }
   };
-
-  return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent size="md">
-        <ModalHeader>
-          <ModalTitle>{t('title')}</ModalTitle>
-          <ModalDescription>
-            <span className="font-medium text-ink">{assetTitle}</span>
-            <br />
-            {t('intro')}
-          </ModalDescription>
-        </ModalHeader>
-
-        {rateLimited ? (
-          <Alert variant="warning" className="mb-4">
-            {t('rateLimited')}
