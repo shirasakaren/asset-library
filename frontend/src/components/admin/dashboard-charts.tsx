@@ -99,3 +99,25 @@ export function DashboardCharts({ downloads, publishes, newUsers, storage }: Das
                 <stop offset="100%" stopColor={COLOR.yellow} stopOpacity={0} />
               </linearGradient>
             </defs>
+            <CartesianGrid stroke="#ececea" strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="date" stroke="#9aa1ad" fontSize={11} tickFormatter={(d) => fmtDate(d, locale)} />
+            <YAxis stroke="#9aa1ad" fontSize={11} allowDecimals={false} />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Area type="monotone" dataKey="count" stroke={COLOR.yellow} strokeWidth={2} fill="url(#grad-usr)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard title="Storage by bucket" eyebrow="Storage">
+        <ResponsiveContainer>
+          <BarChart data={storage} layout="vertical" margin={{ left: 16 }}>
+            <CartesianGrid stroke="#ececea" strokeDasharray="3 3" horizontal={false} />
+            <XAxis type="number" stroke="#9aa1ad" fontSize={11} tickFormatter={fmtBytes} />
+            <YAxis dataKey="bucket" type="category" stroke="#9aa1ad" fontSize={11} width={90} />
+            <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => fmtBytes(v)} />
+            <Bar dataKey="bytes" fill={COLOR.blue} radius={[6, 6, 6, 6]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+    </div>
+  );
