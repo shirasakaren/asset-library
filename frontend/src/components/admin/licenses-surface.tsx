@@ -129,3 +129,15 @@ export function AdminLicensesSurface() {
 function LicenseEditModal({
   license,
   onOpenChange,
+  onDone,
+}: {
+  license?: AdminLicense | null;
+  onOpenChange: (o: boolean) => void;
+  onDone: () => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const editing = Boolean(license);
+  const [slug, setSlug] = useState(license?.slug ?? '');
+  const [name, setName] = useState(license?.name ?? '');
+  const [descEn, setDescEn] = useState(license?.description?.en ?? '');
+  const [descId, setDescId] = useState(license?.description?.id ?? '');
