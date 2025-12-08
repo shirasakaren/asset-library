@@ -133,3 +133,51 @@ export class AnalyticsService {
       LEFT JOIN downloads d ON d."versionId" = av.id
       WHERE av."assetId" = ${assetId}
       GROUP BY av.id, av.semver
+      ORDER BY downloads DESC
+    `);
+    const byFileRaw = await this.prisma.$queryRaw<
+      Array<{ fileId: string; relativePath: string; downloads: bigint }>
+    >(Prisma.sql`
+      SELECT af.id AS "fileId", af."relativePath", COUNT(d.id)::bigint AS downloads
+      FROM asset_files af
+      JOIN asset_versions av ON av.id = af."versionId"
+      LEFT JOIN downloads d ON d."fileId" = af.id
+      WHERE av."assetId" = ${assetId}
+      GROUP BY af.id, af."relativePath"
+      ORDER BY downloads DESC
+      LIMIT 50
+    `);
+
+    return {
+      asset: { id: asset.id, title: asset.title },
+      daily: daily.map((d) => ({ date: d.date.toISOString().slice(0, 10), count: d.count })),
+      byCountry,
+      bySource,
+      byVersion: byVersionRaw.map((r) => ({
+        versionId: r.versionId,
+        semver: r.semver,
+        downloads: Number(r.downloads),
+      })),
+      byFile: byFileRaw.map((r) => ({
+        fileId: r.fileId,
+        relativePath: r.relativePath,
+        downloads: Number(r.downloads),
+      })),
+    };
+  }
+
+  async platform(from: Date, to: Date): Promise<PlatformAnalytics> {
+    const dailyRows = await this.prisma.$queryRaw<Array<{ date: Date; count: bigint }>>(Prisma.sql`
+      SELECT date_trunc('day', "createdAt") AS date, COUNT(*)::bigint AS count
+      FROM downloads
+      WHERE "createdAt" >= ${from} AND "createdAt" < ${to}
+      GROUP BY date ORDER BY date ASC
+    `);
+    const totalsRow = await this.prisma.$queryRaw<
+      Array<{ downloads: bigint; publishes: bigint; newUsers: bigint }>
+    >(Prisma.sql`
+      SELECT
+        (SELECT COUNT(*) FROM downloads WHERE "createdAt" >= ${from} AND "createdAt" < ${to})::bigint AS downloads,
+        (SELECT COUNT(*) FROM assets WHERE "publishedAt" IS NOT NULL AND "publishedAt" >= ${from} AND "publishedAt" < ${to})::bigint AS publishes,
+        (SELECT COUNT(*) FROM users WHERE "createdAt" >= ${from} AND "createdAt" < ${to})::bigint AS "newUsers"
+    `);
