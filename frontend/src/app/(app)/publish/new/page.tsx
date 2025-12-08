@@ -92,19 +92,3 @@ export default function NewDraftPage() {
                   [
                     { value: 'UNITY', label: 'Unity' },
                     { value: 'UNREAL', label: 'Unreal' },
-                    { value: 'ENGINE_AGNOSTIC', label: 'Engine-agnostic' },
-                  ] as const
-                ).map((opt) => {
-                  const active = form.watch('engine') === opt.value;
-                  return (
-                    <label
-                      key={opt.value}
-                      className={`flex items-center gap-2.5 p-3 rounded-[12px] border cursor-pointer transition-colors duration-120 ${
-                        active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40'
-                      }`}
-                    >
-                      <input type="radio" value={opt.value} {...form.register('engine')} className="h-4 w-4 accent-ink" />
-                      <span className="text-[14px] font-medium text-ink">{opt.label}</span>
-                    </label>
-                  );
-                })}
