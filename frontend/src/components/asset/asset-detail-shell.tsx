@@ -200,3 +200,14 @@ export function AssetDetailShell({
                 <div className="mt-5">
                   <AssetMeta
                     engine={asset.engine}
+                    categoryName={asset.category.name}
+                    licenseName={asset.license.name}
+                  />
+                </div>
+
+                {asset.tags.length > 0 ? (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {asset.tags.map((tag) => (
+                      <NextLink
+                        key={tag.id}
+                        href={`/search?tags=${tag.slug}`}
