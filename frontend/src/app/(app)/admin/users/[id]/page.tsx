@@ -69,8 +69,3 @@ export default async function AdminUserPage({ params }: PageProps) {
             <p className="font-display text-h2 text-ink tracking-[-0.01em]">{user.displayName}</p>
             <p className="text-caption text-ink-3 mt-1 geist-tnum">
               Joined {formatDate(user.joinedAt, locale, { dateStyle: 'long' })}
-            </p>
-            <p className="text-caption text-ink-3 mt-1 geist-tnum">
-              {formatNumber(user.publishedAssetCount, locale)} published assets
-            </p>
-          </div>
