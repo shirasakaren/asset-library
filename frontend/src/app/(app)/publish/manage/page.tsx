@@ -64,3 +64,21 @@ export default async function ManagePage() {
         </div>
 
         <div className="mt-8 flex flex-col gap-3">
+          {items.map((a) => (
+            <ManageRow key={a.id} asset={a} locale={locale} isAdmin={me.isAdmin} />
+          ))}
+        </div>
+      </div>
+    </Container>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <Card variant="tinted" padding="md">
+      <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">{label}</p>
+      <p className="mt-1 font-display text-h1 text-ink geist-tnum tracking-[-0.015em]">{value}</p>
+    </Card>
+  );
+}
+
