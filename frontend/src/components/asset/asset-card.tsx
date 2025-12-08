@@ -272,5 +272,3 @@ function FeatureCard({
       ) : null}
     </article>
   );
-}
-
