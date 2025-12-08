@@ -209,3 +209,45 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
           )}
         </Field>
 
+        <Field label="Banner">
+          <div className="flex flex-col gap-2">
+            <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+              <input
+                type="radio"
+                checked={bannerMode === 'thumb'}
+                onChange={() => setBannerMode('thumb')}
+                className="h-4 w-4 accent-ink"
+              />
+              Use asset thumbnail
+            </label>
+            <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+              <input
+                type="radio"
+                checked={bannerMode === 'custom'}
+                onChange={() => setBannerMode('custom')}
+                className="h-4 w-4 accent-ink"
+              />
+              Upload custom banner
+            </label>
+            {bannerMode === 'custom' ? (
+              <div className="mt-1 rounded-[14px] border border-dashed border-line bg-surface-muted/40 p-4">
+                <div className="flex items-center gap-3">
+                  {customBannerUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={customBannerUrl}
+                      alt=""
+                      className="h-20 w-36 object-cover rounded-[8px] border border-line"
+                    />
+                  ) : (
+                    <div className="h-20 w-36 rounded-[8px] bg-surface flex items-center justify-center text-ink-3">
+                      <ImagePlus className="h-5 w-5" strokeWidth={2.25} />
+                    </div>
+                  )}
+                  <Button
+                    variant="secondary"
+                    onClick={() => fileRef.current?.click()}
+                    loading={uploading}
+                    leadingIcon={
+                      uploading ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} /> : undefined
+                    }
