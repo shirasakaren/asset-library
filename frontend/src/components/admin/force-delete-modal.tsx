@@ -55,17 +55,3 @@ export function AdminForceDeleteModal({ asset, onOpenChange, onDone }: Props) {
   };
 
   return (
-    <Modal open onOpenChange={onOpenChange}>
-      <ModalContent size="md">
-        <ModalHeader>
-          <ModalTitle>Force-delete this asset?</ModalTitle>
-          <ModalDescription>
-            This immediately removes the asset, all files in S3, and all history. This cannot be undone.
-          </ModalDescription>
-        </ModalHeader>
-
-        <Alert variant="danger" icon={<ShieldAlert className="h-5 w-5 text-brand-red" strokeWidth={2.25} />}>
-          {asset.ownerDisplayName} will lose every file associated with this asset.
-        </Alert>
-
-        <div className="space-y-4 mt-4">
