@@ -36,4 +36,3 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
       <main className="flex-1 flex items-center">
         <Container size="md">
           <div className="grid md:grid-cols-[1fr_auto] gap-10 items-center py-16">
-            <div>
