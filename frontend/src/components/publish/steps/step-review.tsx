@@ -99,8 +99,3 @@ export function StepReview() {
       </Card>
 
       {wiz.asset.engine !== 'ENGINE_AGNOSTIC' ? (
-        <Card>
-          <SectionHead title={tCompat('title')} onEdit={() => goto('compatibility')} />
-          {v?.compatibility?.length ? (
-            <ul className="space-y-1 text-caption text-ink-2 font-mono">
-              {v.compatibility.map((row, i) => (
