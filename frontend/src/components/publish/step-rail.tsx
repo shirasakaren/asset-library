@@ -76,5 +76,3 @@ export function StepRail() {
           {Object.entries(wiz.checklist)
             .filter(([k]) => k !== 'compatibility' || wiz.asset.engine !== 'ENGINE_AGNOSTIC')
             .map(([k, item]) => (
-              <ChecklistRow key={k} item={item} />
-            ))}
