@@ -55,20 +55,3 @@ export function CommentComposer({
       setEditorEpoch((n) => n + 1);
       logEvent('comment.compose_submit', { kind });
     } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="rounded-[16px] border border-line bg-surface p-4">
-      <div className="flex items-start gap-3">
-        <Avatar data={avatarFromServer(me.avatar)} size={32} />
-        <div className="flex-1 min-w-0">
-          <RichTextEditor
-            key={editorEpoch}
-            mode="lite"
-            value={doc}
-            onChange={setDoc}
-            autoFocus={autoFocus}
-            placeholder="Share what you think…"
-            minHeight={92}
