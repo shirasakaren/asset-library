@@ -30,3 +30,14 @@ export function Logo({
       height={px}
       priority={priority}
       className="select-none"
+    />
+  );
+  const content = (
+    <span className={cn('inline-flex items-center gap-2.5', className)}>
+      {mark}
+      {withWordmark ? (
+        <span
+          className={cn(
+            'font-display font-semibold tracking-[-0.015em] text-ink',
+            size === 'sm' && 'text-[15px]',
+            size === 'md' && 'text-[17px]',
