@@ -175,3 +175,14 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
               })}
             </div>
           </TabsContent>
+        ) : null}
+      </Tabs>
+
+      <CommentComposer
+        me={me}
+        onSubmit={(input) => submitMutation.mutateAsync(input)}
+      />
+
+      {pendingNew > 0 ? (
+        <button
+          type="button"
