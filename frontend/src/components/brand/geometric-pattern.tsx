@@ -50,3 +50,21 @@ export function GeometricPattern({
   cols,
   ariaHidden = true,
 }: GeometricPatternProps) {
+  const grid = { rows: rows ?? VARIANT_GRID[variant].rows, cols: cols ?? VARIANT_GRID[variant].cols };
+  const tiles = pickTiles(seed, grid.rows * grid.cols);
+  return (
+    <div
+      aria-hidden={ariaHidden}
+      className={cn('grid select-none', className)}
+      style={{
+        gridTemplateColumns: `repeat(${grid.cols}, ${size}px)`,
+        gridTemplateRows: `repeat(${grid.rows}, ${size}px)`,
+        width: grid.cols * size,
+        height: grid.rows * size,
+      }}
+    >
+      {tiles.map((n, i) => (
+        <Image
+          key={`${n}-${i}`}
+          src={tileUrl(n)}
+          alt=""
