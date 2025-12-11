@@ -123,3 +123,8 @@ export function StepCompatibility() {
             <li key={idx} className="rounded-[14px] border border-line p-4 bg-surface">
               <div className="flex flex-wrap gap-4">
                 <Field id={`ev-${idx}`} label={versionLabel} className="flex-1 min-w-[200px]">
+                  <Input
+                    id={`ev-${idx}`}
+                    list={`engine-${wiz.asset.engine}`}
+                    value={row.engineVersion}
+                    onChange={(e) => {
