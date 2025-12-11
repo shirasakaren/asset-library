@@ -237,3 +237,62 @@ export interface AssetDetail {
   updatedAt: string;
   createdAt: string;
   isSaved: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+  canArchive: boolean;
+}
+
+export interface FeaturedSlot {
+  id: string;
+  assetId: string;
+  assetSlug: string;
+  title: string;
+  shortDescription: string;
+  bannerUrl: string | null;
+  sortOrder: number;
+}
+
+export interface DiscoverRow {
+  categoryId: string;
+  categorySlug: string;
+  name: string;
+  assets: AssetSummary[];
+}
+
+export interface DiscoverResponse {
+  featured: FeaturedSlot[];
+  rows: DiscoverRow[];
+}
+
+export interface LibraryItem {
+  addedAt: string;
+  hidden: boolean;
+  asset: AssetSummary;
+}
+
+export interface LibraryPage {
+  items: LibraryItem[];
+  pageInfo: PageInfo;
+}
+
+export interface DownloadOptionsFile {
+  id: string;
+  relativePath: string;
+  kind: string;
+  bytes: string;
+  getUrl: string | null;
+  expiresAt: string | null;
+}
+
+export interface DownloadOptions {
+  asset: { id: string; title: string };
+  version: { id: string; semver: string; releaseNotes: TipTapDoc | null };
+  files: DownloadOptionsFile[];
+  olderVersions: { id: string; semver: string; publishedAt: string | null }[];
+}
+
+export interface SearchAssetHit {
+  id: string;
+  slug: string;
+  title: string;
+  shortDescription: string;
