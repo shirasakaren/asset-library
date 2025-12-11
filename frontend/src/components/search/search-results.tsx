@@ -97,3 +97,4 @@ export function SearchResults() {
         <EmptyState
           title={t('emptyTitle')}
           description={t('emptyBody')}
+          seed="search-empty"
