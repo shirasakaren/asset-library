@@ -177,3 +177,61 @@ function applyMark(mark: TipTapMark, child: ReactNode): ReactNode {
       return <span style={style}>{child}</span>;
     }
     case 'link': {
+      const href = typeof mark.attrs?.href === 'string' ? (mark.attrs.href as string) : '#';
+      const safe = sanitizeUrl(href);
+      const isExternal = /^https?:\/\//.test(safe);
+      return (
+        <a
+          href={safe}
+          className="link-inline"
+          {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          {child}
+        </a>
+      );
+    }
+    default:
+      return <Fragment>{child}</Fragment>;
+  }
+}
+
+function clampHeadingLevel(value: unknown): 1 | 2 | 3 {
+  const n = typeof value === 'number' ? value : 1;
+  if (n >= 3) return 3;
+  if (n === 2) return 2;
+  return 1;
+}
+
+function flattenText(node: TipTapNode): string {
+  if (node.text) return node.text;
+  if (!node.content) return '';
+  return node.content.map(flattenText).join('');
+}
+
+function sanitizeUrl(url: string): string {
+  const lower = url.trim().toLowerCase();
+  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return '#';
+  return url;
+}
+
+function RenderedImage({ node }: { node: TipTapNode }) {
+  const src = typeof node.attrs?.src === 'string' ? (node.attrs.src as string) : null;
+  const alt = typeof node.attrs?.alt === 'string' ? (node.attrs.alt as string) : '';
+  const width = typeof node.attrs?.width === 'number' ? (node.attrs.width as number) : 1280;
+  const height = typeof node.attrs?.height === 'number' ? (node.attrs.height as number) : 720;
+  if (!src) return null;
+  return (
+    <figure className="my-6">
+      <div className="rounded-[16px] overflow-hidden border border-line bg-surface-muted">
+        <Image
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          className="w-full h-auto block"
+          sizes="(min-width: 1024px) 720px, 100vw"
+          unoptimized
+        />
+      </div>
+      {alt ? <figcaption className="mt-2 text-caption text-ink-3 text-center">{alt}</figcaption> : null}
+    </figure>
