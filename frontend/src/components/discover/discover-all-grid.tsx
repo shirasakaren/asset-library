@@ -108,15 +108,3 @@ export function DiscoverAllGrid({ ownAssetIds }: DiscoverAllGridProps) {
               <option key={s} value={s}>
                 {t(`sort.${s}` as 'sort.newest')}
               </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <AssetCardSkeleton key={i} />
-          ))}
-        </div>
-      ) : items.length === 0 ? (
