@@ -93,3 +93,16 @@ export function NotificationBell({ initialUnreadCount }: NotificationBellProps) 
               {unread > 99 ? '99+' : unread}
             </span>
           ) : null}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[380px] p-0 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-line px-4 h-12">
+          <div className="text-[13px] font-semibold text-ink">{t('title')}</div>
+          {unread > 0 ? (
+            <button
+              type="button"
+              onClick={handleMarkAllClick}
+              className="text-caption text-ink-3 hover:text-ink transition-colors"
+            >
+              {t('markAllRead')}
+            </button>
