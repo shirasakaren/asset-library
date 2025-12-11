@@ -46,5 +46,3 @@ export function FilterSection({
   );
 }
 
-interface ChipFilterProps {
-  options: { label: string; value: string }[];
