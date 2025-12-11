@@ -145,3 +145,60 @@ export function WizardProvider({ initialAsset, locale, children }: WizardProvide
           err: err instanceof Error ? err.message : String(err),
         });
         // Re-queue so a manual retry / next change re-attempts.
+        queueRef.current = { ...payload, ...queueRef.current };
+        setSaving('error');
+      } finally {
+        inflight.current = null;
+      }
+    })();
+    await inflight.current;
+  }, [asset.id, fetcher, queryClient, locale]);
+
+  const patch = useCallback(
+    (delta: PendingPatch) => {
+      queueRef.current = { ...queueRef.current, ...delta };
+      setDirty(true);
+      setSaving('saving');
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        void flush();
+      }, 800);
+    },
+    [flush],
+  );
+
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    [],
+  );
+
+  // beforeunload guard for dirty state.
+  useEffect(() => {
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      if (dirty || saving === 'saving') {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    }
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [dirty, saving]);
+
+  const refresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.asset(asset.id, locale) });
+  }, [queryClient, asset.id, locale]);
+
+  // Background uploads live in a global store decoupled from the wizard. Watch
+  // it: when a file finishes uploading (its AssetFile row is finalized and the
+  // version recounted server-side), re-read the asset so latestVersion.fileCount
+  // refreshes and the "at least 1 file uploaded" checklist item ticks live —
+  // without the user reloading. Select stable refs and derive the signature in
+  // render (a selector returning a fresh array each call triggers React #185).
+  const uploadTasks = useUploadStore((s) => s.tasks);
+  const uploadOrder = useUploadStore((s) => s.order);
+  const completedUploadSig = useMemo(
+    () =>
+      selectCompletedFileIdsFor(
+        { tasks: uploadTasks, order: uploadOrder },
