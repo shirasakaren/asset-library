@@ -64,3 +64,7 @@ export function notificationLink(type: string, payload: Record<string, unknown>)
   const commentId = String(payload.commentId ?? '');
   switch (t) {
     case 'COMMENT_CREATED':
+    case 'COMMENT_REPLY':
+      return slug ? `/assets/${slug}#comment-${commentId}` : '/notifications';
+    case 'ISSUE_CREATED':
+    case 'ISSUE_STATUS_CHANGED':
