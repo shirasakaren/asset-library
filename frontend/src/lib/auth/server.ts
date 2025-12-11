@@ -55,4 +55,3 @@ export async function requireSession(callbackUrl?: string): Promise<ResolvedSess
 // fetchMe without producing a duplicate /auth/me round-trip.
 export const fetchMe = cache(async (session: ResolvedSession): Promise<MeResponse> => {
   if (session.mock) return MOCK_USER;
-  const locale = (await cookies()).get('NEXT_LOCALE')?.value as 'en' | 'id' | undefined;
