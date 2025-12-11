@@ -107,30 +107,3 @@ export function AnalyticsCharts({ data }: Props) {
               <XAxis type="number" stroke="#9aa1ad" fontSize={11} />
               <YAxis dataKey="source" type="category" stroke="#9aa1ad" fontSize={11} width={70} />
               <Tooltip
-                contentStyle={{
-                  background: '#0e1116',
-                  borderRadius: 12,
-                  border: 'none',
-                  color: '#fff',
-                  fontSize: 12,
-                }}
-              />
-              <Bar dataKey="count" radius={[4, 4, 4, 4]}>
-                {bySource.map((d) => (
-                  <Cell key={d.source} fill={SOURCE_COLOR[d.source] ?? COLOR_BLUE} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-
-      <Card padding="lg">
-        <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">{t('byVersion')}</p>
-        <h2 className="font-display text-h3 text-ink tracking-[-0.005em] mt-1 mb-4">
-          {t('byVersion')}
-        </h2>
-        <table className="w-full text-[13.5px]">
-          <thead>
-            <tr className="text-left text-eyebrow uppercase tracking-[0.12em] text-ink-3">
-              <th className="py-1.5">{t('version')}</th>
