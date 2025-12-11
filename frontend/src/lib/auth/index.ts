@@ -69,3 +69,19 @@ export const authConfig: NextAuthConfig = {
         token.accessToken = account.access_token;
         token.idToken = account.id_token as string | undefined;
         token.refreshToken = account.refresh_token as string | undefined;
+        token.expiresAt =
+          (account.expires_at as number | undefined) ??
+          Math.floor(Date.now() / 1000) + 300;
+        return token;
+      }
+
+      const expiresAt = (token.expiresAt as number | undefined) ?? 0;
+      const now = Math.floor(Date.now() / 1000);
+
+      // Token still fresh — return as-is.
+      if (expiresAt - 60 > now) {
+        return token;
+      }
+
+      // No refresh token — push the user back to sign-in.
+      if (!token.refreshToken) {
