@@ -40,3 +40,12 @@ export class ConfirmationGuard implements CanActivate {
     if (!body.confirmedAt) {
       throw new BadRequestDomainException(
         ErrorCode.CONFIRMATION_REQUIRED,
+        'Confirmation timestamp missing — set body.confirmedAt to an ISO-8601 UTC value.',
+      );
+    }
+    const ts = Date.parse(body.confirmedAt);
+    if (!Number.isFinite(ts)) {
+      throw new BadRequestDomainException(
+        ErrorCode.CONFIRMATION_REQUIRED,
+        'Confirmation timestamp is not a valid ISO-8601 date.',
+      );
