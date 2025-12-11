@@ -68,10 +68,3 @@ export function ThumbnailImage({
       ) : null}
       {url && !errored ? (
         // Plain <img> when:
-        //  - blob: / data: URLs (next/image refuses them — local publish-wizard
-        //    previews that must render the moment the file is picked), or
-        //  - unoptimized grid thumbnails (pre-resized, presigned: the optimizer
-        //    adds a server round-trip with ~0% cache hit).
-        url.startsWith('blob:') || url.startsWith('data:') || unoptimized ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
