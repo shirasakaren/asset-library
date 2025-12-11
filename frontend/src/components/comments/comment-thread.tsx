@@ -137,3 +137,4 @@ export function CommentThread(props: CommentThreadProps) {
                 </button>
               ) : null}
               {canChangeStatus ? (
+                <ChangeStatus
