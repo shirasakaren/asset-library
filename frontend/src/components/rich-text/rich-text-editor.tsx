@@ -402,25 +402,3 @@ function Toolbar({ editor, mode, onLink, onImage, onEmbed, onGif }: ToolbarProps
 
 function BlockDropdown({ editor }: { editor: Editor }) {
   const options: { label: string; check: () => boolean; apply: () => void; icon: typeof Heading1 }[] = [
-    {
-      label: 'Paragraph',
-      icon: Type,
-      check: () => editor.isActive('paragraph') && !editor.isActive('heading'),
-      apply: () => editor.chain().focus().setParagraph().run(),
-    },
-    {
-      label: 'H1',
-      icon: Heading1,
-      check: () => editor.isActive('heading', { level: 1 }),
-      apply: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-    },
-    {
-      label: 'H2',
-      icon: Heading2,
-      check: () => editor.isActive('heading', { level: 2 }),
-      apply: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-    },
-    {
-      label: 'H3',
-      icon: Heading3,
-      check: () => editor.isActive('heading', { level: 3 }),
