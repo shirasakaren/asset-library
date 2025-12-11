@@ -64,3 +64,4 @@ export interface ButtonProps
   iconOnly?: boolean;
   leadingIcon?: React.ReactNode;
   trailingIcon?: React.ReactNode;
+}
