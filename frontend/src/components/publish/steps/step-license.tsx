@@ -73,3 +73,14 @@ export function StepLicense() {
             ))}
           </select>
         </Field>
+      )}
+
+      {open && license ? (
+        <LicenseFullText licenseId={license.id} onOpenChange={setOpen} />
+      ) : null}
+    </div>
+  );
+}
+
+function LicenseFullText({
+  licenseId,
