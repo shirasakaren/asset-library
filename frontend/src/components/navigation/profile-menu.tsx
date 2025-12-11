@@ -61,3 +61,5 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
               {user.displayName}
             </div>
             <div className="text-[12px] text-ink-3 truncate" title={user.email}>
+              {user.email}
+            </div>
