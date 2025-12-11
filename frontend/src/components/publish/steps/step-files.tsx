@@ -378,34 +378,3 @@ function SavedRow({
           <span className="truncate text-[13.5px] font-medium text-ink" title={file.relativePath}>
             {name}
           </span>
-          <span className="geist-tnum shrink-0 text-caption text-ink-3">
-            {formatBytes(file.bytes, locale)}
-          </span>
-        </div>
-        <p className="mt-1 inline-flex items-center gap-1 text-caption font-medium text-brand-green">
-          <Check className="h-3 w-3" strokeWidth={2.5} /> Uploaded
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={onDelete}
-        aria-label="Delete file"
-        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] text-ink-3 transition-colors hover:bg-brand-red-50 hover:text-brand-red"
-      >
-        <Trash2 className="h-4 w-4" strokeWidth={2.25} />
-      </button>
-    </li>
-  );
-}
-
-function TaskRow({
-  task,
-  locale,
-  onCancel,
-  onRetry,
-}: {
-  task: UploadTask;
-  locale: LocaleCode;
-  onCancel: () => void;
-  onRetry: () => void;
-}) {
