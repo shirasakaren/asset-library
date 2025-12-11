@@ -39,6 +39,3 @@ export function VersionsList({ versions, onDownload }: VersionsListProps) {
                 <VersionBadge semver={v.semver} isLatest={v.isLatest} />
                 <span className="text-caption text-ink-3 geist-tnum">
                   {v.publishedAt
-                    ? t('publishedAt', { when: formatDate(v.publishedAt, locale, { dateStyle: 'medium' }) })
-                    : null}
-                </span>
