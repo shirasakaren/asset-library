@@ -98,17 +98,3 @@ export async function apiFetch<T = unknown>(path: string, init: ApiFetchInit = {
     }
     void addBreadcrumb('api:response', {
       url,
-      status: response.status,
-      elapsedMs: Date.now() - startedAt,
-      requestId,
-    });
-    (response as Response & { __requestId?: string }).__requestId = requestId;
-    return response;
-  };
-
-  let response = await doRequest(accessToken);
-
-  // 401 retry-once: a long-running flow (e.g. a 300 MB upload) can outlive the
-  // Keycloak access-token TTL even with periodic session polling, because the
-  // upload's `complete` call can land microseconds after expiry. When the
-  // caller supplied a refresher, force a session refetch and try once more.
