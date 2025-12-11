@@ -37,3 +37,12 @@ Card.displayName = 'Card';
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn('flex items-start justify-between gap-3 mb-3', className)} {...props} />;
+}
+
+export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={cn(
+        'font-display text-h3 text-ink tracking-[-0.005em] font-semibold',
+        className,
+      )}
