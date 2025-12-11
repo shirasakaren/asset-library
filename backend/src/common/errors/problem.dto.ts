@@ -65,3 +65,13 @@ export class NotFoundDomainException extends DomainException {
     super(HttpStatus.NOT_FOUND, code, detail);
   }
 }
+
+export class ConflictDomainException extends DomainException {
+  constructor(code: ErrorCodeValue, detail: string, fields?: ProblemFieldDto[]) {
+    super(HttpStatus.CONFLICT, code, detail, fields);
+  }
+}
+
+export class ForbiddenDomainException extends DomainException {
+  constructor(code: ErrorCodeValue, detail: string) {
+    super(HttpStatus.FORBIDDEN, code, detail);
