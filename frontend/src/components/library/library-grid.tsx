@@ -160,3 +160,11 @@ export function LibraryGrid() {
             )}
           >
             <LayoutGrid className="h-3.5 w-3.5" strokeWidth={2.25} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setView('list')}
+            aria-pressed={view === 'list'}
+            aria-label={t('viewList')}
+            className={cn(
+              'inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors duration-120',
