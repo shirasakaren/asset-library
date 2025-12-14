@@ -34,3 +34,4 @@ import { MetricsModule } from './modules/metrics/metrics.module';
       inject: [AppConfigService],
       useFactory: (config: AppConfigService) => ({
         pinoHttp: {
+          level: config.get('LOG_LEVEL'),
