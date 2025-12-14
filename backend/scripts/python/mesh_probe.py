@@ -74,7 +74,3 @@ def probe(path: str) -> Dict[str, Any]:
                 if anim.channels:
                     first = anim.channels[0]
                     if first.position_keys and len(first.position_keys) > 1:
-                        first_p = first.position_keys[0].value
-                        last_p = first.position_keys[-1].value
-                        if any(abs(a - b) > 1e-3 for a, b in zip(first_p, last_p)):
-                            has_root_motion = True
