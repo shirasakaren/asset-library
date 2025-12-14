@@ -205,3 +205,52 @@ export const useUploadStore = create<UploadStoreState>((set, get) => {
         const blob = file.slice(start, Math.min(file.size, start + partSize));
         await putWithProgress(task.id, part.url, blob, file.type, ctrl, (loaded) => {
           bytesPerPart.set(part.partNumber, loaded);
+          bump();
+        });
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(MAX_PARALLEL_PARTS, partCount) }, worker));
+    if (ctrl.signal.aborted) return;
+    // ETags are sourced server-side via ListParts — no need to send them.
+    await authedFetch('/files/uploads/multipart/complete', {
+      method: 'POST',
+      body: { uploadId: initiate.uploadId },
+      signal: ctrl.signal,
+    });
+  }
+
+  function putWithProgress(
+    taskId: string,
+    url: string,
+    blob: Blob,
+    contentType: string,
+    ctrl: AbortController,
+    onProgress: (loaded: number) => void,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      controllers.get(taskId)?.xhrs.add(xhr);
+      xhr.open('PUT', url);
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onProgress(e.loaded);
+      };
+      xhr.onload = () => {
+        controllers.get(taskId)?.xhrs.delete(xhr);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          onProgress(blob.size);
+          resolve();
+        } else reject(new Error(`PUT failed: ${xhr.status}`));
+      };
+      xhr.onerror = () => reject(new Error('PUT network error'));
+      xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'));
+      ctrl.signal.addEventListener('abort', () => xhr.abort(), { once: true });
+      xhr.setRequestHeader('Content-Type', contentType || 'application/octet-stream');
+      xhr.send(blob);
+    });
+  }
+
+  return {
+    tasks: {},
+    order: [],
+    locale: 'en',
+    setAuthProvider: (provider, locale) => set({ tokenProvider: provider, locale }),
