@@ -84,3 +84,10 @@ export class AdminAssetsController {
   @AuditAction({ action: 'asset.admin_edit', subjectType: 'Asset' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Admin edit on behalf of contributor (bypasses owner check).' })
+  @ApiNoContentResponse()
+  async edit(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateAssetDto,
+  ): Promise<void> {
+    await this.assets.update(id, dto, principal.user);
