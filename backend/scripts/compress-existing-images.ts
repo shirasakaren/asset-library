@@ -140,3 +140,4 @@ async function processThumbnail(key: string): Promise<void> {
 async function main(): Promise<void> {
   if (!THUMBS_BUCKET || !EDITOR_BUCKET) {
     throw new Error('Missing S3 bucket env (S3_BUCKET_THUMBS / S3_BUCKET_EDITOR_MEDIA).');
+  }
