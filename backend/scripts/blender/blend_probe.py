@@ -54,6 +54,3 @@ def probe(path: str) -> dict:
 
     if all_coords:
         xs = [c[0] for c in all_coords]
-        ys = [c[1] for c in all_coords]
-        zs = [c[2] for c in all_coords]
-        bbox = {"min": [min(xs), min(ys), min(zs)], "max": [max(xs), max(ys), max(zs)]}
