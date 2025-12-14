@@ -96,3 +96,24 @@ async function bootstrapApi(env: ReturnType<typeof validateEnv>): Promise<void> 
       'x-total-deleted',
     ],
   });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: false },
+    }),
+  );
+  app.enableShutdownHooks();
+
+  const swaggerEnabled = env.NODE_ENV !== 'production' || env.FEATURE_SWAGGER_PUBLIC;
+  if (swaggerEnabled) {
+    const doc = new DocumentBuilder()
+      .setTitle('MGM Asset Library API')
+      .setDescription('REST API for the MGM Asset Library.')
+      .setVersion('0.3.0')
+      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'keycloak')
+      .build();
+    const document = SwaggerModule.createDocument(app, doc);
+    SwaggerModule.setup('docs', app, document, {
