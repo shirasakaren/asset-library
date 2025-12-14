@@ -52,3 +52,22 @@ describe('uploadStore', () => {
       seed([task('t1', { fileId: 'f1', status: 'uploading' })]);
       expect(selectCompletedFileIdsFor(useUploadStore.getState(), 'a1', 'v1')).toEqual([]);
     });
+  });
+
+  describe('setAuthProvider', () => {
+    it('pulls a fresh token on each resolve, not the value at provider-registration time', async () => {
+      let current = 'token-1';
+      useUploadStore.getState().setAuthProvider(async () => current, 'en');
+      expect(await useUploadStore.getState().__resolveAccessToken()).toBe('token-1');
+      // Simulate Auth.js refresh in the background between requests.
+      current = 'token-2';
+      expect(await useUploadStore.getState().__resolveAccessToken()).toBe('token-2');
+    });
+
+    it('returns undefined when no provider is registered', async () => {
+      useUploadStore.setState({ tokenProvider: undefined });
+      expect(await useUploadStore.getState().__resolveAccessToken()).toBeUndefined();
+    });
+  });
+
+  describe('dismissByFileId', () => {
