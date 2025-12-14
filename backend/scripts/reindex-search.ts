@@ -39,3 +39,4 @@ async function main(): Promise<void> {
     'licenseId',
     'tags',
     'renderPipelines',
+    'targets',
