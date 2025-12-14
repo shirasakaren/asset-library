@@ -516,3 +516,88 @@ model Comment {
 /// User-submitted report against an asset (malicious / broken / etc.).
 model Report {
   id         String         @id @default(cuid())
+  reporterId String
+  assetId    String
+  category   ReportCategory
+  notes      String
+  status     ReportStatus   @default(OPEN)
+  adminNotes String?
+  createdAt  DateTime       @default(now())
+  resolvedAt DateTime?
+
+  reporter User  @relation(fields: [reporterId], references: [id])
+  asset    Asset @relation(fields: [assetId], references: [id])
+
+  @@index([status])
+  @@index([assetId])
+  @@index([reporterId])
+  @@map("reports")
+}
+
+// -----------------------------------------------------------------------------
+// AssetRequest
+// -----------------------------------------------------------------------------
+
+/// "Please source this asset for us" — submitted by users, triaged by admins.
+model AssetRequest {
+  id           String             @id @default(cuid())
+  requesterId  String
+  assetLink    String
+  assetType    String
+  intendedUse  String
+  price        Decimal?           @db.Decimal(12, 2)
+  notes        String?
+  status       AssetRequestStatus @default(SENT)
+  adminComment String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  requester User @relation(fields: [requesterId], references: [id])
+
+  @@index([status])
+  @@index([requesterId])
+  @@map("asset_requests")
+}
+
+// -----------------------------------------------------------------------------
+// FeaturedSlot
+// -----------------------------------------------------------------------------
+
+/// Hero carousel slot on the landing page. Hard cap of 5 active rows enforced
+/// at the service layer.
+model FeaturedSlot {
+  id                     String   @id @default(cuid())
+  assetId                String   @unique
+  sortOrder              Int      @unique
+  customBannerKey        String?
+  customTitle            String?
+  /// `{ en, id }` override for short description, optional.
+  customShortDescription Json?
+  isActive               Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([isActive, sortOrder])
+  @@map("featured_slots")
+}
+
+// -----------------------------------------------------------------------------
+// Notification (in-app inbox)
+// -----------------------------------------------------------------------------
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  /// Context-specific payload (assetId, commentId, requestId, …).
+  payload   Json
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, readAt])
+  // notifications.service.ts#list with `unreadOnly: true` filters by
