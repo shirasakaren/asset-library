@@ -40,3 +40,25 @@ export class ProblemDto {
   @ApiProperty({ example: 'asset.not_found' })
   code!: string;
 
+  @ApiPropertyOptional({ type: [ProblemFieldDto] })
+  fields?: ProblemFieldDto[];
+}
+
+/**
+ * Thrown anywhere in services; caught by AllExceptionsFilter and rendered as
+ * problem+json. Carrying the stable `code` separately from the HTTP status
+ * lets us evolve messages without breaking clients.
+ */
+export class DomainException extends HttpException {
+  constructor(
+    status: HttpStatus,
+    public readonly code: ErrorCodeValue,
+    detail: string,
+    public readonly fields?: ProblemFieldDto[],
+  ) {
+    super({ statusCode: status, code, message: detail, fields }, status);
+  }
+}
+
+export class NotFoundDomainException extends DomainException {
+  constructor(code: ErrorCodeValue, detail: string) {
