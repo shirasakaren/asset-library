@@ -28,3 +28,9 @@ interface WsState {
 }
 
 export const useWsStore = create<WsState>((set, get) => ({
+  status: 'idle',
+  lastMessage: null,
+  lastError: null,
+  reconnectAttempts: 0,
+  handlers: new Map(),
+  setStatus: (status) => set({ status }),
