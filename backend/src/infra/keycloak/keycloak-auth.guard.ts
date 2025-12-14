@@ -45,3 +45,7 @@ export class KeycloakAuthGuard implements CanActivate {
 
     const req = context.switchToHttp().getRequest<FastifyRequest>();
     const token = this.extractBearer(req);
+    if (!token) {
+      throw new UnauthorizedException('Missing bearer token.');
+    }
+
