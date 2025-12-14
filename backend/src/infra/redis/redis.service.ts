@@ -34,16 +34,3 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         const onReady = (): void => {
           cleanup();
           resolve();
-        };
-        const onError = (err: Error): void => {
-          cleanup();
-          reject(err);
-        };
-        const cleanup = (): void => {
-          this.client.off('ready', onReady);
-          this.client.off('error', onError);
-        };
-        this.client.once('ready', onReady);
-        this.client.once('error', onError);
-      });
-    }
