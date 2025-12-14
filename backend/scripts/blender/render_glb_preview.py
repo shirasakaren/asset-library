@@ -62,8 +62,3 @@ def setup_camera(min_v: Vector, max_v: Vector) -> None:
     cam_data = bpy.data.cameras.new("MGM_Cam")
     cam_obj = bpy.data.objects.new("MGM_Cam", cam_data)
     bpy.context.scene.collection.objects.link(cam_obj)
-    # 30° azimuth, 15° elevation off the +X axis.
-    az = math.radians(30)
-    el = math.radians(15)
-    cam_obj.location = center + Vector((
-        math.cos(el) * math.cos(az) * distance,
