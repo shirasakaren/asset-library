@@ -43,3 +43,7 @@ export function useSaveToggle() {
           if (data && data.id === assetId) {
             previousDetails.set(JSON.stringify(key), data);
             queryClient.setQueryData(key, { ...data, isSaved: nextSaved });
+          }
+        });
+      return { previousDetails };
+    },
