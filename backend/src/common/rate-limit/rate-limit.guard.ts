@@ -58,9 +58,3 @@ export class RateLimitGuard implements CanActivate {
       );
     }
     return true;
-  }
-
-  private identifierFor(
-    config: RateLimitConfig,
-    req: FastifyRequest,
-    userId: string | undefined,
