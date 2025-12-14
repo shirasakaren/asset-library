@@ -32,5 +32,3 @@ const PublicEnvSchema = z.object({
     .union([z.literal('true'), z.literal('false'), z.literal('')])
     .default('false')
     .transform((v) => v === 'true'),
-
-  NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
