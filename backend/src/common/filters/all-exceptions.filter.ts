@@ -57,3 +57,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
       this.logger.debug(
         `[${req.method} ${req.url}] ${problem.status} ${problem.title} (${problem.code})`,
       );
+    }
+
+    void res.status(problem.status).type('application/problem+json').send(problem);
+  }
+
+  private toProblem(exception: unknown, instance: string): ProblemPayload {
+    if (exception instanceof DomainException) {
+      const body = exception.getResponse() as { message?: string };
+      return {
+        type: `${this.baseUrl}/errors/${exception.code}`,
+        title: exception.constructor.name.replace(/Exception$/, ''),
