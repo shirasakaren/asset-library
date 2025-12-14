@@ -38,3 +38,8 @@ export const useAnalyzerStore = create<AnalyzerState>((set) => ({
         versions: {
           ...state.versions,
           [versionId]: {
+            ...v,
+            analysisStatus: status === 'READY' ? 'READY' : 'ANALYZING',
+            files: { ...v.files, [fileId]: { status } },
+            updatedAt: Date.now(),
+          },
