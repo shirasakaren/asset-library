@@ -50,3 +50,5 @@ Every server-emitted application message uses the same envelope:
 | `type`                  | When                                                                  |
 | ----------------------- | --------------------------------------------------------------------- |
 | `hello`                 | Sent once after successful handshake.                                 |
+| `notification:new`      | A new in-app notification was created for this user.                  |
+| `notification:read`     | An open tab marked one notification as read (multi-device sync).      |
