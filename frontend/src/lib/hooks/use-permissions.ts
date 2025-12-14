@@ -42,3 +42,8 @@ const DEFAULT: Permissions = {
   canEditOwnComment: false,
   canDeleteAnyComment: false,
   canChangeIssueStatus: false,
+  canViewAnalytics: false,
+  canAccessAdmin: false,
+};
+
+/**
