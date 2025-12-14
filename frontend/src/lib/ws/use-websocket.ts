@@ -78,8 +78,3 @@ export function useWebSocket({ token, enabled = true }: UseWebSocketOptions) {
 
       ws.onmessage = (ev) => {
         resetLiveness();
-        try {
-          const msg = JSON.parse(typeof ev.data === 'string' ? ev.data : '');
-          if (msg && typeof msg.type === 'string') {
-            dispatch(msg);
-          }
