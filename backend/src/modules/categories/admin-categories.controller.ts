@@ -72,3 +72,10 @@ export class AdminCategoriesController {
   ): Promise<AdminCategoryDto> {
     return this.admin.update(id, principal.user, dto);
   }
+
+  @Delete(':id')
+  @AuditAction({ action: 'category.delete_request', subjectType: 'Category' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a category. Rejected if any asset references it.' })
+  remove(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
+    return this.admin.remove(id, principal.user);
