@@ -75,4 +75,3 @@ export class WebhookDeliveriesController {
 
     const rows = (await this.model
       .find(where)
-      .sort({ createdAt: -1 })
