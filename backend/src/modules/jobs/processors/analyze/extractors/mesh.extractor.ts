@@ -33,3 +33,7 @@ export async function extractMesh(
   try {
     const result = await runSubprocess(`${opts.venvBin}/python3`, [MESH_PROBE_SCRIPT, filePath], {
       timeoutMs: opts.timeoutMs,
+    });
+    if (result.exitCode !== 0) return null;
+    return JSON.parse(result.stdout) as MeshMeta;
+  } catch {
