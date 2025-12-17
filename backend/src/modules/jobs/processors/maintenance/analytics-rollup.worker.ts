@@ -91,6 +91,3 @@ export class AnalyticsRollupWorker
 
     // Recompute AssetStats per asset (cheap rollup over the last 30 days).
     const totals = await this.prisma.$queryRaw<TotalRow[]>(Prisma.sql`
-      SELECT a.id AS "assetId",
-             (SELECT COUNT(*) FROM downloads d WHERE d."assetId" = a.id)::int AS "totalDownloads",
-             (SELECT COUNT(*) FROM library_items li WHERE li."assetId" = a.id)::int AS "totalSaves",
