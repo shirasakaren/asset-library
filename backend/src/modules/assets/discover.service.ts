@@ -132,31 +132,3 @@ export class DiscoverService {
               PARTITION BY a."categoryId"
               ORDER BY a."publishedAt" DESC NULLS LAST, a.id DESC
             ) AS rn
-          FROM assets a
-          WHERE a.status = 'PUBLISHED'
-            AND a."categoryId" = ANY(${categoryIds}::text[])
-        )
-        SELECT id, "categoryId"
-        FROM ranked
-        WHERE rn <= ${ASSETS_PER_ROW}
-      `,
-    );
-    if (ranked.length === 0) return [];
-
-    const rowAssets = await this.prisma.asset.findMany({
-      where: { id: { in: ranked.map((r) => r.id) } },
-      include: LIST_INCLUDE,
-    });
-    const assetById = new Map(rowAssets.map((a) => [a.id, a]));
-
-    // Re-group while preserving the CTE's per-category ordering. The CTE
-    // does not guarantee row order at the outer SELECT (Postgres is free to
-    // reorder), so sort each group's ids by (publishedAt DESC, id DESC) to
-    // match the previous per-category `orderBy` exactly.
-    const idsByCategory = new Map<string, string[]>();
-    for (const r of ranked) {
-      const list = idsByCategory.get(r.categoryId);
-      if (list) list.push(r.id);
-      else idsByCategory.set(r.categoryId, [r.id]);
-    }
-    for (const ids of idsByCategory.values()) {
