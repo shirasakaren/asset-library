@@ -53,15 +53,3 @@ export class AdminAuditController {
             ? encodeCursor({
                 id: slice[slice.length - 1].id,
                 createdAt: slice[slice.length - 1].createdAt.toISOString(),
-              })
-            : null,
-        hasMore,
-      },
-    };
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Full audit entry detail incl. metadata payload.' })
-  @ApiOkResponse({ type: AuditEntryDto })
-  async detail(@Param('id') id: string): Promise<AuditEntryDto> {
-    const row = await this.prisma.auditLog.findUnique({ where: { id }, include: { actor: true } });
