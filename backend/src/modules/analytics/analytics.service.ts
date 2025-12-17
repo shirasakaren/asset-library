@@ -99,3 +99,30 @@ export class AnalyticsService {
 
   async assetDetail(user: User, assetId: string): Promise<AssetAnalyticsDetail> {
     const asset = await this.prisma.asset.findUnique({ where: { id: assetId } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${assetId} not found.`);
+    if (asset.ownerId !== user.id && !user.isAdmin) {
+      throw new ForbiddenDomainException(ErrorCode.AUTH_FORBIDDEN, 'You do not own this asset.');
+    }
+    const since = new Date(Date.now() - 90 * 86_400_000);
+
+    const daily = await this.prisma.downloadDaily.findMany({
+      where: { assetId, date: { gte: since } },
+      orderBy: { date: 'asc' },
+    });
+    const byCountry: Record<string, number> = {};
+    const bySource: Record<string, number> = {};
+    for (const row of daily) {
+      for (const [country, count] of Object.entries(
+        (row.byCountry as Record<string, number>) ?? {},
+      )) {
+        byCountry[country] = (byCountry[country] ?? 0) + count;
+      }
+      for (const [source, count] of Object.entries(
+        (row.bySource as Record<string, number>) ?? {},
+      )) {
+        bySource[source] = (bySource[source] ?? 0) + count;
+      }
+    }
+
+    const byVersionRaw = await this.prisma.$queryRaw<
