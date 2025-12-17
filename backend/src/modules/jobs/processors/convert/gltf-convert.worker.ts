@@ -105,5 +105,3 @@ export class GltfConvertWorker extends JobWorkerBase<GltfConvertJob> {
     input: string,
     output: string,
     kind: GltfConvertJob['sourceKind'],
-    timeoutMs: number,
-  ): Promise<void> {
