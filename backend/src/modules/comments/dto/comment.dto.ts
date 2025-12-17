@@ -35,3 +35,10 @@ export class CreateCommentDto {
   @IsObject()
   body!: object;
 }
+
+export class UpdateCommentDto {
+  @ApiProperty({ description: 'Lite TipTap JSON document.' })
+  @IsObject()
+  body!: object;
+}
+
