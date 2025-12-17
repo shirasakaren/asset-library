@@ -81,3 +81,9 @@ export class GifsService {
           {
             id: r.id,
             url: full.url,
+            preview: preview.url,
+            width: full.dims?.[0] ?? 0,
+            height: full.dims?.[1] ?? 0,
+            title: r.content_description ?? '',
+          },
+        ];
