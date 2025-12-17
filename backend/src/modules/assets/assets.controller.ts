@@ -120,11 +120,3 @@ export class AssetsController {
   async create(
     @AuthUser() principal: AuthenticatedRequestUser,
     @Body() dto: CreateAssetDto,
-    @IdempotencyKey() idemKey: string | null,
-  ): Promise<{ id: string; slug: string }> {
-    const route = 'POST /assets';
-    if (idemKey) {
-      const cached = await this.idempotency.lookup(principal.user.id, route, idemKey, dto);
-      if (cached) return cached.response as { id: string; slug: string };
-    }
-    const created = await this.assets.create(dto, principal.user);
