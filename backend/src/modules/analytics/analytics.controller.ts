@@ -55,3 +55,26 @@ export class AnalyticsController {
   async assetLeaderboard(@Query('sort') sort?: string, @Query('limit') limit?: string) {
     const take = Math.min(Math.max(Number(limit ?? '25'), 1), 200);
     const sortBy =
+      sort === 'saves'
+        ? 'totalSaves'
+        : sort === 'last7d'
+          ? 'last7dDownloads'
+          : sort === 'last30d'
+            ? 'last30dDownloads'
+            : 'totalDownloads';
+    const rows = await this.analytics['prisma'].assetStats.findMany({
+      orderBy: { [sortBy]: 'desc' as const },
+      take,
+      include: { asset: { include: { owner: true } } },
+    });
+    return rows.map((r) => ({
+      assetId: r.assetId,
+      title: r.asset.title,
+      ownerDisplayName: r.asset.owner.displayName,
+      totalDownloads: r.totalDownloads,
+      totalSaves: r.totalSaves,
+      last7dDownloads: r.last7dDownloads,
+      last30dDownloads: r.last30dDownloads,
+    }));
+  }
+
