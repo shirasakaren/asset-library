@@ -38,5 +38,3 @@ export class CategoriesService {
   }
 
   private async computeList(locale: Locale): Promise<CategoryDto[]> {
-    const rows = await this.prisma.category.findMany({
-      where: { isActive: true },
