@@ -72,3 +72,9 @@ export async function extractUnityPackage(
           const m = text.match(/m_EditorVersion:\s*([\w.]+)/);
           if (m) meta.unityVersion = m[1];
         } else if (isManifest) {
+          try {
+            const parsed = JSON.parse(text) as { dependencies?: Record<string, string> };
+            if (parsed.dependencies) {
+              meta.dependencies = Object.entries(parsed.dependencies).map(([name, version]) => ({
+                name,
+                version,
