@@ -71,22 +71,3 @@ export class EditorMediaGcWorker extends JobWorkerBase<EditorMediaGcJob> impleme
   }
 
   /**
-   * Walks the TipTap document JSON for every AssetTranslation, harvesting
-   * image/video/embed src attributes that point at the editor bucket.
-   */
-  private async collectReferencedKeys(): Promise<Set<string>> {
-    const referenced = new Set<string>();
-    const editorBucket = this.s3.bucketFor('editor');
-    const translations = await this.prisma.assetTranslation.findMany({
-      select: { longDescription: true },
-    });
-    for (const t of translations) {
-      walkTipTap(t.longDescription as Prisma.JsonValue, (key) => referenced.add(key), editorBucket);
-    }
-    return referenced;
-  }
-}
-
-function walkTipTap(
-  node: Prisma.JsonValue,
-  collect: (key: string) => void,
