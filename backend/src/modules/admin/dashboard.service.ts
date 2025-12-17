@@ -118,4 +118,3 @@ export class DashboardService {
     const latest = await this.prisma.storageDaily.findFirst({
       orderBy: { date: 'desc' },
       select: { date: true },
-    });
