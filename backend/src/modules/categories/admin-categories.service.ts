@@ -146,3 +146,7 @@ export class AdminCategoriesService {
       subjectType: 'Category',
       subjectId: 'reorder',
       metadata: { orderedIds },
+    });
+  }
+
+  async initiateIconUpload(
