@@ -57,3 +57,4 @@ export class UpdateLocaleDto {
 
 export class PluginExchangeDto {
   @ApiProperty({ description: 'Bearer token obtained from Keycloak in the plugin loopback flow.' })
+  @IsString()
