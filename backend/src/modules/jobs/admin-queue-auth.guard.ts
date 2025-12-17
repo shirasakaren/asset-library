@@ -54,3 +54,4 @@ export class AdminQueueAuthGuard implements CanActivate {
     const role: AppRole = await this.roleResolver.resolve(user);
     (req as FastifyRequest & { user?: AuthenticatedRequestUser }).user = {
       user,
+      role,
