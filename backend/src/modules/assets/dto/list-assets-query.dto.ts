@@ -38,3 +38,12 @@ export class ListAssetsQueryDto extends ListQueryDto {
   @Transform(asArray)
   @IsArray()
   tags?: string[];
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
+  @IsArray()
+  fileKinds?: string[];
+  @ApiPropertyOptional() @IsOptional() @IsString() licenseSlug?: string;
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
