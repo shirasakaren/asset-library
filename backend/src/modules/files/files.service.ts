@@ -285,26 +285,3 @@ export class FilesService {
   }
 
   async abortMultipart(uploadId: string, requester: User): Promise<void> {
-    const handle = await this.loadHandle(uploadId);
-    if (handle.versionId) await this.getVersionOrThrow(handle.versionId, requester);
-    if (handle.s3UploadId) await this.s3.abortMultipart('assets', handle.key, handle.s3UploadId);
-    if (handle.fileId) {
-      await this.prisma.assetFile.delete({ where: { id: handle.fileId } }).catch(() => undefined);
-      if (handle.versionId) await this.recountVersion(handle.versionId);
-    }
-    await this.dropHandle(uploadId);
-  }
-
-  // ─── File management (reorder / delete) ──────────────────────────────────
-
-  /** Next sort order = current file count, so new uploads append to the end. */
-  private async nextSortOrder(versionId: string): Promise<number> {
-    return this.prisma.assetFile.count({ where: { versionId } });
-  }
-
-  /**
-   * Persists a new file display order. `orderedFileIds` must be the full set of
-   * the version's file ids; any omitted files keep their relative order after
-   * the listed ones.
-   */
-  async reorderFiles(versionId: string, orderedFileIds: string[], requester: User): Promise<void> {
