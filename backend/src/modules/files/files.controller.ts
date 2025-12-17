@@ -91,3 +91,47 @@ export class FilesController {
     return this.files.completeMultipart(dto, principal.user);
   }
 
+  @Post('uploads/multipart/abort')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Abort an in-flight multipart upload.' })
+  abortMultipart(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: AbortMultipartDto,
+  ): Promise<void> {
+    return this.files.abortMultipart(dto.uploadId, principal.user);
+  }
+
+  @Post('thumbnails/initiate')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get a presigned PUT URL for an asset thumbnail.' })
+  @ApiOkResponse({ type: InitiateThumbnailResponseDto })
+  initiateThumb(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: InitiateThumbnailDto,
+  ): Promise<InitiateThumbnailResponseDto> {
+    return this.files.initiateThumbnail(dto, principal.user);
+  }
+
+  @Post('thumbnails/complete')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Wire a freshly uploaded thumbnail key to the asset, queue resize variants.',
+  })
+  completeThumb(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CompleteThumbnailDto,
+  ): Promise<void> {
+    return this.files.completeThumbnail(dto.assetId, dto.key, principal.user);
+  }
+
+  @Post('editor-media/initiate')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a presigned PUT URL for a TipTap embed; also returns a ~6-day GET URL.',
+  })
+  @ApiOkResponse({ type: InitiateEditorMediaResponseDto })
+  initiateEditorMedia(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: InitiateEditorMediaDto,
+  ): Promise<InitiateEditorMediaResponseDto> {
+    return this.files.initiateEditorMedia(dto, principal.user);
