@@ -32,3 +32,10 @@ export class ListLibraryQueryDto extends ListQueryDto {
   @IsArray()
   tags?: string[];
   @ApiPropertyOptional({ enum: AssetEngine })
+  @IsOptional()
+  @IsEnum(AssetEngine)
+  engine?: AssetEngine;
+  @ApiPropertyOptional({ enum: HIDDEN_MODES })
+  @IsOptional()
+  @IsIn(HIDDEN_MODES as unknown as string[])
+  hidden?: 'true' | 'false' | 'all';
