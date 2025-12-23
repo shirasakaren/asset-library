@@ -93,3 +93,9 @@ export class AdminLicensesService {
     return this.toDto(row);
   }
 
+  async remove(id: string, admin: User): Promise<void> {
+    const usage = await this.prisma.asset.count({ where: { licenseId: id } });
+    if (usage > 0) {
+      throw new ConflictDomainException(
+        ErrorCode.LICENSE_IN_USE,
+        `License is referenced by ${usage} asset(s) — reassign first.`,
