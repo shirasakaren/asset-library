@@ -35,3 +35,5 @@ export class LicensesService {
       LIST_CACHE_TTL_SECONDS,
       () => this.computeList(locale),
     );
+  }
+
