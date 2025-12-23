@@ -63,3 +63,20 @@ export class LibraryService {
       where.asset = {
         ...(where.asset as Prisma.AssetWhereInput),
         tags: { some: { tag: { slug: { in: query.tags } } } },
+      };
+    }
+    if (query.engine) {
+      where.asset = { ...(where.asset as Prisma.AssetWhereInput), engine: query.engine };
+    }
+
+    const orderBy: Prisma.LibraryItemOrderByWithRelationInput[] =
+      query.sort === 'alphabetical'
+        ? [{ asset: { title: 'asc' } }, { id: 'desc' }]
+        : query.sort === 'recentlyUpdated'
+          ? [{ asset: { updatedAt: 'desc' } }, { id: 'desc' }]
+          : [{ addedAt: 'desc' }, { id: 'desc' }];
+
+    const rows = await this.prisma.libraryItem.findMany({
+      where,
+      include: LIBRARY_INCLUDE,
+      take: limit + 1,
