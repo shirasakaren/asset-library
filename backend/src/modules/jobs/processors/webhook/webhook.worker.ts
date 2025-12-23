@@ -52,9 +52,3 @@ export class WebhookWorker extends JobWorkerBase<WebhookDeliveryJob> implements 
 
     const deliveryId = (job.id?.startsWith('wh_') ? job.id : `wh_${randomUUID()}`).toString();
     const attempt = job.attemptsMade + 1;
-
-    const envelope = {
-      id: deliveryId,
-      type: job.data.event,
-      createdAt: new Date().toISOString(),
-      actor: job.data.actor,
