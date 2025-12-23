@@ -86,3 +86,14 @@ const config: Config = {
         'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
         'scale-in': {
           from: { opacity: '0', transform: 'scale(0.96)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+        'slide-up': {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        spin: { to: { transform: 'rotate(360deg)' } },
