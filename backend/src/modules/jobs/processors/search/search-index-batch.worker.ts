@@ -152,20 +152,3 @@ export class SearchIndexBatchWorker
     return asset.translations.map((t) => ({
       id: `${asset.id}:${t.locale}`,
       locale: t.locale,
-      categoryName:
-        this.pickJsonLocalized(asset.category.name as Prisma.JsonValue, t.locale) ??
-        asset.category.slug,
-      shortDescription: t.shortDescription,
-      ...baseDoc,
-    }));
-  }
-
-  /**
-   * Mirrors TagUsage rows into the `tags` Meilisearch index so the
-   * autocomplete endpoint has fresh usageCount values.
-   */
-  private async mirrorTagUsage(): Promise<void> {
-    const rows = await this.prisma.tagUsage.findMany({
-      include: { tag: true },
-      orderBy: { usageCount: 'desc' },
-      take: 5000,
