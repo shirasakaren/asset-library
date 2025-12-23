@@ -54,3 +54,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shared pages moved from `force-dynamic` to `revalidate`.
 - Per-domain TanStack Query `staleTime` defaults; SessionProvider polling
   removed.
+
+## [0.7.0] - 2026-03-15
+
+### Added
+
+- Playwright end-to-end suite (30 scenarios) covering the full publish flow,
+  admin CRUD, and live notifications.
+- Backend e2e harness with in-process FakeKeycloak against the test compose
+  stack.
+- OpenAPI freshness checks on both sides of the workspace.
