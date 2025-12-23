@@ -83,3 +83,14 @@ export class StorageRollupWorker extends JobWorkerBase<StorageRollupJob> impleme
                 bytes: 0n,
                 assetCount: 0,
                 ids: new Set<string>(),
+              };
+              entry.bytes += bytes;
+              entry.ids.add(assetId);
+              entry.assetCount = entry.ids.size;
+              perUser.set(ownerId, entry);
+            }
+          }
+        }
+      }
+
+      for (const [prefix, c] of counters) {
