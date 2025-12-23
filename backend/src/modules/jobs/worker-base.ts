@@ -45,3 +45,12 @@ export abstract class JobWorkerBase<TPayload> implements OnModuleInit, OnModuleD
             queue: this.queueName,
             jobId: job.id,
             data: job.data as unknown as Record<string, unknown>,
+            attempt: job.attemptsMade + 1,
+          });
+          throw err;
+        }
+      },
+      {
+        connection: { url: this.config.get('REDIS_URL') } as never,
+        concurrency: QUEUE_CONCURRENCY[this.queueName],
+        ...this.options,
