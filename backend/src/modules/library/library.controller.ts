@@ -39,3 +39,9 @@ export class LibraryController {
   ): Promise<{
     items: LibraryItemDto[];
     pageInfo: { nextCursor: string | null; hasMore: boolean };
+  }> {
+    return this.library.list(principal.user, query, query.locale ?? principal.user.locale);
+  }
+
+  @Post('items')
+  @HttpCode(HttpStatus.NO_CONTENT)
