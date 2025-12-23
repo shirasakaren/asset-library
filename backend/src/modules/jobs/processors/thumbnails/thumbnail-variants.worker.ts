@@ -48,3 +48,5 @@ export class ThumbnailVariantsWorker extends JobWorkerBase<ThumbnailVariantsJob>
     const source = await this.s3.client.send(
       new GetObjectCommand({ Bucket: this.s3.bucketFor('thumbs'), Key: sourceKey }),
     );
+    if (!source.Body) throw new Error(`No body for thumbnail ${sourceKey}`);
+    const original = await streamToBuffer(source.Body as Readable);
