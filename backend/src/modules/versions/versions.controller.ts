@@ -67,3 +67,6 @@ export class VersionsController {
   @ApiOperation({ summary: 'Update release notes; semver is immutable post-publish.' })
   update(
     @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+    @Body() dto: UpdateVersionDto,
+  ): Promise<void> {
