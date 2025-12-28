@@ -45,7 +45,3 @@ export class MergeTagsDto {
 export class UpdateTagDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  @Matches(SLUG_REGEX)
-  @MaxLength(80)
-  slug?: string;
