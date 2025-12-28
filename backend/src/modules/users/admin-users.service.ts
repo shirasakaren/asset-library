@@ -67,9 +67,3 @@ export class AdminUsersService {
                 id: slice[slice.length - 1].id,
                 createdAt: slice[slice.length - 1].createdAt.toISOString(),
               })
-            : null,
-        hasMore,
-      },
-    };
-  }
-
