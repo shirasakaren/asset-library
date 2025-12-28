@@ -49,3 +49,8 @@ export class UsersService {
     };
     const rows = await this.prisma.user.findMany({
       where,
+      take: Math.min(limit, 20),
+      orderBy: [{ isAdmin: 'desc' }, { displayName: 'asc' }],
+      select: { id: true, email: true, displayName: true, isAdmin: true },
+    });
+    return rows;
