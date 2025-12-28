@@ -119,14 +119,3 @@ export const EMAIL_SPECS: Record<NotificationType, EmailSpec> = {
   [NotificationType.REPORT_RECEIVED_FOR_YOUR_ASSET]: {
     subject: { en: 'Your asset was reported', id: 'Aset Anda dilaporkan' },
     eyebrow: { en: 'Asset reported', id: 'Aset dilaporkan' },
-    title: { en: 'Someone filed a report on your asset', id: 'Seseorang melaporkan aset Anda' },
-    body: {
-      en: 'A {{category}} report was filed on “{{assetTitle}}”. Admins will follow up if needed.',
-      id: 'Laporan {{category}} diajukan pada “{{assetTitle}}”. Admin akan menindaklanjuti jika perlu.',
-    },
-    cta: { label: { en: 'Open asset', id: 'Buka aset' }, href: '{{links.assetUrl}}' },
-  },
-  [NotificationType.FEATURED_FEATURED]: {
-    subject: { en: '“{{assetTitle}}” is featured!', id: '“{{assetTitle}}” telah ditampilkan!' },
-    eyebrow: { en: "You're featured", id: 'Anda ditampilkan' },
-    title: {
