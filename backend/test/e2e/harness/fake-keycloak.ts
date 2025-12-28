@@ -37,11 +37,3 @@ export class FakeKeycloak {
   }
 
   /** Override that returns the decoded claims for any token we just minted. */
-  asProvider(): KeycloakJwksProvider {
-    const verify = async (token: string): Promise<JWTPayload> => {
-      const { jwtVerify } = await import('jose');
-      const key = await this.ensureKey();
-      const publicJwk = await exportJWK(key);
-      const { payload } = await jwtVerify(token, publicJwk, {
-        audience: this.audience,
-        issuer: this.issuer,
