@@ -37,11 +37,3 @@ export class CompatibilityRowDto {
   @MaxLength(40)
   engineVersion!: string;
 
-  @ApiPropertyOptional({
-    type: [String],
-    description: 'Unity render pipelines: URP|HDRP|SRP|BUILT_IN',
-  })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  renderPipelines?: string[];
