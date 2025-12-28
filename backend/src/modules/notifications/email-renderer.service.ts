@@ -86,3 +86,7 @@ export class EmailRendererService {
               </mj-text>
             </mj-column>
           </mj-section>
+          ${cta}
+          ${FOOTER_MJML}
+        </mj-body>
+      </mjml>
