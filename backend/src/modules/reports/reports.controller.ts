@@ -55,3 +55,20 @@ export class ReportsController {
   }
 
   // ─── Admin queue ────────────────────────────────────────────────────────
+
+  @Get('admin/reports')
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Paginated moderation queue.' })
+  @ApiOkResponse()
+  list(@Query() query: ListReportsQueryDto) {
+    return this.reports.list(query);
+  }
+
+  @Get('admin/reports/:id')
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Report detail with linked asset snapshot.' })
+  @ApiOkResponse({ type: ReportDto })
+  detail(@Param('id') id: string): Promise<ReportDto> {
+    return this.reports.get(id);
+  }
+
