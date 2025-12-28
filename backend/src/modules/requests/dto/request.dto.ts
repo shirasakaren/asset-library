@@ -44,3 +44,23 @@ export class ListAssetRequestsQueryDto extends ListQueryDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  requesterId?: string;
+}
+
+export class AssetRequestDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() assetLink!: string;
+  @ApiProperty() assetType!: string;
+  @ApiProperty() intendedUse!: string;
+  @ApiPropertyOptional() price?: number | null;
+  @ApiPropertyOptional() notes?: string | null;
+  @ApiProperty({ enum: AssetRequestStatus }) status!: AssetRequestStatus;
+  @ApiPropertyOptional() adminComment?: string | null;
+  @ApiProperty() createdAt!: string;
+  @ApiProperty() updatedAt!: string;
+  @ApiProperty() requester!: { id: string; displayName: string };
+}
+
+import {
+  IsIn as IsIn2,
+  IsOptional as IsOptional2,
