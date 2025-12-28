@@ -76,4 +76,3 @@ describe('PrincipalResolverService', () => {
     expect(upsert).not.toHaveBeenCalled();
     expect(resolveRole).not.toHaveBeenCalled();
   });
-
