@@ -136,5 +136,3 @@ export class ReportsService {
         ErrorCode.ASSET_ARCHIVE_BLOCKED,
         `Report is in ${row.status}, not OPEN.`,
       );
-    }
-    await this.prisma.report.update({ where: { id }, data: { status: 'REVIEWING' } });
