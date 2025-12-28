@@ -116,10 +116,3 @@ export class NotificationsGateway
         }),
       ),
     );
-  }
-
-  handleDisconnect(socket: AuthedSocket): void {
-    if (socket.userId) this.registry.remove(socket.userId, socket);
-  }
-
-  private async authenticate(request: IncomingMessage): Promise<string | null> {
