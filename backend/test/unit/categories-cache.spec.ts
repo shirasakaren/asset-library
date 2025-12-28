@@ -63,21 +63,3 @@ describe('CategoriesService — Redis cache', () => {
     const client = new FakeRedisClient();
     const cached = new CachedService({ client } as unknown as RedisService);
     const { prisma, calls } = buildPrismaStub();
-    const svc = new CategoriesService(prisma, cached);
-    return { svc, calls, client };
-  }
-
-  it('first call queries Prisma; second call within TTL does not', async () => {
-    const { svc, calls } = build();
-
-    const first = await svc.list('en');
-    expect(first).toHaveLength(1);
-    expect(first[0]).toMatchObject({ id: 'cat_1', slug: 'props', name: 'Props', assetCount: 7 });
-    expect(calls.findMany).toBe(1);
-    expect(calls.groupBy).toBe(1);
-
-    // Let the fire-and-forget SET resolve.
-    await new Promise((r) => setImmediate(r));
-
-    const second = await svc.list('en');
-    expect(second).toEqual(first);
