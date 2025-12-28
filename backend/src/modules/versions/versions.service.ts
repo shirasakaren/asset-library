@@ -130,13 +130,3 @@ export class VersionsService {
     this.assets.assertCanEdit(version.asset, requester);
 
     if (dto.releaseNotes) {
-      const releaseNotes = this.validateReleaseNotes(dto.releaseNotes);
-      await this.prisma.assetVersion.update({
-        where: { id: versionId },
-        data: { releaseNotes: releaseNotes as unknown as Prisma.InputJsonValue },
-      });
-    }
-  }
-
-  async publish(versionId: string, requester: User): Promise<void> {
-    const version = await this.prisma.assetVersion.findUnique({
