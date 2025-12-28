@@ -49,3 +49,5 @@ describe('E2E [16] idempotency on POST /assets', () => {
       .send(body)
       .expect(201);
     const b = await supertest(app.getHttpServer())
+      .post('/assets')
+      .set('Authorization', `Bearer ${token}`)
