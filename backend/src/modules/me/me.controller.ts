@@ -36,21 +36,3 @@ export class MeController {
       this.auth.buildMe(principal.user, principal.role),
       this.auth.listPluginDevices(principal.user.id),
     ]);
-    return { ...base, devices };
-  }
-
-  @Post('devices/:id/revoke')
-  @AuditAction({ action: 'me.revoke_device', subjectType: 'PluginDeviceToken' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: "Revoke one of the user's plugin devices." })
-  async revokeDevice(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Param('id') id: string,
-  ): Promise<void> {
-    await this.auth.revokePluginDevice(principal.user.id, id);
-  }
-
-  @Post('logout')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({
-    summary: "Logout side-effect: audit row + WS broadcast to the user's open tabs.",
