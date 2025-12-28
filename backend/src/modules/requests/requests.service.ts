@@ -100,5 +100,3 @@ export class RequestsService {
     };
   }
 
-  async get(id: string, requester: User): Promise<AssetRequestDto> {
-    const row = await this.prisma.assetRequest.findUnique({
