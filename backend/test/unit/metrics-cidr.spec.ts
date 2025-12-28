@@ -34,3 +34,10 @@ function ipToBigInt(ip: string, family: 4 | 6): bigint {
 }
 
 function inCidr(ip: string, cidr: ParsedCidr): boolean {
+  const family = isIP(ip);
+  if (family !== cidr.family) return false;
+  return (ipToBigInt(ip, family) & cidr.mask) === cidr.base;
+}
+
+describe('metrics CIDR matcher', () => {
+  it('matches a /24', () => {
