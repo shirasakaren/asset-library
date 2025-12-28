@@ -35,7 +35,3 @@ export class AdminRequestsController {
     return this.requests.list(query, principal.user);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Fetch a single asset request by id (admin view).' })
-  @ApiOkResponse({ type: AssetRequestDto })
-  getOne(
