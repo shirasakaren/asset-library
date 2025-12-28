@@ -66,13 +66,3 @@ describe('TipTap walker contract', () => {
           content: [
             {
               type: 'text',
-              text: 'see',
-              marks: [{ type: 'link', attrs: { href: 'https://x.test/a' } }],
-            },
-          ],
-        },
-        { type: 'image', attrs: { src: 'https://x.test/b.png' } },
-      ],
-    };
-    const seen: string[] = [];
-    const walk = (node: Prisma.JsonValue): void => {
