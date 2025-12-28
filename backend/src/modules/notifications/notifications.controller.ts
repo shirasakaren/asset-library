@@ -40,4 +40,3 @@ export class NotificationsController {
     return this.notifications.list(principal.user, {
       cursor,
       limit: limit ? Number(limit) : undefined,
-      unreadOnly: unreadOnly === 'true',
