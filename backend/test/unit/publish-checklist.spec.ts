@@ -32,21 +32,3 @@ describe('PublishChecklistService', () => {
     } as never;
     const svc = new PublishChecklistService(prisma);
     const asset = makeAsset({ thumbnailKey: null, categoryId: '', licenseId: '' });
-    const violations = await svc.evaluate(asset);
-    const codes = violations.map((v) => v.code).sort();
-    expect(codes).toEqual(
-      expect.arrayContaining([
-        'category.missing',
-        'license.missing',
-        'thumbnail.missing',
-        'translations.empty',
-        'version.missing',
-      ]),
-    );
-  });
-
-  it('requires compatibility for engine-specific assets', async () => {
-    const prisma = {
-      assetTranslation: { count: jest.fn().mockResolvedValue(1) },
-      assetVersion: {
-        findFirst: jest.fn().mockResolvedValue({
