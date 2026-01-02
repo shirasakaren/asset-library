@@ -65,3 +65,26 @@ For high-contrast dark sections (testimonials, dramatic stats, big quote breaks)
 * `--brand-green` (#0f8657) on white passes AA. ✅
 * `--brand-red` (#f94141) on white **only passes AA Large** — use it for ≥18px or ≥14px bold, or as a fill behind white text, never for body copy.
 * `--brand-yellow` (#f7bf33) **never carries text on white.** Use yellow only as a fill, with `--ink` text on top.
+
+### 2.4 Color don'ts
+
+* No purple, no teal, no pink, no orange. The palette is closed.
+* No gradients between brand colors. No tie-dye. No mesh gradients.
+* No tinted page backgrounds. The page background is white. Always.
+* No drop shadows on colored fills (a yellow chip with a yellow shadow is forbidden).
+
+---
+
+## 3. Typography
+
+### 3.1 Families
+
+We pair a **characterful display face** with a **clean, modern UI face**. Both are free, variable, and load fast.
+
+```css
+:root {
+  --font-display: "Bricolage Grotesque", "Söhne", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    "Geist", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+}
+```
