@@ -43,3 +43,6 @@ export default async function ProfilePage() {
 
   return (
     <Container size="lg">
+      <div className="pt-8 pb-20">
+        <Card padding="lg" className="flex items-center gap-5">
+          <Avatar data={avatarFromServer(me.avatar)} size={64} />
