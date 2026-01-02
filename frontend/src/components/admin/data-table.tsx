@@ -46,3 +46,12 @@ export function DataTable<T extends { id: string }>({
                   'px-4 py-2.5 text-eyebrow uppercase tracking-[0.12em] text-ink-3 font-semibold',
                   col.align === 'right' && 'text-right',
                   col.align === 'center' && 'text-center',
+                  col.className,
+                )}
+              >
+                {col.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
