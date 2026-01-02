@@ -62,19 +62,3 @@ export default function AdminReportsPage() {
         {STATUSES.map((s) => {
           const active = status === s.value;
           return (
-            <button
-              key={s.value}
-              type="button"
-              onClick={() => setParams({ status: s.value === 'ALL' ? null : s.value, cursor: null })}
-              className={cn(
-                'inline-flex items-center h-8 px-3 rounded-full text-[12.5px] font-medium border transition-colors',
-                active
-                  ? 'bg-ink text-white border-ink'
-                  : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink',
-              )}
-            >
-              {s.label}
-            </button>
-          );
-        })}
-      </div>
