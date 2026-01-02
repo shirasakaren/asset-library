@@ -50,18 +50,3 @@ module.exports = {
         xl: "28px",
       },
       boxShadow: {
-        "1": "0 1px 2px rgba(14,17,22,0.04), 0 1px 1px rgba(14,17,22,0.03)",
-        "2": "0 6px 24px -8px rgba(14,17,22,0.10), 0 2px 6px -2px rgba(14,17,22,0.05)",
-        "3": "0 24px 60px -20px rgba(14,17,22,0.18), 0 4px 12px -4px rgba(14,17,22,0.06)",
-      },
-      transitionTimingFunction: {
-        "out-soft": "cubic-bezier(0.22, 1, 0.36, 1)",
-        "in-out-soft": "cubic-bezier(0.65, 0, 0.35, 1)",
-        "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
-      },
-      transitionDuration: {
-        "120": "120ms",
-        "200": "200ms",
-        "320": "320ms",
-        "520": "520ms",
-        "800": "800ms",
