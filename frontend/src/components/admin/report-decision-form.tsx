@@ -83,3 +83,18 @@ export function ReportDecisionForm({ report }: Props) {
         },
       });
       toast.success('Decision submitted');
+      router.push('/admin/reports');
+    } catch (err) {
+      toast.error('Decision failed', { description: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <Field label="Action">
+        <div className="flex flex-col gap-1.5">
+          {ACTIONS.map((opt) => {
+            const active = action === opt.value;
+            return (
