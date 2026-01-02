@@ -141,3 +141,13 @@ function LicenseEditModal({
   const [name, setName] = useState(license?.name ?? '');
   const [descEn, setDescEn] = useState(license?.description?.en ?? '');
   const [descId, setDescId] = useState(license?.description?.id ?? '');
+  const [textEn, setTextEn] = useState(license?.fullText?.en ?? '');
+  const [textId, setTextId] = useState(license?.fullText?.id ?? '');
+  const [isActive, setIsActive] = useState(license?.isActive ?? true);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    setBusy(true);
+    try {
+      const payload = {
+        slug,
