@@ -95,3 +95,14 @@ export default async function PublishLandingPage() {
             </div>
           </section>
         ) : null}
+
+        {published.length > 0 ? (
+          <section>
+            <h2 className="font-display text-h1 text-ink tracking-[-0.015em] mb-4 inline-flex items-center gap-3">
+              {t('publishedHeading')}
+              <Badge variant="success">{published.length}</Badge>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {published.map((asset) => (
+                <AssetCard key={asset.id} variant="grid" asset={asset} isOwner href={`/publish/${asset.id}`} />
+              ))}
