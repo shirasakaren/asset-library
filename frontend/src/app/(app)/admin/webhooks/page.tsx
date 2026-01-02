@@ -102,3 +102,4 @@ export default function AdminWebhooksPage() {
       />
       <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
         {list.isFetchingNextPage ? 'Loading…' : null}
+      </div>
