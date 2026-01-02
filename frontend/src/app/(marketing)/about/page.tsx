@@ -207,14 +207,3 @@ function Solution() {
     <section id="whats-inside" className="border-t border-line bg-surface-muted">
       <Container size="2xl">
         <div className="py-24 lg:py-32">
-          <div className="max-w-[760px]">
-            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">What’s inside</p>
-            <h2 className="display-lg text-ink mb-12">Three surfaces, one library.</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-5">
-            {offerings.map(({ icon: Icon, title, body }) => (
-              <Card key={title} variant="outlined" padding="lg">
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] bg-brand-blue-50 text-brand-blue">
-                  <Icon className="h-5 w-5" strokeWidth={2.25} />
-                </span>
-                <h3 className="mt-5 font-display text-h2 text-ink tracking-[-0.01em]">{title}</h3>
