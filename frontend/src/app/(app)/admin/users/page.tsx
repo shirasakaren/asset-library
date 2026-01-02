@@ -114,34 +114,3 @@ export default function AdminUsersPage() {
       <DataTable
         rows={rows}
         empty="No users."
-        columns={[
-          {
-            key: 'avatar',
-            header: '',
-            className: 'w-[44px]',
-            cell: (r) => (
-              <Avatar
-                data={
-                  r.avatar
-                    ? avatarFromServer(r.avatar)
-                    : getAvatarTokens({ id: r.id, displayName: r.displayName, email: r.email })
-                }
-                size={32}
-              />
-            ),
-          },
-          {
-            key: 'name',
-            header: 'Name',
-            cell: (r) => (
-              <NextLink href={`/admin/users/${r.id}`} className="font-medium text-ink hover:underline">
-                {r.displayName}
-              </NextLink>
-            ),
-          },
-          {
-            key: 'email',
-            header: 'Email',
-            cell: (r) => <code className="font-mono text-[12.5px] text-ink-2">{r.email}</code>,
-          },
-          {
