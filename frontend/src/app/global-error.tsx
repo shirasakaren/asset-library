@@ -52,3 +52,4 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               style={{
                 marginTop: 16,
                 padding: '8px 12px',
+                background: '#f7f7f5',
