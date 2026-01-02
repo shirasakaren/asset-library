@@ -215,35 +215,3 @@ function RenameTagModal({
         </ModalHeader>
         <div className="space-y-3">
           <Field id="t-slug" label="Slug" required>
-            <Input id="t-slug" value={slug} onChange={(e) => setSlug(e.target.value)} />
-          </Field>
-          <Field id="t-name" label="Display name" required>
-            <Input id="t-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
-          </Field>
-        </div>
-        <ModalFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button loading={busy} onClick={submit}>
-            Save
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-}
-
-function MergeTagsModal({
-  onOpenChange,
-  onDone,
-}: {
-  onOpenChange: (o: boolean) => void;
-  onDone: () => void;
-}) {
-  const fetcher = useAuthedFetch();
-  const [query, setQuery] = useState('');
-  const debounced = useDebouncedValue(query, 200);
-  const [from, setFrom] = useState<Tag[]>([]);
-  const [into, setInto] = useState<Tag | null>(null);
-  const [busy, setBusy] = useState(false);
