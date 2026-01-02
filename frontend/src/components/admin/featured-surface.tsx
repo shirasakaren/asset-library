@@ -198,18 +198,3 @@ function SortableSlot({
   onDelete,
 }: {
   slot: AdminFeaturedSlot;
-  onEdit: () => void;
-  onToggle: (next: boolean) => void;
-  onDelete: () => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: slot.id,
-  });
-  return (
-    <div
-      ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn(isDragging && 'opacity-70')}
-    >
-      <SlotCard
-        slot={slot}
