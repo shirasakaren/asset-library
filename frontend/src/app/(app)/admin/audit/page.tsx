@@ -59,3 +59,11 @@ export default function AdminAuditPage() {
       <AdminPageHeader
         title="Audit log"
         description="Every privileged action is logged. Retention is 30 days."
+      />
+      <Alert variant="neutral" className="mb-4">
+        Audit logs older than 30 days are automatically purged.
+      </Alert>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+        <Input inputSize="sm" placeholder="Actor id" value={actorId} onChange={(e) => setParams({ actorId: e.target.value || null, cursor: null })} />
+        <Input inputSize="sm" placeholder="Action (e.g. asset.publish)" value={action} onChange={(e) => setParams({ action: e.target.value || null, cursor: null })} />
+        <Input inputSize="sm" placeholder="Subject type" value={subjectType} onChange={(e) => setParams({ subjectType: e.target.value || null, cursor: null })} />
