@@ -123,3 +123,12 @@ export default async function AdminDashboardPage() {
               key: 'saves',
               header: 'Saves',
               align: 'right',
+              cell: (r) => <span className="geist-tnum">{formatNumber(r.saves, locale)}</span>,
+            },
+          ]}
+        />
+      </section>
+
+      <section className="mt-10">
+        <div className="flex items-baseline justify-between mb-4">
+          <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">Recent activity</h2>
