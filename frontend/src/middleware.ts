@@ -39,3 +39,4 @@ const MOCK = (process.env.NEXT_PUBLIC_AUTH_MOCK ?? 'false') === 'true';
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
   const response = NextResponse.next();
+
