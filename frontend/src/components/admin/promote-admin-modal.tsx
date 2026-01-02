@@ -73,3 +73,7 @@ export function PromoteAdminModal({ onOpenChange, onDone }: Props) {
               <ul className="mt-2 max-h-[200px] overflow-y-auto rounded-[12px] border border-line bg-surface">
                 {candidates.data.items
                   .filter((u) => !u.isAdmin)
+                  .map((u) => (
+                    <li key={u.id}>
+                      <button
+                        type="button"
