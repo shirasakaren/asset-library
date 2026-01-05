@@ -83,3 +83,18 @@ export function NewVersionForm({ asset }: Props) {
           <h1 className="font-display text-display-lg text-ink tracking-[-0.02em]">{t('title')}</h1>
           <p className="mt-2 text-body text-ink-2 max-w-prose">{t('subtitle')}</p>
 
+          {latest ? (
+            <Alert variant="neutral" className="mt-5">
+              Previous latest: <VersionBadge semver={latest.semver} isLatest size="sm" />
+            </Alert>
+          ) : null}
+
+          <div className="mt-6 space-y-5">
+            <Field id="new-semver" label="New semver" required error={semverInvalid}>
+              <Input
+                id="new-semver"
+                value={semver}
+                onChange={(e) => setSemver(e.target.value)}
+                invalid={Boolean(semverInvalid)}
+              />
+            </Field>
