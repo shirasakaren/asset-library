@@ -72,7 +72,3 @@ export function StepDescription() {
   const update = (locale: LocaleCode, patch: Partial<TranslationDraft>) => {
     setDrafts((prev) => ({ ...prev, [locale]: { ...prev[locale], ...patch } }));
     schedulePatch();
-  };
-
-  const current = drafts[activeLocale];
-  const isFallback = !current.short && !current.long?.content?.length;
