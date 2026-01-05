@@ -140,3 +140,6 @@ export function RequestSurface({ me, initial }: Props) {
                 href={selected.assetLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1 link-inline break-all"
+              >
+                {selected.assetLink}
