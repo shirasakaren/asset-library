@@ -138,3 +138,43 @@ export function SearchFilterSidebar() {
               className="inline-flex items-center gap-2.5 text-[13.5px] text-ink cursor-pointer"
             >
               <input
+                type="radio"
+                name="engine"
+                checked={engine === e.value}
+                onChange={() => setParams({ engine: e.value || null })}
+                className="h-4 w-4 accent-ink"
+              />
+              {e.label}
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title={t('categories')} activeCount={categoryIds.length}>
+        <ChipFilter
+          options={(categoriesQuery.data ?? []).map((c) => ({ label: c.name, value: c.id }))}
+          values={categoryIds}
+          onChange={(next) => setParams({ categoryIds: next })}
+        />
+      </FilterSection>
+
+      <FilterSection title={t('fileTypes')} activeCount={fileKinds.length}>
+        <ChipFilter
+          options={FILE_KINDS.map((k) => ({
+            label: tSearch(`fileKind.${k}` as 'fileKind.GLB'),
+            value: k,
+          }))}
+          values={fileKinds}
+          onChange={(next) => setParams({ fileKinds: next })}
+        />
+      </FilterSection>
+
+      <FilterSection title={t('license')} activeCount={licenseSlug ? 1 : 0}>
+        <select
+          value={licenseSlug}
+          onChange={(e) => setParams({ licenseSlug: e.target.value || null })}
+          className="w-full h-10 rounded-[10px] border border-line bg-surface text-[13.5px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        >
+          <option value="">Any license</option>
+          {(licensesQuery.data ?? []).map((l) => (
+            <option key={l.slug} value={l.slug}>
