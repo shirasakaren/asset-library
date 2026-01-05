@@ -272,3 +272,23 @@ function FeatureCard({
       ) : null}
     </article>
   );
+}
+
+/* ------------------------------- ROW ------------------------------- */
+
+function RowCard({
+  asset,
+  isSaved = false,
+  isOwner = false,
+  fallbackThumbnail,
+  className,
+  href,
+  hidden,
+  onHide,
+  onQuickDownload,
+  trailingAction,
+}: RowProps) {
+  return (
+    <article
+      className={cn(
+        'group relative grid grid-cols-[200px_1fr_auto] gap-5 items-center p-3 rounded-[16px] border border-line bg-surface',
