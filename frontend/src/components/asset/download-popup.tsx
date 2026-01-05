@@ -205,3 +205,45 @@ export function DownloadPopup({
           {state.step === 'thank-you' ? (
             <motion.div
               key="thanks"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="py-8 text-center"
+            >
+              <div className="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand-green-50 text-brand-green">
+                <CheckCircle2 className="h-7 w-7" strokeWidth={2.25} />
+              </div>
+              <h3 className="font-display text-h2 text-ink tracking-[-0.01em]">{t('thankYouTitle')}</h3>
+              <p className="mt-2 text-body-sm text-ink-2">
+                {t.rich('thankYouBody', {
+                  link: (chunks) => (
+                    <a className="link-inline" href={state.url}>
+                      {t('thankYouLink')}
+                      <span className="sr-only">{chunks}</span>
+                    </a>
+                  ),
+                })}
+              </p>
+              <div className="mt-6 flex items-center justify-center gap-2">
+                <Button variant="secondary" onClick={() => setState({ step: 'browse' })}>
+                  {t('downloadAnother')}
+                </Button>
+                <Button variant="ghost" onClick={() => onOpenChange(false)}>
+                  {tCommon('close')}
+                </Button>
+              </div>
+            </motion.div>
+          ) : state.step === 'error' ? (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            >
+              <Alert variant="danger" title={t('failedTitle')} icon={<AlertTriangle className="h-5 w-5 text-brand-red" strokeWidth={2.25} />}>
+                {state.message}
+              </Alert>
+              <div className="mt-5 flex items-center justify-end gap-2">
+                <Button variant="ghost" onClick={() => onOpenChange(false)}>
