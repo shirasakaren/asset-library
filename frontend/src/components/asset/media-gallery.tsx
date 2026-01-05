@@ -152,3 +152,25 @@ export function MediaGallery({
             controls
             preload="metadata"
             poster={active.thumb ?? undefined}
+            className="absolute inset-0 h-full w-full object-contain bg-black"
+          >
+            <source src={active.url} />
+          </video>
+        ) : active?.kind === 'audio' ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-8">
+            <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-brand-blue-50 text-brand-blue">
+              <Music className="h-8 w-8" strokeWidth={2.25} />
+            </div>
+            <p className="text-h3 font-display text-ink tracking-[-0.005em]">{active.label}</p>
+            <audio controls src={active.url} className="w-full max-w-[420px]" />
+          </div>
+        ) : active?.kind === '3d' ? (
+          <ModelViewerPanel
+            src={active.url}
+            alt={active.label ?? assetTitle}
+            poster={active.thumb ?? thumbnailUrl ?? thumbnailFallback ?? null}
+            animations={active.meta?.animations ?? []}
+          />
+        ) : (
+          <EmptyState
+            title={t('noPreview')}
