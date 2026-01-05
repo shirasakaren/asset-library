@@ -223,15 +223,3 @@ function RenderedImage({ node }: { node: TipTapNode }) {
   return (
     <figure className="my-6">
       <div className="rounded-[16px] overflow-hidden border border-line bg-surface-muted">
-        <Image
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          className="w-full h-auto block"
-          sizes="(min-width: 1024px) 720px, 100vw"
-          unoptimized
-        />
-      </div>
-      {alt ? <figcaption className="mt-2 text-caption text-ink-3 text-center">{alt}</figcaption> : null}
-    </figure>
