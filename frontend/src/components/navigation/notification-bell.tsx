@@ -104,5 +104,3 @@ export function NotificationBell({ initialUnreadCount }: NotificationBellProps) 
               onClick={handleMarkAllClick}
               className="text-caption text-ink-3 hover:text-ink transition-colors"
             >
-              {t('markAllRead')}
-            </button>
