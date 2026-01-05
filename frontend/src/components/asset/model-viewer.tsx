@@ -178,32 +178,3 @@ export function ModelViewerPanel({
         exposure="1.0"
         tone-mapping="aces"
         interaction-prompt="none"
-        animation-name={activeAnim}
-        onDoubleClick={() => {
-          const el = ref.current as unknown as { resetTurntableRotation?: () => void } | null;
-          el?.resetTurntableRotation?.();
-        }}
-        style={{ width: '100%', height: '100%', background: 'transparent' }}
-      />
-
-      {/* Blurred poster + progress bar until the GLB finishes downloading. */}
-      {!loaded ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden">
-          {poster ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={poster}
-              alt=""
-              aria-hidden
-              className="absolute inset-0 h-full w-full object-cover scale-110 blur-xl opacity-60"
-            />
-          ) : null}
-          <div className="relative z-10 inline-flex items-center gap-2 text-[13px] font-medium text-ink">
-            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
-            {ready ? `Loading 3D preview · ${loadingPct}%` : t('loading')}
-          </div>
-          <div className="relative z-10 w-[min(260px,70%)] h-1.5 rounded-full bg-ink/10 overflow-hidden">
-            <div
-              className="h-full bg-brand-blue transition-[width] duration-150"
-              style={{ width: `${ready ? loadingPct : 5}%` }}
-            />
