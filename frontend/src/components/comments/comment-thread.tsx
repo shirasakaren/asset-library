@@ -130,11 +130,3 @@ export function CommentThread(props: CommentThreadProps) {
                 <button
                   type="button"
                   onClick={() => setReplying((r) => !r)}
-                  className="inline-flex items-center gap-1 hover:text-ink transition-colors"
-                >
-                  <MessageSquare className="h-3 w-3" strokeWidth={2.25} />
-                  {t('reply')}
-                </button>
-              ) : null}
-              {canChangeStatus ? (
-                <ChangeStatus
