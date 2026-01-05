@@ -46,3 +46,7 @@ export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingEle
         'font-display text-h3 text-ink tracking-[-0.005em] font-semibold',
         className,
       )}
+      {...props}
+    />
+  );
+}
