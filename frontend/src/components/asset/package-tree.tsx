@@ -111,3 +111,7 @@ export function PackageTree({ files }: PackageTreeProps) {
           onChange={(e) => setQuery(e.target.value)}
           className="max-w-[280px]"
         />
+      </div>
+      {filtered.length === 0 ? (
+        <p className="text-body-sm text-ink-3">{t('emptyMatch', { query })}</p>
+      ) : (
