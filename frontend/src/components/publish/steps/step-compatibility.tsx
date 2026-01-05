@@ -111,20 +111,3 @@ export function StepCompatibility() {
 
   return (
     <div className="space-y-4 max-w-[820px]">
-      <div>
-        <h2 className="font-display text-h2 text-ink tracking-[-0.01em] mb-1">{t('title')}</h2>
-      </div>
-
-      {rows.length === 0 ? (
-        <Alert variant="neutral">{t('noRows')}</Alert>
-      ) : (
-        <ul className="space-y-3">
-          {rows.map((row, idx) => (
-            <li key={idx} className="rounded-[14px] border border-line p-4 bg-surface">
-              <div className="flex flex-wrap gap-4">
-                <Field id={`ev-${idx}`} label={versionLabel} className="flex-1 min-w-[200px]">
-                  <Input
-                    id={`ev-${idx}`}
-                    list={`engine-${wiz.asset.engine}`}
-                    value={row.engineVersion}
-                    onChange={(e) => {
