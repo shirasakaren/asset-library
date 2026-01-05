@@ -108,3 +108,8 @@ export function DiscoverAllGrid({ ownAssetIds }: DiscoverAllGridProps) {
               <option key={s} value={s}>
                 {t(`sort.${s}` as 'sort.newest')}
               </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
