@@ -180,25 +180,3 @@ export function WizardProvider({ initialAsset, locale, children }: WizardProvide
       if (dirty || saving === 'saving') {
         e.preventDefault();
         e.returnValue = '';
-      }
-    }
-    window.addEventListener('beforeunload', onBeforeUnload);
-    return () => window.removeEventListener('beforeunload', onBeforeUnload);
-  }, [dirty, saving]);
-
-  const refresh = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.asset(asset.id, locale) });
-  }, [queryClient, asset.id, locale]);
-
-  // Background uploads live in a global store decoupled from the wizard. Watch
-  // it: when a file finishes uploading (its AssetFile row is finalized and the
-  // version recounted server-side), re-read the asset so latestVersion.fileCount
-  // refreshes and the "at least 1 file uploaded" checklist item ticks live —
-  // without the user reloading. Select stable refs and derive the signature in
-  // render (a selector returning a fresh array each call triggers React #185).
-  const uploadTasks = useUploadStore((s) => s.tasks);
-  const uploadOrder = useUploadStore((s) => s.order);
-  const completedUploadSig = useMemo(
-    () =>
-      selectCompletedFileIdsFor(
-        { tasks: uploadTasks, order: uploadOrder },
