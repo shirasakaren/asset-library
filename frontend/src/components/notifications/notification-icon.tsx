@@ -48,23 +48,3 @@ const TINT_MAP: Record<NotificationType, string> = {
 };
 
 export function NotificationIcon({ type, className }: { type: string; className?: string }) {
-  const t = (type as NotificationType) || 'COMMENT_CREATED';
-  const Icon = ICON_MAP[t] ?? Inbox;
-  const tint = TINT_MAP[t] ?? 'bg-surface-muted text-ink-2';
-  return (
-    <span className={cn('inline-flex h-8 w-8 items-center justify-center rounded-[10px]', tint, className)}>
-      <Icon className="h-4 w-4" strokeWidth={2.25} />
-    </span>
-  );
-}
-
-export function notificationLink(type: string, payload: Record<string, unknown>): string {
-  const t = (type as NotificationType) ?? 'COMMENT_CREATED';
-  const slug = String(payload.assetSlug ?? '');
-  const commentId = String(payload.commentId ?? '');
-  switch (t) {
-    case 'COMMENT_CREATED':
-    case 'COMMENT_REPLY':
-      return slug ? `/assets/${slug}#comment-${commentId}` : '/notifications';
-    case 'ISSUE_CREATED':
-    case 'ISSUE_STATUS_CHANGED':
