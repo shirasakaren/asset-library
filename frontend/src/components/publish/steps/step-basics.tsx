@@ -123,3 +123,20 @@ export function StepBasics() {
             <option key={c.id} value={c.id}>
               {c.name}
             </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field id="license" label={t('license')} required>
+        <div className="flex items-stretch gap-2">
+          <select
+            id="license"
+            value={wiz.asset.license?.id ?? ''}
+            onChange={(e) => wiz.patch({ licenseId: e.target.value })}
+            className="flex-1 h-11 rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            <option value="">—</option>
+            {licenses.data?.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
