@@ -68,3 +68,37 @@ export function ThumbnailImage({
       ) : null}
       {url && !errored ? (
         // Plain <img> when:
+        //  - blob: / data: URLs (next/image refuses them — local publish-wizard
+        //    previews that must render the moment the file is picked), or
+        //  - unoptimized grid thumbnails (pre-resized, presigned: the optimizer
+        //    adds a server round-trip with ~0% cache hit).
+        url.startsWith('blob:') || url.startsWith('data:') || unoptimized ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt={alt}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+            className={cn(
+              'absolute inset-0 h-full w-full object-cover transition-opacity duration-200',
+              loaded ? 'opacity-100' : 'opacity-0',
+            )}
+            onLoad={() => setLoaded(true)}
+            onError={() => setErrored(true)}
+          />
+        ) : (
+          <Image
+            src={url}
+            alt={alt}
+            fill={fill}
+            width={fill ? undefined : width}
+            height={fill ? undefined : height}
+            priority={priority}
+            sizes={fill ? sizes : undefined}
+            className={cn(
+              'object-cover transition-opacity duration-200',
+              loaded ? 'opacity-100' : 'opacity-0',
+            )}
+            onLoad={() => setLoaded(true)}
+            onError={() => setErrored(true)}
+          />
