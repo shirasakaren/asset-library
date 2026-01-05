@@ -51,3 +51,8 @@ export async function Footer() {
         { label: t('cookies'), href: '/about#cookies' },
       ],
     },
+  ];
+
+  return (
+    <footer className="mt-24 border-t border-line bg-bg">
+      <Container size="2xl">
