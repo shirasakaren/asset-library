@@ -98,3 +98,6 @@ export function SearchResults() {
           title={t('emptyTitle')}
           description={t('emptyBody')}
           seed="search-empty"
+          primaryAction={<Button onClick={reset}>Clear filters</Button>}
+        />
+      ) : (
