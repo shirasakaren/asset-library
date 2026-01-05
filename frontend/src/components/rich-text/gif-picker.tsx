@@ -71,3 +71,29 @@ export function GifPicker({ open, onOpenChange, onPick }: GifPickerProps) {
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-3"
               strokeWidth={2.25}
+            />
+            <Input
+              autoFocus
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search GIFs…"
+              className="pl-9"
+            />
+          </div>
+          {available.length > 1 ? (
+            <div className="inline-flex rounded-[10px] border border-line overflow-hidden">
+              {available.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setProvider(p)}
+                  className={cn(
+                    'px-3 h-9 text-[12.5px] font-medium capitalize transition-colors',
+                    provider === p ? 'bg-ink text-white' : 'bg-surface text-ink-2 hover:bg-surface-muted',
+                  )}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          ) : null}
