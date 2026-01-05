@@ -72,7 +72,3 @@ export function StepRail() {
         <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
           {tChecklist('title')}
         </p>
-        <ul className="space-y-2">
-          {Object.entries(wiz.checklist)
-            .filter(([k]) => k !== 'compatibility' || wiz.asset.engine !== 'ENGINE_AGNOSTIC')
-            .map(([k, item]) => (
