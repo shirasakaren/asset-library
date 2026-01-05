@@ -70,4 +70,3 @@ export function ReportModal({ open, onOpenChange, assetId, assetTitle }: ReportM
       }
       toast.error(t('intro'), { description: err instanceof Error ? err.message : String(err) });
     }
-  };
