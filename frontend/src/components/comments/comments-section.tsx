@@ -186,3 +186,13 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
       {pendingNew > 0 ? (
         <button
           type="button"
+          onClick={() => {
+            void query.refetch();
+            setPendingNew(0);
+          }}
+          className="mt-4 w-full inline-flex items-center justify-center h-9 rounded-[10px] bg-brand-blue-50 text-brand-blue font-medium text-[13.5px] hover:bg-brand-blue-50/80 transition-colors"
+        >
+          {t('newCommentsBanner', { count: pendingNew })}
+        </button>
+      ) : null}
+
