@@ -96,3 +96,28 @@ export function AdminTransferModal({ asset, onOpenChange, onDone }: Props) {
                     type="button"
                     onClick={() => setPicked(u)}
                     className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-muted/60 transition-colors"
+                  >
+                    <Avatar
+                      data={
+                        u.avatar
+                          ? avatarFromServer(u.avatar)
+                          : { initials: u.displayName.slice(0, 2).toUpperCase(), bgColor: '#3a6dc5', fgColor: '#fff' }
+                      }
+                      size={24}
+                    />
+                    <span className="text-[14px] font-medium text-ink">{u.displayName}</span>
+                    <span className="text-caption text-ink-3 font-mono ml-auto">{u.email}</span>
+                  </button>
+                </li>
+              ))}
+          </ul>
+        ) : null}
+
+        {picked ? (
+          <div className="mt-3 flex items-center justify-between p-3 rounded-[12px] bg-surface-muted/50 border border-line">
+            <span className="inline-flex items-center gap-2">
+              <Avatar
+                data={
+                  picked.avatar
+                    ? avatarFromServer(picked.avatar)
+                    : { initials: picked.displayName.slice(0, 2).toUpperCase(), bgColor: '#3a6dc5', fgColor: '#fff' }
