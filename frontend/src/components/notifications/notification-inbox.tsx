@@ -109,4 +109,3 @@ export function NotificationInbox({ initial, initialCursor }: Props) {
             <section key={group.key}>
               <h2 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
                 {t(`group.${group.key}` as 'group.today')}
-              </h2>
