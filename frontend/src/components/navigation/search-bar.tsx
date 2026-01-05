@@ -176,3 +176,21 @@ export function SearchBar({ className }: SearchBarProps) {
           leadingIcon={
             isFetching ? (
               <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+            ) : (
+              <Search className="h-4 w-4" strokeWidth={2.25} />
+            )
+          }
+          className="bg-surface-muted border-transparent focus-visible:bg-surface focus-visible:border-line-strong"
+        />
+
+        {showPanel ? (
+          <div
+            id="search-typeahead"
+            role="listbox"
+            className="absolute top-full mt-2 left-0 right-0 z-50 rounded-[14px] border border-line bg-surface shadow-2 overflow-hidden"
+          >
+            {rows.length === 0 && !isFetching ? (
+              <div className="p-4 text-body-sm text-ink-3">{tNav('noMatches')}</div>
+            ) : (
+              <>
+                {(tagsQ.data?.length ?? 0) > 0 ? (
