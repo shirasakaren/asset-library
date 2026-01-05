@@ -71,17 +71,3 @@ export function RequestForm({ me, open, onOpenChange, onCreated }: Props) {
         return;
       }
       toast.error('Could not submit', {
-        description: err instanceof Error ? err.message : String(err),
-      });
-    }
-  };
-
-  return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent size="md">
-        <ModalHeader>
-          <ModalTitle>{t('newRequest')}</ModalTitle>
-          <ModalDescription>{t('subtitle')}</ModalDescription>
-        </ModalHeader>
-
-        {rateLimited ? <Alert variant="warning" className="mb-4">{t('rateLimited')}</Alert> : null}
