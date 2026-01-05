@@ -87,3 +87,10 @@ export function CategoryRow({
             </div>
           ))}
         </div>
+
+        <button
+          type="button"
+          aria-label={t('scrollLeft')}
+          onClick={() => scrollBy(-1)}
+          disabled={!canPrev}
+          className={cn(
