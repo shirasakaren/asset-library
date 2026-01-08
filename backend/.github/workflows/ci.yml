@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://mgm:mgm@localhost:5432/mgm_asset_library_test?schema=public
+      MONGO_URL: mongodb://localhost:27017/mgm_asset_library_test
+      REDIS_URL: redis://localhost:6379
+      KEYCLOAK_ISSUER_URL: http://localhost/realms/mgm
+      KEYCLOAK_AUDIENCE: mgm-asset-library
+      KEYCLOAK_JWKS_URI: http://localhost/realms/mgm/protocol/openid-connect/certs
+      PUBLIC_BASE_URL: http://localhost:4000
+      S3_ACCESS_KEY_ID: dummy
+      S3_SECRET_ACCESS_KEY: dummy
+      S3_BUCKET_ASSETS: assets
+      S3_BUCKET_THUMBS: thumbs
+      S3_BUCKET_EDITOR_MEDIA: editor
+      MEILI_URL: http://localhost:7700
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm prisma generate
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test -- --coverage --coverageReporters=json-summary --coverageReporters=text
+      - run: pnpm build
+
+      - name: Verify openapi.json is up to date
+        run: |
+          pnpm openapi:export
+          if ! git diff --quiet openapi.json; then
+            echo "::error::openapi.json is out of date. Run \`pnpm openapi:export\` and commit."
+            git --no-pager diff openapi.json | head -200
+            exit 1
+          fi
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
