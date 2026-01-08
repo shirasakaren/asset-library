@@ -194,3 +194,69 @@ export function SearchBar({ className }: SearchBarProps) {
             ) : (
               <>
                 {(tagsQ.data?.length ?? 0) > 0 ? (
+                  <div className="px-3 pt-2.5 pb-1">
+                    <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">
+                      {tNav('tags')}
+                    </p>
+                  </div>
+                ) : null}
+                {tagsQ.data?.map((tag, i) => {
+                  const rowIndex = i;
+                  const active = rows[activeIndex]?.id === `tag-${tag.slug}`;
+                  return (
+                    <NextLink
+                      key={tag.slug}
+                      href={`/search?tags=${encodeURIComponent(tag.slug)}`}
+                      id={`tag-${tag.slug}`}
+                      role="option"
+                      aria-selected={active}
+                      onMouseEnter={() => setActiveIndex(rowIndex)}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        'flex items-center gap-2.5 px-3 h-9 text-[13.5px] text-ink hover:bg-surface-muted/60 transition-colors duration-120',
+                        active && 'bg-surface-muted/60',
+                      )}
+                    >
+                      <TagIcon className="h-3.5 w-3.5 text-ink-3" strokeWidth={2.25} />
+                      <span className="font-medium">{tag.displayName}</span>
+                      <span className="ml-auto text-caption text-ink-3 geist-tnum">
+                        {tag.usageCount}
+                      </span>
+                    </NextLink>
+                  );
+                })}
+
+                {(assetsQ.data?.hits?.length ?? 0) > 0 ? (
+                  <div className="px-3 pt-2.5 pb-1 border-t border-line">
+                    <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">
+                      {tNav('assets')}
+                    </p>
+                  </div>
+                ) : null}
+                {assetsQ.data?.hits?.map((hit, i) => {
+                  const rowIndex = (tagsQ.data?.length ?? 0) + i;
+                  const active = rows[activeIndex]?.id === `asset-${hit.id}`;
+                  return (
+                    <NextLink
+                      key={hit.id}
+                      href={`/assets/${hit.slug}`}
+                      id={`asset-${hit.id}`}
+                      role="option"
+                      aria-selected={active}
+                      onMouseEnter={() => setActiveIndex(rowIndex)}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        'flex items-center gap-3 px-3 py-2 hover:bg-surface-muted/60 transition-colors duration-120',
+                        active && 'bg-surface-muted/60',
+                      )}
+                    >
+                      <div className="relative h-10 w-[60px] shrink-0 rounded-[8px] overflow-hidden bg-surface-muted border border-line">
+                        {hit.thumbnailUrl ? (
+                          <Image
+                            src={hit.thumbnailUrl}
+                            alt=""
+                            fill
+                            sizes="60px"
+                            className="object-cover"
+                            unoptimized
+                          />

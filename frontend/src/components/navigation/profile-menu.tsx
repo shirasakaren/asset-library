@@ -42,3 +42,9 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
     <Popover>
       <PopoverTrigger asChild>
         <button
+          type="button"
+          aria-label={tc('openProfileMenu')}
+          className={cn(
+            'inline-flex h-10 w-10 items-center justify-center rounded-full',
+            'transition-transform duration-200 hover:scale-[1.04]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
