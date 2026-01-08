@@ -43,3 +43,6 @@ export const useAnalyzerStore = create<AnalyzerState>((set) => ({
             files: { ...v.files, [fileId]: { status } },
             updatedAt: Date.now(),
           },
+        },
+      };
+    }),
