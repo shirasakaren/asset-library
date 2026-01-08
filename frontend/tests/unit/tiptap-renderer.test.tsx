@@ -59,5 +59,3 @@ describe('TipTapRenderer', () => {
           content: [{ type: 'text', text: 'console.log(42)' }],
         },
       ],
-    };
-    const { container } = render(<TipTapRenderer doc={doc} />);
