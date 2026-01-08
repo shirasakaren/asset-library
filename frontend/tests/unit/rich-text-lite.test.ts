@@ -42,3 +42,12 @@ describe('stripDisallowedLiteNodes', () => {
     const cleaned = stripDisallowedLiteNodes(doc);
     expect(cleaned.content?.map((n) => n.type)).toEqual(['paragraph', 'image']);
   });
+
+  it('strips disallowed marks (underline, highlight, textStyle)', () => {
+    const doc: TipTapDoc = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
