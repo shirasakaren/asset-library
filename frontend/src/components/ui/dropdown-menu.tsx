@@ -43,6 +43,3 @@ export const DropdownMenuItem = forwardRef<
     )}
     {...props}
   />
-));
-DropdownMenuItem.displayName = 'DropdownMenuItem';
-
