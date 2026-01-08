@@ -41,9 +41,3 @@ export function useSaveToggle() {
         .getQueriesData<{ id: string; isSaved: boolean }>({ queryKey: ['asset'] })
         .forEach(([key, data]) => {
           if (data && data.id === assetId) {
-            previousDetails.set(JSON.stringify(key), data);
-            queryClient.setQueryData(key, { ...data, isSaved: nextSaved });
-          }
-        });
-      return { previousDetails };
-    },
