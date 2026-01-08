@@ -54,3 +54,18 @@ def probe(path: str) -> dict:
 
     if all_coords:
         xs = [c[0] for c in all_coords]
+        ys = [c[1] for c in all_coords]
+        zs = [c[2] for c in all_coords]
+        bbox = {"min": [min(xs), min(ys), min(zs)], "max": [max(xs), max(ys), max(zs)]}
+    else:
+        bbox = {"min": [0, 0, 0], "max": [0, 0, 0]}
+
+    has_skeleton = any(obj.type == "ARMATURE" for obj in bpy.context.scene.objects)
+    animations = []
+    for action in bpy.data.actions:
+        frame_start, frame_end = action.frame_range
+        length_sec = (frame_end - frame_start) / max(bpy.context.scene.render.fps, 1)
+        animations.append(
+            {
+                "name": action.name,
+                "lengthSec": round(float(length_sec), 4),
