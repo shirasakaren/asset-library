@@ -112,13 +112,3 @@ export function UploadDock() {
                           'block h-full transition-[width] duration-150',
                           t.status === 'failed'
                             ? 'bg-brand-red'
-                            : t.status === 'uploading'
-                              ? 'bg-brand-blue'
-                              : 'bg-brand-green',
-                        )}
-                        style={{
-                          width: `${
-                            t.status === 'analyzing' || t.status === 'ready'
-                              ? 100
-                              : t.totalBytes
-                                ? Math.round((t.bytesUploaded / t.totalBytes) * 100)
