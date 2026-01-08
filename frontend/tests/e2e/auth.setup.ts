@@ -52,3 +52,7 @@ async function loginViaUi(
     page.locator('button[type="submit"], input[type="submit"]').first().click(),
   ]);
   await expect(page.locator('nav[aria-label="Primary"]')).toBeVisible();
+}
+
+for (const persona of PERSONAS) {
+  setup(`auth: ${persona}`, async ({ page, context }) => {
