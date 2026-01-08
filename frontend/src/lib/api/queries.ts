@@ -68,3 +68,10 @@ export const queryKeys = {
 
   downloadOptions: (assetId: string, versionId: string) =>
     ['download-options', assetId, versionId] as const,
+
+  assetVersions: (assetId: string) => ['asset', assetId, 'versions'] as const,
+
+  comments: (assetId: string, filter: { kind?: 'ALL' | 'COMMENT' | 'ISSUE' } = {}) =>
+    ['comments', assetId, filter] as const,
+
+  notificationsInbox: (params: { unreadOnly?: boolean } = {}) =>
