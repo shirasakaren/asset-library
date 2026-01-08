@@ -230,23 +230,3 @@ Authentication is delegated to Keycloak via Auth.js v5:
   `/patterns/*`, `/favicon*`, `/robots.txt`, `/sitemap.xml`, `/403`).
 - Server helpers live in `frontend/src/lib/auth/server.ts`:
   `getSession()`, `requireSession(callbackUrl?)`, `fetchMe(session)`,
-  `requireAdmin()`.
-- The Keycloak `access_token` is forwarded on every API call; refresh
-  happens in `callbacks.jwt` within 60 s of expiry.
-- Roles: **Admin** (bootstrapped via `admin@labmgm.org`) · **Contributor**
-  (published ≥ 1 asset) · **User** (default).
-
-### 4.2 i18n
-
-Powered by `next-intl`. Catalogs live in `frontend/messages/{en,id}.json`.
-Locale resolution: `User.locale` (set via the switcher) → `NEXT_LOCALE`
-cookie → `accept-language` header → `NEXT_PUBLIC_DEFAULT_LOCALE`. Dates,
-numbers, and byte sizes are formatted through locale-aware helpers in
-`frontend/src/lib/format.ts`.
-
-### 4.3 Design system
-
-All visual primitives derive from `frontend/DESIGN_SYSTEM.md`. Tokens flow
-into CSS custom properties (`frontend/src/styles/globals.css`) and Tailwind
-(`frontend/tailwind.config.ts`), and are consumed by the primitives in
-`frontend/src/components/ui/` and the brand components. The geometric
