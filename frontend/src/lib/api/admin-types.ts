@@ -160,3 +160,79 @@ export interface AdminReport {
   adminNotes: string | null;
   createdAt: string;
   resolvedAt: string | null;
+}
+
+export interface AdminReportPage {
+  items: AdminReport[];
+  pageInfo: PageInfo;
+}
+
+export type AdminAssetRequest = AssetRequest;
+
+export interface AdminAssetRequestPage {
+  items: AdminAssetRequest[];
+  pageInfo: PageInfo;
+}
+
+export interface AdminStorageUserRow {
+  userId: string;
+  displayName: string;
+  email: string;
+  bytes: number;
+  spark: { date: string; bytes: number }[];
+}
+
+export interface AdminStorageAssetRow {
+  assetId: string;
+  slug: string;
+  title: string;
+  ownerDisplayName: string;
+  bytes: number;
+  spark: { date: string; bytes: number }[];
+}
+
+export interface AdminStorageSummary {
+  totalBytes: number;
+  byBucket: { bucket: string; bytes: number }[];
+  asOfDate: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  displayName: string;
+  isAdmin: boolean;
+  locale: LocaleCode;
+  createdAt: string;
+  publishedAssetCount: number;
+  avatar?: ServerAvatar;
+  savedBytes?: number;
+}
+
+export interface AdminUserPage {
+  items: AdminUser[];
+  pageInfo: PageInfo;
+}
+
+export interface AdminAuditPage {
+  items: AuditEntry[];
+  pageInfo: PageInfo;
+}
+
+export interface AdminWebhookDelivery {
+  id: string;
+  type: string;
+  status: 'success' | 'failure' | 'pending';
+  recipient: string;
+  attempt: number;
+  durationMs: number | null;
+  requestBody: unknown;
+  responseStatus: number | null;
+  responseHeaders: Record<string, string> | null;
+  responseBodyExcerpt: string | null;
+  createdAt: string;
+}
+
+export interface AdminWebhookPage {
+  items: AdminWebhookDelivery[];
+  pageInfo: PageInfo;
