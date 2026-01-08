@@ -47,11 +47,3 @@ export async function requireSession(callbackUrl?: string): Promise<ResolvedSess
   if (!session || session.error === 'RefreshAccessTokenError') {
     const target = callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : '';
     redirect(`/auth/signin${target}`);
-  }
-  return session;
-}
-
-// Cached per request, keyed by access token. Layout + page can both call
-// fetchMe without producing a duplicate /auth/me round-trip.
-export const fetchMe = cache(async (session: ResolvedSession): Promise<MeResponse> => {
-  if (session.mock) return MOCK_USER;
