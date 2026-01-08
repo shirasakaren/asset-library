@@ -85,3 +85,25 @@ export const authConfig: NextAuthConfig = {
 
       // No refresh token — push the user back to sign-in.
       if (!token.refreshToken) {
+        token.error = 'RefreshAccessTokenError';
+        return token;
+      }
+
+      try {
+        const refreshed = await refreshKeycloakToken({
+          accessToken: token.accessToken as string,
+          idToken: token.idToken as string | undefined,
+          refreshToken: token.refreshToken as string,
+          expiresAt,
+        });
+        token.accessToken = refreshed.accessToken;
+        token.idToken = refreshed.idToken;
+        token.refreshToken = refreshed.refreshToken;
+        token.expiresAt = refreshed.expiresAt;
+        token.error = undefined;
+      } catch {
+        token.error = 'RefreshAccessTokenError';
+      }
+      return token;
+    },
+    async session({ session, token }) {
