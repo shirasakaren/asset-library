@@ -60,11 +60,3 @@ export const ModalContent = forwardRef<
       )}
       {...props}
     >
-      {children}
-      {!hideClose ? (
-        <DialogPrimitive.Close
-          aria-label="Close"
-          className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-ink-3 hover:bg-surface-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-        >
-          <X className="h-4 w-4" strokeWidth={2.25} />
-        </DialogPrimitive.Close>
