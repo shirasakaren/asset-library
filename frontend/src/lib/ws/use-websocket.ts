@@ -78,3 +78,21 @@ export function useWebSocket({ token, enabled = true }: UseWebSocketOptions) {
 
       ws.onmessage = (ev) => {
         resetLiveness();
+        try {
+          const msg = JSON.parse(typeof ev.data === 'string' ? ev.data : '');
+          if (msg && typeof msg.type === 'string') {
+            dispatch(msg);
+          }
+        } catch {
+          /* ignore non-JSON frames */
+        }
+      };
+
+      ws.onerror = () => {
+        setError('socket-error');
+        logger.warn('ws:error');
+      };
+
+      ws.onclose = (ev) => {
+        setStatus('closed');
+        logger.info('ws:close', { code: ev.code, reason: ev.reason });
