@@ -68,3 +68,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return {
         type: `${this.baseUrl}/errors/${exception.code}`,
         title: exception.constructor.name.replace(/Exception$/, ''),
+        status: exception.getStatus(),
+        detail: body.message ?? exception.message,
+        instance,
+        code: exception.code,
+        fields: exception.fields,
+      };
+    }
+
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+      const response = exception.getResponse();
