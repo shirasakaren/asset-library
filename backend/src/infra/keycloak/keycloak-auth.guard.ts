@@ -49,3 +49,13 @@ export class KeycloakAuthGuard implements CanActivate {
       throw new UnauthorizedException('Missing bearer token.');
     }
 
+    let claims: KeycloakClaims;
+    try {
+      claims = await this.jwks.verify(token);
+    } catch (err) {
+      this.logger.debug(`Token verification failed: ${(err as Error).message}`);
+      throw new UnauthorizedException('Invalid or expired token.');
+    }
+
+    const resolved = await this.principals.resolvePrincipal(claims);
+
