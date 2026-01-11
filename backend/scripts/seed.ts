@@ -129,3 +129,13 @@ const LICENSES: LicenseSeed[] = [
       id: 'Hanya untuk penggunaan internal di MGM Laboratory dan mitranya. Distribusi ulang ke luar organisasi dilarang.',
     },
     sortOrder: 70,
+  },
+];
+
+async function seedAdmin(): Promise<void> {
+  const email = (process.env.ADMIN_BOOTSTRAP_EMAIL ?? 'admin@labmgm.org').toLowerCase();
+  // We can't reach Keycloak from a seed script, so we mint a placeholder sub
+  // that the auth guard will overwrite on first real login.
+  const placeholderSub = `seed:${email}`;
+  const user = await prisma.user.upsert({
+    where: { email },
