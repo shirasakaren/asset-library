@@ -81,3 +81,21 @@ export const envSchema = z
     SMTP_FROM: z.string().default('MGM Asset Library <no-reply@labmgm.org>'),
 
     // ─────────── n8n ────────────────────────────────────────────────────────
+    N8N_WEBHOOK_URL: z.string().optional().default(''),
+    N8N_WEBHOOK_SECRET: z.string().optional().default(''),
+
+    // ─────────── GIF providers (comment composer) ───────────────────────────
+    // Server-side keys for the /gifs proxy. Empty disables that provider.
+    GIPHY_API_KEY: z.string().optional().default(''),
+    TENOR_API_KEY: z.string().optional().default(''),
+
+    // ─────────── Sentry ─────────────────────────────────────────────────────
+    SENTRY_DSN: z.string().optional().default(''),
+    SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.1),
+    SENTRY_ENVIRONMENT: z.string().default('development'),
+
+    // ─────────── Background tool paths (worker container only) ────────────
+    BLENDER_BIN: z.string().default('/usr/bin/blender'),
+    CLAMSCAN_BIN: z.string().default('/usr/bin/clamscan'),
+    FFMPEG_BIN: z.string().default('/usr/bin/ffmpeg'),
+    FFPROBE_BIN: z.string().default('/usr/bin/ffprobe'),
