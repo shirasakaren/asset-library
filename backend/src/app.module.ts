@@ -69,21 +69,3 @@ import { WsModule } from './modules/ws/ws.module';
     }),
 
     // ── Infra (shared connectors) ───────────────────────────────────────────
-    SentryModule,
-    PrismaModule,
-    MongoModule,
-    RedisModule,
-    S3Module,
-    MeilisearchModule,
-    MailerModule,
-    N8nModule,
-    KeycloakModule,
-    GuardsModule,
-    AuditCoreModule,
-    IdempotencyModule,
-    RateLimitModule,
-
-    // ── Health ──────────────────────────────────────────────────────────────
-    HealthModule,
-
-    // ── Active feature modules (Part 1) ─────────────────────────────────────
