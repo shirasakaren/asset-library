@@ -67,3 +67,8 @@ export class AuditInterceptor implements NestInterceptor {
     );
     if (!config) return next.handle();
 
+    const req = context.switchToHttp().getRequest<
+      FastifyRequest & {
+        user?: AuthenticatedRequestUser;
+        body?: Record<string, unknown>;
+        params?: Record<string, unknown>;
