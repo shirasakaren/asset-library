@@ -64,3 +64,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Backend e2e harness with in-process FakeKeycloak against the test compose
   stack.
 - OpenAPI freshness checks on both sides of the workspace.
+
+## [0.6.0] - 2026-03-01
+
+### Added
+
+- Admin panel: dashboard, moderation, storage rollup, AV queue, audit log.
+- Rate limiting on reports, asset requests, comments, and plugin token
+  exchange.
+- `@RequireConfirmation` guard for destructive admin operations.
