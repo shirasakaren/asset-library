@@ -40,3 +40,6 @@ async function main(): Promise<void> {
     'tags',
     'renderPipelines',
     'targets',
+    'fileKinds',
+    'status',
+  ]);
