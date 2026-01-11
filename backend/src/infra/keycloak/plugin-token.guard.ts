@@ -29,3 +29,4 @@ export class PluginTokenGuard implements CanActivate {
     ]);
     if (isPublic) return true;
     const req = context.switchToHttp().getRequest<FastifyRequest>();
+    const token = extractPluginToken(req);
