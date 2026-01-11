@@ -33,13 +33,3 @@ export class ConfirmationGuard implements CanActivate {
     const body = (req.body ?? {}) as ConfirmationBody;
     if (body.confirm !== CONFIRMATION_PHRASE) {
       throw new BadRequestDomainException(
-        ErrorCode.CONFIRMATION_REQUIRED,
-        `Confirmation phrase missing — set body.confirm to "${CONFIRMATION_PHRASE}".`,
-      );
-    }
-    if (!body.confirmedAt) {
-      throw new BadRequestDomainException(
-        ErrorCode.CONFIRMATION_REQUIRED,
-        'Confirmation timestamp missing — set body.confirmedAt to an ISO-8601 UTC value.',
-      );
-    }
