@@ -57,8 +57,3 @@ def setup_hdri(path: str) -> None:
 
 def setup_camera(min_v: Vector, max_v: Vector) -> None:
     center = (min_v + max_v) / 2
-    size = (max_v - min_v).length
-    distance = max(size * 1.8, 1.5)
-    cam_data = bpy.data.cameras.new("MGM_Cam")
-    cam_obj = bpy.data.objects.new("MGM_Cam", cam_data)
-    bpy.context.scene.collection.objects.link(cam_obj)
