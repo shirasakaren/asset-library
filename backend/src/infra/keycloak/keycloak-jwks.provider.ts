@@ -40,4 +40,3 @@ export class KeycloakJwksProvider {
 
   /**
    * Verifies a Keycloak-issued bearer token end-to-end (signature, issuer,
-   * audience, expiry with configurable skew). Throws on any failure so the
