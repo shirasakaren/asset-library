@@ -141,3 +141,10 @@ async function main(): Promise<void> {
   if (!THUMBS_BUCKET || !EDITOR_BUCKET) {
     throw new Error('Missing S3 bucket env (S3_BUCKET_THUMBS / S3_BUCKET_EDITOR_MEDIA).');
   }
+  console.log(`compress-existing-images${DRY ? ' (DRY RUN)' : ''}`);
+
+  const assets = await prisma.asset.findMany({
+    select: { id: true, slug: true, thumbnailKey: true, previewMedia: true },
+  });
+  console.log(`scanning ${assets.length} assets…`);
+
