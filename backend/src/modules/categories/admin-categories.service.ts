@@ -150,3 +150,9 @@ export class AdminCategoriesService {
   }
 
   async initiateIconUpload(
+    contentType: string,
+    bytes: number,
+  ): Promise<{ putUrl: string; key: string; expiresAt: string }> {
+    if (bytes > ICON_MAX_BYTES) {
+      throw new BadRequestDomainException(
+        ErrorCode.FILE_UPLOAD_INIT_FAILED,
