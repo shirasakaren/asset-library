@@ -132,3 +132,10 @@ export class DiscoverService {
               PARTITION BY a."categoryId"
               ORDER BY a."publishedAt" DESC NULLS LAST, a.id DESC
             ) AS rn
+          FROM assets a
+          WHERE a.status = 'PUBLISHED'
+            AND a."categoryId" = ANY(${categoryIds}::text[])
+        )
+        SELECT id, "categoryId"
+        FROM ranked
+        WHERE rn <= ${ASSETS_PER_ROW}
