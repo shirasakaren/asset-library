@@ -134,3 +134,48 @@ export class FeaturedService {
       action: 'featured.update',
       subjectType: 'FeaturedSlot',
       subjectId: id,
+      metadata: { changes: dto },
+    });
+    return this.toDto(updated);
+  }
+
+  async remove(id: string, admin: User): Promise<void> {
+    const row = await this.prisma.featuredSlot.findUnique({ where: { id } });
+    if (!row)
+      throw new NotFoundDomainException(
+        ErrorCode.ASSET_NOT_FOUND,
+        `Featured slot ${id} not found.`,
+      );
+    await this.prisma.featuredSlot.delete({ where: { id } });
+    await this.discover.invalidate();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'featured.delete',
+      subjectType: 'FeaturedSlot',
+      subjectId: id,
+    });
+  }
+
+  /**
+   * Re-numbers `sortOrder` to match the supplied id sequence. Done in a
+   * single transaction so the unique constraint never trips mid-update.
+   */
+  async reorder(orderedIds: string[], admin: User): Promise<void> {
+    const rows = await this.prisma.featuredSlot.findMany({
+      where: { id: { in: orderedIds } },
+      select: { id: true },
+    });
+    if (rows.length !== orderedIds.length) {
+      throw new NotFoundDomainException(
+        ErrorCode.ASSET_NOT_FOUND,
+        'One or more featured slot ids could not be found.',
+      );
+    }
+    // Two passes so the unique-on-sortOrder index never collides mid-reorder:
+    //   1. park each row at a large unused number.
+    //   2. set the final value.
+    const offset = 1_000_000;
+    await this.prisma.$transaction([
+      ...orderedIds.map((id, idx) =>
+        this.prisma.featuredSlot.update({
+          where: { id },
