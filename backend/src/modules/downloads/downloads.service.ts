@@ -116,7 +116,3 @@ export class DownloadsService {
         data: targetFiles.map((f) => ({
           userId: requester.id,
           assetId,
-          versionId,
-          fileId: f.id,
-          ipHash,
-          userAgent: truncatedUa,
