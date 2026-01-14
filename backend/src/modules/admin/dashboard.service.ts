@@ -118,3 +118,47 @@ export class DashboardService {
     const latest = await this.prisma.storageDaily.findFirst({
       orderBy: { date: 'desc' },
       select: { date: true },
+    });
+    if (!latest) {
+      return {
+        totalBytes: '0',
+        sourceBytes: '0',
+        derivedBytes: '0',
+        thumbsBytes: '0',
+        featuredBannersBytes: '0',
+        editorMediaBytes: '0',
+      };
+    }
+    const rows = await this.prisma.storageDaily.findMany({ where: { date: latest.date } });
+    const byPrefix = (p: string): bigint => rows.find((r) => r.prefix === p)?.bytes ?? 0n;
+    const source = byPrefix('source');
+    const derived = byPrefix('derived');
+    const thumbs = byPrefix('thumbs');
+    const featured = byPrefix('featured');
+    const editor = byPrefix('editor');
+    const total = source + derived + thumbs + featured + editor;
+    return {
+      totalBytes: total.toString(),
+      sourceBytes: source.toString(),
+      derivedBytes: derived.toString(),
+      thumbsBytes: thumbs.toString(),
+      featuredBannersBytes: featured.toString(),
+      editorMediaBytes: editor.toString(),
+    };
+  }
+
+  private async loadCharts(): Promise<DashboardResponseDto['charts']> {
+    const start = new Date(Date.now() - 30 * 86_400_000);
+
+    const downloads = await this.prisma.$queryRaw<Array<{ date: Date; count: bigint }>>(Prisma.sql`
+      SELECT date_trunc('day', "createdAt") AS date, COUNT(*)::bigint AS count
+      FROM downloads
+      WHERE "createdAt" >= ${start}
+      GROUP BY date ORDER BY date ASC
+    `);
+    const publishes = await this.prisma.$queryRaw<Array<{ date: Date; count: bigint }>>(Prisma.sql`
+      SELECT date_trunc('day', "publishedAt") AS date, COUNT(*)::bigint AS count
+      FROM assets
+      WHERE "publishedAt" >= ${start} AND status = 'PUBLISHED'
+      GROUP BY date ORDER BY date ASC
+    `);
