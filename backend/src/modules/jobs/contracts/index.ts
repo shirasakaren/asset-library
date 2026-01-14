@@ -52,3 +52,8 @@ export interface SearchIndexJob {
 
 /** Batch trigger — payload is empty because the worker reads from Redis SET. */
 export interface SearchIndexBatchJob {
+  triggeredAt: string;
+}
+
+export interface NotifyJob {
+  recipientUserId: string;
