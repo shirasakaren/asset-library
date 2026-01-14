@@ -1,0 +1,30 @@
+name: CD - Staging
+
+on:
+  pull_request:
+    branches: ["*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  build-image-worker:
+    name: Build & Push Worker Image
+    uses: ./.github/workflows/image-worker.yml
+    needs: ci
+    with:
+      tag: worker-staging
+    secrets: inherit
+
+  build-image-api:
+    name: Build & Push API Image
+    uses: ./.github/workflows/image-api.yml
+    needs: ci
+    with:
+      tag: api-staging
+    secrets: inherit
