@@ -51,3 +51,11 @@ export class CommentsController {
   }
 
   @Post('assets/:assetId/comments')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @RateLimit({ windowSec: 60, max: 60, scope: 'user', name: 'comments.create' })
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a top-level comment/issue or a reply (max depth 5).' })
+  @ApiCreatedResponse()
+  create(
+    @AuthUser() principal: AuthenticatedRequestUser,
