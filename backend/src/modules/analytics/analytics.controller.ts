@@ -74,7 +74,3 @@ export class AnalyticsController {
       totalDownloads: r.totalDownloads,
       totalSaves: r.totalSaves,
       last7dDownloads: r.last7dDownloads,
-      last30dDownloads: r.last30dDownloads,
-    }));
-  }
-
