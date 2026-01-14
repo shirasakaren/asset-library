@@ -65,4 +65,3 @@ export class UpdateCategoryDto {
   @IsInt()
   @Min(0)
   sortOrder?: number;
-
