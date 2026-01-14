@@ -63,3 +63,7 @@ export class PrincipalResolverService {
    * enforced by the caller. Cache reads/writes are best-effort: a Redis failure
    * falls back to the Postgres upsert + role query.
    */
+  async resolvePrincipal(claims: KeycloakClaims): Promise<{ user: User; role: AppRole }> {
+    const cacheKey = PrincipalResolverService.cacheKey(claims.sub);
+    try {
+      const cached = await this.redis.client.get(cacheKey);
