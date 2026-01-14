@@ -53,3 +53,7 @@ export class AdminAuditController {
             ? encodeCursor({
                 id: slice[slice.length - 1].id,
                 createdAt: slice[slice.length - 1].createdAt.toISOString(),
+              })
+            : null,
+        hasMore,
+      },
