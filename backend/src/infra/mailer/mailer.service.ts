@@ -34,3 +34,7 @@ export class MailerService implements OnModuleDestroy {
       this.logger.warn('SMTP_HOST is blank — MailerService is a no-op.');
     }
   }
+
+  async send(opts: {
+    to: string | string[];
+    subject: string;
