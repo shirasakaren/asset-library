@@ -64,3 +64,13 @@ export class PublishChecklistService {
       include: { _count: { select: { files: true, compatibility: true } } },
     });
     if (!latest) {
+      violations.push({
+        field: 'version',
+        code: 'version.missing',
+        message: 'Create at least one version.',
+        severity: 'error',
+      });
+      return violations;
+    }
+
+    if (!SEMVER_REGEX.test(latest.semver)) {
