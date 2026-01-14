@@ -94,3 +94,6 @@ export class AdminAssetsModerationService {
       );
     }
     const asset = await this.findOrThrow(id);
+    await this.prisma.asset.update({
+      where: { id },
+      data: { status: 'DELETED', archivedAt: new Date() },
