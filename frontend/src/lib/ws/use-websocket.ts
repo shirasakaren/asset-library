@@ -96,3 +96,20 @@ export function useWebSocket({ token, enabled = true }: UseWebSocketOptions) {
       ws.onclose = (ev) => {
         setStatus('closed');
         logger.info('ws:close', { code: ev.code, reason: ev.reason });
+        if (livenessTimer.current) clearTimeout(livenessTimer.current);
+        if (stopped.current) return;
+        if (ev.code === 4401) {
+          setError('unauthenticated');
+          return;
+        }
+        scheduleReconnect();
+      };
+    };
+
+    const scheduleReconnect = () => {
+      if (stopped.current) return;
+      const attempts = useWsStore.getState().reconnectAttempts;
+      const delay = computeBackoff(attempts);
+      bumpAttempts();
+      logger.info('ws:reconnect-scheduled', { delay, attempts });
+      reconnectTimer.current = setTimeout(connect, delay);
