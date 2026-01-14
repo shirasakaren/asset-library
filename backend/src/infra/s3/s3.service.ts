@@ -122,3 +122,61 @@ export class S3Service {
     return out.UploadId;
   }
 
+  async presignParts(
+    role: S3BucketRole,
+    key: string,
+    uploadId: string,
+    partNumbers: number[],
+  ): Promise<Array<{ partNumber: number; url: string }>> {
+    const bucket = this.bucketFor(role);
+    const expiresIn = this.config.get('S3_PRESIGN_EXPIRES_SEC');
+    return Promise.all(
+      partNumbers.map(async (partNumber) => {
+        const command = new UploadPartCommand({
+          Bucket: bucket,
+          Key: key,
+          UploadId: uploadId,
+          PartNumber: partNumber,
+        });
+        const url = await getSignedUrl(this.client, command, { expiresIn });
+        return { partNumber, url };
+      }),
+    );
+  }
+
+  async completeMultipart(
+    role: S3BucketRole,
+    key: string,
+    uploadId: string,
+    parts: Array<{ partNumber: number; etag: string }>,
+  ): Promise<void> {
+    const bucket = this.bucketFor(role);
+    await this.client.send(
+      new CompleteMultipartUploadCommand({
+        Bucket: bucket,
+        Key: key,
+        UploadId: uploadId,
+        MultipartUpload: {
+          Parts: parts
+            .sort((a, b) => a.partNumber - b.partNumber)
+            .map((p) => ({ PartNumber: p.partNumber, ETag: p.etag })),
+        },
+      }),
+    );
+  }
+
+  /**
+   * Lists the parts S3 actually received for an in-flight multipart upload,
+   * returning their authoritative ETags. We complete from these instead of
+   * client-reported ETags because the browser can only read the `ETag`
+   * response header when the bucket CORS exposes it — relying on that made
+   * CompleteMultipartUpload fail with "the specified entity tag may not match".
+   * Handles pagination (>1000 parts) via PartNumberMarker.
+   */
+  async listParts(
+    role: S3BucketRole,
+    key: string,
+    uploadId: string,
+  ): Promise<Array<{ partNumber: number; etag: string }>> {
+    const bucket = this.bucketFor(role);
+    const out: Array<{ partNumber: number; etag: string }> = [];
