@@ -160,34 +160,3 @@ export class AssetMapperService {
             }),
         )
       : [];
-
-    const versions: AssetVersionPayloadDto[] = asset.versions
-      .slice()
-      .sort((a, b) => this.compareSemverDesc(a.semver, b.semver))
-      .map((v) => ({
-        id: v.id,
-        semver: v.semver,
-        releaseNotes: v.releaseNotes as object,
-        publishedAt: v.publishedAt?.toISOString(),
-        isLatest: v.isLatest,
-        analysisStatus: v.analysisStatus,
-        bytesTotal: v.bytesTotal.toString(),
-        fileCount: v.fileCount,
-        files: v.files.map((f) => ({
-          id: f.id,
-          relativePath: f.relativePath,
-          kind: f.kind,
-          bytes: f.bytes.toString(),
-          meta: (f.meta as object | null) ?? undefined,
-        })),
-        compatibility: v.compatibility.map((c) => ({
-          engineVersion: c.engineVersion,
-          renderPipelines: c.renderPipelines,
-          targets: c.targets,
-        })),
-        dependencies: v.dependencies.map((d) => ({
-          name: d.name,
-          version: d.version ?? undefined,
-          source: d.source,
-        })),
-        requiresEmptyProject: asset.requiresEmptyProject,
