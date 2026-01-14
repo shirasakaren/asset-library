@@ -62,5 +62,3 @@ export class MeilisearchService implements OnModuleInit {
       'publishedAt',
       'createdAt',
       'totalDownloads',
-      'totalSaves',
-      'title',
