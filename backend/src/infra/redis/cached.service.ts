@@ -29,19 +29,3 @@ export class CachedService {
     try {
       hit = await this.redis.client.get(key);
     } catch (err) {
-      this.logger.warn(`Cache GET failed for ${key}: ${(err as Error).message}`);
-    }
-    if (hit) {
-      try {
-        return JSON.parse(hit) as T;
-      } catch (err) {
-        // Corrupt cache entry — drop it and fall through to the fetcher.
-        this.logger.warn(`Cache parse failed for ${key}: ${(err as Error).message}`);
-      }
-    }
-    const value = await fetcher();
-    // Best-effort: do not await the SET on the response path. Failures here
-    // (Redis blip, OOM eviction policy refusing the write, etc.) must not
-    // turn into a 500 for the user.
-    void this.redis.client.set(key, JSON.stringify(value), 'EX', ttlSeconds).catch((err) => {
-      this.logger.warn(`Cache SET failed for ${key}: ${(err as Error).message}`);
