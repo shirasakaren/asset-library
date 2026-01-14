@@ -71,24 +71,3 @@ export class AssetsListService {
       orderBy,
       include: LIST_INCLUDE,
       take: limit + 1,
-      ...(cursor ? { skip: 1, cursor: { id: cursor.id } } : {}),
-    });
-    const hasMore = rows.length > limit;
-    const items = await this.mapper.toSummaryMany(rows.slice(0, limit), locale);
-    const last = rows[items.length - 1];
-    const nextCursor =
-      hasMore && last
-        ? encodeCursor({ id: last.id, createdAt: last.createdAt.toISOString() })
-        : null;
-    return { items, pageInfo: { nextCursor, hasMore } };
-  }
-
-  /**
-   * Hydrate a list of asset ids in their incoming order (the Meilisearch path
-   * uses this). Skips assets the requester is not allowed to see.
-   */
-  async hydrate(
-    ids: string[],
-    _requester: User | null,
-    locale: Locale,
-  ): Promise<AssetSummaryDto[]> {
