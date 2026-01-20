@@ -83,3 +83,13 @@ export class AnalyzeVersionWorker extends JobWorkerBase<AnalyzeVersionJob> {
     for (const file of version.files) {
       const convertible: AssetFileKind[] = [
         AssetFileKind.FBX,
+        AssetFileKind.OBJ,
+        AssetFileKind.BLEND,
+        AssetFileKind.GLTF,
+      ];
+      if (convertible.includes(file.kind)) {
+        const hasDerivedGlb = version.files.some(
+          (f) =>
+            f.kind === AssetFileKind.GLB && f.relativePath.endsWith(`${file.relativePath}.glb`),
+        );
+        if (!hasDerivedGlb) {
