@@ -37,3 +37,12 @@ export async function extractMesh(
     if (result.exitCode !== 0) return null;
     return JSON.parse(result.stdout) as MeshMeta;
   } catch {
+    return null;
+  }
+}
+
+/**
+ * The `.blend` format is opaque to pyassimp; this calls Blender headless to
+ * export a temp glTF + read its stats via the same probe.
+ */
+export async function extractBlendViaBlender(
