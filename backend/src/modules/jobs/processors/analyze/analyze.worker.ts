@@ -65,3 +65,14 @@ export class AnalyzeWorker extends JobWorkerBase<AnalyzeFileJob> {
     }
 
     await this.prisma.$transaction(async (tx) => {
+      await tx.assetFile.update({
+        where: { id: fileId },
+        data: {
+          kind: analyzed.kind,
+          mimeType: analyzed.mimeType,
+          bytes: BigInt(analyzed.bytes),
+          meta: analyzed.meta as unknown as Prisma.InputJsonValue,
+        },
+      });
+      if (analyzed.dependencies?.length) {
+        // Replace previous dependency rows so reruns don't duplicate.
