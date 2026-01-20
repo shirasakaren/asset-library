@@ -74,3 +74,21 @@ export class ArchivePurgeWorker extends JobWorkerBase<ArchivePurgeJob> implement
     }
   }
 
+  private async purgeOne(asset: {
+    id: string;
+    slug: string;
+    thumbnailKey: string | null;
+    status: string;
+  }): Promise<void> {
+    await this.deleteS3Prefix('assets', `assets/${asset.id}/`);
+    await this.deleteS3Prefix('thumbs', `thumbs/${asset.id}/`);
+    if (asset.thumbnailKey && !asset.thumbnailKey.startsWith(`thumbs/${asset.id}/`)) {
+      // The publisher's original key may live outside the per-asset prefix.
+      await this.s3.deleteObject('thumbs', asset.thumbnailKey).catch(() => undefined);
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.auditLog.create({
+        data: {
+          action: 'archive.purged',
+          subjectType: 'Asset',
