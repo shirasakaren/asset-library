@@ -45,3 +45,7 @@ export class LibraryController {
 
   @Post('items')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: "Add an asset to the current user's library (idempotent)." })
+  add(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: AddLibraryItemDto,
