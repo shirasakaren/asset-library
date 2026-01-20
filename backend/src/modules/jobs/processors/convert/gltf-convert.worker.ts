@@ -105,3 +105,22 @@ export class GltfConvertWorker extends JobWorkerBase<GltfConvertJob> {
     input: string,
     output: string,
     kind: GltfConvertJob['sourceKind'],
+    timeoutMs: number,
+  ): Promise<void> {
+    const script = join(process.cwd(), 'scripts', 'blender', 'fbx_to_glb.py');
+    if (kind === 'GLTF') {
+      // Skip Blender for separate-file glTF — gltf-pipeline handles bundling.
+      await runSubprocess(this.config.get('GLTF_PIPELINE_BIN'), ['-i', input, '-o', output, '-b'], {
+        timeoutMs,
+      });
+      return;
+    }
+    const res = await runSubprocess(
+      this.config.get('BLENDER_BIN'),
+      ['-b', '-P', script, '--', input, output],
+      { timeoutMs },
+    );
+    if (res.exitCode !== 0) {
+      throw new Error(`Blender exit ${res.exitCode}: ${res.stderr.slice(-512)}`);
+    }
+  }
