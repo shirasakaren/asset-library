@@ -79,15 +79,3 @@ export class AnalyticsRollupWorker
           uniqueUsers: row.uniqueUsers,
           byCountry: (row.byCountry ?? {}) as unknown as Prisma.InputJsonValue,
           bySource: (row.bySource ?? {}) as unknown as Prisma.InputJsonValue,
-        },
-        update: {
-          count: row.count,
-          uniqueUsers: row.uniqueUsers,
-          byCountry: (row.byCountry ?? {}) as unknown as Prisma.InputJsonValue,
-          bySource: (row.bySource ?? {}) as unknown as Prisma.InputJsonValue,
-        },
-      });
-    }
-
-    // Recompute AssetStats per asset (cheap rollup over the last 30 days).
-    const totals = await this.prisma.$queryRaw<TotalRow[]>(Prisma.sql`
