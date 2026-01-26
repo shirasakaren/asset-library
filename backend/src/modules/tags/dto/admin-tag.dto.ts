@@ -36,12 +36,3 @@ export class MergeTagsDto {
   @ArrayMinSize(1)
   @IsString({ each: true })
   fromTagIds!: string[];
-
-  @ApiProperty()
-  @IsString()
-  intoTagId!: string;
-}
-
-export class UpdateTagDto {
-  @ApiPropertyOptional()
-  @IsOptional()
