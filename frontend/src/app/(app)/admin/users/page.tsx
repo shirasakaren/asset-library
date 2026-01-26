@@ -109,8 +109,3 @@ export default function AdminUsersPage() {
             );
           })}
         </div>
-      </div>
-
-      <DataTable
-        rows={rows}
-        empty="No users."
