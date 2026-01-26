@@ -94,3 +94,8 @@ export function CategoryRow({
           onClick={() => scrollBy(-1)}
           disabled={!canPrev}
           className={cn(
+            'hidden md:inline-flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full',
+            'bg-white text-ink border border-line shadow-2 transition-all duration-200',
+            'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
+            !canPrev && 'opacity-0 pointer-events-none',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
