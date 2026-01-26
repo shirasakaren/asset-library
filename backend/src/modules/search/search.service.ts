@@ -119,3 +119,5 @@ export class SearchService {
         },
         _count: { select: { libraryItems: true, downloads: true } },
       },
+    });
+    if (!asset || asset.status !== 'PUBLISHED') return null;
