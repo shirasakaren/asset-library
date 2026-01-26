@@ -54,3 +54,6 @@ export class UsersService {
       select: { id: true, email: true, displayName: true, isAdmin: true },
     });
     return rows;
+  }
+
+  /**
