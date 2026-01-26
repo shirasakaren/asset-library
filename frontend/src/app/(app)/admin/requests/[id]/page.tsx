@@ -56,3 +56,12 @@ export default async function AdminRequestDetailPage({ params }: PageProps) {
         <div className="space-y-4">
           <Card padding="lg">
             <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-1">Asset link</p>
+            <a
+              href={req.assetLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 link-inline break-all"
+            >
+              {req.assetLink}
+              <ExternalLink className="h-3 w-3" strokeWidth={2.25} />
+            </a>
