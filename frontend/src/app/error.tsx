@@ -40,7 +40,3 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
                 <Alert variant="warning" className="mt-6" title={t('requestIdLabel')}>
                   <code className="font-mono text-[12.5px] text-ink-2">{error.digest}</code>
                 </Alert>
-              ) : null}
-              <div className="mt-7 flex items-center gap-2">
-                <Button onClick={() => reset()} size="lg">
-                  {t('tryAgain')}
