@@ -37,3 +37,5 @@ export class CompatibilityRowDto {
   @MaxLength(40)
   engineVersion!: string;
 
+  @ApiPropertyOptional({
+    type: [String],
