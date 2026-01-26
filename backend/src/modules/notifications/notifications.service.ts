@@ -87,3 +87,5 @@ export class NotificationsService {
       data: { readAt: new Date() },
     });
     return this.toDto(updated);
+  }
+
