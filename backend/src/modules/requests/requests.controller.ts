@@ -41,3 +41,8 @@ export class RequestsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Submit a new asset-sourcing request.' })
   @ApiCreatedResponse()
+  create(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CreateAssetRequestDto,
+  ): Promise<{ id: string }> {
+    return this.requests.create(dto, principal.user);
