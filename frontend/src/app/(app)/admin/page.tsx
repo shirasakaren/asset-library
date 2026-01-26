@@ -101,34 +101,3 @@ export default async function AdminDashboardPage() {
           </NextLink>
         </div>
         <DataTable
-          rows={(data?.topAssets7d ?? []).map((a) => ({ ...a, id: a.id }))}
-          columns={[
-            {
-              key: 'title',
-              header: 'Title',
-              cell: (r) => (
-                <NextLink href={`/assets/${r.slug || r.id}`} className="font-medium text-ink hover:underline">
-                  {r.title}
-                </NextLink>
-              ),
-            },
-            { key: 'owner', header: 'Owner', cell: (r) => r.ownerDisplayName },
-            {
-              key: 'downloads',
-              header: 'Downloads',
-              align: 'right',
-              cell: (r) => <span className="geist-tnum">{formatNumber(r.downloads, locale)}</span>,
-            },
-            {
-              key: 'saves',
-              header: 'Saves',
-              align: 'right',
-              cell: (r) => <span className="geist-tnum">{formatNumber(r.saves, locale)}</span>,
-            },
-          ]}
-        />
-      </section>
-
-      <section className="mt-10">
-        <div className="flex items-baseline justify-between mb-4">
-          <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">Recent activity</h2>
