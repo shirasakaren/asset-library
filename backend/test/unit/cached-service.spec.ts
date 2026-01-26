@@ -71,3 +71,30 @@ describe('CachedService', () => {
     expect(second).toEqual({ hello: 'world' });
     // Fetcher must not run again — that's the whole point of the cache.
     expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(client.getCalls).toBe(2);
+  });
+
+  it('different keys do not share cache entries', async () => {
+    const { svc } = build();
+    const a = jest.fn().mockResolvedValue('A');
+    const b = jest.fn().mockResolvedValue('B');
+
+    expect(await svc.getOrFetch('k-en', 60, a)).toBe('A');
+    expect(await svc.getOrFetch('k-id', 60, b)).toBe('B');
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).toHaveBeenCalledTimes(1);
+
+    // Hitting the same keys again — both fetchers stay at one call.
+    await svc.getOrFetch('k-en', 60, a);
+    await svc.getOrFetch('k-id', 60, b);
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).toHaveBeenCalledTimes(1);
+  });
+
+  it('invalidate() drops the cached entry so the next call re-runs the fetcher', async () => {
+    const { svc, client } = build();
+    const fetcher = jest.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(2);
+
+    expect(await svc.getOrFetch('k', 60, fetcher)).toBe(1);
+    await new Promise((r) => setImmediate(r));
+    expect(client.store.has('k')).toBe(true);
