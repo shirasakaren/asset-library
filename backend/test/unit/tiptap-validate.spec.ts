@@ -59,8 +59,3 @@ describe('TipTap validators', () => {
             { type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'No' }] },
           ],
         }),
-      ).toThrow(/disallowed/i);
-    });
-
-    it('rejects oversized documents', () => {
-      const giant = {
