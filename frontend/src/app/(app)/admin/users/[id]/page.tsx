@@ -55,17 +55,3 @@ export default async function AdminUserPage({ params }: PageProps) {
             <code className="font-mono text-[12.5px] text-ink-3">{user.email}</code>
           ) : null
         }
-        actions={
-          <NextLink href="/admin/users" className="inline-flex items-center gap-1 text-caption text-brand-blue hover:underline">
-            <ArrowLeft className="h-3 w-3" strokeWidth={2.25} />
-            Back to users
-          </NextLink>
-        }
-      />
-      <div className="grid lg:grid-cols-[1fr_2fr] gap-6">
-        <Card padding="lg" className="flex items-center gap-4">
-          <Avatar data={avatar} size={64} />
-          <div>
-            <p className="font-display text-h2 text-ink tracking-[-0.01em]">{user.displayName}</p>
-            <p className="text-caption text-ink-3 mt-1 geist-tnum">
-              Joined {formatDate(user.joinedAt, locale, { dateStyle: 'long' })}
