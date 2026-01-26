@@ -103,3 +103,11 @@ export default function AdminWebhooksPage() {
       <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
         {list.isFetchingNextPage ? 'Loading…' : null}
       </div>
+
+      {active ? (
+        <Modal open onOpenChange={(o) => !o && setActive(null)}>
+          <ModalContent size="lg">
+            <ModalHeader>
+              <ModalTitle>
+                {active.type}
+                <Badge variant={STATUS_TONE[active.status]} className="ml-3">
