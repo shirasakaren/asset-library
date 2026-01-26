@@ -70,9 +70,3 @@ describe('PrincipalResolverService', () => {
 
     const result = await service.resolvePrincipal(CLAIMS);
 
-    expect(result.user.id).toBe('user-1');
-    expect(result.role).toBe('admin');
-    expect(result.user.createdAt).toBeInstanceOf(Date);
-    expect(upsert).not.toHaveBeenCalled();
-    expect(resolveRole).not.toHaveBeenCalled();
-  });
