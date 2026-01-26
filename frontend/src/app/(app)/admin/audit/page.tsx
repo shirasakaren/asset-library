@@ -67,3 +67,23 @@ export default function AdminAuditPage() {
         <Input inputSize="sm" placeholder="Actor id" value={actorId} onChange={(e) => setParams({ actorId: e.target.value || null, cursor: null })} />
         <Input inputSize="sm" placeholder="Action (e.g. asset.publish)" value={action} onChange={(e) => setParams({ action: e.target.value || null, cursor: null })} />
         <Input inputSize="sm" placeholder="Subject type" value={subjectType} onChange={(e) => setParams({ subjectType: e.target.value || null, cursor: null })} />
+        <Input inputSize="sm" placeholder="Subject id" value={subjectId} onChange={(e) => setParams({ subjectId: e.target.value || null, cursor: null })} />
+        <Input inputSize="sm" type="datetime-local" value={from} onChange={(e) => setParams({ from: e.target.value || null, cursor: null })} />
+        <Input inputSize="sm" type="datetime-local" value={to} onChange={(e) => setParams({ to: e.target.value || null, cursor: null })} />
+      </div>
+
+      <ul className="rounded-[14px] border border-line bg-surface overflow-hidden divide-y divide-line">
+        {rows.length === 0 ? (
+          <li className="p-6 text-center text-body-sm text-ink-3">No audit entries.</li>
+        ) : (
+          rows.map((entry) => <AuditRow key={entry.id} entry={entry} locale={locale} />)
+        )}
+      </ul>
+      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
+        {list.isFetchingNextPage ? 'Loading…' : null}
+      </div>
+    </>
+  );
+}
+
+function AuditRow({ entry, locale }: { entry: AuditEntry; locale: LocaleCode }) {
