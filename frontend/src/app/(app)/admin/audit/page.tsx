@@ -75,15 +75,3 @@ export default function AdminAuditPage() {
       <ul className="rounded-[14px] border border-line bg-surface overflow-hidden divide-y divide-line">
         {rows.length === 0 ? (
           <li className="p-6 text-center text-body-sm text-ink-3">No audit entries.</li>
-        ) : (
-          rows.map((entry) => <AuditRow key={entry.id} entry={entry} locale={locale} />)
-        )}
-      </ul>
-      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
-        {list.isFetchingNextPage ? 'Loading…' : null}
-      </div>
-    </>
-  );
-}
-
-function AuditRow({ entry, locale }: { entry: AuditEntry; locale: LocaleCode }) {
