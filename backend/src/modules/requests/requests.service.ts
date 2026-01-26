@@ -100,3 +100,20 @@ export class RequestsService {
     };
   }
 
+  async get(id: string, requester: User): Promise<AssetRequestDto> {
+    const row = await this.prisma.assetRequest.findUnique({
+      where: { id },
+      include: { requester: true },
+    });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Request ${id} not found.`);
+    if (!requester.isAdmin && row.requesterId !== requester.id) {
+      throw new ForbiddenDomainException(ErrorCode.AUTH_FORBIDDEN, 'You do not own this request.');
+    }
+    return this.toDto(row);
+  }
+
+  /**
+   * Admin transitions a request through its review lifecycle. Reject requires
+   * a non-empty `adminComment`; every transition fires REQUEST_STATUS_CHANGED
+   * to the requester and writes an audit row.
