@@ -58,8 +58,3 @@ function buildPrismaStub() {
   return { prisma: prisma as unknown as PrismaService, calls };
 }
 
-describe('CategoriesService — Redis cache', () => {
-  function build() {
-    const client = new FakeRedisClient();
-    const cached = new CachedService({ client } as unknown as RedisService);
-    const { prisma, calls } = buildPrismaStub();
