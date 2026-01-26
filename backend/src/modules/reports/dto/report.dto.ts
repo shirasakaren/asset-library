@@ -42,3 +42,5 @@ export class ActionReportDto {
 
   @ApiProperty({ enum: ['NOTHING', 'ARCHIVE_ASSET', 'DELETE_ASSET', 'FORCE_DELETE_ASSET'] })
   @IsIn(['NOTHING', 'ARCHIVE_ASSET', 'DELETE_ASSET', 'FORCE_DELETE_ASSET'])
+  action!: ReportActionKind;
+
