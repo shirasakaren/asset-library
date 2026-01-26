@@ -70,3 +70,10 @@ export class VersionsController {
     @Param('vid') vid: string,
     @Body() dto: UpdateVersionDto,
   ): Promise<void> {
+    return this.versions.update(vid, dto, principal.user);
+  }
+
+  @Post(':vid/publish')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
