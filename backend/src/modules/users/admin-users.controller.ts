@@ -31,3 +31,17 @@ export class AdminUsersController {
   list(@Query() query: ListAdminUsersQueryDto) {
     return this.admin.list(query);
   }
+
+  @Post(':id/promote')
+  @RequireConfirmation()
+  @AuditAction({ action: 'user.promote_request', subjectType: 'User' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Promote a user to admin. Requires confirmation phrase.' })
+  promote(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() _dto: ConfirmActionDto,
+  ): Promise<void> {
+    return this.admin.promote(id, principal.user);
+  }
+
