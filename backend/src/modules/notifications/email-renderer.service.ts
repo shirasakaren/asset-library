@@ -74,19 +74,3 @@ export class EmailRendererService {
         <mj-body background-color="${BRAND.surface}">
           ${HEADER_MJML}
           <mj-section background-color="#FFFFFF">
-            <mj-column>
-              <mj-text font-size="12px" color="#525252" text-transform="uppercase" letter-spacing="0.08em" padding-bottom="4px">
-                ${eyebrow}
-              </mj-text>
-              <mj-text font-size="22px" font-weight="700" color="${BRAND.ink}" line-height="1.3">
-                ${title}
-              </mj-text>
-              <mj-text font-size="15px" color="${BRAND.ink}" line-height="1.5">
-                ${body}
-              </mj-text>
-            </mj-column>
-          </mj-section>
-          ${cta}
-          ${FOOTER_MJML}
-        </mj-body>
-      </mjml>
