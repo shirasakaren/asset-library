@@ -73,15 +73,3 @@ export default function AdminStoragePage() {
         <Card variant="tinted" padding="md">
           <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">Users tracked</p>
           <p className="mt-1 font-display text-h1 text-ink geist-tnum">
-            {users.data?.length ?? '—'}
-          </p>
-        </Card>
-        <Card variant="tinted" padding="md">
-          <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">Assets tracked</p>
-          <p className="mt-1 font-display text-h1 text-ink geist-tnum">
-            {assets.data?.length ?? '—'}
-          </p>
-        </Card>
-        <Card variant="tinted" padding="md">
-          <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">Total (users)</p>
-          <p className="mt-1 font-display text-h1 text-ink geist-tnum">
