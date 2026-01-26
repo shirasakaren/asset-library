@@ -67,3 +67,19 @@ export class AdminUsersService {
                 id: slice[slice.length - 1].id,
                 createdAt: slice[slice.length - 1].createdAt.toISOString(),
               })
+            : null,
+        hasMore,
+      },
+    };
+  }
+
+  async promote(id: string, admin: User): Promise<void> {
+    const target = await this.prisma.user.findUnique({ where: { id } });
+    if (!target)
+      throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${id} not found.`);
+    if (target.isAdmin) return;
+    await this.prisma.user.update({ where: { id }, data: { isAdmin: true } });
+    await this.invalidatePrincipal(target.keycloakSub);
+    await this.producer.enqueueNotify({
+      recipientUserId: id,
+      type: NotificationType.ADMIN_PROMOTED,
