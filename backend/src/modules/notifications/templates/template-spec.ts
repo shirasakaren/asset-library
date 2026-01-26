@@ -119,3 +119,32 @@ export const EMAIL_SPECS: Record<NotificationType, EmailSpec> = {
   [NotificationType.REPORT_RECEIVED_FOR_YOUR_ASSET]: {
     subject: { en: 'Your asset was reported', id: 'Aset Anda dilaporkan' },
     eyebrow: { en: 'Asset reported', id: 'Aset dilaporkan' },
+    title: { en: 'Someone filed a report on your asset', id: 'Seseorang melaporkan aset Anda' },
+    body: {
+      en: 'A {{category}} report was filed on “{{assetTitle}}”. Admins will follow up if needed.',
+      id: 'Laporan {{category}} diajukan pada “{{assetTitle}}”. Admin akan menindaklanjuti jika perlu.',
+    },
+    cta: { label: { en: 'Open asset', id: 'Buka aset' }, href: '{{links.assetUrl}}' },
+  },
+  [NotificationType.FEATURED_FEATURED]: {
+    subject: { en: '“{{assetTitle}}” is featured!', id: '“{{assetTitle}}” telah ditampilkan!' },
+    eyebrow: { en: "You're featured", id: 'Anda ditampilkan' },
+    title: {
+      en: 'Your asset is featured on the landing page',
+      id: 'Aset Anda ditampilkan di halaman utama',
+    },
+    body: {
+      en: '“{{assetTitle}}” is now in the Discover carousel.',
+      id: '“{{assetTitle}}” kini ada di korsel Discover.',
+    },
+    cta: { label: { en: 'Open Discover', id: 'Buka Discover' }, href: '{{links.discoverUrl}}' },
+  },
+  [NotificationType.VERSION_PUBLISHED]: {
+    subject: {
+      en: '{{assetTitle}} v{{semver}} is available',
+      id: '{{assetTitle}} v{{semver}} kini tersedia',
+    },
+    eyebrow: { en: 'New version', id: 'Versi baru' },
+    title: {
+      en: 'A new version of an asset you saved is live',
+      id: 'Versi baru aset yang Anda simpan telah dirilis',
