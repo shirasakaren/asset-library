@@ -41,3 +41,4 @@ function inCidr(ip: string, cidr: ParsedCidr): boolean {
 
 describe('metrics CIDR matcher', () => {
   it('matches a /24', () => {
+    const cidr = parseCidr('10.0.0.0/24')!;
