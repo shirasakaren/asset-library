@@ -35,3 +35,4 @@ export class AdminRequestsController {
     return this.requests.list(query, principal.user);
   }
 
+  @Get(':id')
