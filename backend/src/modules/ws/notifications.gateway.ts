@@ -116,3 +116,6 @@ export class NotificationsGateway
         }),
       ),
     );
+  }
+
+  handleDisconnect(socket: AuthedSocket): void {
