@@ -36,3 +36,6 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
             'mt-2 inline-flex items-center gap-1 text-caption font-medium geist-tnum',
             trend.delta >= 0 ? 'text-brand-green' : 'text-brand-red',
           )}
+        >
+          {trend.delta >= 0 ? (
+            <ArrowUp className="h-3 w-3" strokeWidth={2.25} />
