@@ -95,3 +95,10 @@ export function AdminSidebar() {
       return;
     }
     const url = `${baseHref}${baseHref.includes('?') ? '&' : '?'}access_token=${encodeURIComponent(token)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <aside
+      aria-label="Admin sections"
+      className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto pr-2"
