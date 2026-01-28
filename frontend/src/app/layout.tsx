@@ -39,3 +39,12 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
+  const messages = await getMessages();
+
+  return (
+    <html lang={locale} className={fontVariables}>
+      <body className="bg-bg font-sans text-ink antialiased">
+        {/*
+          The Auth.js JWT callback already refreshes the Keycloak access token
+          when it's close to expiry on the next request, and `useAuthedFetch`
+          forces a session refetch via `tokenRefresher` on a single 401 retry.
