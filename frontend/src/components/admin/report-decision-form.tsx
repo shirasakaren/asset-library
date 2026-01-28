@@ -91,10 +91,3 @@ export function ReportDecisionForm({ report }: Props) {
     }
   };
 
-  return (
-    <div className="space-y-4">
-      <Field label="Action">
-        <div className="flex flex-col gap-1.5">
-          {ACTIONS.map((opt) => {
-            const active = action === opt.value;
-            return (
