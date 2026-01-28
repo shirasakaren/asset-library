@@ -115,3 +115,65 @@ export function PackageTree({ files }: PackageTreeProps) {
       {filtered.length === 0 ? (
         <p className="text-body-sm text-ink-3">{t('emptyMatch', { query })}</p>
       ) : (
+        <div className="rounded-[14px] border border-line bg-surface overflow-hidden">
+          <ul role="tree" className="text-[13.5px]">
+            {Array.from(tree.children?.values() ?? []).map((node) => (
+              <TreeRow key={node.path} node={node} depth={0} defaultOpen={!!query} />
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface TreeRowProps {
+  node: TreeNode;
+  depth: number;
+  defaultOpen?: boolean;
+}
+
+function TreeRow({ node, depth, defaultOpen }: TreeRowProps) {
+  const [open, setOpen] = useState(defaultOpen ?? depth < 1);
+  const locale = useLocale() as LocaleCode;
+
+  if (node.kind === 'folder') {
+    const FolderIcon = open ? FolderOpen : Folder;
+    return (
+      <li role="treeitem" aria-expanded={open}>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex w-full items-center gap-2 px-3 h-9 text-left hover:bg-surface-muted/60 transition-colors duration-120"
+          style={{ paddingLeft: 12 + depth * 16 }}
+        >
+          <ChevronRight
+            className={cn('h-3.5 w-3.5 text-ink-3 transition-transform duration-200', open && 'rotate-90')}
+            strokeWidth={2.25}
+          />
+          <FolderIcon className="h-4 w-4 text-ink-2 shrink-0" strokeWidth={2.25} />
+          <span className="font-medium text-ink truncate">{node.name}</span>
+          <span className="ml-auto text-caption text-ink-3 geist-tnum">
+            {node.children ? `${node.children.size} item${node.children.size === 1 ? '' : 's'}` : ''}
+          </span>
+        </button>
+        {open && node.children ? (
+          <ul role="group" className="border-t border-line/50">
+            {Array.from(node.children.values()).map((child) => (
+              <TreeRow key={child.path} node={child} depth={depth + 1} defaultOpen={defaultOpen} />
+            ))}
+          </ul>
+        ) : null}
+      </li>
+    );
+  }
+
+  const FileIcon = kindIcon(node.fileKind);
+  const meta = node.meta ?? {};
+  const polyCount = typeof meta.triangles === 'number' ? (meta.triangles as number) : null;
+  const animLength = typeof meta.duration === 'number' ? (meta.duration as number) : null;
+
+  const tooltip = [
+    formatBytes((node.bytes ?? 0n).toString(), locale),
+    polyCount ? `${polyCount.toLocaleString()} tris` : null,
+    animLength ? `${animLength.toFixed(1)}s` : null,
