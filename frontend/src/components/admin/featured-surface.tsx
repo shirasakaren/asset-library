@@ -198,3 +198,42 @@ function SortableSlot({
   onDelete,
 }: {
   slot: AdminFeaturedSlot;
+  onEdit: () => void;
+  onToggle: (next: boolean) => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: slot.id,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(isDragging && 'opacity-70')}
+    >
+      <SlotCard
+        slot={slot}
+        onEdit={onEdit}
+        onToggle={onToggle}
+        onDelete={onDelete}
+        dragHandle={
+          <button
+            {...attributes}
+            {...listeners}
+            type="button"
+            aria-label="Drag to reorder"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-ink-3 hover:bg-surface-muted hover:text-ink cursor-grab active:cursor-grabbing"
+          >
+            <GripVertical className="h-4 w-4" strokeWidth={2.25} />
+          </button>
+        }
+      />
+    </div>
+  );
+}
+
+function SlotCard({
+  slot,
+  onEdit,
+  onToggle,
+  onDelete,
