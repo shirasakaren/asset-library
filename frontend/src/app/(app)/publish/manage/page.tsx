@@ -60,9 +60,3 @@ export default async function ManagePage() {
         <div className="mt-6 grid sm:grid-cols-3 gap-3">
           <Stat label={t('totalsDownloads')} value={formatNumber(totals.downloads, locale)} />
           <Stat label={t('totalsSaves')} value={formatNumber(totals.saves, locale)} />
-          <Stat label={t('totalsAssets')} value={formatNumber(totals.assets, locale)} />
-        </div>
-
-        <div className="mt-8 flex flex-col gap-3">
-          {items.map((a) => (
-            <ManageRow key={a.id} asset={a} locale={locale} isAdmin={me.isAdmin} />
