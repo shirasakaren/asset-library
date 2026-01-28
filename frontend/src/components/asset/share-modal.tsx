@@ -69,3 +69,22 @@ export function ShareModal({ open, onOpenChange, assetTitle, url }: ShareModalPr
         <div className="flex items-stretch gap-2">
           <input
             ref={inputRef}
+            readOnly
+            value={url}
+            aria-label={assetTitle}
+            onFocus={(e) => e.currentTarget.select()}
+            className="flex-1 min-w-0 h-11 px-3 rounded-[10px] border border-line bg-surface-muted text-[13.5px] font-mono text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          />
+          <Button onClick={copy} leadingIcon={copied ? <Check className="h-4 w-4" strokeWidth={2.5} /> : <Copy className="h-4 w-4" strokeWidth={2.25} />}>
+            {copied ? t('copied') : t('copy')}
+          </Button>
+        </div>
+        <ModalFooter>
+          {nativeAvailable ? (
+            <Button
+              variant="secondary"
+              onClick={native}
+              leadingIcon={<Share2 className="h-4 w-4" strokeWidth={2.25} />}
+            >
+              {t('native')}
+            </Button>
