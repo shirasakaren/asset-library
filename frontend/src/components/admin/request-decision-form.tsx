@@ -53,8 +53,3 @@ export function RequestDecisionForm({ request }: Props) {
                 className={`inline-flex items-center gap-2.5 px-3 h-9 rounded-[10px] border cursor-pointer transition-colors ${
                   active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40'
                 }`}
-              >
-                <input
-                  type="radio"
-                  name="req-status"
-                  checked={active}
