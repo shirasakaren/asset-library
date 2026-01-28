@@ -106,3 +106,5 @@ export default async function PublishLandingPage() {
               {published.map((asset) => (
                 <AssetCard key={asset.id} variant="grid" asset={asset} isOwner href={`/publish/${asset.id}`} />
               ))}
+            </div>
+          </section>
