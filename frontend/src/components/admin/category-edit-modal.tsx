@@ -62,3 +62,23 @@ export function CategoryEditModal({ category, onOpenChange, onDone }: Props) {
   };
 
   return (
+    <Modal open onOpenChange={onOpenChange}>
+      <ModalContent size="md">
+        <ModalHeader>
+          <ModalTitle>{editing ? 'Edit category' : 'New category'}</ModalTitle>
+        </ModalHeader>
+        <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field id="cat-name-en" label="Name (EN)" required>
+              <Input
+                id="cat-name-en"
+                value={nameEn}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setNameEn(v);
+                  if (!editing) setSlug(slugify(v));
+                }}
+              />
+            </Field>
+            <Field id="cat-name-id" label="Name (ID)">
+              <Input id="cat-name-id" value={nameId} onChange={(e) => setNameId(e.target.value)} />
