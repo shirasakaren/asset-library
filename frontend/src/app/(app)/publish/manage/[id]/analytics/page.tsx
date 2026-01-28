@@ -40,9 +40,3 @@ export default async function AnalyticsPage({ params }: PageProps) {
       <div className="pt-6 pb-20">
         <Breadcrumbs
           items={[
-            { label: 'Publish', href: '/publish' },
-            { label: 'Manage', href: '/publish/manage' },
-            { label: t('title') },
-          ]}
-        />
-        <div className="mt-3 flex items-center gap-3">
