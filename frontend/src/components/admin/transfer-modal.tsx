@@ -115,9 +115,3 @@ export function AdminTransferModal({ asset, onOpenChange, onDone }: Props) {
 
         {picked ? (
           <div className="mt-3 flex items-center justify-between p-3 rounded-[12px] bg-surface-muted/50 border border-line">
-            <span className="inline-flex items-center gap-2">
-              <Avatar
-                data={
-                  picked.avatar
-                    ? avatarFromServer(picked.avatar)
-                    : { initials: picked.displayName.slice(0, 2).toUpperCase(), bgColor: '#3a6dc5', fgColor: '#fff' }
