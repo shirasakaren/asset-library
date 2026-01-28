@@ -173,37 +173,3 @@ function Problem() {
         </div>
       </Container>
     </section>
-  );
-}
-
-/* =====================================================================
- * Solution — 3-up card grid (DS §4.4 forbids 4-up)
- * ===================================================================== */
-function Solution() {
-  const offerings = [
-    {
-      icon: Library,
-      title: 'Centralized asset library',
-      // TODO: replace OFFERING_1_BODY
-      body:
-        'Discover, save, and download Unity, Unreal, and engine-agnostic assets. Versioned, searchable, and license-stamped.',
-    },
-    {
-      icon: Plug,
-      title: 'In-engine plugins',
-      // TODO: replace OFFERING_2_BODY
-      body:
-        'Pull any saved asset into your Unity or Unreal project directly — same account, same library, two clicks.',
-    },
-    {
-      icon: GitBranch,
-      title: 'Versioned + searchable',
-      // TODO: replace OFFERING_3_BODY
-      body:
-        'Every version is preserved. Search by tag, engine, target platform, or license. Old work doesn’t disappear.',
-    },
-  ];
-  return (
-    <section id="whats-inside" className="border-t border-line bg-surface-muted">
-      <Container size="2xl">
-        <div className="py-24 lg:py-32">
