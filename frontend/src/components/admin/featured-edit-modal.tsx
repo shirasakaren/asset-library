@@ -225,3 +225,8 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
                 type="radio"
                 checked={bannerMode === 'custom'}
                 onChange={() => setBannerMode('custom')}
+                className="h-4 w-4 accent-ink"
+              />
+              Upload custom banner
+            </label>
+            {bannerMode === 'custom' ? (
