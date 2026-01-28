@@ -56,9 +56,3 @@ export default async function DiscoverPage() {
 
         {discover?.rows?.map((row) => (
           <CategoryRow
-            key={row.categoryId}
-            categoryId={row.categoryId}
-            categoryName={row.name}
-            assets={row.assets}
-            ownAssetIds={ownAssetIds}
-          />
