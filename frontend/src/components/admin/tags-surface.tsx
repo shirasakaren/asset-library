@@ -215,3 +215,19 @@ function RenameTagModal({
         </ModalHeader>
         <div className="space-y-3">
           <Field id="t-slug" label="Slug" required>
+            <Input id="t-slug" value={slug} onChange={(e) => setSlug(e.target.value)} />
+          </Field>
+          <Field id="t-name" label="Display name" required>
+            <Input id="t-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+          </Field>
+        </div>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button loading={busy} onClick={submit}>
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
