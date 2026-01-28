@@ -34,3 +34,9 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
         </Container>
       </header>
       <main className="flex-1 flex items-center">
+        <Container size="md">
+          <div className="grid md:grid-cols-[1fr_auto] gap-10 items-center py-16">
+            <div>
+              <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
+                {t('eyebrow')}
+              </p>
