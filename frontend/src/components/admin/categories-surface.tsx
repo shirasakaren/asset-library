@@ -169,3 +169,6 @@ function SortableRow({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: cat.id,
   });
+  const canDelete = cat.assetCount === 0;
+  return (
+    <li
