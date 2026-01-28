@@ -76,4 +76,3 @@ export function PromoteAdminModal({ onOpenChange, onDone }: Props) {
                   .map((u) => (
                     <li key={u.id}>
                       <button
-                        type="button"
