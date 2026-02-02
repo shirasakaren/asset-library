@@ -58,3 +58,4 @@ export function AssetTabs({ asset, activeVersion, onDownloadVersion }: AssetTabs
             <TipTapRenderer doc={asset.longDescription} variant="full" />
           ) : (
             <Alert variant="neutral">No long description provided.</Alert>
+          )}
