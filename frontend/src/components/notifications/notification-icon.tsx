@@ -48,3 +48,4 @@ const TINT_MAP: Record<NotificationType, string> = {
 };
 
 export function NotificationIcon({ type, className }: { type: string; className?: string }) {
+  const t = (type as NotificationType) || 'COMMENT_CREATED';
