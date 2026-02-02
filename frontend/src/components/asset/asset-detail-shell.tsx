@@ -156,3 +156,85 @@ export function AssetDetailShell({
             </div>
 
             {/* Right rail */}
+            <aside className="lg:sticky lg:top-24 lg:self-start">
+              <Card variant="outlined" padding="lg" className="!shadow-2">
+                <h1 className="font-display text-h1 text-ink tracking-[-0.015em] leading-[1.15]">
+                  {asset.title}
+                </h1>
+                <NextLink
+                  href={`/?ownerId=${asset.owner.id}`}
+                  className="mt-3 inline-flex items-center gap-2 text-body-sm text-ink-2 hover:text-ink transition-colors duration-120"
+                >
+                  <Avatar data={avatarFromServer(asset.owner.avatar)} size={24} />
+                  <span>
+                    {t('by')} <span className="font-medium text-ink">{asset.owner.displayName}</span>
+                  </span>
+                </NextLink>
+
+                <div className="mt-5 flex items-center gap-2">
+                  {!isOwner ? (
+                    <SaveButton assetId={asset.id} initialSaved={asset.isSaved} variant="pill" />
+                  ) : (
+                    <Badge variant="warning">{t('youOwn')}</Badge>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShareOpen(true)}
+                    aria-label={t('share')}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                  >
+                    <Share2 className="h-4 w-4" strokeWidth={2.25} />
+                  </button>
+                  {showReport ? (
+                    <button
+                      type="button"
+                      onClick={() => setReportOpen(true)}
+                      aria-label={t('report')}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                    >
+                      <Flag className="h-4 w-4" strokeWidth={2.25} />
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="mt-5">
+                  <AssetMeta
+                    engine={asset.engine}
+                    categoryName={asset.category.name}
+                    licenseName={asset.license.name}
+                  />
+                </div>
+
+                {asset.tags.length > 0 ? (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {asset.tags.map((tag) => (
+                      <NextLink
+                        key={tag.id}
+                        href={`/search?tags=${tag.slug}`}
+                        className="inline-flex items-center h-6 px-2.5 rounded-full bg-surface-muted text-[12px] font-medium text-ink-2 border border-line hover:border-ink/30 hover:text-ink transition-colors duration-120"
+                      >
+                        {tag.displayName}
+                      </NextLink>
+                    ))}
+                  </div>
+                ) : null}
+
+                <dl className="mt-5 grid grid-cols-2 gap-3 text-caption">
+                  <div>
+                    <dt className="text-ink-3">{t('downloadsLifetime', { n: '' }).trim()}</dt>
+                    <dd className="text-ink font-semibold text-[20px] geist-tnum">
+                      {formatNumber(asset.totalDownloads, locale)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-ink-3">{t('saves', { n: '' }).trim()}</dt>
+                    <dd className="text-ink font-semibold text-[20px] geist-tnum">
+                      {formatNumber(asset.totalSaves, locale)}
+                    </dd>
+                  </div>
+                </dl>
+
+                {latestVersion ? (
+                  <>
+                    <div className="mt-6 pt-5 border-t border-line">
+                      <p className="text-caption text-ink-3 mb-2">{t('latestVersion')}</p>
