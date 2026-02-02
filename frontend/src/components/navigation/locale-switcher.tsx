@@ -38,3 +38,24 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ locale: next }),
+        });
+      } catch {
+        /* ignore — cookie set is still authoritative for now */
+      }
+      document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=${60 * 60 * 24 * 365}; sameSite=Lax`;
+      toast.success(t('updated'));
+      router.refresh();
+    });
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label={t('switchLabel')}
+          className={cn(
+            'inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+            isPending && 'opacity-60',
+            className,
