@@ -82,11 +82,3 @@ export async function Footer() {
                       <a
                         href={link.href}
                         className="text-ink-2 hover:text-ink transition-colors duration-120"
-                      >
-                        {link.label}
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
