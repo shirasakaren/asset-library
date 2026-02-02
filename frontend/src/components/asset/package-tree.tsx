@@ -152,28 +152,3 @@ function TreeRow({ node, depth, defaultOpen }: TreeRowProps) {
             strokeWidth={2.25}
           />
           <FolderIcon className="h-4 w-4 text-ink-2 shrink-0" strokeWidth={2.25} />
-          <span className="font-medium text-ink truncate">{node.name}</span>
-          <span className="ml-auto text-caption text-ink-3 geist-tnum">
-            {node.children ? `${node.children.size} item${node.children.size === 1 ? '' : 's'}` : ''}
-          </span>
-        </button>
-        {open && node.children ? (
-          <ul role="group" className="border-t border-line/50">
-            {Array.from(node.children.values()).map((child) => (
-              <TreeRow key={child.path} node={child} depth={depth + 1} defaultOpen={defaultOpen} />
-            ))}
-          </ul>
-        ) : null}
-      </li>
-    );
-  }
-
-  const FileIcon = kindIcon(node.fileKind);
-  const meta = node.meta ?? {};
-  const polyCount = typeof meta.triangles === 'number' ? (meta.triangles as number) : null;
-  const animLength = typeof meta.duration === 'number' ? (meta.duration as number) : null;
-
-  const tooltip = [
-    formatBytes((node.bytes ?? 0n).toString(), locale),
-    polyCount ? `${polyCount.toLocaleString()} tris` : null,
-    animLength ? `${animLength.toFixed(1)}s` : null,
