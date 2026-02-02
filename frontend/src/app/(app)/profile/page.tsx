@@ -38,14 +38,3 @@ export default async function ProfilePage() {
 
   const roleLabel =
     me.role === 'admin' ? 'Admin' : me.role === 'contributor' ? 'Contributor' : 'User';
-  const roleVariant: 'info' | 'success' | 'neutral' =
-    me.role === 'admin' ? 'info' : me.role === 'contributor' ? 'success' : 'neutral';
-
-  return (
-    <Container size="lg">
-      <div className="pt-8 pb-20">
-        <Card padding="lg" className="flex items-center gap-5">
-          <Avatar data={avatarFromServer(me.avatar)} size={64} />
-          <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 mb-1">
-              <h1 className="font-display text-display-lg text-ink tracking-[-0.02em]">
