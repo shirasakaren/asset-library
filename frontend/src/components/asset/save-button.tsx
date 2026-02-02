@@ -86,16 +86,3 @@ export function SaveButton({
           'inline-flex items-center gap-2 h-10 px-4 rounded-[12px] text-[14px] font-medium transition-colors duration-120',
           optimistic
             ? 'bg-ink text-white hover:bg-[#1a1f29]'
-            : 'bg-surface text-ink border border-line-strong hover:border-ink/40',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
-          className,
-        )}
-      >
-        {isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
-        ) : (
-          <Icon className="h-4 w-4" strokeWidth={2.25} fill={optimistic ? 'currentColor' : 'none'} />
-        )}
-        {label}
-      </button>
-    );
