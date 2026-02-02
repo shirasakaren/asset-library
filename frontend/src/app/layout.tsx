@@ -48,3 +48,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           The Auth.js JWT callback already refreshes the Keycloak access token
           when it's close to expiry on the next request, and `useAuthedFetch`
           forces a session refetch via `tokenRefresher` on a single 401 retry.
+          That makes the previous 4-minute polling + window-focus refetch
+          redundant — they were the leading cause of "every tab return feels
+          slow" because every focus event fanned out a /api/auth/session
+          request that blocked any TanStack query depending on the token.
+        */}
+        <SessionProvider refetchOnWindowFocus={false}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <QueryProvider>
+              <PrimaryButtonGuard>
+                <SentryBootstrap />
+                {children}
+                <Toaster />
+              </PrimaryButtonGuard>
+            </QueryProvider>
+          </NextIntlClientProvider>
+        </SessionProvider>
+      </body>
+    </html>
+  );
+}
