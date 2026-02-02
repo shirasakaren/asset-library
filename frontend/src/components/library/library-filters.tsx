@@ -97,37 +97,3 @@ export function LibraryFilters() {
 
       <FilterSection title={t('category')} activeCount={categoryIds.length}>
         <ChipFilter
-          options={(categoriesQuery.data ?? []).map((c) => ({ label: c.name, value: c.id }))}
-          values={categoryIds}
-          onChange={(next) => setParams({ categoryIds: next })}
-        />
-      </FilterSection>
-
-      <FilterSection title={t('tags')} activeCount={tags.length}>
-        <TagCombobox
-          values={tags}
-          onChange={(next) => setParams({ tags: next })}
-          placeholder="Type to add a tag"
-        />
-      </FilterSection>
-
-      <FilterSection title={t('hidden')} activeCount={hidden !== 'false' ? 1 : 0}>
-        <div className="flex flex-col gap-1.5">
-          {HIDDEN.map((h) => (
-            <label
-              key={h.value}
-              className="inline-flex items-center gap-2.5 text-[13.5px] text-ink cursor-pointer"
-            >
-              <input
-                type="radio"
-                name="library-hidden"
-                checked={hidden === h.value}
-                onChange={() => setParams({ hidden: h.value === 'false' ? null : h.value })}
-                className="h-4 w-4 accent-ink"
-              />
-              {h.value === 'true'
-                ? t('hiddenHidden')
-                : h.value === 'all'
-                  ? t('hiddenAll')
-                  : t('hiddenVisible')}
-            </label>
