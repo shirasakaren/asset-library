@@ -72,3 +72,36 @@ export function DiscoverAllGrid({ ownAssetIds }: DiscoverAllGridProps) {
   const items = query.data?.pages.flatMap((p) => p.items) ?? [];
   const isLoading = query.isPending;
 
+  return (
+    <section>
+      <div className="flex flex-wrap items-center gap-3 justify-between mb-5">
+        <div className="flex flex-wrap items-center gap-2">
+          {ENGINE_FILTERS.map((e) => {
+            const active = engine === e.value;
+            return (
+              <button
+                key={e.value}
+                type="button"
+                onClick={() => setEngine(e.value)}
+                aria-pressed={active}
+                className={cn(
+                  'inline-flex items-center h-9 px-3.5 rounded-full text-[13.5px] font-medium border transition-colors duration-120',
+                  active
+                    ? 'bg-ink text-white border-ink'
+                    : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+                )}
+              >
+                {e.label}
+              </button>
+            );
+          })}
+        </div>
+        <label className="inline-flex items-center gap-2 text-caption text-ink-3">
+          <span>{t('sortLabel')}</span>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortOrder)}
+            className="h-9 rounded-[10px] border border-line bg-surface text-[13.5px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            {SORTS.map((s) => (
