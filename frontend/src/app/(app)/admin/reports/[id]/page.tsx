@@ -53,9 +53,3 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
             <ArrowLeft className="h-3 w-3" strokeWidth={2.25} />
             Back to reports
           </NextLink>
-        }
-      />
-
-      <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
-        <div className="space-y-4">
-          <Card padding="lg">
