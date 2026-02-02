@@ -142,3 +142,8 @@ export function SearchBar({ className }: SearchBarProps) {
 
   const showPanel = open && debouncedQuery.length > 1;
 
+  return (
+    <div ref={containerRef} className={cn('relative', className)}>
+      {/* Mobile: collapsed icon link */}
+      <a
+        href="/search"
