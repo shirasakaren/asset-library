@@ -73,3 +73,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting on reports, asset requests, comments, and plugin token
   exchange.
 - `@RequireConfirmation` guard for destructive admin operations.
+
+## [0.5.0] - 2026-02-14
+
+### Added
+
+- BullMQ worker pipeline: analyzer extractors, ClamAV streaming scans,
+  glTF conversion, thumbnail variants, search indexing.
+- WebSocket gateway with Redis pub/sub fan-out across replicas.
+- Notification system: in-app, email (MJML, en/id), and n8n fan-out.
