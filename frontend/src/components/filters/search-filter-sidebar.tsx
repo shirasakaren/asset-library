@@ -178,3 +178,25 @@ export function SearchFilterSidebar() {
           <option value="">Any license</option>
           {(licensesQuery.data ?? []).map((l) => (
             <option key={l.slug} value={l.slug}>
+              {l.name}
+            </option>
+          ))}
+        </select>
+      </FilterSection>
+
+      <FilterSection title={t('renderPipelines')} activeCount={renderPipelines.length}>
+        <ChipFilter
+          options={RENDER_PIPELINES.map((rp) => ({
+            label: tSearch(`renderPipeline.${rp}`),
+            value: rp,
+          }))}
+          values={renderPipelines}
+          onChange={(next) => setParams({ renderPipelines: next })}
+        />
+      </FilterSection>
+
+      <FilterSection title={t('targets')} activeCount={targets.length}>
+        <ChipFilter
+          options={TARGETS.map((tg) => ({
+            label: tSearch(`target.${tg}`),
+            value: tg,
