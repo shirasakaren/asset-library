@@ -130,3 +130,28 @@ export function CommentThread(props: CommentThreadProps) {
                 <button
                   type="button"
                   onClick={() => setReplying((r) => !r)}
+                  className="inline-flex items-center gap-1 hover:text-ink transition-colors"
+                >
+                  <MessageSquare className="h-3 w-3" strokeWidth={2.25} />
+                  {t('reply')}
+                </button>
+              ) : null}
+              {canChangeStatus ? (
+                <ChangeStatus
+                  current={node.status ?? 'OPEN'}
+                  onChange={(s) => props.onStatus(node.id, s)}
+                />
+              ) : null}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="More"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-[8px] hover:bg-surface-muted text-ink-3 hover:text-ink transition-colors"
+                  >
+                    <MoreHorizontal className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onSelect={copyLink}>
