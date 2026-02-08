@@ -121,12 +121,3 @@ export function AnalyticsCharts({ data }: Props) {
                 ))}
               </Bar>
             </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-
-      <Card padding="lg">
-        <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">{t('byVersion')}</p>
-        <h2 className="font-display text-h3 text-ink tracking-[-0.005em] mt-1 mb-4">
-          {t('byVersion')}
-        </h2>
