@@ -111,35 +111,3 @@ export function RequestSurface({ me, initial }: Props) {
                       </span>
                     </div>
                     <p className="mt-1.5 text-[14px] font-medium text-ink truncate">{r.assetType}</p>
-                    <p className="text-caption text-ink-3 truncate font-mono">{r.assetLink}</p>
-                    {r.adminComment ? (
-                      <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-brand-blue">
-                        {t('adminComment')}
-                      </span>
-                    ) : null}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
-
-        <section>
-          {selected ? (
-            <Card padding="lg">
-              <div className="flex items-center gap-2 mb-3">
-                <Badge variant={STATUS_VARIANT[selected.status]}>
-                  {t(`status.${selected.status}` as 'status.SENT')}
-                </Badge>
-                <span className="text-caption text-ink-3 geist-tnum">
-                  {formatRelative(selected.createdAt, locale)}
-                </span>
-              </div>
-              <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">{selected.assetType}</h2>
-              <a
-                href={selected.assetLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-1 link-inline break-all"
-              >
-                {selected.assetLink}
