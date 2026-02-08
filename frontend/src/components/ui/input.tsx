@@ -140,3 +140,40 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   },
 );
 Input.displayName = 'Input';
+
+/* ===================== Textarea ===================== */
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  invalid?: boolean;
+}
+
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, invalid, rows = 4, ...props }, ref) => (
+    <textarea
+      ref={ref}
+      rows={rows}
+      className={cn(
+        inputBase,
+        'py-2.5 px-3.5 text-[15px] resize-y min-h-[88px]',
+        invalid && 'border-brand-red focus-visible:ring-brand-red',
+        className,
+      )}
+      aria-invalid={invalid || undefined}
+      {...props}
+    />
+  ),
+);
+Textarea.displayName = 'Textarea';
+
+/* ===================== Field shell ===================== */
+
+interface FieldProps {
+  id?: string;
+  label?: ReactNode;
+  helper?: ReactNode;
+  error?: ReactNode;
+  required?: boolean;
+  children: ReactNode;
+  className?: string;
+}
+
