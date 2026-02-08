@@ -100,12 +100,3 @@ export function NotificationInbox({ initial, initialCursor }: Props) {
         <EmptyState
           title={t('empty')}
           description={t('emptyBody')}
-          seed="notifications-empty"
-          pattern={false}
-        />
-      ) : (
-        <div className="space-y-8">
-          {grouped.map((group) => (
-            <section key={group.key}>
-              <h2 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
-                {t(`group.${group.key}` as 'group.today')}
