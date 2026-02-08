@@ -104,10 +104,3 @@ export function SearchResults() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {items.map((asset, i) => (
-              <AssetCard
-                key={asset.id}
-                variant="grid"
-                asset={asset}
-                isSaved={savedIds.has(asset.id)}
-                priority={i < 4}
-              />
