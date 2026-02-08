@@ -85,3 +85,25 @@ export default function AdminReportsPage() {
         onRowClick={(r) => {
           window.location.href = `/admin/reports/${r.id}`;
         }}
+        columns={[
+          { key: 'reporter', header: 'Reporter', cell: (r) => r.reporter.displayName },
+          {
+            key: 'asset',
+            header: 'Asset',
+            cell: (r) => (
+              <NextLink href={`/assets/${r.assetSlug || r.assetId}`} className="font-medium text-ink hover:underline">
+                {r.assetTitle}
+              </NextLink>
+            ),
+          },
+          {
+            key: 'category',
+            header: 'Category',
+            cell: (r) => (r.category === 'MALICIOUS_FILE' ? 'Malicious' : 'Broken'),
+          },
+          {
+            key: 'submitted',
+            header: 'Submitted',
+            cell: (r) => (
+              <span className="text-caption text-ink-3 geist-tnum">{formatRelative(r.createdAt, locale)}</span>
+            ),
