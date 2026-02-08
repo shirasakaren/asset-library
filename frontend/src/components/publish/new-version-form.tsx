@@ -98,3 +98,9 @@ export function NewVersionForm({ asset }: Props) {
                 invalid={Boolean(semverInvalid)}
               />
             </Field>
+
+            <div>
+              <div className="flex items-center gap-1 border-b border-line mb-3">
+                {(['en', 'id'] as LocaleCode[]).map((l) => {
+                  const active = activeLocale === l;
+                  return (
