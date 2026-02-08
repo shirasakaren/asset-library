@@ -100,3 +100,7 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
                   Revoke
                 </Button>
               </li>
+            ))
+          )}
+        </ul>
+      </Card>
