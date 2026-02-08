@@ -54,7 +54,3 @@ export const DropdownMenuSeparator = forwardRef<
     ref={ref}
     className={cn('my-1.5 h-px bg-line', className)}
     {...props}
-  />
-));
-DropdownMenuSeparator.displayName = 'DropdownMenuSeparator';
-
