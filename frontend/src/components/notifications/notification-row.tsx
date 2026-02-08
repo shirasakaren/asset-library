@@ -48,3 +48,7 @@ export function NotificationRow({ item, onActivate, dense }: Props) {
 
 function renderMessage(
   type: string,
+  payload: Record<string, unknown>,
+  t: (key: string, vars?: Record<string, unknown>) => string,
+): React.ReactNode {
+  const known: NotificationType[] = [
