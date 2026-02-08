@@ -87,3 +87,14 @@ export function WizardHeader({ variant = 'edit' }: WizardHeaderProps) {
               <SaveIndicator
                 saving={wiz.saving}
                 lastSavedAt={wiz.lastSavedAt}
+                locale={locale}
+              />
+            </div>
+            <h1 className="font-display text-h1 text-ink tracking-[-0.015em] truncate max-w-[60vw]">
+              {wiz.asset.title || 'Untitled asset'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={handleExit}>
+              {t('exit')}
+            </Button>
