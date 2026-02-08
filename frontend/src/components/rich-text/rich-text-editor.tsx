@@ -414,3 +414,75 @@ function BlockDropdown({ editor }: { editor: Editor }) {
       check: () => editor.isActive('heading', { level: 1 }),
       apply: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
+    {
+      label: 'H2',
+      icon: Heading2,
+      check: () => editor.isActive('heading', { level: 2 }),
+      apply: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    },
+    {
+      label: 'H3',
+      icon: Heading3,
+      check: () => editor.isActive('heading', { level: 3 }),
+      apply: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+    },
+    {
+      label: 'Quote',
+      icon: Quote,
+      check: () => editor.isActive('blockquote'),
+      apply: () => editor.chain().focus().toggleBlockquote().run(),
+    },
+    {
+      label: 'Code',
+      icon: Code,
+      check: () => editor.isActive('codeBlock'),
+      apply: () => editor.chain().focus().toggleCodeBlock().run(),
+    },
+  ];
+  const active = options.find((o) => o.check()) ?? options[0]!;
+  return (
+    <select
+      value={active.label}
+      onChange={(e) => options.find((o) => o.label === e.target.value)?.apply()}
+      aria-label="Block type"
+      className="h-7 rounded-[8px] border border-line bg-surface text-[12.5px] px-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+    >
+      {options.map((o) => (
+        <option key={o.label} value={o.label}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function ToolButton({
+  active,
+  onClick,
+  label,
+  icon: Icon,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  label: string;
+  icon: typeof Bold;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      aria-pressed={active}
+      className={cn(
+        'inline-flex h-7 w-7 items-center justify-center rounded-[8px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120',
+        active && 'bg-ink text-white hover:bg-ink hover:text-white',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-1',
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" strokeWidth={2.25} />
+    </button>
+  );
+}
+
+function Divider() {
