@@ -272,24 +272,3 @@ export function StepFiles() {
                   task={task}
                   locale={locale}
                   onCancel={() => cancel(task.id)}
-                  onRetry={() => retry(task.id)}
-                />
-              ))}
-            </ul>
-          ) : null}
-
-          {/* Saved files — drag to reorder, gear/trash to delete. */}
-          {visibleSaved.length > 0 ? (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-              <SortableContext
-                items={visibleSaved.map((f) => f.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <ul
-                  className={cn(
-                    'divide-y divide-line',
-                    activeTasks.length > 0 && 'border-t border-line',
-                  )}
-                >
-                  {visibleSaved.map((f) => (
-                    <SavedRow
