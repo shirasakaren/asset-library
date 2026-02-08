@@ -323,3 +323,71 @@ export function StepMedia() {
                       onSettings={() => setSettingsItem(m)}
                     />
                   ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
+            <p className="mt-2 text-caption text-ink-3">
+              Drag tiles to reorder slides. Use the gear to blur or hide sensitive media.
+            </p>
+          </>
+        )}
+      </section>
+
+      {settingsItem ? (
+        <MediaSettingsModal
+          item={settingsItem}
+          onClose={() => setSettingsItem(null)}
+          onSave={(patch) => {
+            saveSettings(settingsItem.id, patch);
+            setSettingsItem(null);
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function PreviewMediaCard({
+  item,
+  index,
+  onRemove,
+  onSettings,
+}: {
+  item: PreviewMediaItem;
+  index: number;
+  onRemove: () => void;
+  onSettings: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  });
+  const blurred = item.visibility === 'blur';
+  const hidden = item.visibility === 'hidden';
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        'relative rounded-[12px] overflow-hidden border border-line bg-surface-muted group',
+        item.kind === 'audio' ? '' : 'aspect-[16/9]',
+        isDragging && 'opacity-80 shadow-2 z-10',
+      )}
+    >
+      <span className="absolute top-1.5 left-1.5 z-20 inline-flex h-6 min-w-6 px-1.5 items-center justify-center rounded-full bg-ink/70 text-white text-[10px] font-semibold geist-tnum">
+        {index + 1}
+      </span>
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        aria-label="Drag to reorder"
+        className="absolute top-1.5 left-1/2 -translate-x-1/2 z-20 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/80 backdrop-blur-[6px] text-ink-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="h-3.5 w-3.5" strokeWidth={2.25} />
+      </button>
+
+      <div className={cn('absolute inset-0', blurred && 'blur-xl scale-110')}>
+        {item.kind === 'image' ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.viewUrl} alt={item.label} className="absolute inset-0 h-full w-full object-cover" />
+        ) : item.kind === 'video' ? (
