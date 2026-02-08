@@ -180,3 +180,6 @@ export function WizardProvider({ initialAsset, locale, children }: WizardProvide
       if (dirty || saving === 'saving') {
         e.preventDefault();
         e.returnValue = '';
+      }
+    }
+    window.addEventListener('beforeunload', onBeforeUnload);
