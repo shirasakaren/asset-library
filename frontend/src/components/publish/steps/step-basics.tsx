@@ -137,6 +137,3 @@ export function StepBasics() {
           >
             <option value="">—</option>
             {licenses.data?.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.name}
-              </option>
