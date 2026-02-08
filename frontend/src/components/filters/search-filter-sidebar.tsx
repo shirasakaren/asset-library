@@ -109,15 +109,3 @@ export function SearchFilterSidebar() {
             type="button"
             onClick={reset}
             className="text-caption text-brand-blue hover:underline"
-          >
-            {t('clearAll')}
-          </button>
-        ) : null}
-      </div>
-      {activeCount > 0 ? (
-        <p className="text-caption text-ink-3 mb-2 geist-tnum">
-          {t('activeCount', { count: activeCount })}
-        </p>
-      ) : null}
-
-      <FilterSection title={t('query')} activeCount={q ? 1 : 0}>
