@@ -35,5 +35,3 @@ const PublicEnvSchema = z.object({
 
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
 });
-
-const raw = {
