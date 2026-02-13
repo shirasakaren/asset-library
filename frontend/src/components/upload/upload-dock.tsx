@@ -156,19 +156,3 @@ export function UploadDock() {
                       onClick={() => cancel(t.id)}
                       className="text-caption text-ink-3 hover:text-brand-red"
                     >
-                      Cancel
-                    </button>
-                  </div>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function CircularProgress({ pct, active }: { pct: number; active: boolean }) {
-  const r = 12;
-  const c = 2 * Math.PI * r;
