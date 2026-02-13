@@ -60,3 +60,10 @@ export default async function AnalyticsPage({ params }: PageProps) {
           <Card variant="tinted" padding="lg" className="mt-8">
             <p className="text-body-sm text-ink-3">No analytics data available yet.</p>
           </Card>
+        ) : (
+          <AnalyticsCharts data={data} />
+        )}
+      </div>
+    </Container>
+  );
+}
