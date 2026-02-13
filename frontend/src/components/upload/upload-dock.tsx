@@ -112,3 +112,63 @@ export function UploadDock() {
                           'block h-full transition-[width] duration-150',
                           t.status === 'failed'
                             ? 'bg-brand-red'
+                            : t.status === 'uploading'
+                              ? 'bg-brand-blue'
+                              : 'bg-brand-green',
+                        )}
+                        style={{
+                          width: `${
+                            t.status === 'analyzing' || t.status === 'ready'
+                              ? 100
+                              : t.totalBytes
+                                ? Math.round((t.bytesUploaded / t.totalBytes) * 100)
+                                : 0
+                          }%`,
+                        }}
+                      />
+                    </span>
+                  </span>
+                  <StatusGlyph status={t.status} />
+                </button>
+                {t.status === 'failed' ? (
+                  <div className="mt-1.5 flex items-center gap-2 pl-9">
+                    <span className="flex-1 truncate text-caption text-brand-red">{t.error}</span>
+                    <button
+                      type="button"
+                      onClick={() => retry(t.id)}
+                      className="text-caption font-medium text-brand-blue hover:underline"
+                    >
+                      Retry
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => dismiss(t.id)}
+                      className="text-ink-3 hover:text-ink"
+                      aria-label="Dismiss"
+                    >
+                      <X className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    </button>
+                  </div>
+                ) : ACTIVE.has(t.status) ? (
+                  <div className="mt-1.5 pl-9">
+                    <button
+                      type="button"
+                      onClick={() => cancel(t.id)}
+                      className="text-caption text-ink-3 hover:text-brand-red"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function CircularProgress({ pct, active }: { pct: number; active: boolean }) {
+  const r = 12;
+  const c = 2 * Math.PI * r;
