@@ -79,3 +79,28 @@ export default function AdminRequestsPage() {
             </button>
           );
         })}
+      </div>
+      <DataTable
+        rows={rows}
+        empty="No requests."
+        onRowClick={(r) => {
+          window.location.href = `/admin/requests/${r.id}`;
+        }}
+        columns={[
+          { key: 'requester', header: 'Requester', cell: (r) => r.requester.displayName },
+          {
+            key: 'link',
+            header: 'Link',
+            cell: (r) => (
+              <a href={r.assetLink} target="_blank" rel="noopener noreferrer" className="link-inline font-mono text-[12.5px] truncate inline-block max-w-[280px]">
+                {r.assetLink}
+              </a>
+            ),
+          },
+          { key: 'type', header: 'Type', cell: (r) => r.assetType },
+          {
+            key: 'submitted',
+            header: 'Submitted',
+            cell: (r) => <span className="text-caption text-ink-3 geist-tnum">{formatRelative(r.createdAt, locale)}</span>,
+          },
+          { key: 'status', header: 'Status', cell: (r) => <Badge variant={TONE[r.status]}>{r.status}</Badge> },
