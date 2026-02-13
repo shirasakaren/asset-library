@@ -35,23 +35,3 @@ export function getAvatarTokens(input: {
 }): AvatarTokens {
   const initials = computeInitials(input.displayName || input.email || input.id);
   const idx = hashString(input.id || input.email || input.displayName || 'anon') % PALETTE.length;
-  const { bg, fg } = PALETTE[idx]!;
-  return { initials, bgColor: bg, fgColor: fg };
-}
-
-// Convert a server-provided semantic color name ("brand-blue") to a hex.
-const NAME_TO_HEX: Record<string, string> = {
-  'brand-blue': '#3a6dc5',
-  'brand-yellow': '#f7bf33',
-  'brand-red': '#f94141',
-  'brand-green': '#0f8657',
-};
-const FG_TO_HEX: Record<string, string> = {
-  'ink-white': '#ffffff',
-  'ink-black': '#0e1116',
-};
-
-export function avatarFromServer(input: {
-  initials: string;
-  bgColor: string;
-  fgColor: string;
