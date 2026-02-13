@@ -98,3 +98,57 @@ export function WizardHeader({ variant = 'edit' }: WizardHeaderProps) {
             <Button variant="ghost" onClick={handleExit}>
               {t('exit')}
             </Button>
+            <Button
+              size="lg"
+              onClick={handlePublish}
+              disabled={!ready || publishing || variant === 'new-version'}
+              loading={publishing}
+              title={ready ? undefined : t('publishBlocked')}
+            >
+              {publishing
+                ? isPublished
+                  ? t('updatingCta')
+                  : t('publishingCta')
+                : isPublished
+                  ? t('updateCta')
+                  : t('publishCta')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const variant =
+    status === 'PUBLISHED'
+      ? 'success'
+      : status === 'DRAFT'
+        ? 'warning'
+        : status === 'ARCHIVED'
+          ? 'neutral'
+          : 'danger';
+  return (
+    <Badge variant={variant as 'success'}>
+      {status.charAt(0) + status.slice(1).toLowerCase()}
+    </Badge>
+  );
+}
+
+function SaveIndicator({
+  saving,
+  lastSavedAt,
+  locale,
+}: {
+  saving: 'idle' | 'saving' | 'saved' | 'error';
+  lastSavedAt: number | null;
+  locale: LocaleCode;
+}) {
+  if (saving === 'saving') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-caption text-ink-3">
+        <Loader2 className="h-3 w-3 animate-spin" strokeWidth={2.25} />
+        Saving…
+      </span>
+    );
