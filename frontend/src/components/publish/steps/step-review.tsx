@@ -126,3 +126,36 @@ export function StepReview() {
                 {tag.displayName}
               </Badge>
             ))}
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <SectionHead title={tLicense('title')} onEdit={() => goto('license')} />
+        <p className="text-body-sm text-ink-2">
+          {wiz.asset.license?.name ?? 'No license selected'}
+        </p>
+      </Card>
+
+      <Alert variant="info" icon={<FileCheck2 className="h-5 w-5 text-brand-blue" strokeWidth={2.25} />}>
+        {t('publishingNote')}
+      </Alert>
+    </div>
+  );
+}
+
+function SectionHead({ title, onEdit }: { title: string; onEdit: () => void }) {
+  const t = useTranslations('publish.review');
+  return (
+    <div className="flex items-center justify-between mb-3">
+      <h3 className="font-display text-h3 text-ink tracking-[-0.005em]">{title}</h3>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="inline-flex items-center gap-1 text-caption text-brand-blue hover:underline"
+      >
+        <Pencil className="h-3 w-3" strokeWidth={2.25} />
+        {t('editSection')}
+      </button>
+    </div>
+  );

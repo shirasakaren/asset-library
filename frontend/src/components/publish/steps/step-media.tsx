@@ -391,3 +391,94 @@ function PreviewMediaCard({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={item.viewUrl} alt={item.label} className="absolute inset-0 h-full w-full object-cover" />
         ) : item.kind === 'video' ? (
+          <video src={item.viewUrl} controls={!blurred} preload="metadata" className="absolute inset-0 h-full w-full object-contain bg-ink" />
+        ) : item.kind === 'audio' ? (
+          <div className="p-3 flex flex-col gap-2">
+            <div className="inline-flex items-center gap-2 text-caption text-ink-2">
+              <Music className="h-4 w-4" strokeWidth={2.25} />
+              <span className="font-medium text-ink truncate">{item.label}</span>
+            </div>
+            <audio src={item.viewUrl} controls preload="metadata" className="w-full" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-ink-3 px-4 text-center">
+            <FileBox className="h-6 w-6" strokeWidth={2.25} />
+            <span className="text-[12.5px] font-medium text-ink truncate max-w-full">{item.label}</span>
+            <span className="text-caption">3D model</span>
+          </div>
+        )}
+      </div>
+
+      {(blurred || hidden) && item.kind !== 'audio' ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-center px-4 pointer-events-none">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-ink/70 text-white">
+            <EyeOff className="h-4 w-4" strokeWidth={2.25} />
+          </span>
+          <span className="text-[12px] font-semibold text-white drop-shadow">
+            {hidden ? 'Hidden' : item.warning?.trim() || 'Sensitive content'}
+          </span>
+        </div>
+      ) : null}
+
+      <div className="absolute top-1.5 right-1.5 z-20 flex items-center gap-1">
+        <button
+          type="button"
+          aria-label="Media settings"
+          onClick={onSettings}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-[6px] text-ink-2 hover:text-ink shadow-1"
+        >
+          <Settings2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+        </button>
+        <button
+          type="button"
+          aria-label="Remove"
+          onClick={onRemove}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-[6px] text-ink-2 hover:text-brand-red shadow-1"
+        >
+          <X className="h-3.5 w-3.5" strokeWidth={2.25} />
+        </button>
+      </div>
+      <span className="absolute bottom-1.5 left-1.5 z-20 text-[10px] uppercase tracking-[0.1em] text-white bg-ink/65 px-1.5 py-0.5 rounded-[4px]">
+        {item.kind}
+      </span>
+    </li>
+  );
+}
+
+function MediaSettingsModal({
+  item,
+  onClose,
+  onSave,
+}: {
+  item: PreviewMediaItem;
+  onClose: () => void;
+  onSave: (patch: Partial<PreviewMediaItem>) => void;
+}) {
+  const [visibility, setVisibility] = useState<PreviewMediaVisibility>(item.visibility ?? 'visible');
+  const [warning, setWarning] = useState(item.warning ?? '');
+
+  const options: { value: PreviewMediaVisibility; label: string; desc: string; icon: typeof Eye }[] = [
+    { value: 'visible', label: 'Visible', desc: 'Shown normally to everyone.', icon: Eye },
+    { value: 'blur', label: 'Blur + warning', desc: 'Blurred with a label; viewers click to reveal.', icon: EyeOff },
+    { value: 'hidden', label: 'Hidden', desc: 'Not shown in the gallery at all.', icon: EyeOff },
+  ];
+
+  return (
+    <Modal open onOpenChange={(o) => !o && onClose()}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>Media display settings</ModalTitle>
+          <ModalDescription>Control how this item appears on the asset page.</ModalDescription>
+        </ModalHeader>
+        <div className="space-y-2">
+          {options.map((opt) => {
+            const Icon = opt.icon;
+            const active = visibility === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setVisibility(opt.value)}
+                className={cn(
+                  'w-full flex items-start gap-3 p-3 rounded-[12px] border text-left transition-colors',
+                  active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40',
