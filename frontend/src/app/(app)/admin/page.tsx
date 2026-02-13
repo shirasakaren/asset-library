@@ -149,3 +149,29 @@ export default async function AdminDashboardPage() {
                     initials: (entry.actorDisplayName?.split(' ').map((p) => p[0]).join('') || '?').slice(0, 2).toUpperCase(),
                     bgColor: 'brand-blue',
                     fgColor: 'ink-white',
+                  })}
+                  size={24}
+                />
+                <span className="text-ink font-medium truncate">
+                  {entry.actorDisplayName ?? entry.actorEmail ?? 'System'}
+                </span>
+                <span className="text-ink-3">·</span>
+                <span className="font-mono text-[12px] text-ink-2 truncate">{entry.action}</span>
+                <span className="text-ink-3 hidden sm:inline">·</span>
+                <span className="hidden sm:inline text-ink-2 truncate">
+                  {entry.subjectType}/{entry.subjectId}
+                </span>
+                <span className="ml-auto text-caption text-ink-3 geist-tnum shrink-0">
+                  {formatRelative(entry.createdAt, locale)}
+                </span>
+              </li>
+            ))}
+            {(data?.recentAudit ?? []).length === 0 ? (
+              <li className="px-4 py-6 text-body-sm text-ink-3">No recent activity.</li>
+            ) : null}
+          </ul>
+        </Card>
+      </section>
+    </>
+  );
+}
