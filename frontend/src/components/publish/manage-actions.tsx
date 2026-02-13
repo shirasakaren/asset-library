@@ -120,23 +120,3 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
               <Archive className="h-3.5 w-3.5" strokeWidth={2.25} />
               {t('archive')}
             </DropdownMenuItem>
-          )}
-          <DropdownMenuItem danger onSelect={() => setDeleteOpen(true)}>
-            <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
-            {t('delete')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <Modal open={archiveOpen} onOpenChange={setArchiveOpen}>
-        <ModalContent size="sm">
-          <ModalHeader>
-            <ModalTitle>{t('archiveConfirmTitle')}</ModalTitle>
-            <ModalDescription>{t('archiveConfirmBody')}</ModalDescription>
-          </ModalHeader>
-          <ModalFooter>
-            <Button variant="ghost" onClick={() => setArchiveOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={doArchive} loading={busy}>
-              {t('archiveConfirm')}

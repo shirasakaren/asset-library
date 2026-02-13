@@ -104,3 +104,12 @@ export function NewVersionForm({ asset }: Props) {
                 {(['en', 'id'] as LocaleCode[]).map((l) => {
                   const active = activeLocale === l;
                   return (
+                    <button
+                      key={l}
+                      type="button"
+                      onClick={() => setActiveLocale(l)}
+                      className={`relative h-10 px-3 text-[14px] font-medium ${active ? 'text-ink' : 'text-ink-3 hover:text-ink'} after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px] ${active ? 'after:bg-brand-blue' : 'after:bg-transparent'}`}
+                    >
+                      {l === 'en' ? 'English' : 'Bahasa Indonesia'}
+                    </button>
+                  );
