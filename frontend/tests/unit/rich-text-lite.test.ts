@@ -46,8 +46,3 @@ describe('stripDisallowedLiteNodes', () => {
   it('strips disallowed marks (underline, highlight, textStyle)', () => {
     const doc: TipTapDoc = {
       type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            {
