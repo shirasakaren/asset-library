@@ -178,3 +178,55 @@ export const useUploadStore = create<UploadStoreState>((set, get) => {
         method: 'POST',
         body: {
           assetId: task.input.assetId,
+          versionId: task.input.versionId,
+          relativePath: task.input.relativePath,
+          contentType: file.type || 'application/octet-stream',
+          bytes: file.size,
+          partCount,
+        },
+        signal: ctrl.signal,
+      },
+    );
+    patch(task.id, { fileId: initiate.fileId, uploadId: initiate.uploadId });
+
+    const bytesPerPart = new Map<number, number>();
+    const bump = () =>
+      patch(task.id, {
+        bytesUploaded: Array.from(bytesPerPart.values()).reduce((a, b) => a + b, 0),
+      });
+
+    const partsToDo = initiate.partUrls.slice();
+    const worker = async () => {
+      while (partsToDo.length > 0) {
+        if (ctrl.signal.aborted) return;
+        const part = partsToDo.shift();
+        if (!part) return;
+        const start = (part.partNumber - 1) * partSize;
+        const blob = file.slice(start, Math.min(file.size, start + partSize));
+        await putWithProgress(task.id, part.url, blob, file.type, ctrl, (loaded) => {
+          bytesPerPart.set(part.partNumber, loaded);
+          bump();
+        });
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(MAX_PARALLEL_PARTS, partCount) }, worker));
+    if (ctrl.signal.aborted) return;
+    // ETags are sourced server-side via ListParts — no need to send them.
+    await authedFetch('/files/uploads/multipart/complete', {
+      method: 'POST',
+      body: { uploadId: initiate.uploadId },
+      signal: ctrl.signal,
+    });
+  }
+
+  function putWithProgress(
+    taskId: string,
+    url: string,
+    blob: Blob,
+    contentType: string,
+    ctrl: AbortController,
+    onProgress: (loaded: number) => void,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      controllers.get(taskId)?.xhrs.add(xhr);
