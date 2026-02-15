@@ -29,23 +29,3 @@ interface WsState {
 
 export const useWsStore = create<WsState>((set, get) => ({
   status: 'idle',
-  lastMessage: null,
-  lastError: null,
-  reconnectAttempts: 0,
-  handlers: new Map(),
-  setStatus: (status) => set({ status }),
-  setError: (lastError) => set({ lastError }),
-  bumpAttempts: () => set((s) => ({ reconnectAttempts: s.reconnectAttempts + 1 })),
-  resetAttempts: () => set({ reconnectAttempts: 0 }),
-  dispatch: (msg) => {
-    set({ lastMessage: msg });
-    const bucket = get().handlers.get(msg.type);
-    if (!bucket) return;
-    for (const handler of bucket) handler(msg);
-  },
-  subscribe: (type, handler) => {
-    const handlers = get().handlers;
-    let bucket = handlers.get(type);
-    if (!bucket) {
-      bucket = new Set();
-      handlers.set(type, bucket);
