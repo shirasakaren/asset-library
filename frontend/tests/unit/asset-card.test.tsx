@@ -50,3 +50,6 @@ describe('AssetCard (compact)', () => {
     // 1234 formatted as "1.2k"
     expect(screen.getByText(/1\.2k/)).toBeInTheDocument();
   });
+});
+
+describe('AssetCard (feature)', () => {
