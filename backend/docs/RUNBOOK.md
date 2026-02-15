@@ -139,3 +139,19 @@ docker compose -f docker-compose.prod.yml up -d
 ```
 
 **Database migrations are forward-only.** If a migration introduced a
+breaking schema change AND the previous app image cannot read the new
+schema, you must roll the DB back too. Procedure:
+
+1. `pg_restore` from last night's backup (see §8).
+2. Mark the rolled-back migrations in `_prisma_migrations` as
+   `rolled_back`.
+3. Re-deploy the previous image.
+
+This is rare but worth practicing in staging once a quarter.
+
+## 6. Health-check expectations
+
+| Probe       | Purpose                                                                                |
+| ----------- | -------------------------------------------------------------------------------------- |
+| `/healthz`  | Liveness. Always 200 while the process is alive. Use for orchestration restart.        |
+| `/readyz`   | Readiness. 200 only when every downstream is reachable. Use as load-balancer gate.     |
