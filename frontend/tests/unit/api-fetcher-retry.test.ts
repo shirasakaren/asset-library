@@ -39,3 +39,4 @@ describe('apiFetch — 401 retry-once', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(2);
     const secondCall = fetchSpy.mock.calls[1];
     const init = secondCall[1] as RequestInit;
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer fresh-token');
