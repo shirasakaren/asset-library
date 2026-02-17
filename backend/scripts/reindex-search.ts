@@ -41,5 +41,3 @@ async function main(): Promise<void> {
     'renderPipelines',
     'targets',
     'fileKinds',
-    'status',
-  ]);
