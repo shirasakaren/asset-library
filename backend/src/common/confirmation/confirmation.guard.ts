@@ -33,3 +33,5 @@ export class ConfirmationGuard implements CanActivate {
     const body = (req.body ?? {}) as ConfirmationBody;
     if (body.confirm !== CONFIRMATION_PHRASE) {
       throw new BadRequestDomainException(
+        ErrorCode.CONFIRMATION_REQUIRED,
+        `Confirmation phrase missing — set body.confirm to "${CONFIRMATION_PHRASE}".`,
