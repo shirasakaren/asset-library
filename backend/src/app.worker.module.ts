@@ -43,3 +43,6 @@ import { MetricsModule } from './modules/metrics/metrics.module';
       }),
     }),
     SentryModule,
+    PrismaModule,
+    MongoModule,
+    RedisModule,
