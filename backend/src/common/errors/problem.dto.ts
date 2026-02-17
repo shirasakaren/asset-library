@@ -41,3 +41,5 @@ export class ProblemDto {
   code!: string;
 
   @ApiPropertyOptional({ type: [ProblemFieldDto] })
+  fields?: ProblemFieldDto[];
+}
