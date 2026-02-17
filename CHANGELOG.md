@@ -82,3 +82,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   glTF conversion, thumbnail variants, search indexing.
 - WebSocket gateway with Redis pub/sub fan-out across replicas.
 - Notification system: in-app, email (MJML, en/id), and n8n fan-out.
+
+## [0.4.0] - 2026-01-30
+
+### Added
+
+- Publishing wizard (basics, files, compatibility, media, license, tags,
+  review) with AV-warning acknowledgement.
+- Versions management with transactional `isLatest` swap.
+- Comments and issues with threaded reads, depth cap, and status flow.
+- Asset requests with an admin review queue.
