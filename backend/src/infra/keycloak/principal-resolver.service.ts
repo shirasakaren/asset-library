@@ -66,4 +66,3 @@ export class PrincipalResolverService {
   async resolvePrincipal(claims: KeycloakClaims): Promise<{ user: User; role: AppRole }> {
     const cacheKey = PrincipalResolverService.cacheKey(claims.sub);
     try {
-      const cached = await this.redis.client.get(cacheKey);
