@@ -38,12 +38,3 @@ export class IdempotencyService {
   async lookup(
     userId: string,
     route: string,
-    key: string,
-    body: unknown,
-  ): Promise<IdempotencyRecord | null> {
-    const raw = await this.redis.client.get(this.key(userId, route, key));
-    if (!raw) return null;
-    const record = JSON.parse(raw) as IdempotencyRecord;
-    if (record.bodyHash !== this.hashBody(body)) {
-      throw new ConflictDomainException(
-        ErrorCode.IDEMPOTENCY_KEY_REUSED,
