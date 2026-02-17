@@ -29,3 +29,5 @@ export class CachedService {
     try {
       hit = await this.redis.client.get(key);
     } catch (err) {
+      this.logger.warn(`Cache GET failed for ${key}: ${(err as Error).message}`);
+    }
