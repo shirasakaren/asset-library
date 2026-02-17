@@ -83,3 +83,38 @@ export function GifPicker({ open, onOpenChange, onPick }: GifPickerProps) {
           {available.length > 1 ? (
             <div className="inline-flex rounded-[10px] border border-line overflow-hidden">
               {available.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setProvider(p)}
+                  className={cn(
+                    'px-3 h-9 text-[12.5px] font-medium capitalize transition-colors',
+                    provider === p ? 'bg-ink text-white' : 'bg-surface text-ink-2 hover:bg-surface-muted',
+                  )}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        {available.length === 0 && !loading ? (
+          <p className="py-12 text-center text-body-sm text-ink-3">
+            GIF search isn&apos;t configured on the server.
+          </p>
+        ) : loading && results.length === 0 ? (
+          <div className="py-16 flex items-center justify-center text-ink-3">
+            <Loader2 className="h-5 w-5 animate-spin" strokeWidth={2.25} />
+          </div>
+        ) : results.length === 0 ? (
+          <p className="py-12 text-center text-body-sm text-ink-3">No GIFs found.</p>
+        ) : (
+          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[55vh] overflow-y-auto">
+            {results.map((g) => (
+              <li key={g.id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onPick({ url: g.url, alt: g.title || 'GIF' });
+                    onOpenChange(false);
