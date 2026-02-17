@@ -56,4 +56,3 @@ def setup_hdri(path: str) -> None:
 
 
 def setup_camera(min_v: Vector, max_v: Vector) -> None:
-    center = (min_v + max_v) / 2
