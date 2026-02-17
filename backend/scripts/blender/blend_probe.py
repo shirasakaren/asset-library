@@ -65,7 +65,3 @@ def probe(path: str) -> dict:
     for action in bpy.data.actions:
         frame_start, frame_end = action.frame_range
         length_sec = (frame_end - frame_start) / max(bpy.context.scene.render.fps, 1)
-        animations.append(
-            {
-                "name": action.name,
-                "lengthSec": round(float(length_sec), 4),
