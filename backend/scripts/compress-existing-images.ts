@@ -148,3 +148,5 @@ async function main(): Promise<void> {
   });
   console.log(`scanning ${assets.length} assets…`);
 
+  for (const asset of assets) {
+    // 1) Thumbnail — compress in place.
