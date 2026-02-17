@@ -174,3 +174,12 @@ function walk(node: TipTapNode | TipTapDoc, path: string, state: WalkState): Tip
         for (const [k, v] of Object.entries(mark.attrs)) {
           if (allowed.has(k)) cleanAttrs[k] = v;
         }
+      }
+      // Force-set rel on links so we never persist bare external href tracking.
+      if (mark.type === 'link') {
+        cleanAttrs['rel'] = 'noopener nofollow';
+        if (!cleanAttrs['target']) cleanAttrs['target'] = '_blank';
+      }
+      safeMarks.push({
+        type: mark.type,
+        attrs: Object.keys(cleanAttrs).length ? cleanAttrs : undefined,
