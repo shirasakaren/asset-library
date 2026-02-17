@@ -200,3 +200,60 @@ function clampHeadingLevel(value: unknown): 1 | 2 | 3 {
   if (n >= 3) return 3;
   if (n === 2) return 2;
   return 1;
+}
+
+function flattenText(node: TipTapNode): string {
+  if (node.text) return node.text;
+  if (!node.content) return '';
+  return node.content.map(flattenText).join('');
+}
+
+function sanitizeUrl(url: string): string {
+  const lower = url.trim().toLowerCase();
+  if (lower.startsWith('javascript:') || lower.startsWith('data:')) return '#';
+  return url;
+}
+
+function RenderedImage({ node }: { node: TipTapNode }) {
+  const src = typeof node.attrs?.src === 'string' ? (node.attrs.src as string) : null;
+  const alt = typeof node.attrs?.alt === 'string' ? (node.attrs.alt as string) : '';
+  const width = typeof node.attrs?.width === 'number' ? (node.attrs.width as number) : 1280;
+  const height = typeof node.attrs?.height === 'number' ? (node.attrs.height as number) : 720;
+  if (!src) return null;
+  return (
+    <figure className="my-6">
+      <div className="rounded-[16px] overflow-hidden border border-line bg-surface-muted">
+        <Image
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          className="w-full h-auto block"
+          sizes="(min-width: 1024px) 720px, 100vw"
+          unoptimized
+        />
+      </div>
+      {alt ? <figcaption className="mt-2 text-caption text-ink-3 text-center">{alt}</figcaption> : null}
+    </figure>
+  );
+}
+
+function RenderedVideo({ node }: { node: TipTapNode }) {
+  const src = typeof node.attrs?.src === 'string' ? (node.attrs.src as string) : null;
+  if (!src) return null;
+  return (
+    <figure className="my-6">
+      <video
+        controls
+        preload="metadata"
+        className="w-full rounded-[16px] border border-line bg-black"
+      >
+        <source src={src} />
+      </video>
+    </figure>
+  );
+}
+
+function RenderedEmbed({ node }: { node: TipTapNode }) {
+  const src = typeof node.attrs?.src === 'string' ? (node.attrs.src as string) : null;
+  if (!src) return null;
