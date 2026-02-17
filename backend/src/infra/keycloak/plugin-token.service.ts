@@ -63,5 +63,3 @@ export class PluginTokenService {
     const record = await this.prisma.pluginDeviceToken.findUnique({
       where: { tokenHash: this.hash(token) },
       include: { user: true },
-    });
-    if (!record || record.revokedAt || record.expiresAt < new Date()) return null;
