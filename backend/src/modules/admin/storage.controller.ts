@@ -49,3 +49,5 @@ export class AdminStorageController {
   @Get('assets')
   @ApiOperation({ summary: 'Per-asset storage usage, sorted by bytes desc.' })
   @ApiQuery({ name: 'date', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiOkResponse()
