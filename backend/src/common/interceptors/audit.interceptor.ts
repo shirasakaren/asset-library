@@ -72,3 +72,10 @@ export class AuditInterceptor implements NestInterceptor {
         user?: AuthenticatedRequestUser;
         body?: Record<string, unknown>;
         params?: Record<string, unknown>;
+      }
+    >();
+
+    return next.handle().pipe(
+      tap({
+        next: () => {
+          const subjectId = resolveSubjectId(req, config.subjectParam) ?? 'unknown';
