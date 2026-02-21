@@ -63,11 +63,3 @@ export class AssetsListService {
       ownerId: query.ownerId,
       statuses,
     });
-
-    const orderBy = this.buildOrderBy(query.sort ?? 'newest');
-
-    const rows = await this.prisma.asset.findMany({
-      where,
-      orderBy,
-      include: LIST_INCLUDE,
-      take: limit + 1,
