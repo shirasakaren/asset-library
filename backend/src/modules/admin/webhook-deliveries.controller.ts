@@ -86,3 +86,8 @@ export class WebhookDeliveriesController {
     return {
       items: items.map((r) => this.toDto(r)),
       pageInfo: {
+        hasMore,
+        nextCursor: hasMore && last ? encodeCursor(last.createdAt.toISOString()) : null,
+      },
+    };
+  }
