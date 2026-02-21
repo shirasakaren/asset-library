@@ -151,3 +151,8 @@ export class AssetsController {
     @AuthUser() principal: AuthenticatedRequestUser,
     @Param('id') id: string,
     @Body() dto: UpdateAssetDto,
+  ): Promise<void> {
+    await this.assets.update(id, dto, principal.user);
+  }
+
+  @Post('assets/:id/publish')
