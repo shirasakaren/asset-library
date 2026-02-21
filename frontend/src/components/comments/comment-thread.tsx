@@ -155,3 +155,63 @@ export function CommentThread(props: CommentThreadProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onSelect={copyLink}>
+                    <LinkIcon className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    {t('copyLink')}
+                  </DropdownMenuItem>
+                  {canEdit ? (
+                    <DropdownMenuItem onSelect={() => setEditing(true)}>
+                      <Pencil className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      {t('edit')}
+                    </DropdownMenuItem>
+                  ) : null}
+                  {canDelete ? (
+                    <DropdownMenuItem
+                      danger
+                      onSelect={() => void props.onDelete(node.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      {t('delete')}
+                    </DropdownMenuItem>
+                  ) : null}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </footer>
+          ) : null}
+
+          {replying ? (
+            <div className="mt-3 pl-4 border-l-2 border-line">
+              <CommentComposer
+                me={me}
+                defaultKind="COMMENT"
+                autoFocus
+                onSubmit={async ({ body }) => {
+                  await props.onReply(node.id, body);
+                  setReplying(false);
+                }}
+              />
+            </div>
+          ) : null}
+
+          {node.replies.length > 0 ? (
+            <ul className="mt-3 space-y-2 pl-4 sm:pl-8 border-l border-line/60">
+              {node.replies.map((child) => (
+                <li key={child.id}>
+                  {depth + 1 >= MAX_DEPTH ? (
+                    <p className="text-caption text-ink-3 italic px-2 py-1">{t('maxDepth')}</p>
+                  ) : (
+                    <CommentThread
+                      {...props}
+                      node={child}
+                      depth={depth + 1}
+                    />
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
