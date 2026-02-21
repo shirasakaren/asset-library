@@ -138,3 +138,32 @@ export default function NewDraftPage() {
                   <option key={l.id} value={l.id}>
                     {l.name}
                   </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field
+              id="nd-semver"
+              label="Initial version (semver)"
+              required
+              error={form.formState.errors.semver?.message}
+            >
+              <Input id="nd-semver" {...form.register('semver')} placeholder="1.0.0" inputMode="numeric" />
+            </Field>
+
+            {error ? <Alert variant="danger">{error}</Alert> : null}
+
+            <div className="flex items-center justify-end gap-2">
+              <Button type="button" variant="ghost" onClick={() => router.back()}>
+                Cancel
+              </Button>
+              <Button type="submit" loading={form.formState.isSubmitting}>
+                {t('newDraft.create')}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </Container>
+  );
+}
