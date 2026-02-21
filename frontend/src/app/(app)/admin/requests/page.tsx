@@ -104,3 +104,14 @@ export default function AdminRequestsPage() {
             cell: (r) => <span className="text-caption text-ink-3 geist-tnum">{formatRelative(r.createdAt, locale)}</span>,
           },
           { key: 'status', header: 'Status', cell: (r) => <Badge variant={TONE[r.status]}>{r.status}</Badge> },
+        ]}
+      />
+      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
+        {list.isFetchingNextPage ? 'Loading…' : null}
+      </div>
+      <NextLink href="/" className="sr-only">
+        Home
+      </NextLink>
+    </>
+  );
+}
