@@ -107,3 +107,12 @@ export class AnalyticsService {
     const since = new Date(Date.now() - 90 * 86_400_000);
 
     const daily = await this.prisma.downloadDaily.findMany({
+      where: { assetId, date: { gte: since } },
+      orderBy: { date: 'asc' },
+    });
+    const byCountry: Record<string, number> = {};
+    const bySource: Record<string, number> = {};
+    for (const row of daily) {
+      for (const [country, count] of Object.entries(
+        (row.byCountry as Record<string, number>) ?? {},
+      )) {
