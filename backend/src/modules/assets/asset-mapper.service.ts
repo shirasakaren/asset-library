@@ -139,24 +139,3 @@ export class AssetMapperService {
               const displayKey = typeof m.displayKey === 'string' ? m.displayKey : undefined;
               const [originalUrl, displayUrl] = await Promise.all([
                 this.s3.presignGet('editor', key),
-                displayKey ? this.s3.presignGet('editor', displayKey) : Promise.resolve(undefined),
-              ]);
-              const visibility =
-                m.visibility === 'blur' || m.visibility === 'hidden' ? m.visibility : 'visible';
-              return {
-                id: String(m.id),
-                kind: (m.kind === 'video' || m.kind === 'audio' || m.kind === '3d'
-                  ? m.kind
-                  : 'image') as 'image' | 'video' | 'audio' | '3d',
-                key,
-                displayKey,
-                label: typeof m.label === 'string' ? m.label : '',
-                mime: typeof m.mime === 'string' ? m.mime : undefined,
-                viewUrl: displayUrl ?? originalUrl,
-                originalUrl,
-                visibility: visibility as 'visible' | 'blur' | 'hidden',
-                warning: typeof m.warning === 'string' ? m.warning : undefined,
-              };
-            }),
-        )
-      : [];
