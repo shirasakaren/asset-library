@@ -55,3 +55,8 @@ export default async function AdminUserPage({ params }: PageProps) {
             <code className="font-mono text-[12.5px] text-ink-3">{user.email}</code>
           ) : null
         }
+        actions={
+          <NextLink href="/admin/users" className="inline-flex items-center gap-1 text-caption text-brand-blue hover:underline">
+            <ArrowLeft className="h-3 w-3" strokeWidth={2.25} />
+            Back to users
+          </NextLink>
