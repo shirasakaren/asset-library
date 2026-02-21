@@ -71,6 +71,3 @@ export class AnalyticsController {
       assetId: r.assetId,
       title: r.asset.title,
       ownerDisplayName: r.asset.owner.displayName,
-      totalDownloads: r.totalDownloads,
-      totalSaves: r.totalSaves,
-      last7dDownloads: r.last7dDownloads,
