@@ -71,11 +71,3 @@ export class AdminFeaturedController {
     @Param('id') id: string,
     @Body() dto: UpdateFeaturedSlotDto,
   ): Promise<AdminFeaturedSlotDto> {
-    return this.featured.update(id, principal.user, dto);
-  }
-
-  @Delete(':id')
-  @AuditAction({ action: 'featured.delete_request', subjectType: 'FeaturedSlot' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Hard delete the slot. Asset is not affected.' })
-  remove(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
