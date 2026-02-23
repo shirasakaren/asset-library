@@ -69,3 +69,15 @@ export class CompletedPartDto {
 export class CompleteMultipartDto {
   @ApiProperty() @IsString() uploadId!: string;
 
+  // Optional + ignored: the server now sources authoritative ETags via
+  // S3 ListParts. Kept so older clients posting `parts` still validate.
+  @ApiPropertyOptional({ type: [CompletedPartDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CompletedPartDto)
+  parts?: CompletedPartDto[];
+}
+
+export class AbortMultipartDto {
+  @ApiProperty() @IsString() uploadId!: string;
