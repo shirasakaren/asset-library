@@ -57,3 +57,16 @@ export interface SearchIndexBatchJob {
 
 export interface NotifyJob {
   recipientUserId: string;
+  /** Stable event identifier — see Part 3 §8.1. */
+  type: import('@prisma/client').NotificationType;
+  /** Typed per-event payload (see notifications/payloads/*). */
+  payload: Record<string, unknown>;
+  /**
+   * Channels to fan out on. Defaults to every channel; setting `dropChannels`
+   * lets internal events skip email or webhook.
+   */
+  dropChannels?: Array<'inApp' | 'ws' | 'email' | 'webhook'>;
+  actor?: { id: string; email?: string; displayName?: string };
+}
+
+export interface WebhookDeliveryJob {
