@@ -47,3 +47,5 @@ export class UpdateIssueStatusDto {
   @IsEnum(IssueStatus)
   status!: IssueStatus;
 }
+
+export class CommentAuthorDto {
