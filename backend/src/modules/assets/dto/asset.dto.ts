@@ -199,3 +199,30 @@ export class AssetSummaryDto {
   @ApiProperty({ enum: AssetStatus }) status!: AssetStatus;
   @ApiPropertyOptional() thumbnailUrl?: string;
   @ApiProperty() ownerDisplayName!: string;
+  @ApiProperty() categoryName!: string;
+  @ApiProperty() totalDownloads!: number;
+  @ApiProperty() totalSaves!: number;
+  @ApiProperty() updatedAt!: string;
+  @ApiPropertyOptional() publishedAt?: string;
+}
+
+export class AssetOwnerDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() displayName!: string;
+  @ApiProperty({ type: AvatarDto }) avatar!: AvatarDto;
+}
+
+export class AssetThumbnailDto {
+  @ApiPropertyOptional() key?: string;
+  @ApiPropertyOptional() url?: string;
+}
+
+export class AssetCategoryRefDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() name!: string;
+}
+
+export class AssetLicenseRefDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
