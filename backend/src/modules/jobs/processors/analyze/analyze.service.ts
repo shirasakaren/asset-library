@@ -105,12 +105,3 @@ export class AnalyzeService {
       case AssetFileKind.UNITYPACKAGE: {
         const pkg = await extractUnityPackage(filePath);
         return {
-          ...base,
-          meta: {
-            unityVersion: pkg.unityVersion,
-            contents: pkg.contents,
-            renderPipelineHints: pkg.renderPipelineHints,
-          },
-          dependencies: pkg.dependencies.map((d) => ({
-            name: d.name,
-            version: d.version,
