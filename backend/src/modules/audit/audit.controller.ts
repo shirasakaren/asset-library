@@ -57,3 +57,8 @@ export class AdminAuditController {
             : null,
         hasMore,
       },
+    };
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Full audit entry detail incl. metadata payload.' })
