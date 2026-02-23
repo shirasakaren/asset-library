@@ -86,3 +86,16 @@ export class FilesController {
   @ApiOperation({ summary: 'Finalize a multipart upload (calls CompleteMultipartUpload on S3).' })
   completeMultipart(
     @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CompleteMultipartDto,
+  ): Promise<void> {
+    return this.files.completeMultipart(dto, principal.user);
+  }
+
+  @Post('uploads/multipart/abort')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Abort an in-flight multipart upload.' })
+  abortMultipart(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: AbortMultipartDto,
+  ): Promise<void> {
+    return this.files.abortMultipart(dto.uploadId, principal.user);
