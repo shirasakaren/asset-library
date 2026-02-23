@@ -124,3 +124,7 @@ export class GltfConvertWorker extends JobWorkerBase<GltfConvertJob> {
       throw new Error(`Blender exit ${res.exitCode}: ${res.stderr.slice(-512)}`);
     }
   }
+
+  private async runGltfpack(input: string, output: string, timeoutMs: number): Promise<void> {
+    const args = ['-i', input, '-o', output, '-cc'];
+    if (this.config.get('GLTFPACK_KTX2')) args.push('-tc');
