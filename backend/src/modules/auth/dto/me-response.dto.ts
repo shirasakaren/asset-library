@@ -73,6 +73,3 @@ export class PluginExchangeResponseDto {
 
   @ApiProperty()
   deviceId!: string;
-
-  @ApiProperty()
-  expiresAt!: string;
