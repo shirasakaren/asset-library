@@ -292,3 +292,45 @@ export class FilesService {
       await this.prisma.assetFile.delete({ where: { id: handle.fileId } }).catch(() => undefined);
       if (handle.versionId) await this.recountVersion(handle.versionId);
     }
+    await this.dropHandle(uploadId);
+  }
+
+  // ─── File management (reorder / delete) ──────────────────────────────────
+
+  /** Next sort order = current file count, so new uploads append to the end. */
+  private async nextSortOrder(versionId: string): Promise<number> {
+    return this.prisma.assetFile.count({ where: { versionId } });
+  }
+
+  /**
+   * Persists a new file display order. `orderedFileIds` must be the full set of
+   * the version's file ids; any omitted files keep their relative order after
+   * the listed ones.
+   */
+  async reorderFiles(versionId: string, orderedFileIds: string[], requester: User): Promise<void> {
+    const version = await this.getVersionOrThrow(versionId, requester);
+    const files = await this.prisma.assetFile.findMany({
+      where: { versionId: version.id },
+      select: { id: true },
+    });
+    const known = new Set(files.map((f) => f.id));
+    const rank = new Map<string, number>();
+    orderedFileIds.forEach((id, i) => {
+      if (known.has(id)) rank.set(id, i);
+    });
+    await this.prisma.$transaction(
+      files.map((f) =>
+        this.prisma.assetFile.update({
+          where: { id: f.id },
+          data: { sortOrder: rank.get(f.id) ?? orderedFileIds.length },
+        }),
+      ),
+    );
+  }
+
+  /** Hard-deletes a single uploaded file (S3 object + row). Owner/admin only. */
+  async deleteFile(fileId: string, requester: User): Promise<void> {
+    const file = await this.prisma.assetFile.findUnique({
+      where: { id: fileId },
+      include: { version: { include: { asset: true } } },
+    });
