@@ -58,8 +58,3 @@ export async function extractUnityPackage(
         const text = Buffer.concat(chunks).toString('utf8');
         if (isPathname) {
           const trimmed = text.trim();
-          if (trimmed) {
-            meta.contents.push(trimmed);
-            if (trimmed.startsWith('ProjectSettings/')) meta.hasProjectSettings = true;
-            if (/URP|UniversalRP|Universal Render Pipeline/i.test(trimmed))
-              meta.renderPipelineHints.push('URP');
