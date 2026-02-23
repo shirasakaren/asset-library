@@ -40,3 +40,11 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
               <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
                 {t('eyebrow')}
               </p>
+              <h1 className="display-lg text-ink">{t(messages.titleKey as 'defaultTitle')}</h1>
+              <p className="text-body text-ink-2 mt-3 max-w-prose">
+                {t(messages.bodyKey as 'defaultBody')}
+              </p>
+              <div className="mt-7 flex flex-wrap items-center gap-2">
+                <Button variant="primary" size="lg" asChild>
+                  <a href="/auth/signin">{t('signInAgain')}</a>
+                </Button>
