@@ -101,6 +101,3 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
                 </Button>
               </li>
             ))
-          )}
-        </ul>
-      </Card>
