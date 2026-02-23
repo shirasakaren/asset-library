@@ -65,3 +65,15 @@ export class GifsService {
     url.searchParams.set('client_key', 'mgm-asset-library');
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error(`Tenor ${res.status}`);
+      const json = (await res.json()) as {
+        results?: Array<{
+          id: string;
+          content_description?: string;
+          media_formats?: Record<string, { url: string; dims?: [number, number] }>;
+        }>;
+      };
+      return (json.results ?? []).flatMap((r) => {
+        const full = r.media_formats?.gif ?? r.media_formats?.tinygif;
+        const preview = r.media_formats?.tinygif ?? full;
+        if (!full || !preview) return [];
