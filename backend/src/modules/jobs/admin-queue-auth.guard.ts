@@ -51,3 +51,16 @@ export class AdminQueueAuthGuard implements CanActivate {
     if (!user.isAdmin) {
       throw new ForbiddenException('Admins only.');
     }
+    const role: AppRole = await this.roleResolver.resolve(user);
+    (req as FastifyRequest & { user?: AuthenticatedRequestUser }).user = {
+      user,
+      role,
+      claims,
+    };
+    return true;
+  }
+
+  private extractToken(req: FastifyRequest): string | null {
+    const header = req.headers.authorization;
+    if (header) {
+      const [scheme, value] = header.split(' ');
