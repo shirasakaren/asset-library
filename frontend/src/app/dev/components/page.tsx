@@ -121,3 +121,57 @@ export default function ComponentsPlaygroundPage() {
               <CardTitle>Tinted</CardTitle>
               <CardDescription>Subtle off-white zoning.</CardDescription>
             </Card>
+            <Card variant="inverse">
+              <CardTitle className="text-white">Inverse</CardTitle>
+              <p className="text-body-sm text-white/70 mt-2">
+                Reserved for high-contrast breaks.
+              </p>
+            </Card>
+          </div>
+        </Section>
+
+        {/* Section: Badges */}
+        <Section title="Badges" eyebrow="04">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="neutral">Neutral</Badge>
+            <Badge variant="info">Info</Badge>
+            <Badge variant="success">Published</Badge>
+            <Badge variant="warning">Pending</Badge>
+            <Badge variant="danger">Infected</Badge>
+            <Badge variant="outline">Outline</Badge>
+            <Badge variant="solid">Solid</Badge>
+          </div>
+        </Section>
+
+        {/* Section: Alerts */}
+        <Section title="Alerts" eyebrow="05">
+          <div className="grid gap-3 max-w-[640px]">
+            <Alert title="Heads up" variant="info">
+              A new version of this asset is available.
+            </Alert>
+            <Alert title="Saved" variant="success">
+              Your draft was saved at 3:24 PM.
+            </Alert>
+            <Alert title="Slow upload" variant="warning">
+              This file is bigger than 100MB — multipart upload recommended.
+            </Alert>
+            <Alert title="Upload failed" variant="danger">
+              The file couldn't be uploaded. Please retry.
+            </Alert>
+          </div>
+        </Section>
+
+        {/* Section: Loading */}
+        <Section title="Loading" eyebrow="06">
+          <div className="flex items-center gap-4">
+            <Spinner size={16} />
+            <Spinner size={20} />
+            <Spinner size={24} />
+          </div>
+          <div className="mt-6 grid md:grid-cols-2 gap-6 max-w-[640px]">
+            <div>
+              <Skeleton className="h-32 w-full mb-3" />
+              <SkeletonText lines={3} />
+            </div>
+            <div>
+              <Skeleton className="h-32 w-full mb-3" />
