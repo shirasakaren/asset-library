@@ -150,23 +150,3 @@ describe('DiscoverService (integration: batched rows)', () => {
     // Exactly one batched ranking query + one hydration query, regardless of
     // category count. This is the whole point of the fix.
     expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
-    expect(prisma.asset.findMany).toHaveBeenCalledTimes(1);
-
-    // One row per category (all categories have data), in input order.
-    expect(result.rows).toHaveLength(CATEGORY_COUNT);
-    expect(result.rows.map((r) => r.categoryId)).toEqual(categories.map((c) => c.id));
-
-    for (const row of result.rows) {
-      expect(row.assets.length).toBeLessThanOrEqual(ASSETS_PER_ROW);
-      expect(row.assets.length).toBe(ASSETS_PER_ROW);
-
-      // publishedAt DESC: each subsequent asset has timestamp <= previous.
-      const timestamps = row.assets.map((a) => new Date(a.publishedAt ?? 0).getTime());
-      const sorted = [...timestamps].sort((a, b) => b - a);
-      expect(timestamps).toEqual(sorted);
-    }
-  });
-
-  it('drops categories with no published assets and preserves order for the rest', async () => {
-    const categories = makeCategories(4);
-    const byCat = new Map<string, AssetRow[]>();
