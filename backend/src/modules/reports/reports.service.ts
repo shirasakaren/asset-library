@@ -135,19 +135,3 @@ export class ReportsService {
       throw new BadRequestDomainException(
         ErrorCode.ASSET_ARCHIVE_BLOCKED,
         `Report is in ${row.status}, not OPEN.`,
-      );
-    }
-    await this.prisma.report.update({ where: { id }, data: { status: 'REVIEWING' } });
-    await this.audit.record({
-      actorId: admin.id,
-      action: 'report.start_review',
-      subjectType: 'Report',
-      subjectId: id,
-    });
-  }
-
-  async action(id: string, admin: User, dto: ActionReportDto): Promise<void> {
-    const row = await this.prisma.report.findUnique({ where: { id }, include: { asset: true } });
-    if (!row)
-      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Report ${id} not found.`);
-
