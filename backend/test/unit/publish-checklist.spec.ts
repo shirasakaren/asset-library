@@ -41,3 +41,6 @@ describe('PublishChecklistService', () => {
         'thumbnail.missing',
         'translations.empty',
         'version.missing',
+      ]),
+    );
+  });
