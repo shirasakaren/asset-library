@@ -75,3 +75,12 @@ const config: Config = {
         120: '120ms',
         200: '200ms',
         320: '320ms',
+        520: '520ms',
+        800: '800ms',
+      },
+      maxWidth: {
+        prose: '640px',
+        container: '1280px',
+      },
+      keyframes: {
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
