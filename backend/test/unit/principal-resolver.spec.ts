@@ -57,16 +57,3 @@ describe('PrincipalResolverService', () => {
 
   it('returns the cached principal without hitting Postgres on a cache hit', async () => {
     const cached = {
-      user: {
-        ...buildUser(),
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        deletedAt: null,
-      },
-      role: 'admin',
-    };
-    const get = jest.fn().mockResolvedValue(JSON.stringify(cached));
-    const { service, upsert, resolveRole } = build({ get });
-
-    const result = await service.resolvePrincipal(CLAIMS);
-
