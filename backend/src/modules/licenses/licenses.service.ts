@@ -37,3 +37,8 @@ export class LicensesService {
     );
   }
 
+  private async computeList(locale: Locale): Promise<LicenseSummaryDto[]> {
+    const rows = await this.prisma.license.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: 'asc' },
+    });
