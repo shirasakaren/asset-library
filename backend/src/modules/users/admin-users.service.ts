@@ -83,3 +83,4 @@ export class AdminUsersService {
     await this.producer.enqueueNotify({
       recipientUserId: id,
       type: NotificationType.ADMIN_PROMOTED,
+      payload: { promotedBy: { id: admin.id, displayName: admin.displayName, email: admin.email } },
