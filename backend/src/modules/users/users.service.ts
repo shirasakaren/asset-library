@@ -57,3 +57,9 @@ export class UsersService {
   }
 
   /**
+   * Public profile shape. Email is exposed only when the requester is the
+   * user themselves or an admin.
+   */
+  async getPublicProfile(id: string, requester: User | null): Promise<UserPublicProfileDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
