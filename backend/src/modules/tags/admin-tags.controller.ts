@@ -37,3 +37,9 @@ export class AdminTagsController {
   @AuditAction({ action: 'tag.merge_request', subjectType: 'Tag', subjectParam: 'body.intoTagId' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Merge several source tags into one target tag.' })
+  merge(@AuthUser() principal: AuthenticatedRequestUser, @Body() dto: MergeTagsDto): Promise<void> {
+    return this.admin.merge(principal.user, dto);
+  }
+
+  @Patch(':id')
+  @AuditAction({ action: 'tag.update_request', subjectType: 'Tag' })
