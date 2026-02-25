@@ -78,14 +78,3 @@ export class NotificationsService {
     if (!row || row.userId !== user.id) {
       throw new NotFoundDomainException(
         ErrorCode.IDEMPOTENCY_KEY_REUSED,
-        `Notification ${id} not found.`,
-      );
-    }
-    if (row.readAt) return this.toDto(row);
-    const updated = await this.prisma.notification.update({
-      where: { id },
-      data: { readAt: new Date() },
-    });
-    return this.toDto(updated);
-  }
-
