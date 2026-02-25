@@ -47,4 +47,3 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
               <div className="mt-7 flex flex-wrap items-center gap-2">
                 <Button variant="primary" size="lg" asChild>
                   <a href="/auth/signin">{t('signInAgain')}</a>
-                </Button>
