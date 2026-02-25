@@ -48,3 +48,11 @@ export class AdminLicensesController {
   @ApiCreatedResponse({ type: AdminLicenseDto })
   create(
     @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CreateLicenseDto,
+  ): Promise<AdminLicenseDto> {
+    return this.admin.create(principal.user, dto);
+  }
+
+  @Patch(':id')
+  @AuditAction({ action: 'license.update_request', subjectType: 'License' })
+  @HttpCode(HttpStatus.OK)
