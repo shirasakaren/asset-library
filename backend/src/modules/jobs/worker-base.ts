@@ -48,3 +48,7 @@ export abstract class JobWorkerBase<TPayload> implements OnModuleInit, OnModuleD
             attempt: job.attemptsMade + 1,
           });
           throw err;
+        }
+      },
+      {
+        connection: { url: this.config.get('REDIS_URL') } as never,
