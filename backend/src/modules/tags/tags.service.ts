@@ -83,9 +83,3 @@ export class TagsService {
       include: { usage: true },
       orderBy: [{ usage: { usageCount: 'desc' } }, { displayName: 'asc' }],
       take: limit,
-    });
-    return rows.map((t) => ({
-      id: t.id,
-      slug: t.slug,
-      displayName: t.displayName,
-      usageCount: t.usage?.usageCount ?? 0,
