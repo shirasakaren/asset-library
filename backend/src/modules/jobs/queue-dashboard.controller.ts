@@ -35,3 +35,4 @@ export class QueueDashboardController {
     this.adapter = new BullFastifyAdapter();
     createBullBoard({
       queues: this.producer.listQueues().map((q) => new BullMQAdapter(q)),
+      serverAdapter: this.adapter,
