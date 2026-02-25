@@ -43,13 +43,3 @@ export class ListAssetRequestsQueryDto extends ListQueryDto {
   /** Admins-only convenience flag; ignored for non-admins. */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  requesterId?: string;
-}
-
-export class AssetRequestDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() assetLink!: string;
-  @ApiProperty() assetType!: string;
-  @ApiProperty() intendedUse!: string;
-  @ApiPropertyOptional() price?: number | null;
