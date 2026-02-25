@@ -51,3 +51,16 @@ export class ThumbnailVariantsWorker extends JobWorkerBase<ThumbnailVariantsJob>
     if (!source.Body) throw new Error(`No body for thumbnail ${sourceKey}`);
     const original = await streamToBuffer(source.Body as Readable);
     const variants: Record<string, string> = {};
+
+    for (const size of SIZES) {
+      const buf = await sharp(original)
+        .resize(size.width, size.height, { fit: 'cover', position: 'attention' })
+        .webp({ quality: 82 })
+        .toBuffer();
+      const key = `thumbs/${assetId}/${size.name}.webp`;
+      await this.s3.client.send(
+        new PutObjectCommand({
+          Bucket: this.s3.bucketFor('thumbs'),
+          Key: key,
+          Body: buf,
+          ContentType: 'image/webp',
