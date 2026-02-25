@@ -34,3 +34,11 @@ describe('E2E [15] TipTap lite enforcement on comments', () => {
       update: {},
     });
     const asset = await prisma.asset.create({
+      data: {
+        slug: `tt-asset-${Date.now()}`,
+        title: 'Lite TipTap fixture',
+        ownerId: owner.id,
+        categoryId: category.id,
+        licenseId: license.id,
+        engine: 'UNITY',
+        status: 'PUBLISHED',
