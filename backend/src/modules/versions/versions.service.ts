@@ -145,3 +145,21 @@ export class VersionsService {
     });
     if (!version)
       throw new NotFoundDomainException(
+        ErrorCode.VERSION_NOT_FOUND,
+        `Version ${versionId} not found.`,
+      );
+    this.assets.assertCanEdit(version.asset, requester);
+
+    if (version._count.files === 0) {
+      throw new BadRequestDomainException(
+        ErrorCode.ASSET_PUBLISH_BLOCKED,
+        'Version has no files — upload at least one before publishing.',
+      );
+    }
+    // Async publish: we no longer block on analyzer / AV completion. Both run
+    // in the background and surface their status (PENDING / READY / FAILED /
+    // CLEAN / INFECTED / SKIPPED_SIZE) on the asset detail page. Files flagged
+    // INFECTED are quarantined separately by the AV worker.
+
+    // Transactionally flip isLatest off on the previous winner, then on this row.
+    await this.prisma.$transaction([
