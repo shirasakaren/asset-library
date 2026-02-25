@@ -116,4 +116,3 @@ export class RequestsService {
   /**
    * Admin transitions a request through its review lifecycle. Reject requires
    * a non-empty `adminComment`; every transition fires REQUEST_STATUS_CHANGED
-   * to the requester and writes an audit row.
