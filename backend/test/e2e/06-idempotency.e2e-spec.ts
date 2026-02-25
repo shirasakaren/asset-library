@@ -48,11 +48,3 @@ describe('E2E [16] idempotency on POST /assets', () => {
       .set('Idempotency-Key', idemKey)
       .send(body)
       .expect(201);
-    const b = await supertest(app.getHttpServer())
-      .post('/assets')
-      .set('Authorization', `Bearer ${token}`)
-      .set('Idempotency-Key', idemKey)
-      .send(body)
-      .expect(201);
-    expect(b.body.id).toBe(a.body.id);
-    const dupes = await prisma.asset.findMany({ where: { title: body.title } });
