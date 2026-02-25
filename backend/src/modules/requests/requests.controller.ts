@@ -33,16 +33,3 @@ import { RequestsService } from './requests.service';
 @ApiBearerAuth('keycloak')
 @Controller('asset-requests')
 @UseGuards(KeycloakAuthGuard)
-export class RequestsController {
-  constructor(private readonly requests: RequestsService) {}
-
-  @Post()
-  @RateLimit({ windowSec: 86_400, max: 20, scope: 'user', name: 'requests.create' })
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Submit a new asset-sourcing request.' })
-  @ApiCreatedResponse()
-  create(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Body() dto: CreateAssetRequestDto,
-  ): Promise<{ id: string }> {
-    return this.requests.create(dto, principal.user);
