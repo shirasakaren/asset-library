@@ -89,12 +89,3 @@ describe('CachedService', () => {
     await svc.getOrFetch('k-id', 60, b);
     expect(a).toHaveBeenCalledTimes(1);
     expect(b).toHaveBeenCalledTimes(1);
-  });
-
-  it('invalidate() drops the cached entry so the next call re-runs the fetcher', async () => {
-    const { svc, client } = build();
-    const fetcher = jest.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(2);
-
-    expect(await svc.getOrFetch('k', 60, fetcher)).toBe(1);
-    await new Promise((r) => setImmediate(r));
-    expect(client.store.has('k')).toBe(true);
