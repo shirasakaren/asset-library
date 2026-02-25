@@ -85,3 +85,14 @@ export class EditorMediaGcWorker extends JobWorkerBase<EditorMediaGcJob> impleme
     }
     return referenced;
   }
+}
+
+function walkTipTap(
+  node: Prisma.JsonValue,
+  collect: (key: string) => void,
+  editorBucket: string,
+): void {
+  if (!node) return;
+  if (Array.isArray(node)) {
+    for (const child of node) walkTipTap(child, collect, editorBucket);
+    return;
