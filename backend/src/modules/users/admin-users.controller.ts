@@ -45,3 +45,5 @@ export class AdminUsersController {
     return this.admin.promote(id, principal.user);
   }
 
+  @Post(':id/demote')
+  @RequireConfirmation()
