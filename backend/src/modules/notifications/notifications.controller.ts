@@ -40,3 +40,16 @@ export class NotificationsController {
     return this.notifications.list(principal.user, {
       cursor,
       limit: limit ? Number(limit) : undefined,
+      unreadOnly: unreadOnly === 'true',
+    });
+  }
+
+  @Get('unread-count')
+  @ApiOperation({ summary: 'Cheap unread counter for the bell badge.' })
+  async unreadCount(@AuthUser() principal: AuthenticatedRequestUser): Promise<{ count: number }> {
+    return { count: await this.notifications.unreadCount(principal.user) };
+  }
+
+  @Post(':id/read')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Mark a single notification as read.' })
