@@ -36,3 +36,9 @@ export class AdminRequestsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Fetch a single asset request by id (admin view).' })
+  @ApiOkResponse({ type: AssetRequestDto })
+  getOne(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+  ): Promise<AssetRequestDto> {
