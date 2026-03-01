@@ -91,28 +91,3 @@ export function NotificationBell({ initialUnreadCount }: NotificationBellProps) 
               className="absolute top-1.5 right-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand-red text-white text-[10px] font-semibold px-1 border-2 border-bg"
             >
               {unread > 99 ? '99+' : unread}
-            </span>
-          ) : null}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[380px] p-0 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-line px-4 h-12">
-          <div className="text-[13px] font-semibold text-ink">{t('title')}</div>
-          {unread > 0 ? (
-            <button
-              type="button"
-              onClick={handleMarkAllClick}
-              className="text-caption text-ink-3 hover:text-ink transition-colors"
-            >
-              {t('markAllRead')}
-            </button>
-          ) : null}
-        </div>
-        {items.length === 0 ? (
-          <div className="p-6 text-center">
-            <div className="mx-auto h-14 w-14 rounded-full bg-brand-yellow-50 flex items-center justify-center mb-3">
-              <Bell className="h-5 w-5 text-[#a16800]" strokeWidth={2.25} />
-            </div>
-            <p className="text-[13.5px] font-semibold text-ink">{t('empty')}</p>
-            <p className="text-[12.5px] text-ink-3 mt-1">{t('emptyBody')}</p>
-          </div>
