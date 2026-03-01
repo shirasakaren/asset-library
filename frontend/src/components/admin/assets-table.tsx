@@ -168,36 +168,3 @@ export function AdminAssetsTable() {
             <option value="recentlyUpdated">Recently updated</option>
             <option value="newest">Newest</option>
             <option value="alphabetical">A → Z</option>
-            <option value="mostDownloaded">Most downloaded</option>
-          </select>
-          {get('q') ? (
-            <Button variant="ghost" onClick={reset}>
-              Reset
-            </Button>
-          ) : null}
-        </div>
-      </div>
-
-      <DataTable
-        rows={items}
-        empty="No assets match this filter."
-        columns={[
-          {
-            key: 'thumb',
-            header: '',
-            className: 'w-[88px]',
-            cell: (r) => (
-              <div className="h-12 w-20 rounded-[6px] overflow-hidden bg-surface-muted border border-line">
-                {r.thumbnailUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={r.thumbnailUrl} alt="" className="h-full w-full object-cover" />
-                ) : null}
-              </div>
-            ),
-          },
-          {
-            key: 'title',
-            header: 'Title',
-            cell: (r) => (
-              <NextLink href={`/assets/${r.slug || r.id}`} className="font-medium text-ink hover:underline">
-                {r.title}
