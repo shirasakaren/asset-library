@@ -134,21 +134,3 @@ interface TreeRowProps {
 }
 
 function TreeRow({ node, depth, defaultOpen }: TreeRowProps) {
-  const [open, setOpen] = useState(defaultOpen ?? depth < 1);
-  const locale = useLocale() as LocaleCode;
-
-  if (node.kind === 'folder') {
-    const FolderIcon = open ? FolderOpen : Folder;
-    return (
-      <li role="treeitem" aria-expanded={open}>
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          className="flex w-full items-center gap-2 px-3 h-9 text-left hover:bg-surface-muted/60 transition-colors duration-120"
-          style={{ paddingLeft: 12 + depth * 16 }}
-        >
-          <ChevronRight
-            className={cn('h-3.5 w-3.5 text-ink-3 transition-transform duration-200', open && 'rotate-90')}
-            strokeWidth={2.25}
-          />
-          <FolderIcon className="h-4 w-4 text-ink-2 shrink-0" strokeWidth={2.25} />
