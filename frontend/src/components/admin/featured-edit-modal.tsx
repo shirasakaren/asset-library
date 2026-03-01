@@ -211,22 +211,3 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
 
         <Field label="Banner">
           <div className="flex flex-col gap-2">
-            <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
-              <input
-                type="radio"
-                checked={bannerMode === 'thumb'}
-                onChange={() => setBannerMode('thumb')}
-                className="h-4 w-4 accent-ink"
-              />
-              Use asset thumbnail
-            </label>
-            <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
-              <input
-                type="radio"
-                checked={bannerMode === 'custom'}
-                onChange={() => setBannerMode('custom')}
-                className="h-4 w-4 accent-ink"
-              />
-              Upload custom banner
-            </label>
-            {bannerMode === 'custom' ? (
