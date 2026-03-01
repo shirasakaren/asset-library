@@ -55,30 +55,3 @@ export function GeometricPattern({
   return (
     <div
       aria-hidden={ariaHidden}
-      className={cn('grid select-none', className)}
-      style={{
-        gridTemplateColumns: `repeat(${grid.cols}, ${size}px)`,
-        gridTemplateRows: `repeat(${grid.rows}, ${size}px)`,
-        width: grid.cols * size,
-        height: grid.rows * size,
-      }}
-    >
-      {tiles.map((n, i) => (
-        <Image
-          key={`${n}-${i}`}
-          src={tileUrl(n)}
-          alt=""
-          width={size}
-          height={size}
-          className="block"
-          unoptimized
-        />
-      ))}
-    </div>
-  );
-}
-
-/**
- * Small empty-state pattern (max 200px square) used as the slot
- * inside EmptyState components.
- */
