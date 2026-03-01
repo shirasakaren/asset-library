@@ -231,3 +231,11 @@ function RenameTagModal({
         </ModalFooter>
       </ModalContent>
     </Modal>
+  );
+}
+
+function MergeTagsModal({
+  onOpenChange,
+  onDone,
+}: {
+  onOpenChange: (o: boolean) => void;
