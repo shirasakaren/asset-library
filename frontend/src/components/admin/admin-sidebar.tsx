@@ -102,3 +102,14 @@ export function AdminSidebar() {
     <aside
       aria-label="Admin sections"
       className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto pr-2"
+    >
+      <ul className="flex flex-col gap-6">
+        {GROUPS.map((group) => (
+          <li key={group.title}>
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 px-2 mb-2">
+              {group.title}
+            </p>
+            <ul className="flex flex-col gap-0.5">
+              {group.items.map((item) => {
+                const active =
+                  !item.external &&
