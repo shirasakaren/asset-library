@@ -59,3 +59,6 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
             isPending && 'opacity-60',
             className,
+          )}
+        >
+          <Globe className="h-[18px] w-[18px]" strokeWidth={2.25} />
