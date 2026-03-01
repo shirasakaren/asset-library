@@ -129,3 +129,32 @@ export function LibraryGrid() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.libraryAll });
     },
+  });
+
+  const [downloadFor, setDownloadFor] = useState<{ id: string; title: string; versionId: string } | null>(
+    null,
+  );
+
+  const items = query.data?.pages.flatMap((p) => p.items) ?? [];
+  const allFilters = Object.keys(filters).filter((k) => filters[k] && (Array.isArray(filters[k]) ? (filters[k] as unknown[]).length : true));
+  const isFiltered = allFilters.some((k) => k !== 'hidden') || filters.hidden !== 'false';
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div className="flex items-baseline gap-3">
+          <h1 className="font-display text-h1 text-ink tracking-[-0.015em]">{t('title')}</h1>
+          {!query.isPending ? (
+            <p className="text-body-sm text-ink-3 geist-tnum">{items.length}</p>
+          ) : null}
+        </div>
+        <div className="inline-flex rounded-[10px] border border-line p-1">
+          <button
+            type="button"
+            onClick={() => setView('grid')}
+            aria-pressed={view === 'grid'}
+            aria-label={t('viewGrid')}
+            className={cn(
+              'inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors duration-120',
+              view === 'grid' ? 'bg-ink text-white' : 'text-ink-2 hover:bg-surface-muted',
+            )}
