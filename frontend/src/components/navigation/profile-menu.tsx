@@ -46,3 +46,23 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
           aria-label={tc('openProfileMenu')}
           className={cn(
             'inline-flex h-10 w-10 items-center justify-center rounded-full',
+            'transition-transform duration-200 hover:scale-[1.04]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+          )}
+        >
+          <Avatar data={tokens} size={32} />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-[260px] p-0 overflow-hidden">
+        <div className="flex items-start gap-3 px-4 pt-4 pb-3 border-b border-line">
+          <Avatar data={tokens} size={36} />
+          <div className="min-w-0 flex-1">
+            <div className="text-[13.5px] font-semibold text-ink truncate">
+              {user.displayName}
+            </div>
+            <div className="text-[12px] text-ink-3 truncate" title={user.email}>
+              {user.email}
+            </div>
+            <div className="mt-1.5">
+              <Badge variant={roleVariant} size="sm">
+                {roleLabel}
