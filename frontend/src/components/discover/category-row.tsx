@@ -78,3 +78,13 @@ export function CategoryRow({
         >
           {assets.map((asset) => (
             <div key={asset.id} className="snap-start">
+              <AssetCard
+                variant="compact"
+                asset={asset}
+                isSaved={savedIds.has(asset.id)}
+                isOwner={ownAssetIds.has(asset.id)}
+              />
+            </div>
+          ))}
+        </div>
+
