@@ -53,3 +53,8 @@ export function ShareModal({ open, onOpenChange, assetTitle, url }: ShareModalPr
     if (typeof navigator === 'undefined' || !navigator.share) return;
     try {
       await navigator.share({ title: assetTitle, url });
+      logEvent('asset.share_native', { url });
+    } catch {
+      /* user cancelled — fine */
+    }
+  };
