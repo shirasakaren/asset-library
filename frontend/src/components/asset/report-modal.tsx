@@ -79,37 +79,3 @@ export function ReportModal({ open, onOpenChange, assetId, assetTitle }: ReportM
           <ModalTitle>{t('title')}</ModalTitle>
           <ModalDescription>
             <span className="font-medium text-ink">{assetTitle}</span>
-            <br />
-            {t('intro')}
-          </ModalDescription>
-        </ModalHeader>
-
-        {rateLimited ? (
-          <Alert variant="warning" className="mb-4">
-            {t('rateLimited')}
-          </Alert>
-        ) : null}
-
-        <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)} noValidate>
-          <Field
-            label={t('categoryLabel')}
-            error={form.formState.errors.category?.message as string | undefined}
-          >
-            <RadioGroup
-              value={form.watch('category')}
-              onValueChange={(v) => form.setValue('category', v as FormValues['category'])}
-              className="grid sm:grid-cols-2 gap-2"
-            >
-              {(
-                [
-                  { value: 'MALICIOUS_FILE', label: t('categoryMalicious') },
-                  { value: 'BROKEN_ASSET', label: t('categoryBroken') },
-                ] as const
-              ).map((opt) => (
-                <label
-                  key={opt.value}
-                  className="flex items-center gap-2.5 p-3 rounded-[12px] border border-line cursor-pointer hover:border-ink/40 transition-colors duration-120 has-[:checked]:border-ink has-[:checked]:bg-surface-muted/60"
-                >
-                  <Radio value={opt.value} />
-                  <span className="text-[14px] font-medium text-ink">{opt.label}</span>
-                </label>
