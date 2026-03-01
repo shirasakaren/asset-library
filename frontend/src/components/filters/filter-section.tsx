@@ -42,3 +42,21 @@ export function FilterSection({
       <div className={cn('overflow-hidden transition-all duration-200', open ? 'mt-3' : 'h-0 mt-0')}>
         {open ? children : null}
       </div>
+    </section>
+  );
+}
+
+interface ChipFilterProps {
+  options: { label: string; value: string }[];
+  values: string[];
+  onChange: (next: string[]) => void;
+  multi?: boolean;
+}
+
+export function ChipFilter({ options, values, onChange, multi = true }: ChipFilterProps) {
+  const toggle = (value: string) => {
+    if (multi) {
+      onChange(values.includes(value) ? values.filter((v) => v !== value) : [...values, value]);
+    } else {
+      onChange(values.includes(value) ? [] : [value]);
+    }
