@@ -48,8 +48,3 @@ export function RequestDecisionForm({ request }: Props) {
           {STATUSES.map((s) => {
             const active = status === s;
             return (
-              <label
-                key={s}
-                className={`inline-flex items-center gap-2.5 px-3 h-9 rounded-[10px] border cursor-pointer transition-colors ${
-                  active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40'
-                }`}
