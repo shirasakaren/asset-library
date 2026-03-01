@@ -128,3 +128,8 @@ export function AdminLicensesSurface() {
 
 function LicenseEditModal({
   license,
+  onOpenChange,
+  onDone,
+}: {
+  license?: AdminLicense | null;
+  onOpenChange: (o: boolean) => void;
