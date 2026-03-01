@@ -49,3 +49,12 @@ const TINT_MAP: Record<NotificationType, string> = {
 
 export function NotificationIcon({ type, className }: { type: string; className?: string }) {
   const t = (type as NotificationType) || 'COMMENT_CREATED';
+  const Icon = ICON_MAP[t] ?? Inbox;
+  const tint = TINT_MAP[t] ?? 'bg-surface-muted text-ink-2';
+  return (
+    <span className={cn('inline-flex h-8 w-8 items-center justify-center rounded-[10px]', tint, className)}>
+      <Icon className="h-4 w-4" strokeWidth={2.25} />
+    </span>
+  );
+}
+
