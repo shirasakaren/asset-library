@@ -76,3 +76,28 @@ export function PromoteAdminModal({ onOpenChange, onDone }: Props) {
                   .map((u) => (
                     <li key={u.id}>
                       <button
+                        type="button"
+                        onClick={() => setPicked(u)}
+                        className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-muted/60 transition-colors"
+                      >
+                        <Avatar
+                          data={
+                            u.avatar
+                              ? avatarFromServer(u.avatar)
+                              : getAvatarTokens({ id: u.id, displayName: u.displayName, email: u.email })
+                          }
+                          size={32}
+                        />
+                        <span className="block">
+                          <span className="text-[13.5px] font-medium text-ink">{u.displayName}</span>
+                          <span className="block text-caption text-ink-3 font-mono">{u.email}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            ) : null}
+          </Field>
+        ) : (
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-3 p-3 rounded-[12px] border border-line bg-surface-muted/60">
