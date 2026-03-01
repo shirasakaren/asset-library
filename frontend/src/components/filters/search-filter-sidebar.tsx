@@ -109,3 +109,50 @@ export function SearchFilterSidebar() {
             type="button"
             onClick={reset}
             className="text-caption text-brand-blue hover:underline"
+          >
+            {t('clearAll')}
+          </button>
+        ) : null}
+      </div>
+      {activeCount > 0 ? (
+        <p className="text-caption text-ink-3 mb-2 geist-tnum">
+          {t('activeCount', { count: activeCount })}
+        </p>
+      ) : null}
+
+      <FilterSection title={t('query')} activeCount={q ? 1 : 0}>
+        <Input
+          inputSize="sm"
+          type="search"
+          value={q}
+          onChange={(e) => setParams({ q: e.target.value || null, cursor: null })}
+          placeholder={t('queryPlaceholder')}
+        />
+      </FilterSection>
+
+      <FilterSection title={t('engine')} activeCount={engine ? 1 : 0}>
+        <div className="flex flex-col gap-1.5">
+          {ENGINES.map((e) => (
+            <label
+              key={e.value || 'any'}
+              className="inline-flex items-center gap-2.5 text-[13.5px] text-ink cursor-pointer"
+            >
+              <input
+                type="radio"
+                name="engine"
+                checked={engine === e.value}
+                onChange={() => setParams({ engine: e.value || null })}
+                className="h-4 w-4 accent-ink"
+              />
+              {e.label}
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title={t('categories')} activeCount={categoryIds.length}>
+        <ChipFilter
+          options={(categoriesQuery.data ?? []).map((c) => ({ label: c.name, value: c.id }))}
+          values={categoryIds}
+          onChange={(next) => setParams({ categoryIds: next })}
+        />
