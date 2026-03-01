@@ -32,6 +32,3 @@ export function VersionsList({ versions, onDownload }: VersionsListProps) {
         return (
           <li
             key={v.id}
-            className="rounded-[16px] border border-line p-5 bg-surface"
-          >
-            <div className="flex flex-wrap items-center gap-3 justify-between">
