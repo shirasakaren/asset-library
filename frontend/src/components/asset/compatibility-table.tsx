@@ -52,3 +52,4 @@ export function CompatibilityTable({ rows, requiresEmptyProject }: Compatibility
                           {tSearch(`renderPipeline.${rp as RenderPipeline}`)}
                         </Badge>
                       ))
+                    )}
