@@ -186,3 +186,17 @@ export function ModelViewerPanel({
         style={{ width: '100%', height: '100%', background: 'transparent' }}
       />
 
+      {/* Blurred poster + progress bar until the GLB finishes downloading. */}
+      {!loaded ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden">
+          {poster ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={poster}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover scale-110 blur-xl opacity-60"
+            />
+          ) : null}
+          <div className="relative z-10 inline-flex items-center gap-2 text-[13px] font-medium text-ink">
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
