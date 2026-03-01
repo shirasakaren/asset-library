@@ -238,3 +238,18 @@ export function AssetDetailShell({
                   <>
                     <div className="mt-6 pt-5 border-t border-line">
                       <p className="text-caption text-ink-3 mb-2">{t('latestVersion')}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <VersionBadge semver={latestVersion.semver} isLatest size="md" />
+                        <span className="text-caption text-ink-3 geist-tnum">
+                          {latestVersion.publishedAt
+                            ? formatDate(latestVersion.publishedAt, locale, { dateStyle: 'medium' })
+                            : '—'}
+                        </span>
+                      </div>
+                      <Button
+                        size="lg"
+                        fullWidth
+                        className="mt-4"
+                        onClick={() => openDownload()}
+                        leadingIcon={<Download className="h-4 w-4" strokeWidth={2.25} />}
+                      >
