@@ -68,33 +68,3 @@ export function StepLicense() {
             <option value="">—</option>
             {licenses.data?.map((l) => (
               <option key={l.id} value={l.id}>
-                {l.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-      )}
-
-      {open && license ? (
-        <LicenseFullText licenseId={license.id} onOpenChange={setOpen} />
-      ) : null}
-    </div>
-  );
-}
-
-function LicenseFullText({
-  licenseId,
-  onOpenChange,
-}: {
-  licenseId: string;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const fetcher = useAuthedFetch();
-  const locale = useLocale() as LocaleCode;
-  const detail = useQuery({
-    queryKey: ['license', licenseId, locale],
-    queryFn: () =>
-      fetcher<{ id: string; name: string; fullText: string }>(`/licenses/${licenseId}`, {
-        query: { locale },
-      }),
-    staleTime: 60_000,
