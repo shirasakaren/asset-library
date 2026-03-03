@@ -69,3 +69,14 @@ export interface ButtonProps
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
+      className,
+      variant,
+      size,
+      fullWidth,
+      asChild,
+      loading,
+      disabled,
+      iconOnly,
+      leadingIcon,
+      trailingIcon,
+      children,
