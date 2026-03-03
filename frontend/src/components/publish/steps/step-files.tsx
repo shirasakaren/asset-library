@@ -265,3 +265,125 @@ export function StepFiles() {
         <div className="overflow-hidden rounded-[14px] border border-line bg-surface">
           {/* In-flight uploads (not yet persisted) — not reorderable. */}
           {activeTasks.length > 0 ? (
+            <ul className="divide-y divide-line">
+              {activeTasks.map((task) => (
+                <TaskRow
+                  key={task.id}
+                  task={task}
+                  locale={locale}
+                  onCancel={() => cancel(task.id)}
+                  onRetry={() => retry(task.id)}
+                />
+              ))}
+            </ul>
+          ) : null}
+
+          {/* Saved files — drag to reorder, gear/trash to delete. */}
+          {visibleSaved.length > 0 ? (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+              <SortableContext
+                items={visibleSaved.map((f) => f.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul
+                  className={cn(
+                    'divide-y divide-line',
+                    activeTasks.length > 0 && 'border-t border-line',
+                  )}
+                >
+                  {visibleSaved.map((f) => (
+                    <SavedRow
+                      key={f.id}
+                      file={f}
+                      locale={locale}
+                      onDelete={() => setDeleteTarget(f)}
+                    />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
+          ) : null}
+
+          <div className="geist-tnum flex items-center justify-between border-t border-line px-4 py-2.5 text-caption text-ink-3">
+            <span>{totalCount} files</span>
+            <span>{t('totalBytes', { size: formatBytes(totalBytes, locale) })}</span>
+          </div>
+        </div>
+      ) : null}
+
+      {visibleSaved.length > 1 ? (
+        <p className="text-caption text-ink-3">
+          Drag the handle to reorder how files appear on the asset page.
+        </p>
+      ) : null}
+
+      <label className="hover:border-ink/40 inline-flex max-w-[640px] cursor-pointer items-start gap-3 rounded-[12px] border border-line p-3 transition-colors duration-120">
+        <Checkbox
+          checked={wiz.latestVersion.requiresEmptyProject}
+          onCheckedChange={(c) => wiz.patch({ requiresEmptyProject: c === true })}
+        />
+        <div>
+          <p className="text-[14px] font-medium text-ink">{t('requiresEmptyProjectLabel')}</p>
+          <p className="mt-0.5 text-caption text-ink-3">{t('requiresEmptyProjectHint')}</p>
+        </div>
+      </label>
+
+      {deleteTarget ? (
+        <DeleteFileModal
+          file={deleteTarget}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function SavedRow({
+  file,
+  locale,
+  onDelete,
+}: {
+  file: SavedFile;
+  locale: LocaleCode;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: file.id,
+  });
+  const name = file.relativePath.split('/').pop() || file.relativePath;
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        'flex items-center gap-3 bg-surface p-3',
+        isDragging && 'rounded-[10px] opacity-70 shadow-2',
+      )}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        aria-label="Drag to reorder"
+        className="cursor-grab touch-none text-ink-3 hover:text-ink active:cursor-grabbing"
+      >
+        <GripVertical className="h-4 w-4" strokeWidth={2.25} />
+      </button>
+      <div className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-brand-green-50 text-brand-green">
+        <Check className="h-4 w-4" strokeWidth={2.5} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3">
+          <span className="truncate text-[13.5px] font-medium text-ink" title={file.relativePath}>
+            {name}
+          </span>
+          <span className="geist-tnum shrink-0 text-caption text-ink-3">
+            {formatBytes(file.bytes, locale)}
+          </span>
+        </div>
+        <p className="mt-1 inline-flex items-center gap-1 text-caption font-medium text-brand-green">
+          <Check className="h-3 w-3" strokeWidth={2.5} /> Uploaded
+        </p>
+      </div>
+      <button
