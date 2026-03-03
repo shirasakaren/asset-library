@@ -49,3 +49,5 @@ export function StepRail() {
                     'inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold border',
                     active ? 'bg-ink text-white border-ink' : 'bg-surface text-ink-2 border-line-strong',
                   )}
+                >
+                  {idx}
