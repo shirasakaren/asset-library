@@ -92,3 +92,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Versions management with transactional `isLatest` swap.
 - Comments and issues with threaded reads, depth cap, and status flow.
 - Asset requests with an admin review queue.
+
+## [0.3.0] - 2026-01-15
+
+### Added
+
+- Discover landing page with featured carousel and per-category rows.
+- Library and save flows; downloads with signed-URL issuance.
+- Meilisearch-backed search with filters and tag autocomplete.
