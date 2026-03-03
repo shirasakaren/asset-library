@@ -148,3 +148,25 @@ export const EMAIL_SPECS: Record<NotificationType, EmailSpec> = {
     title: {
       en: 'A new version of an asset you saved is live',
       id: 'Versi baru aset yang Anda simpan telah dirilis',
+    },
+    body: {
+      en: '“{{assetTitle}}” v{{semver}} is now available in your library.',
+      id: '“{{assetTitle}}” v{{semver}} kini tersedia di pustaka Anda.',
+    },
+    cta: { label: { en: 'Download', id: 'Unduh' }, href: '{{links.assetUrl}}' },
+  },
+  [NotificationType.ANALYZER_FAILED]: {
+    subject: {
+      en: 'Analysis failed for “{{assetTitle}}”',
+      id: 'Analisis gagal untuk “{{assetTitle}}”',
+    },
+    eyebrow: { en: 'Action needed', id: 'Perlu tindakan' },
+    title: {
+      en: "We couldn't finish analyzing your upload",
+      id: 'Kami tidak dapat menyelesaikan analisis unggahan Anda',
+    },
+    body: {
+      en: 'Analysis failed: {{reason}}. You can retry from the version page.',
+      id: 'Analisis gagal: {{reason}}. Anda dapat mengulang dari halaman versi.',
+    },
+    cta: { label: { en: 'Open version', id: 'Buka versi' }, href: '{{links.versionUrl}}' },
