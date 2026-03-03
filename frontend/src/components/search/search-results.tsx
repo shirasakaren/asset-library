@@ -60,3 +60,36 @@ export function SearchResults() {
 
   const { ref: sentinelRef, isIntersecting } = useIntersection<HTMLDivElement>({ rootMargin: '320px' });
 
+  useEffect(() => {
+    if (isIntersecting && query.hasNextPage && !query.isFetchingNextPage) {
+      void query.fetchNextPage();
+    }
+  }, [isIntersecting, query]);
+
+  useEffect(() => {
+    logEvent('search.filter_change', filters);
+  }, [filters]);
+
+  const items = query.data?.pages.flatMap((p) => p.items) ?? [];
+  const total = query.data?.pages[0]?.items.length ?? 0;
+  const q = (filters.q as string) ?? '';
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-baseline gap-3 mb-5">
+        <h1 className="font-display text-h1 text-ink tracking-[-0.015em]">{t('title')}</h1>
+        {!query.isPending ? (
+          <p className="text-body-sm text-ink-3 geist-tnum">
+            {t('resultCount', { count: items.length })}
+            {q ? ` ${t('queryEcho', { query: q })}` : ''}
+          </p>
+        ) : null}
+        {total === 0 ? null : null}
+      </div>
+
+      {query.isPending ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <AssetCardSkeleton key={i} />
+          ))}
+        </div>
