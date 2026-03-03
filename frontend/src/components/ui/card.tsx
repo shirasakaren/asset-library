@@ -36,3 +36,5 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 Card.displayName = 'Card';
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('flex items-start justify-between gap-3 mb-3', className)} {...props} />;
+}
