@@ -304,3 +304,73 @@ export function RichTextEditor({
 
 /* =====================================================================
  * Toolbar
+ * ===================================================================== */
+
+interface ToolbarProps {
+  editor: Editor;
+  mode: RichTextMode;
+  busyUploading: boolean;
+  onLink: () => void;
+  onImage: () => void;
+  onEmbed: () => void;
+  onGif: () => void;
+}
+
+function Toolbar({ editor, mode, onLink, onImage, onEmbed, onGif }: ToolbarProps) {
+  return (
+    <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 border-b border-line bg-surface/95 backdrop-blur-[6px] p-1.5 rounded-t-[14px]">
+      {mode === 'full' ? (
+        <>
+          <BlockDropdown editor={editor} />
+          <Divider />
+        </>
+      ) : null}
+      <ToolButton
+        active={editor.isActive('bold')}
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        label="Bold (⌘B)"
+        icon={Bold}
+      />
+      <ToolButton
+        active={editor.isActive('italic')}
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        label="Italic (⌘I)"
+        icon={Italic}
+      />
+      {mode === 'full' ? (
+        <>
+          <ToolButton
+            active={editor.isActive('underline')}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            label="Underline (⌘U)"
+            icon={UnderlineIcon}
+          />
+          <ToolButton
+            active={editor.isActive('strike')}
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            label="Strikethrough"
+            icon={Strikethrough}
+          />
+        </>
+      ) : null}
+      <ToolButton
+        active={editor.isActive('code')}
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        label="Inline code"
+        icon={Code}
+      />
+      <ToolButton active={editor.isActive('link')} onClick={onLink} label="Link (⌘K)" icon={LinkIcon} />
+      <Divider />
+      <ToolButton
+        active={editor.isActive('bulletList')}
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        label="Bullet list"
+        icon={List}
+      />
+      <ToolButton
+        active={editor.isActive('orderedList')}
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        label="Numbered list"
+        icon={ListOrdered}
+      />
+      <Divider />
