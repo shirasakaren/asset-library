@@ -95,15 +95,3 @@ export function StepDescription() {
                 active ? 'after:bg-brand-blue' : 'after:bg-transparent',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
               )}
-            >
-              {l.label}
-            </button>
-          );
-        })}
-        <span className="ml-auto inline-flex h-9 items-center px-2.5 rounded-full bg-surface-muted text-caption text-ink-3 opacity-60 cursor-not-allowed">
-          + {t('addLanguage')}
-        </span>
-      </div>
-
-      {isFallback ? (
-        <Alert variant="info">{t('fallbackNote')}</Alert>
