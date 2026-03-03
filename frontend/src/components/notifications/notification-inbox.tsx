@@ -78,25 +78,3 @@ export function NotificationInbox({ initial, initialCursor }: Props) {
                 key={k}
                 type="button"
                 onClick={() => setTab(k)}
-                aria-pressed={active}
-                className={cn(
-                  'inline-flex items-center h-9 px-3.5 rounded-full text-[13.5px] font-medium border transition-colors',
-                  active
-                    ? 'bg-ink text-white border-ink'
-                    : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink',
-                )}
-              >
-                {t(`tabs.${k}` as 'tabs.all')}
-              </button>
-            );
-          })}
-        </div>
-        <Button variant="ghost" onClick={handleMarkAll}>
-          {t('markAll')}
-        </Button>
-      </div>
-
-      {items.length === 0 ? (
-        <EmptyState
-          title={t('empty')}
-          description={t('emptyBody')}
