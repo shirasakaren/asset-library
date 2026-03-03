@@ -72,11 +72,3 @@ export function NotificationsLive() {
         if (p.id) markRead(p.id);
       }),
       subscribe('notification:read-all', () => {
-        markAllRead();
-      }),
-    ];
-    return () => offs.forEach((fn) => fn());
-  }, [subscribe, applyIncoming, markRead, markAllRead, queryClient]);
-
-  // Cross-tab read sync — when this tab marks one as read, broadcast it to others.
-  const onBroadcast = useCallback<(evt: BroadcastEvent) => void>(
