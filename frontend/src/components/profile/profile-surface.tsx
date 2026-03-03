@@ -91,13 +91,3 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
                       ? `Last used ${formatRelative(d.lastUsedAt, locale)}`
                       : 'Never used'}{' '}
                     · Expires {formatDate(d.expiresAt, locale)}
-                  </p>
-                </div>
-                <Badge variant={new Date(d.expiresAt) < new Date() ? 'danger' : 'neutral'}>
-                  {new Date(d.expiresAt) < new Date() ? 'Expired' : 'Active'}
-                </Badge>
-                <Button size="sm" variant="ghost" onClick={() => setConfirmRevoke(d)}>
-                  Revoke
-                </Button>
-              </li>
-            ))
