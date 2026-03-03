@@ -87,3 +87,24 @@ export function StepReview() {
               ))}
             </ul>
           </div>
+        ) : null}
+      </Card>
+
+      <Card>
+        <SectionHead title="Description" onEdit={() => goto('description')} />
+        <p className="text-body-sm text-ink-2">{wiz.asset.shortDescription || '—'}</p>
+        <p className="mt-2 text-caption text-ink-3">
+          Available locales: {wiz.asset.availableLocales.join(', ') || '—'}
+        </p>
+      </Card>
+
+      {wiz.asset.engine !== 'ENGINE_AGNOSTIC' ? (
+        <Card>
+          <SectionHead title={tCompat('title')} onEdit={() => goto('compatibility')} />
+          {v?.compatibility?.length ? (
+            <ul className="space-y-1 text-caption text-ink-2 font-mono">
+              {v.compatibility.map((row, i) => (
+                <li key={i}>
+                  {row.engineVersion} · {row.renderPipelines.join(', ') || '—'} · {row.targets.join(', ')}
+                </li>
+              ))}
