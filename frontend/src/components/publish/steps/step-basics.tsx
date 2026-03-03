@@ -106,3 +106,50 @@ export function StepBasics() {
         </div>
         {isPublished ? (
           <p className="mt-2 text-caption text-ink-3">
+            {t('engine')} — locked after publish.
+          </p>
+        ) : null}
+      </Field>
+
+      <Field id="category" label={t('category')} required>
+        <select
+          id="category"
+          value={wiz.asset.category?.id ?? ''}
+          onChange={(e) => wiz.patch({ categoryId: e.target.value })}
+          className="h-11 w-full rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        >
+          <option value="">—</option>
+          {categories.data?.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field id="license" label={t('license')} required>
+        <div className="flex items-stretch gap-2">
+          <select
+            id="license"
+            value={wiz.asset.license?.id ?? ''}
+            onChange={(e) => wiz.patch({ licenseId: e.target.value })}
+            className="flex-1 h-11 rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            <option value="">—</option>
+            {licenses.data?.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
+            ))}
+          </select>
+          {license ? (
+            <Button variant="ghost" onClick={() => setLicensePreviewOpen(true)}>
+              {t('viewFullLicenseText')}
+            </Button>
+          ) : null}
+        </div>
+        {license ? (
+          <p className="mt-2 text-caption text-ink-3 max-w-prose">{license.description}</p>
+        ) : null}
+      </Field>
+
