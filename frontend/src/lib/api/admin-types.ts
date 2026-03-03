@@ -205,3 +205,44 @@ export interface AdminUser {
   locale: LocaleCode;
   createdAt: string;
   publishedAssetCount: number;
+  avatar?: ServerAvatar;
+  savedBytes?: number;
+}
+
+export interface AdminUserPage {
+  items: AdminUser[];
+  pageInfo: PageInfo;
+}
+
+export interface AdminAuditPage {
+  items: AuditEntry[];
+  pageInfo: PageInfo;
+}
+
+export interface AdminWebhookDelivery {
+  id: string;
+  type: string;
+  status: 'success' | 'failure' | 'pending';
+  recipient: string;
+  attempt: number;
+  durationMs: number | null;
+  requestBody: unknown;
+  responseStatus: number | null;
+  responseHeaders: Record<string, string> | null;
+  responseBodyExcerpt: string | null;
+  createdAt: string;
+}
+
+export interface AdminWebhookPage {
+  items: AdminWebhookDelivery[];
+  pageInfo: PageInfo;
+}
+
+/* ------------- shared inputs ------------- */
+
+export interface ConfirmActionPayload {
+  confirm: string;
+  confirmedAt: string;
+}
+
+export interface CreateFeaturedSlotInput {
