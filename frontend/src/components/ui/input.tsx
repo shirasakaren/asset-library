@@ -129,3 +129,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         type={type}
         className={cn(
           inputBase,
+          sizeMap[inputSize],
+          invalid && 'border-brand-red focus-visible:ring-brand-red',
+          className,
+        )}
+        aria-invalid={invalid || undefined}
+        {...props}
+      />
+    );
+  },
+);
+Input.displayName = 'Input';
+
+/* ===================== Textarea ===================== */
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  invalid?: boolean;
+}
