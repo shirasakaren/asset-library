@@ -114,3 +114,5 @@ export async function apiFetch<T = unknown>(path: string, init: ApiFetchInit = {
   // caller supplied a refresher, force a session refetch and try once more.
   // Capped at one retry so a bad refresh token can't infinite-loop.
   if (response.status === 401 && tokenRefresher) {
+    const refreshed = await tokenRefresher().catch(() => undefined);
+    if (refreshed && refreshed !== accessToken) {
