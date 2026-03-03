@@ -83,3 +83,50 @@ export function WizardHeader({ variant = 'edit' }: WizardHeaderProps) {
         <div className="mt-3 flex flex-wrap items-center gap-3 justify-between">
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
+              <StatusPill status={wiz.asset.status} />
+              <SaveIndicator
+                saving={wiz.saving}
+                lastSavedAt={wiz.lastSavedAt}
+                locale={locale}
+              />
+            </div>
+            <h1 className="font-display text-h1 text-ink tracking-[-0.015em] truncate max-w-[60vw]">
+              {wiz.asset.title || 'Untitled asset'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={handleExit}>
+              {t('exit')}
+            </Button>
+            <Button
+              size="lg"
+              onClick={handlePublish}
+              disabled={!ready || publishing || variant === 'new-version'}
+              loading={publishing}
+              title={ready ? undefined : t('publishBlocked')}
+            >
+              {publishing
+                ? isPublished
+                  ? t('updatingCta')
+                  : t('publishingCta')
+                : isPublished
+                  ? t('updateCta')
+                  : t('publishCta')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const variant =
+    status === 'PUBLISHED'
+      ? 'success'
+      : status === 'DRAFT'
+        ? 'warning'
+        : status === 'ARCHIVED'
+          ? 'neutral'
+          : 'danger';
+  return (
