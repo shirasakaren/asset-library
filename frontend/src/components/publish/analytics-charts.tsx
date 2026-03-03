@@ -78,3 +78,39 @@ export function AnalyticsCharts({ data }: Props) {
                 contentStyle={{
                   background: '#0e1116',
                   borderRadius: 12,
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: 12,
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="count"
+                stroke={COLOR_BLUE}
+                strokeWidth={2}
+                fill="url(#dlGrad)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      <Card padding="lg">
+        <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">{t('bySource')}</p>
+        <h2 className="font-display text-h3 text-ink tracking-[-0.005em] mt-1 mb-4">
+          {t('bySource')}
+        </h2>
+        <div className="h-[220px]">
+          <ResponsiveContainer>
+            <BarChart data={bySource} layout="vertical" margin={{ left: 12 }}>
+              <CartesianGrid stroke="#ececea" strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" stroke="#9aa1ad" fontSize={11} />
+              <YAxis dataKey="source" type="category" stroke="#9aa1ad" fontSize={11} width={70} />
+              <Tooltip
+                contentStyle={{
+                  background: '#0e1116',
+                  borderRadius: 12,
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: 12,
+                }}
