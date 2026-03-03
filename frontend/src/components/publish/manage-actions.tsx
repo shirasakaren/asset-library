@@ -120,3 +120,6 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
               <Archive className="h-3.5 w-3.5" strokeWidth={2.25} />
               {t('archive')}
             </DropdownMenuItem>
+          )}
+          <DropdownMenuItem danger onSelect={() => setDeleteOpen(true)}>
+            <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
