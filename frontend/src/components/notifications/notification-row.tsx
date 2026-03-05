@@ -62,3 +62,6 @@ function renderMessage(
     'REPORT_CREATED',
     'FEATURED_FEATURED',
     'VERSION_PUBLISHED',
+    'ANALYZER_FAILED',
+    'ADMIN_PROMOTED',
+    'ADMIN_DEMOTED',
