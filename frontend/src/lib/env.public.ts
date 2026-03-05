@@ -29,26 +29,3 @@ const PublicEnvSchema = z.object({
     .or(z.literal('').transform(() => undefined)),
 
   NEXT_PUBLIC_AUTH_MOCK: z
-    .union([z.literal('true'), z.literal('false'), z.literal('')])
-    .default('false')
-    .transform((v) => v === 'true'),
-
-  NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
-});
-
-const raw = {
-  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
-  NEXT_PUBLIC_DEFAULT_LOCALE: process.env.NEXT_PUBLIC_DEFAULT_LOCALE,
-  NEXT_PUBLIC_SUPPORTED_LOCALES: process.env.NEXT_PUBLIC_SUPPORTED_LOCALES,
-  NEXT_PUBLIC_COMMUNITY_DOCS_URL: process.env.NEXT_PUBLIC_COMMUNITY_DOCS_URL,
-  NEXT_PUBLIC_COMMUNITY_LEARNING_URL: process.env.NEXT_PUBLIC_COMMUNITY_LEARNING_URL,
-  NEXT_PUBLIC_COMMUNITY_HELP_URL: process.env.NEXT_PUBLIC_COMMUNITY_HELP_URL,
-  NEXT_PUBLIC_AUTH_MOCK: process.env.NEXT_PUBLIC_AUTH_MOCK,
-  NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
-};
-
-const result = PublicEnvSchema.safeParse(raw);
-if (!result.success) {
