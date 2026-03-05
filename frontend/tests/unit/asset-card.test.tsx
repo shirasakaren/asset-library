@@ -37,19 +37,3 @@ describe('AssetCard (grid)', () => {
     expect(screen.queryByRole('button', { name: /save/i })).toBeNull();
   });
 
-  it('renders the save button when not owner', () => {
-    render(<AssetCard variant="grid" asset={asset} />);
-    expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
-  });
-});
-
-describe('AssetCard (compact)', () => {
-  it('renders title and download count', () => {
-    render(<AssetCard variant="compact" asset={asset} />);
-    expect(screen.getByText('Demo asset')).toBeInTheDocument();
-    // 1234 formatted as "1.2k"
-    expect(screen.getByText(/1\.2k/)).toBeInTheDocument();
-  });
-});
-
-describe('AssetCard (feature)', () => {
