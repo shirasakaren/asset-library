@@ -205,3 +205,88 @@ function Solution() {
   ];
   return (
     <section id="whats-inside" className="border-t border-line bg-surface-muted">
+      <Container size="2xl">
+        <div className="py-24 lg:py-32">
+          <div className="max-w-[760px]">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">What’s inside</p>
+            <h2 className="display-lg text-ink mb-12">Three surfaces, one library.</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {offerings.map(({ icon: Icon, title, body }) => (
+              <Card key={title} variant="outlined" padding="lg">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] bg-brand-blue-50 text-brand-blue">
+                  <Icon className="h-5 w-5" strokeWidth={2.25} />
+                </span>
+                <h3 className="mt-5 font-display text-h2 text-ink tracking-[-0.01em]">{title}</h3>
+                <p className="mt-2 text-body text-ink-2 leading-[1.7]">{body}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/* =====================================================================
+ * Access — the page's one inverse-dark moment (DS §2.3)
+ * ===================================================================== */
+function Access() {
+  return (
+    <section className="bg-surface-inverse text-white">
+      <Container size="2xl">
+        <div className="grid md:grid-cols-12 gap-8 py-24 lg:py-32 items-center">
+          <div className="md:col-span-7">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-white/60 mb-3">Access</p>
+            <h2 className="display-lg !text-white">Internal use only.</h2>
+            {/* TODO: replace ACCESS_COPY */}
+            <p className="mt-6 text-body-lg text-white/85 leading-[1.7] max-w-prose">
+              MGM Asset Library is gated behind sign-in. Only MGM Laboratory members and approved
+              partners have accounts. This About page is the one public-facing surface — everything
+              else lives behind authentication.
+            </p>
+            <p className="mt-4 text-body-lg text-white/85 leading-[1.7] max-w-prose">
+              If you’re part of the lab and don’t yet have access, ask a workspace admin to invite
+              you through Keycloak.
+            </p>
+          </div>
+          <div className="md:col-span-5 hidden md:block">
+            <div className="rounded-[28px] overflow-hidden border border-white/10 bg-white/[0.04]">
+              <GeometricPattern variant="square" seed="about-access" size={72} rows={3} cols={3} />
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/* =====================================================================
+ * Closing CTA
+ * ===================================================================== */
+function ClosingCta() {
+  return (
+    <section className="border-t border-line">
+      <Container size="2xl">
+        <div className="py-24 lg:py-32 text-center max-w-[680px] mx-auto">
+          <h2 className="display-xl text-ink">Get started.</h2>
+          <p className="mt-4 text-body-lg text-ink-2">
+            Sign in with your MGM Keycloak account. The library, the plugins, and your saved work
+            are all one click away.
+          </p>
+          <div className="mt-8 inline-flex items-center gap-2">
+            <Button size="lg" asChild>
+              <a href="/auth/signin">
+                Sign in
+                <ArrowRight className="h-4 w-4 ml-1" strokeWidth={2.25} />
+              </a>
+            </Button>
+            <Button size="lg" variant="ghost" asChild>
+              <NextLink href="#whats-inside">Learn more</NextLink>
+            </Button>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
