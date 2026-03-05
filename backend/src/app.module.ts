@@ -69,3 +69,10 @@ import { WsModule } from './modules/ws/ws.module';
     }),
 
     // ── Infra (shared connectors) ───────────────────────────────────────────
+    SentryModule,
+    PrismaModule,
+    MongoModule,
+    RedisModule,
+    S3Module,
+    MeilisearchModule,
+    MailerModule,
