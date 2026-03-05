@@ -62,3 +62,13 @@ describe('uploadStore', () => {
       // Simulate Auth.js refresh in the background between requests.
       current = 'token-2';
       expect(await useUploadStore.getState().__resolveAccessToken()).toBe('token-2');
+    });
+
+    it('returns undefined when no provider is registered', async () => {
+      useUploadStore.setState({ tokenProvider: undefined });
+      expect(await useUploadStore.getState().__resolveAccessToken()).toBeUndefined();
+    });
+  });
+
+  describe('dismissByFileId', () => {
+    it('removes only the task matching the fileId', () => {
