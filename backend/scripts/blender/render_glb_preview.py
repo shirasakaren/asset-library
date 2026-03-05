@@ -56,3 +56,21 @@ def setup_hdri(path: str) -> None:
 
 
 def setup_camera(min_v: Vector, max_v: Vector) -> None:
+    center = (min_v + max_v) / 2
+    size = (max_v - min_v).length
+    distance = max(size * 1.8, 1.5)
+    cam_data = bpy.data.cameras.new("MGM_Cam")
+    cam_obj = bpy.data.objects.new("MGM_Cam", cam_data)
+    bpy.context.scene.collection.objects.link(cam_obj)
+    # 30° azimuth, 15° elevation off the +X axis.
+    az = math.radians(30)
+    el = math.radians(15)
+    cam_obj.location = center + Vector((
+        math.cos(el) * math.cos(az) * distance,
+        math.cos(el) * math.sin(az) * distance,
+        math.sin(el) * distance,
+    ))
+    direction = (center - cam_obj.location)
+    cam_obj.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam_obj
+
