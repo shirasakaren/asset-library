@@ -78,3 +78,9 @@ async function bootstrapApi(env: ReturnType<typeof validateEnv>): Promise<void> 
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   });
   await app.register(compress);
+  await app.register(cookie);
+  // 10 MB inline body cap — large uploads always go direct to S3 via
+  // presigned URLs (Part 2 file pipeline).
+  await app.register(multipart, { limits: { fileSize: 10 * 1024 * 1024 } });
+  await app.register(cors, {
+    origin: env.CORS_ORIGINS,
