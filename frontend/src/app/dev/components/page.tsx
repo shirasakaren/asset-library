@@ -175,3 +175,103 @@ export default function ComponentsPlaygroundPage() {
             </div>
             <div>
               <Skeleton className="h-32 w-full mb-3" />
+              <SkeletonText lines={2} />
+            </div>
+          </div>
+        </Section>
+
+        {/* Section: Empty state */}
+        <Section title="Empty state" eyebrow="07">
+          <EmptyState
+            title="Your library is empty"
+            description="Save assets to your library to download them later or sync them through the Unity / Unreal plugin."
+            seed="library-empty"
+            primaryAction={<Button>Browse Discover</Button>}
+            secondaryAction={<Button variant="ghost">Read the docs</Button>}
+          />
+        </Section>
+
+        {/* Section: Tabs */}
+        <Section title="Tabs" eyebrow="08">
+          <Tabs defaultValue="overview" className="max-w-[640px]">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="versions">Versions</TabsTrigger>
+              <TabsTrigger value="discussion">Discussion</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <p className="text-body-sm text-ink-2">Overview content lives here.</p>
+            </TabsContent>
+            <TabsContent value="versions">
+              <p className="text-body-sm text-ink-2">Versions land in Part 2.</p>
+            </TabsContent>
+            <TabsContent value="discussion">
+              <p className="text-body-sm text-ink-2">Comments land in Part 3.</p>
+            </TabsContent>
+          </Tabs>
+        </Section>
+
+        {/* Section: CodeBlock */}
+        <Section title="Code" eyebrow="09">
+          <CodeBlock
+            filename="package.json"
+            language="json"
+            code={`{
+  "name": "mgm-asset-library-frontend",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev"
+  }
+}`}
+          />
+        </Section>
+
+        {/* Section: Brand */}
+        <Section title="Brand" eyebrow="10">
+          <div className="flex items-center gap-8 mb-6">
+            <Avatar data={{ initials: 'ID', bgColor: '#3a6dc5', fgColor: '#ffffff' }} size={48} />
+            <Avatar data={{ initials: 'MA', bgColor: '#f7bf33', fgColor: '#0e1116' }} size={48} />
+            <Avatar data={{ initials: 'RB', bgColor: '#f94141', fgColor: '#ffffff' }} size={48} />
+            <Avatar data={{ initials: 'GN', bgColor: '#0f8657', fgColor: '#ffffff' }} size={48} />
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="border border-line rounded-[16px] overflow-hidden">
+              <GeometricPattern variant="corner" seed="brand-1" size={56} />
+            </div>
+            <div className="border border-line rounded-[16px] overflow-hidden">
+              <GeometricPattern variant="square" seed="brand-2" size={56} />
+            </div>
+            <div className="border border-line rounded-[16px] overflow-hidden">
+              <GeometricPattern variant="banner" seed="brand-3" size={56} rows={2} cols={3} />
+            </div>
+          </div>
+          <div className="mt-6">
+            <FooterStrip />
+          </div>
+        </Section>
+      </div>
+    </Container>
+  );
+}
+
+function Section({
+  title,
+  eyebrow,
+  children,
+}: {
+  title: string;
+  eyebrow: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="py-10 border-t border-line first:border-t-0 first:pt-0">
+      <div className="mb-6 flex items-baseline gap-4">
+        <span className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 geist-tnum">
+          {eyebrow}
+        </span>
+        <h2 className="font-display text-h1 text-ink tracking-[-0.015em]">{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
