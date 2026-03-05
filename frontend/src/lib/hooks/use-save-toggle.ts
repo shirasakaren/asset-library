@@ -36,4 +36,3 @@ export function useSaveToggle() {
     onMutate: async ({ assetId, nextSaved }) => {
       logEvent('asset.save_toggle', { assetId, nextSaved });
       // Optimistically flip isSaved on any cached asset detail and library page.
-      const previousDetails = new Map<string, unknown>();
