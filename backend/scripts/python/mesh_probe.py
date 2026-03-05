@@ -61,3 +61,7 @@ def probe(path: str) -> Dict[str, Any]:
             texture_refs.extend(_walk_textures(material))
 
         animations = []
+        has_skeleton = False
+        for anim in scene.animations:
+            try:
+                # FPS may be 0 in some FBX exports; fall back to 30.
