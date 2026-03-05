@@ -41,8 +41,3 @@ export class HealthController {
    */
   @Public()
   @Get('readyz')
-  async readiness(): Promise<ReadinessReport> {
-    const [postgres, redis, mongo, meilisearch, s3] = await Promise.all([
-      this.prisma.ping(),
-      this.redis.ping(),
-      this.mongo.ping(),
