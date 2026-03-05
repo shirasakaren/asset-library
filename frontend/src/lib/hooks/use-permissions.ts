@@ -47,3 +47,9 @@ const DEFAULT: Permissions = {
 };
 
 /**
+ * Single source of truth for client-side action visibility. The backend still
+ * enforces. Hiding controls here is a UX nicety, not a security boundary.
+ */
+export function usePermissions(ctx: PermissionContext): Permissions {
+  return useMemo(() => {
+    const me = ctx.me;
