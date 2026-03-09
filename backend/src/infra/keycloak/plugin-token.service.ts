@@ -63,3 +63,12 @@ export class PluginTokenService {
     const record = await this.prisma.pluginDeviceToken.findUnique({
       where: { tokenHash: this.hash(token) },
       include: { user: true },
+    });
+    if (!record || record.revokedAt || record.expiresAt < new Date()) return null;
+    if (!record.lastUsedAt || Date.now() - record.lastUsedAt.getTime() > 60_000) {
+      // Avoid hammering Postgres on every single request — only persist
+      // lastUsedAt once a minute per device.
+      await this.prisma.pluginDeviceToken
+        .update({ where: { id: record.id }, data: { lastUsedAt: new Date() } })
+        .catch(() => undefined);
+    }
