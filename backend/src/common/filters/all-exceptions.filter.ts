@@ -58,3 +58,31 @@ export class AllExceptionsFilter implements ExceptionFilter {
         `[${req.method} ${req.url}] ${problem.status} ${problem.title} (${problem.code})`,
       );
     }
+
+    void res.status(problem.status).type('application/problem+json').send(problem);
+  }
+
+  private toProblem(exception: unknown, instance: string): ProblemPayload {
+    if (exception instanceof DomainException) {
+      const body = exception.getResponse() as { message?: string };
+      return {
+        type: `${this.baseUrl}/errors/${exception.code}`,
+        title: exception.constructor.name.replace(/Exception$/, ''),
+        status: exception.getStatus(),
+        detail: body.message ?? exception.message,
+        instance,
+        code: exception.code,
+        fields: exception.fields,
+      };
+    }
+
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+      const response = exception.getResponse();
+      const { detail, fields } = this.normalizeHttp(response);
+      const code = `http.${status}`;
+      return {
+        type: `${this.baseUrl}/errors/${code}`,
+        title: exception.name,
+        status,
+        detail,
