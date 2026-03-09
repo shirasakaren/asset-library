@@ -66,3 +66,10 @@ export class PrincipalResolverService {
   async resolvePrincipal(claims: KeycloakClaims): Promise<{ user: User; role: AppRole }> {
     const cacheKey = PrincipalResolverService.cacheKey(claims.sub);
     try {
+      const cached = await this.redis.client.get(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached) as { user: SerializedUser; role: AppRole };
+        return { user: deserializeUser(parsed.user), role: parsed.role };
+      }
+    } catch {
+      /* cache miss / parse error — fall through to the DB */
