@@ -116,3 +116,24 @@ export class AnalyticsService {
       for (const [country, count] of Object.entries(
         (row.byCountry as Record<string, number>) ?? {},
       )) {
+        byCountry[country] = (byCountry[country] ?? 0) + count;
+      }
+      for (const [source, count] of Object.entries(
+        (row.bySource as Record<string, number>) ?? {},
+      )) {
+        bySource[source] = (bySource[source] ?? 0) + count;
+      }
+    }
+
+    const byVersionRaw = await this.prisma.$queryRaw<
+      Array<{ versionId: string; semver: string; downloads: bigint }>
+    >(Prisma.sql`
+      SELECT av.id AS "versionId", av.semver, COUNT(d.id)::bigint AS downloads
+      FROM asset_versions av
+      LEFT JOIN downloads d ON d."versionId" = av.id
+      WHERE av."assetId" = ${assetId}
+      GROUP BY av.id, av.semver
+      ORDER BY downloads DESC
+    `);
+    const byFileRaw = await this.prisma.$queryRaw<
+      Array<{ fileId: string; relativePath: string; downloads: bigint }>
