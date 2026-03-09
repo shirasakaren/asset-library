@@ -63,3 +63,22 @@ export class AssetsListService {
       ownerId: query.ownerId,
       statuses,
     });
+
+    const orderBy = this.buildOrderBy(query.sort ?? 'newest');
+
+    const rows = await this.prisma.asset.findMany({
+      where,
+      orderBy,
+      include: LIST_INCLUDE,
+      take: limit + 1,
+      ...(cursor ? { skip: 1, cursor: { id: cursor.id } } : {}),
+    });
+    const hasMore = rows.length > limit;
+    const items = await this.mapper.toSummaryMany(rows.slice(0, limit), locale);
+    const last = rows[items.length - 1];
+    const nextCursor =
+      hasMore && last
+        ? encodeCursor({ id: last.id, createdAt: last.createdAt.toISOString() })
+        : null;
+    return { items, pageInfo: { nextCursor, hasMore } };
+  }
