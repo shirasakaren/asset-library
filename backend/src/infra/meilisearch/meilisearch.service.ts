@@ -56,9 +56,3 @@ export class MeilisearchService implements OnModuleInit {
       'renderPipelines',
       'targets',
       'fileKinds',
-      'status',
-    ]);
-    await index.updateSortableAttributes([
-      'publishedAt',
-      'createdAt',
-      'totalDownloads',
