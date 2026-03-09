@@ -31,3 +31,6 @@ export class CachedService {
     } catch (err) {
       this.logger.warn(`Cache GET failed for ${key}: ${(err as Error).message}`);
     }
+    if (hit) {
+      try {
+        return JSON.parse(hit) as T;
