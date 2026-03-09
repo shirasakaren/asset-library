@@ -156,30 +156,3 @@ export class DashboardService {
       WHERE "createdAt" >= ${start}
       GROUP BY date ORDER BY date ASC
     `);
-    const publishes = await this.prisma.$queryRaw<Array<{ date: Date; count: bigint }>>(Prisma.sql`
-      SELECT date_trunc('day', "publishedAt") AS date, COUNT(*)::bigint AS count
-      FROM assets
-      WHERE "publishedAt" >= ${start} AND status = 'PUBLISHED'
-      GROUP BY date ORDER BY date ASC
-    `);
-    const newUsers = await this.prisma.$queryRaw<Array<{ date: Date; count: bigint }>>(Prisma.sql`
-      SELECT date_trunc('day', "createdAt") AS date, COUNT(*)::bigint AS count
-      FROM users
-      WHERE "createdAt" >= ${start}
-      GROUP BY date ORDER BY date ASC
-    `);
-
-    const toSeries = (rows: Array<{ date: Date; count: bigint }>): SeriesPoint[] =>
-      rows.map((r) => ({ date: r.date.toISOString().slice(0, 10), count: Number(r.count) }));
-
-    return {
-      downloads30d: toSeries(downloads),
-      publishes30d: toSeries(publishes),
-      newUsers30d: toSeries(newUsers),
-    };
-  }
-
-  private async loadTopAssets(): Promise<TopAssetRow[]> {
-    const since = new Date(Date.now() - 7 * 86_400_000);
-    const rows = await this.prisma.$queryRaw<
-      Array<{ assetId: string; downloads: bigint }>
