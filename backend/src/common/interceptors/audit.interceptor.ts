@@ -79,3 +79,13 @@ export class AuditInterceptor implements NestInterceptor {
       tap({
         next: () => {
           const subjectId = resolveSubjectId(req, config.subjectParam) ?? 'unknown';
+          const metadata = this.buildMetadata(req);
+          void this.audit.record({
+            actorId: req.user?.user.id,
+            action: config.action,
+            subjectType: config.subjectType,
+            subjectId,
+            metadata,
+          });
+        },
+      }),
