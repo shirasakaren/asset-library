@@ -44,3 +44,9 @@ export class RateLimitGuard implements CanActivate {
       await this.redis.client.expire(key, config.windowSec);
     }
     if (used > config.max) {
+      const retryAfter = config.windowSec - (Math.floor(Date.now() / 1000) - windowStart);
+      const res = context.switchToHttp().getResponse<{ header: (k: string, v: string) => void }>();
+      try {
+        res.header('Retry-After', String(Math.max(retryAfter, 1)));
+      } catch {
+        // Fastify reply already shipped; safe to ignore.
