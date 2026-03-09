@@ -93,7 +93,3 @@ export class AdminAssetsModerationService {
         'A reason is required when an admin soft-deletes.',
       );
     }
-    const asset = await this.findOrThrow(id);
-    await this.prisma.asset.update({
-      where: { id },
-      data: { status: 'DELETED', archivedAt: new Date() },
