@@ -54,22 +54,3 @@ export class UpdateLocaleDto {
   @IsIn(['en', 'id'])
   locale!: Locale;
 }
-
-export class PluginExchangeDto {
-  @ApiProperty({ description: 'Bearer token obtained from Keycloak in the plugin loopback flow.' })
-  @IsString()
-  @Length(20, 8192)
-  keycloakAccessToken!: string;
-
-  @ApiProperty({ example: 'Unity 2022.3 — DESKTOP-ABCD', maxLength: 120 })
-  @IsString()
-  @MaxLength(120)
-  deviceLabel!: string;
-}
-
-export class PluginExchangeResponseDto {
-  @ApiProperty()
-  deviceToken!: string;
-
-  @ApiProperty()
-  deviceId!: string;
