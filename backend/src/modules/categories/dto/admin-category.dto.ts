@@ -53,31 +53,3 @@ export class UpdateCategoryDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsObject()
-  name?: { en?: string; id?: string };
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  iconKey?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  sortOrder?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-}
-
-export class ReorderCategoriesDto {
-  @ApiProperty({ type: [String] })
-  @IsArray()
-  @ArrayMinSize(1)
-  @IsString({ each: true })
-  orderedIds!: string[];
-}
-
-export class CategoryIconInitiateDto {
