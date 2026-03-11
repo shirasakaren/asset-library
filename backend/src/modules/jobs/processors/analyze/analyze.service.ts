@@ -93,15 +93,3 @@ export class AnalyzeService {
           venvBin: this.config.get('PYANALYZE_VENV') + '/bin',
           timeoutMs,
         });
-        return { ...base, meta: (mesh ?? {}) as Record<string, unknown> };
-      }
-      case AssetFileKind.BLEND: {
-        const mesh = await extractBlendViaBlender(filePath, {
-          blenderBin: this.config.get('BLENDER_BIN'),
-          timeoutMs,
-        });
-        return { ...base, meta: (mesh ?? {}) as Record<string, unknown> };
-      }
-      case AssetFileKind.UNITYPACKAGE: {
-        const pkg = await extractUnityPackage(filePath);
-        return {
