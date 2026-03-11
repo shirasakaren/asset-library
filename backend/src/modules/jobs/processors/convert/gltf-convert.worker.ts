@@ -119,29 +119,3 @@ export class GltfConvertWorker extends JobWorkerBase<GltfConvertJob> {
       this.config.get('BLENDER_BIN'),
       ['-b', '-P', script, '--', input, output],
       { timeoutMs },
-    );
-    if (res.exitCode !== 0) {
-      throw new Error(`Blender exit ${res.exitCode}: ${res.stderr.slice(-512)}`);
-    }
-  }
-
-  private async runGltfpack(input: string, output: string, timeoutMs: number): Promise<void> {
-    const args = ['-i', input, '-o', output, '-cc'];
-    if (this.config.get('GLTFPACK_KTX2')) args.push('-tc');
-    try {
-      const res = await runSubprocess(this.config.get('GLTFPACK_BIN'), args, { timeoutMs });
-      if (res.exitCode !== 0) {
-        this.logger.warn(`gltfpack non-zero (${res.exitCode}); using unpacked GLB`);
-      }
-    } catch (err) {
-      this.logger.warn(`gltfpack unavailable: ${(err as Error).message}`);
-    }
-  }
-
-  private derivedKeyFor(s3Prefix: string, relativePath: string): string {
-    return `${s3Prefix}__derived__/web-viewer/${relativePath}.glb`;
-  }
-
-  private async markSkipped(fileId: string, reason: string): Promise<void> {
-    const file = await this.prisma.assetFile.findUnique({ where: { id: fileId } });
-    if (!file) return;
