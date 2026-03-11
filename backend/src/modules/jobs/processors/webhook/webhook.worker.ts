@@ -78,13 +78,3 @@ export class WebhookWorker extends JobWorkerBase<WebhookDeliveryJob> implements 
           'content-type': 'application/json',
           'x-mgm-signature': signature,
           'x-mgm-delivery-id': deliveryId,
-          'x-mgm-attempt': attempt.toString(),
-        },
-        body,
-      });
-      httpStatus = res.status;
-      responseBody = (await res.text()).slice(0, 2000);
-      success = res.ok;
-      if (!success) error = `HTTP ${res.status}`;
-    } catch (err) {
-      error = (err as Error).message;
