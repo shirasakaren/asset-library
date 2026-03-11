@@ -147,12 +147,3 @@ export class AssetsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Partial update; engine is immutable after publish.' })
   @ApiNoContentResponse()
-  async update(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Param('id') id: string,
-    @Body() dto: UpdateAssetDto,
-  ): Promise<void> {
-    await this.assets.update(id, dto, principal.user);
-  }
-
-  @Post('assets/:id/publish')
