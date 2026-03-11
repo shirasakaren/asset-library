@@ -150,3 +150,11 @@ export class SearchIndexBatchWorker
     };
 
     return asset.translations.map((t) => ({
+      id: `${asset.id}:${t.locale}`,
+      locale: t.locale,
+      categoryName:
+        this.pickJsonLocalized(asset.category.name as Prisma.JsonValue, t.locale) ??
+        asset.category.slug,
+      shortDescription: t.shortDescription,
+      ...baseDoc,
+    }));
