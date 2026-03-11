@@ -70,10 +70,3 @@ export class ArchivePurgeWorker extends JobWorkerBase<ArchivePurgeJob> implement
       } catch (err) {
         this.logger.error(`archive-purge: ${asset.id} failed: ${(err as Error).message}`);
         this.sentry.captureException(err, { assetId: asset.id });
-      }
-    }
-  }
-
-  private async purgeOne(asset: {
-    id: string;
-    slug: string;
