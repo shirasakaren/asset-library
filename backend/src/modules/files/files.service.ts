@@ -334,3 +334,4 @@ export class FilesService {
       where: { id: fileId },
       include: { version: { include: { asset: true } } },
     });
+    if (!file)
