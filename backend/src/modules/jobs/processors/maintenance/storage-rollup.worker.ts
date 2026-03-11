@@ -91,3 +91,23 @@ export class StorageRollupWorker extends JobWorkerBase<StorageRollupJob> impleme
             }
           }
         }
+      }
+
+      for (const [prefix, c] of counters) {
+        await this.prisma.storageDaily.upsert({
+          where: { date_bucket_prefix: { date, bucket: bucketName, prefix } },
+          create: { date, bucket: bucketName, prefix, bytes: c.bytes, objectCount: c.count },
+          update: { bytes: c.bytes, objectCount: c.count },
+        });
+      }
+    }
+
+    for (const [userId, c] of perUser) {
+      await this.prisma.storageUserDaily.upsert({
+        where: { date_userId: { date, userId } },
+        create: { date, userId, bytes: c.bytes, assetCount: c.assetCount },
+        update: { bytes: c.bytes, assetCount: c.assetCount },
+      });
+    }
+    for (const [assetId, bytes] of perAsset) {
+      await this.prisma.storageAssetDaily.upsert({
