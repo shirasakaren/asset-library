@@ -95,3 +95,34 @@ export class DownloadsService {
 
     const ipHash = createHash('sha256')
       .update(`${requestIp ?? 'unknown'}::${this.config.get('PLUGIN_TOKEN_PEPPER') ?? ''}`)
+      .digest('hex');
+    const truncatedUa = (userAgent ?? '').slice(0, 512);
+    const expiresInSec = this.config.get('S3_PRESIGN_EXPIRES_SEC');
+
+    const signedFiles: DownloadFileItemDto[] = await Promise.all(
+      targetFiles.map(async (f) => ({
+        id: f.id,
+        relativePath: f.relativePath,
+        kind: f.kind,
+        bytes: f.bytes.toString(),
+        getUrl: await this.s3.presignLongLivedGet('assets', f.s3Key, expiresInSec),
+        expiresAt: new Date(Date.now() + expiresInSec * 1000).toISOString(),
+      })),
+    );
+
+    // Persist Download rows + upsert the LibraryItem in a single transaction.
+    await this.prisma.$transaction([
+      this.prisma.download.createMany({
+        data: targetFiles.map((f) => ({
+          userId: requester.id,
+          assetId,
+          versionId,
+          fileId: f.id,
+          ipHash,
+          userAgent: truncatedUa,
+          source,
+        })),
+      }),
+      this.prisma.libraryItem.upsert({
+        where: { userId_assetId: { userId: requester.id, assetId } },
+        create: { userId: requester.id, assetId },
