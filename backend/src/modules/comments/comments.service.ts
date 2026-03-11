@@ -189,3 +189,70 @@ export class CommentsService {
         select: { authorId: true },
       });
       if (parent && parent.authorId !== author.id) {
+        await this.jobs.enqueueNotify({
+          recipientUserId: parent.authorId,
+          type: NotificationType.COMMENT_REPLY,
+          payload: { ...payload, parentCommentId: dto.parentId },
+          actor: { id: author.id, displayName: author.displayName, email: author.email },
+        });
+      }
+    } else if (asset.ownerId !== author.id) {
+      await this.jobs.enqueueNotify({
+        recipientUserId: asset.ownerId,
+        type:
+          effectiveKind === 'ISSUE'
+            ? NotificationType.ISSUE_CREATED
+            : NotificationType.COMMENT_CREATED,
+        payload,
+        actor: { id: author.id, displayName: author.displayName, email: author.email },
+      });
+    }
+    return { id: created.id };
+  }
+
+  private buildCommentPayload(
+    asset: { id: string; slug: string; title: string },
+    commentId: string,
+    author: User,
+    body: Prisma.InputJsonValue,
+  ): Record<string, unknown> {
+    return {
+      assetId: asset.id,
+      assetSlug: asset.slug,
+      assetTitle: asset.title,
+      commentId,
+      commentExcerpt: this.excerpt(body),
+      author: { id: author.id, displayName: author.displayName, email: author.email },
+    };
+  }
+
+  /** Pulls the first ~140 chars of plain text out of a Lite TipTap doc. */
+  private excerpt(doc: Prisma.InputJsonValue): string {
+    const buf: string[] = [];
+    const walk = (node: unknown): void => {
+      if (!node || typeof node !== 'object') return;
+      const obj = node as Record<string, unknown>;
+      if (typeof obj.text === 'string') buf.push(obj.text);
+      if (Array.isArray(obj.content)) for (const c of obj.content) walk(c);
+    };
+    walk(doc);
+    return buf.join(' ').slice(0, 140);
+  }
+
+  async edit(commentId: string, body: object, editor: User): Promise<void> {
+    const row = await this.prisma.comment.findUnique({ where: { id: commentId } });
+    if (!row || row.deletedAt)
+      throw new NotFoundDomainException(
+        ErrorCode.COMMENT_NOT_FOUND,
+        `Comment ${commentId} not found.`,
+      );
+    if (row.authorId !== editor.id) {
+      throw new ForbiddenDomainException(
+        ErrorCode.AUTH_FORBIDDEN,
+        'You can only edit your own comments.',
+      );
+    }
+    const sanitized = validateLiteTipTap(body) as unknown as Prisma.InputJsonValue;
+    await this.prisma.comment.update({
+      where: { id: commentId },
+      data: { body: sanitized, editedAt: new Date() },
