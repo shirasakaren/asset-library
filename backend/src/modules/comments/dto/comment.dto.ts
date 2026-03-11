@@ -45,7 +45,3 @@ export class UpdateCommentDto {
 export class UpdateIssueStatusDto {
   @ApiProperty({ enum: IssueStatus })
   @IsEnum(IssueStatus)
-  status!: IssueStatus;
-}
-
-export class CommentAuthorDto {
