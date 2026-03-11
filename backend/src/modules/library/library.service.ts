@@ -96,3 +96,4 @@ export class LibraryService {
     }));
     const last = itemsRaw[itemsRaw.length - 1];
     const nextCursor =
+      hasMore && last ? encodeCursor({ id: last.id, createdAt: last.addedAt.toISOString() }) : null;
