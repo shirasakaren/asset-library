@@ -126,3 +126,10 @@ export class JobsProducer implements OnModuleInit, OnModuleDestroy {
     await this.queue(QUEUE.SEARCH_INDEX).add('mark-dirty', job, {
       jobId: `${job.assetId}__${job.reason}`,
     });
+  }
+
+  private async scheduleSearchIndexBatch(): Promise<void> {
+    const queue = this.queue(QUEUE.SEARCH_INDEX_BATCH);
+    await queue.add(
+      'batch',
+      { triggeredAt: new Date().toISOString() } satisfies SearchIndexBatchJob,
