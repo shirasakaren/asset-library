@@ -283,3 +283,93 @@ export class AssetsService {
           }
           await tx.assetVersion.update({
             where: { id: latest.id },
+            data: {
+              semver: dto.semver,
+              s3Prefix: `assets/${id}/v${dto.semver}/`,
+            },
+          });
+        }
+      }
+      if (Object.keys(data).length) {
+        await tx.asset.update({ where: { id }, data });
+      }
+    });
+
+    await this.categories.invalidateCache();
+    if (asset.status === 'PUBLISHED') {
+      await this.jobs.enqueueSearchIndex({ reason: 'asset.update', assetId: id });
+    }
+  }
+
+  // ─── Publish / Archive / Restore / Delete ─────────────────────────────────
+
+  async publish(
+    id: string,
+    requester: User,
+    _confirmInfectedWarning: boolean,
+  ): Promise<PublishViolation[]> {
+    const asset = await this.prisma.asset.findUnique({ where: { id } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${id} not found.`);
+    this.assertCanEdit(asset, requester);
+
+    const violations = await this.publishChecklist.evaluate(asset);
+    const hardErrors = violations.filter((v) => v.severity === 'error');
+
+    if (hardErrors.length > 0) {
+      throw new BadRequestDomainException(
+        ErrorCode.ASSET_PUBLISH_BLOCKED,
+        'Publish blocked by checklist failures.',
+        hardErrors.map((v) => ({ path: v.field, code: v.code, message: v.message })),
+      );
+    }
+
+    const latest = await this.prisma.assetVersion.findFirst({
+      where: { assetId: id },
+      orderBy: { createdAt: 'desc' },
+    });
+    await this.prisma.$transaction([
+      this.prisma.asset.update({
+        where: { id },
+        data: { status: 'PUBLISHED', publishedAt: new Date() },
+      }),
+      ...(latest && !latest.publishedAt
+        ? [
+            this.prisma.assetVersion.update({
+              where: { id: latest.id },
+              data: { publishedAt: new Date() },
+            }),
+          ]
+        : []),
+    ]);
+
+    await this.categories.invalidateCache();
+    await this.jobs.enqueueSearchIndex({ reason: 'asset.publish', assetId: id });
+    return [];
+  }
+
+  async archive(id: string, requester: User): Promise<void> {
+    await this.transitionStatus(id, requester, 'ARCHIVED', 'asset.archive');
+  }
+
+  async restore(id: string, requester: User): Promise<void> {
+    const asset = await this.prisma.asset.findUnique({ where: { id } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${id} not found.`);
+    this.assertCanEdit(asset, requester);
+    if (asset.status !== 'ARCHIVED' && asset.status !== 'DELETED') {
+      throw new BadRequestDomainException(
+        ErrorCode.ASSET_ARCHIVE_BLOCKED,
+        'Asset is not archived.',
+      );
+    }
+    await this.prisma.asset.update({
+      where: { id },
+      data: { status: 'PUBLISHED', archivedAt: null, publishedAt: asset.publishedAt ?? new Date() },
+    });
+    await this.categories.invalidateCache();
+    await this.jobs.enqueueSearchIndex({ reason: 'asset.restore', assetId: id });
+  }
+
+  async softDelete(id: string, requester: User): Promise<void> {
+    await this.transitionStatus(id, requester, 'DELETED', 'asset.delete');
