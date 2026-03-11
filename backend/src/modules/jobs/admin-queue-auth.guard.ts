@@ -78,6 +78,3 @@ export class AdminQueueAuthGuard implements CanActivate {
   private async upsertUser(claims: KeycloakClaims): Promise<User> {
     const email = (claims.email ?? '').toLowerCase();
     if (!email) {
-      throw new UnauthorizedException('Keycloak token has no email claim.');
-    }
-    const displayName = claims.name ?? claims.preferred_username ?? email.split('@')[0];
