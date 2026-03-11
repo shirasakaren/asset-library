@@ -58,3 +58,19 @@ export async function extractUnityPackage(
         const text = Buffer.concat(chunks).toString('utf8');
         if (isPathname) {
           const trimmed = text.trim();
+          if (trimmed) {
+            meta.contents.push(trimmed);
+            if (trimmed.startsWith('ProjectSettings/')) meta.hasProjectSettings = true;
+            if (/URP|UniversalRP|Universal Render Pipeline/i.test(trimmed))
+              meta.renderPipelineHints.push('URP');
+            if (/HDRP|HighDefinition/i.test(trimmed)) meta.renderPipelineHints.push('HDRP');
+            if (/Built[-_ ]?in/i.test(trimmed)) meta.renderPipelineHints.push('BUILT_IN');
+            if (/Shader Graph|ScriptableRenderPipeline/i.test(trimmed))
+              meta.renderPipelineHints.push('SRP');
+          }
+        } else if (isProjectVersion) {
+          const m = text.match(/m_EditorVersion:\s*([\w.]+)/);
+          if (m) meta.unityVersion = m[1];
+        } else if (isManifest) {
+          try {
+            const parsed = JSON.parse(text) as { dependencies?: Record<string, string> };
