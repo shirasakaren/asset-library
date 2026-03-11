@@ -64,3 +64,12 @@ export class ThumbnailVariantsWorker extends JobWorkerBase<ThumbnailVariantsJob>
           Key: key,
           Body: buf,
           ContentType: 'image/webp',
+        }),
+      );
+      variants[size.name] = key;
+    }
+
+    await this.prisma.asset.update({
+      where: { id: assetId },
+      data: { thumbnailVariants: variants },
+    });

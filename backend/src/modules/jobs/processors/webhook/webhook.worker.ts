@@ -57,3 +57,34 @@ export class WebhookWorker extends JobWorkerBase<WebhookDeliveryJob> implements 
       id: deliveryId,
       type: job.data.event,
       createdAt: new Date().toISOString(),
+      actor: job.data.actor,
+      recipient: job.data.recipient,
+      payload: job.data.payload,
+    };
+    const body = JSON.stringify(envelope);
+    const signature = this.secret
+      ? `sha256=${createHmac('sha256', this.secret).update(body).digest('hex')}`
+      : '';
+
+    const start = Date.now();
+    let httpStatus: number | undefined;
+    let responseBody = '';
+    let error: string | undefined;
+    let success = false;
+    try {
+      const res = await fetch(this.url, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-mgm-signature': signature,
+          'x-mgm-delivery-id': deliveryId,
+          'x-mgm-attempt': attempt.toString(),
+        },
+        body,
+      });
+      httpStatus = res.status;
+      responseBody = (await res.text()).slice(0, 2000);
+      success = res.ok;
+      if (!success) error = `HTTP ${res.status}`;
+    } catch (err) {
+      error = (err as Error).message;
