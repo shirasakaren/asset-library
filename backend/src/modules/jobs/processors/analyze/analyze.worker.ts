@@ -85,3 +85,9 @@ export class AnalyzeWorker extends JobWorkerBase<AnalyzeFileJob> {
         await tx.assetDependency.createMany({
           data: analyzed.dependencies.map((d) => ({
             versionId,
+            name: d.name,
+            version: d.version ?? null,
+            source: d.source,
+          })),
+        });
+      }
