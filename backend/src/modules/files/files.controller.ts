@@ -99,3 +99,16 @@ export class FilesController {
     @Body() dto: AbortMultipartDto,
   ): Promise<void> {
     return this.files.abortMultipart(dto.uploadId, principal.user);
+  }
+
+  @Post('thumbnails/initiate')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get a presigned PUT URL for an asset thumbnail.' })
+  @ApiOkResponse({ type: InitiateThumbnailResponseDto })
+  initiateThumb(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: InitiateThumbnailDto,
+  ): Promise<InitiateThumbnailResponseDto> {
+    return this.files.initiateThumbnail(dto, principal.user);
+  }
+
