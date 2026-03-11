@@ -74,3 +74,4 @@ export class PublishChecklistService {
     }
 
     if (!SEMVER_REGEX.test(latest.semver)) {
+      violations.push({
