@@ -42,3 +42,7 @@ export async function extractUPlugin(filePath: string): Promise<UPluginMeta | nu
         .map((p) => ({ name: p.Name ?? '', enabled: !!p.Enabled }))
         .filter((p) => p.name),
     };
+  } catch {
+    return null;
+  }
+}
