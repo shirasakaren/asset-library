@@ -71,3 +71,22 @@ export class AnalyticsRollupWorker
 
     for (const row of dailyRows) {
       await this.prisma.downloadDaily.upsert({
+        where: { assetId_date: { assetId: row.assetId, date: yesterdayUtc } },
+        create: {
+          assetId: row.assetId,
+          date: yesterdayUtc,
+          count: row.count,
+          uniqueUsers: row.uniqueUsers,
+          byCountry: (row.byCountry ?? {}) as unknown as Prisma.InputJsonValue,
+          bySource: (row.bySource ?? {}) as unknown as Prisma.InputJsonValue,
+        },
+        update: {
+          count: row.count,
+          uniqueUsers: row.uniqueUsers,
+          byCountry: (row.byCountry ?? {}) as unknown as Prisma.InputJsonValue,
+          bySource: (row.bySource ?? {}) as unknown as Prisma.InputJsonValue,
+        },
+      });
+    }
+
+    // Recompute AssetStats per asset (cheap rollup over the last 30 days).
