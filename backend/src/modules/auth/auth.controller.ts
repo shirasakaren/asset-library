@@ -71,15 +71,3 @@ export class AuthController {
     summary: 'Exchange a Keycloak access token for a long-lived plugin device token.',
   })
   @ApiOkResponse({ type: PluginExchangeResponseDto })
-  async exchangePlugin(@Body() body: PluginExchangeDto): Promise<PluginExchangeResponseDto> {
-    const issued = await this.auth.exchangePluginToken(body.keycloakAccessToken, body.deviceLabel);
-    return {
-      deviceToken: issued.token,
-      deviceId: issued.deviceId,
-      expiresAt: issued.expiresAt.toISOString(),
-    };
-  }
-
-  @Public()
-  @Post('plugin/refresh')
-  @HttpCode(HttpStatus.OK)
