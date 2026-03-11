@@ -38,6 +38,3 @@ export async function extractMesh(
     return JSON.parse(result.stdout) as MeshMeta;
   } catch {
     return null;
-  }
-}
-
