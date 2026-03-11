@@ -121,3 +121,18 @@ export class FeaturedService {
         customTitle: dto.customTitle ?? row.customTitle,
         customShortDescription:
           dto.customShortDescription === undefined
+            ? (row.customShortDescription ?? Prisma.JsonNull)
+            : (dto.customShortDescription as Prisma.InputJsonValue),
+        isActive: dto.isActive ?? row.isActive,
+        sortOrder: dto.sortOrder ?? row.sortOrder,
+      },
+      include: { asset: true },
+    });
+    await this.discover.invalidate();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'featured.update',
+      subjectType: 'FeaturedSlot',
+      subjectId: id,
+      metadata: { changes: dto },
+    });
