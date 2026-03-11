@@ -77,3 +77,28 @@ export class GifsService {
         const full = r.media_formats?.gif ?? r.media_formats?.tinygif;
         const preview = r.media_formats?.tinygif ?? full;
         if (!full || !preview) return [];
+        return [
+          {
+            id: r.id,
+            url: full.url,
+            preview: preview.url,
+            width: full.dims?.[0] ?? 0,
+            height: full.dims?.[1] ?? 0,
+            title: r.content_description ?? '',
+          },
+        ];
+      });
+    } catch (err) {
+      this.logger.warn(`Tenor search failed: ${(err as Error).message}`);
+      return [];
+    }
+  }
+
+  private async searchGiphy(query: string, limit: number): Promise<GifResult[]> {
+    const key = this.config.get('GIPHY_API_KEY');
+    const base = query
+      ? 'https://api.giphy.com/v1/gifs/search'
+      : 'https://api.giphy.com/v1/gifs/trending';
+    const url = new URL(base);
+    url.searchParams.set('api_key', key);
+    if (query) url.searchParams.set('q', query);
