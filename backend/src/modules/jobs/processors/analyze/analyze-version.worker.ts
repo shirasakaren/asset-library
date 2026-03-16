@@ -79,3 +79,44 @@ export class AnalyzeVersionWorker extends JobWorkerBase<AnalyzeVersionJob> {
       { upsert: true, new: true },
     );
 
+    // Fan out conversion jobs for any 3D source files.
+    for (const file of version.files) {
+      const convertible: AssetFileKind[] = [
+        AssetFileKind.FBX,
+        AssetFileKind.OBJ,
+        AssetFileKind.BLEND,
+        AssetFileKind.GLTF,
+      ];
+      if (convertible.includes(file.kind)) {
+        const hasDerivedGlb = version.files.some(
+          (f) =>
+            f.kind === AssetFileKind.GLB && f.relativePath.endsWith(`${file.relativePath}.glb`),
+        );
+        if (!hasDerivedGlb) {
+          await this.producer.enqueueGltfConvert({
+            versionId,
+            fileId: file.id,
+            sourceKey: file.s3Key,
+            sourceKind:
+              file.kind === AssetFileKind.FBX
+                ? 'FBX'
+                : file.kind === AssetFileKind.OBJ
+                  ? 'OBJ'
+                  : file.kind === AssetFileKind.BLEND
+                    ? 'BLEND'
+                    : 'GLTF',
+          });
+        }
+      }
+    }
+
+    await this.producer.enqueueSearchIndex({ assetId: version.asset.id, reason: 'asset.update' });
+  }
+
+  private async handleFailure(
+    versionId: string,
+    ownerId: string,
+    assetTitle: string,
+    assetId: string,
+    assetSlug: string,
+    err: Error,
