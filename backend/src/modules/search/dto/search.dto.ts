@@ -38,27 +38,3 @@ export class SearchAssetsQueryDto {
   @IsOptional()
   @Transform(asArray)
   @IsArray()
-  renderPipelines?: string[];
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
-  @Transform(asArray)
-  @IsArray()
-  targets?: string[];
-  @ApiPropertyOptional() @IsOptional() @IsString() licenseSlug?: string;
-  @ApiPropertyOptional({ minimum: 1, maximum: 100 })
-  @IsOptional()
-  @Transform(({ value }) => Number(value))
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit?: number = 24;
-  @ApiPropertyOptional()
-  @IsOptional()
-  @Transform(({ value }) => Number(value))
-  @IsInt()
-  @Min(0)
-  offset?: number = 0;
-  @ApiPropertyOptional({ enum: ['en', 'id'] }) @IsOptional() @IsString() locale?: 'en' | 'id';
-}
-
-export class SearchAssetHitDto {
