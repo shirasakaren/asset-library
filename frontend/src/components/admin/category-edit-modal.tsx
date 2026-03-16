@@ -82,3 +82,8 @@ export function CategoryEditModal({ category, onOpenChange, onDone }: Props) {
             </Field>
             <Field id="cat-name-id" label="Name (ID)">
               <Input id="cat-name-id" value={nameId} onChange={(e) => setNameId(e.target.value)} />
+            </Field>
+          </div>
+          <Field id="cat-slug" label="Slug" required>
+            <Input id="cat-slug" value={slug} onChange={(e) => setSlug(slugify(e.target.value))} />
+          </Field>
