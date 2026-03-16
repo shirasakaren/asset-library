@@ -116,8 +116,3 @@ export class SearchService {
           include: { files: true, compatibility: true },
           orderBy: { createdAt: 'desc' },
           take: 1,
-        },
-        _count: { select: { libraryItems: true, downloads: true } },
-      },
-    });
-    if (!asset || asset.status !== 'PUBLISHED') return null;
