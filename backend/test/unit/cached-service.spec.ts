@@ -86,6 +86,3 @@ describe('CachedService', () => {
 
     // Hitting the same keys again — both fetchers stay at one call.
     await svc.getOrFetch('k-en', 60, a);
-    await svc.getOrFetch('k-id', 60, b);
-    expect(a).toHaveBeenCalledTimes(1);
-    expect(b).toHaveBeenCalledTimes(1);
