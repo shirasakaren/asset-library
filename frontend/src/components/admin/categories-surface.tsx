@@ -158,17 +158,3 @@ export function AdminCategoriesSurface() {
 function SortableRow({
   cat,
   onEdit,
-  onToggle,
-  onDelete,
-}: {
-  cat: AdminCategory;
-  onEdit: () => void;
-  onToggle: (next: boolean) => void;
-  onDelete: () => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: cat.id,
-  });
-  const canDelete = cat.assetCount === 0;
-  return (
-    <li
