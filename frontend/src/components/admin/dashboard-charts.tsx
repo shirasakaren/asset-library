@@ -113,9 +113,3 @@ export function DashboardCharts({ downloads, publishes, newUsers, storage }: Das
           <BarChart data={storage} layout="vertical" margin={{ left: 16 }}>
             <CartesianGrid stroke="#ececea" strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" stroke="#9aa1ad" fontSize={11} tickFormatter={fmtBytes} />
-            <YAxis dataKey="bucket" type="category" stroke="#9aa1ad" fontSize={11} width={90} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => fmtBytes(v)} />
-            <Bar dataKey="bytes" fill={COLOR.blue} radius={[6, 6, 6, 6]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </ChartCard>
