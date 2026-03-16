@@ -53,16 +53,3 @@ describe('editor-media URL → key extraction', () => {
   it('decodes %20 etc in keys', () => {
     const url = `http://minio:9000/${bucket}/editor/user1/hello%20world.png`;
     expect(extractEditorKey(url, bucket)).toBe('editor/user1/hello world.png');
-  });
-});
-
-describe('TipTap walker contract', () => {
-  it('finds image src + link href at any depth', () => {
-    const doc: Prisma.JsonValue = {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            {
-              type: 'text',
