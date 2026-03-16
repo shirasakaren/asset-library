@@ -34,11 +34,3 @@ export class AdminRequestsController {
   list(@AuthUser() principal: AuthenticatedRequestUser, @Query() query: ListAssetRequestsQueryDto) {
     return this.requests.list(query, principal.user);
   }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Fetch a single asset request by id (admin view).' })
-  @ApiOkResponse({ type: AssetRequestDto })
-  getOne(
-    @AuthUser() principal: AuthenticatedRequestUser,
-    @Param('id') id: string,
-  ): Promise<AssetRequestDto> {
