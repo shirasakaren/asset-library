@@ -45,6 +45,3 @@ describe('Unreal extractors', () => {
 
   it('reads .uproject JSON', async () => {
     const path = join(dir, 'a.uproject');
-    await writeFile(
-      path,
-      JSON.stringify({
