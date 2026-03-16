@@ -75,3 +75,5 @@ describe('CategoriesService — Redis cache', () => {
     expect(first[0]).toMatchObject({ id: 'cat_1', slug: 'props', name: 'Props', assetCount: 7 });
     expect(calls.findMany).toBe(1);
     expect(calls.groupBy).toBe(1);
+
+    // Let the fire-and-forget SET resolve.
