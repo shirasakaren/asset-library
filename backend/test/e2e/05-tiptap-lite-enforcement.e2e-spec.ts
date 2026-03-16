@@ -42,3 +42,5 @@ describe('E2E [15] TipTap lite enforcement on comments', () => {
         licenseId: license.id,
         engine: 'UNITY',
         status: 'PUBLISHED',
+        publishedAt: new Date(),
+        translations: { create: { locale: 'en', shortDescription: 'x', longDescription: {} } },
