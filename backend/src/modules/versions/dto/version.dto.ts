@@ -39,3 +39,5 @@ export class CompatibilityRowDto {
 
   @ApiPropertyOptional({
     type: [String],
+    description: 'Unity render pipelines: URP|HDRP|SRP|BUILT_IN',
+  })
