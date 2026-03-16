@@ -70,3 +70,15 @@ describe('TipTap validators', () => {
           content: [{ type: 'text', text: 'x'.repeat(50) }],
         })),
       };
+      expect(() => validateLiteTipTap(giant)).toThrow(/exceeds/);
+    });
+  });
+
+  describe('full schema (asset description)', () => {
+    it('caps heading level at 3', () => {
+      expect(() =>
+        validateFullTipTap({
+          type: 'doc',
+          content: [
+            { type: 'heading', attrs: { level: 5 }, content: [{ type: 'text', text: 'h5' }] },
+          ],
