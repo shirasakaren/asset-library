@@ -163,3 +163,9 @@ export class VersionsService {
 
     // Transactionally flip isLatest off on the previous winner, then on this row.
     await this.prisma.$transaction([
+      this.prisma.assetVersion.updateMany({
+        where: { assetId: version.assetId, isLatest: true, id: { not: versionId } },
+        data: { isLatest: false },
+      }),
+      this.prisma.assetVersion.update({
+        where: { id: versionId },
