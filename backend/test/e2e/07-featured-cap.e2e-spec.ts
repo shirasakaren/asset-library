@@ -38,15 +38,3 @@ describe('E2E [08] featured slot active cap', () => {
         displayName: 'Owner',
       },
       update: {},
-    });
-    const assetIds: string[] = [];
-    for (let i = 0; i < 6; i++) {
-      const a = await prisma.asset.create({
-        data: {
-          slug: `feat-${Date.now()}-${i}`,
-          title: `Feat ${i}`,
-          ownerId: owner.id,
-          categoryId: category.id,
-          licenseId: license.id,
-          engine: 'UNITY',
-          status: 'PUBLISHED',
