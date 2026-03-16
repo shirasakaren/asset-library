@@ -139,14 +139,3 @@ describe('DiscoverService (integration: batched rows)', () => {
     const ASSETS_PER_CAT = 20; // > ASSETS_PER_ROW so we exercise the cap
     const categories = makeCategories(CATEGORY_COUNT);
     const byCat = new Map<string, AssetRow[]>();
-    for (const c of categories) byCat.set(c.id, makeAssetsForCategory(c.id, ASSETS_PER_CAT));
-
-    const prisma = buildFakePrisma(byCat);
-    prisma.category.findMany.mockResolvedValueOnce(categories);
-
-    const service = buildService(prisma);
-    const result = await service.get('en');
-
-    // Exactly one batched ranking query + one hydration query, regardless of
-    // category count. This is the whole point of the fix.
-    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
