@@ -81,3 +81,37 @@ export class NotificationsGateway
     this.logger.log('WS gateway online at /ws');
   }
 
+  async handleConnection(socket: AuthedSocket, request: IncomingMessage): Promise<void> {
+    let userId: string | null = null;
+    try {
+      userId = await this.authenticate(request);
+    } catch (err) {
+      this.logger.debug(`WS auth failed: ${(err as Error).message}`);
+    }
+    if (!userId) {
+      socket.send(JSON.stringify({ type: 'error', payload: { code: 'auth.unauthenticated' } }));
+      socket.close(4401, 'unauthenticated');
+      return;
+    }
+    socket.userId = userId;
+    socket.isAlive = true;
+    socket.lastSeenAt = Date.now();
+    this.registry.add(userId, socket);
+
+    socket.on('pong', () => {
+      socket.isAlive = true;
+      socket.lastSeenAt = Date.now();
+    });
+    socket.on('message', () => {
+      // Client → server messages are not part of the protocol. Treat any
+      // inbound traffic as a liveness signal but don't act on it.
+      socket.lastSeenAt = Date.now();
+    });
+
+    socket.send(
+      JSON.stringify(
+        this.notifications.newWsEnvelope('hello', {
+          userId,
+          serverTime: new Date().toISOString(),
+        }),
+      ),
