@@ -168,3 +168,74 @@ export function AdminAssetsTable() {
             <option value="recentlyUpdated">Recently updated</option>
             <option value="newest">Newest</option>
             <option value="alphabetical">A → Z</option>
+            <option value="mostDownloaded">Most downloaded</option>
+          </select>
+          {get('q') ? (
+            <Button variant="ghost" onClick={reset}>
+              Reset
+            </Button>
+          ) : null}
+        </div>
+      </div>
+
+      <DataTable
+        rows={items}
+        empty="No assets match this filter."
+        columns={[
+          {
+            key: 'thumb',
+            header: '',
+            className: 'w-[88px]',
+            cell: (r) => (
+              <div className="h-12 w-20 rounded-[6px] overflow-hidden bg-surface-muted border border-line">
+                {r.thumbnailUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={r.thumbnailUrl} alt="" className="h-full w-full object-cover" />
+                ) : null}
+              </div>
+            ),
+          },
+          {
+            key: 'title',
+            header: 'Title',
+            cell: (r) => (
+              <NextLink href={`/assets/${r.slug || r.id}`} className="font-medium text-ink hover:underline">
+                {r.title}
+              </NextLink>
+            ),
+          },
+          {
+            key: 'owner',
+            header: 'Owner',
+            cell: (r) => (
+              <span className="text-ink-2">
+                {r.ownerDisplayName}
+                {r.ownerEmail ? (
+                  <span className="text-ink-3 text-caption ml-1 font-mono">{r.ownerEmail}</span>
+                ) : null}
+              </span>
+            ),
+          },
+          { key: 'engine', header: 'Engine', cell: (r) => r.engine.replace('_', ' ') },
+          { key: 'category', header: 'Category', cell: (r) => r.categoryName },
+          {
+            key: 'status',
+            header: 'Status',
+            cell: (r) => <Badge variant={STATUS_VARIANT[r.status]}>{r.status}</Badge>,
+          },
+          {
+            key: 'downloads',
+            header: 'DLs',
+            align: 'right',
+            cell: (r) => <span className="geist-tnum">{formatNumber(r.totalDownloads, locale)}</span>,
+          },
+          {
+            key: 'updated',
+            header: 'Updated',
+            cell: (r) => <span className="geist-tnum text-ink-3">{formatDate(r.updatedAt, locale)}</span>,
+          },
+          {
+            key: 'actions',
+            header: '',
+            align: 'right',
+            cell: (r) => (
