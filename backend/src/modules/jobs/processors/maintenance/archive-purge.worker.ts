@@ -70,3 +70,50 @@ export class ArchivePurgeWorker extends JobWorkerBase<ArchivePurgeJob> implement
       } catch (err) {
         this.logger.error(`archive-purge: ${asset.id} failed: ${(err as Error).message}`);
         this.sentry.captureException(err, { assetId: asset.id });
+      }
+    }
+  }
+
+  private async purgeOne(asset: {
+    id: string;
+    slug: string;
+    thumbnailKey: string | null;
+    status: string;
+  }): Promise<void> {
+    await this.deleteS3Prefix('assets', `assets/${asset.id}/`);
+    await this.deleteS3Prefix('thumbs', `thumbs/${asset.id}/`);
+    if (asset.thumbnailKey && !asset.thumbnailKey.startsWith(`thumbs/${asset.id}/`)) {
+      // The publisher's original key may live outside the per-asset prefix.
+      await this.s3.deleteObject('thumbs', asset.thumbnailKey).catch(() => undefined);
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.auditLog.create({
+        data: {
+          action: 'archive.purged',
+          subjectType: 'Asset',
+          subjectId: asset.id,
+          metadata: { previousStatus: asset.status, slug: asset.slug },
+        },
+      });
+      // Cascade-delete the row — Prisma onDelete: Cascade on the schema handles
+      // versions, files, library items, comments, etc.
+      await tx.asset.delete({ where: { id: asset.id } });
+    });
+
+    await this.meili.client
+      .index(MEILI_INDEX_ASSETS)
+      .deleteDocuments([`${asset.id}:en`, `${asset.id}:id`])
+      .catch(() => undefined);
+  }
+
+  private async deleteS3Prefix(role: 'assets' | 'thumbs', prefix: string): Promise<void> {
+    let continuationToken: string | undefined;
+    do {
+      const list = await this.s3.client.send(
+        new ListObjectsV2Command({
+          Bucket: this.s3.bucketFor(role),
+          Prefix: prefix,
+          ContinuationToken: continuationToken,
+        }),
+      );

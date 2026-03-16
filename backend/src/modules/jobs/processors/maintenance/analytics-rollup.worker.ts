@@ -90,3 +90,30 @@ export class AnalyticsRollupWorker
     }
 
     // Recompute AssetStats per asset (cheap rollup over the last 30 days).
+    const totals = await this.prisma.$queryRaw<TotalRow[]>(Prisma.sql`
+      SELECT a.id AS "assetId",
+             (SELECT COUNT(*) FROM downloads d WHERE d."assetId" = a.id)::int AS "totalDownloads",
+             (SELECT COUNT(*) FROM library_items li WHERE li."assetId" = a.id)::int AS "totalSaves",
+             (SELECT COUNT(*) FROM downloads d WHERE d."assetId" = a.id AND d."createdAt" >= NOW() - INTERVAL '7 days')::int AS "last7dDownloads",
+             (SELECT COUNT(*) FROM downloads d WHERE d."assetId" = a.id AND d."createdAt" >= NOW() - INTERVAL '30 days')::int AS "last30dDownloads"
+      FROM assets a
+    `);
+    for (const t of totals) {
+      await this.prisma.assetStats.upsert({
+        where: { assetId: t.assetId },
+        create: { ...t },
+        update: { ...t, updatedAt: new Date() },
+      });
+    }
+
+    // Trim raw downloads past retention.
+    const cutoff = new Date(
+      Date.now() - this.config.get('DOWNLOAD_RAW_RETENTION_DAYS') * 86_400_000,
+    );
+    const trimmed = await this.prisma.download.deleteMany({ where: { createdAt: { lt: cutoff } } });
+    this.logger.log(
+      `analytics-rollup: ${dailyRows.length} daily rows, ${totals.length} stats refreshed, ${trimmed.count} raw rows trimmed`,
+    );
+  }
+}
+
