@@ -113,3 +113,4 @@ export function AdminSidebar() {
               {group.items.map((item) => {
                 const active =
                   !item.external &&
+                  (item.href === '/admin'
