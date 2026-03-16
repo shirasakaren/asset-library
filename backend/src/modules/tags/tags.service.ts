@@ -78,8 +78,3 @@ export class TagsService {
   }
 
   private async computePopular(limit: number): Promise<TagDto[]> {
-    const rows = await this.prisma.tag.findMany({
-      where: { usage: { is: { usageCount: { gt: 0 } } } },
-      include: { usage: true },
-      orderBy: [{ usage: { usageCount: 'desc' } }, { displayName: 'asc' }],
-      take: limit,
