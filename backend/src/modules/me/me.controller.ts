@@ -40,5 +40,3 @@ export class MeController {
   }
 
   @Post('devices/:id/revoke')
-  @AuditAction({ action: 'me.revoke_device', subjectType: 'PluginDeviceToken' })
-  @HttpCode(HttpStatus.NO_CONTENT)
