@@ -77,3 +77,10 @@ export class VersionsController {
   @UseGuards(KeycloakAuthGuard)
   @ApiBearerAuth('keycloak')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Publish a version; transactionally flips isLatest.' })
+  publish(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+  ): Promise<void> {
+    return this.versions.publish(vid, principal.user);
+  }
