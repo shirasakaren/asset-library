@@ -36,3 +36,28 @@ export class QueueDashboardController {
     createBullBoard({
       queues: this.producer.listQueues().map((q) => new BullMQAdapter(q)),
       serverAdapter: this.adapter,
+    });
+    this.adapter.setBasePath('/admin/queues');
+  }
+
+  /**
+   * Proxy hook — Fastify's typed plugin registration is the proper integration
+   * point but isn't available in a controller. Instead we expose a simple
+   * landing endpoint that re-renders bull-board's HTML via the adapter.
+   */
+  @Get('admin/queues')
+  @ApiOperation({ summary: 'Operational dashboard for BullMQ queues (admin only).' })
+  async dashboard(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply,
+  ): Promise<void> {
+    if (!principal.user.isAdmin) throw new ForbiddenException('Admins only.');
+    if (!this.adapter) {
+      void res.status(404).send({ message: 'Queue dashboard disabled.' });
+      return;
+    }
+    // Hand the request off to the bull-board plugin's internal router.
+    const adapter = this.adapter as unknown as {
+      getRouter?: () => { lookup: (req: FastifyRequest['raw'], res: FastifyReply['raw']) => void };
+    };
