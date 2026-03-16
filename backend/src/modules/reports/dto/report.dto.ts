@@ -38,24 +38,3 @@ export class ActionReportDto {
   @IsString()
   @MinLength(4)
   @MaxLength(1000)
-  adminNotes!: string;
-
-  @ApiProperty({ enum: ['NOTHING', 'ARCHIVE_ASSET', 'DELETE_ASSET', 'FORCE_DELETE_ASSET'] })
-  @IsIn(['NOTHING', 'ARCHIVE_ASSET', 'DELETE_ASSET', 'FORCE_DELETE_ASSET'])
-  action!: ReportActionKind;
-
-  @ApiPropertyOptional({
-    description: 'Required when action=FORCE_DELETE_ASSET — value: "I understand".',
-  })
-  @IsOptional()
-  @IsString()
-  confirm?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  confirmedAt?: string;
-}
-
-export class DismissReportDto {
-  @ApiProperty()
