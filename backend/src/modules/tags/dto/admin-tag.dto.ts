@@ -33,6 +33,3 @@ export class ListTagsQueryDto extends ListQueryDto {
 export class MergeTagsDto {
   @ApiProperty({ type: [String] })
   @IsArray()
-  @ArrayMinSize(1)
-  @IsString({ each: true })
-  fromTagIds!: string[];
