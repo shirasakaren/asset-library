@@ -43,3 +43,41 @@ export class ThumbnailVariantsWorker extends JobWorkerBase<ThumbnailVariantsJob>
     super(QUEUE.THUMBNAIL_VARIANTS, config, sentry);
   }
 
+  async process(job: Job<ThumbnailVariantsJob>): Promise<void> {
+    const { assetId, sourceKey } = job.data;
+    const source = await this.s3.client.send(
+      new GetObjectCommand({ Bucket: this.s3.bucketFor('thumbs'), Key: sourceKey }),
+    );
+    if (!source.Body) throw new Error(`No body for thumbnail ${sourceKey}`);
+    const original = await streamToBuffer(source.Body as Readable);
+    const variants: Record<string, string> = {};
+
+    for (const size of SIZES) {
+      const buf = await sharp(original)
+        .resize(size.width, size.height, { fit: 'cover', position: 'attention' })
+        .webp({ quality: 82 })
+        .toBuffer();
+      const key = `thumbs/${assetId}/${size.name}.webp`;
+      await this.s3.client.send(
+        new PutObjectCommand({
+          Bucket: this.s3.bucketFor('thumbs'),
+          Key: key,
+          Body: buf,
+          ContentType: 'image/webp',
+        }),
+      );
+      variants[size.name] = key;
+    }
+
+    await this.prisma.asset.update({
+      where: { id: assetId },
+      data: { thumbnailVariants: variants },
+    });
+  }
+}
+
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) chunks.push(chunk as Buffer);
+  return Buffer.concat(chunks);
+}
