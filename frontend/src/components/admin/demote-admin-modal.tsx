@@ -55,9 +55,3 @@ export function DemoteAdminModal({ user, onOpenChange, onDone }: Props) {
       <ModalContent size="sm">
         <ModalHeader>
           <ModalTitle>Demote {user.displayName}?</ModalTitle>
-        </ModalHeader>
-        {lastAdminError ? (
-          <Alert variant="danger" className="mb-3">
-            Cannot demote the last remaining admin.
-          </Alert>
-        ) : null}
