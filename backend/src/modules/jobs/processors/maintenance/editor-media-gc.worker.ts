@@ -73,3 +73,49 @@ export class EditorMediaGcWorker extends JobWorkerBase<EditorMediaGcJob> impleme
   /**
    * Walks the TipTap document JSON for every AssetTranslation, harvesting
    * image/video/embed src attributes that point at the editor bucket.
+   */
+  private async collectReferencedKeys(): Promise<Set<string>> {
+    const referenced = new Set<string>();
+    const editorBucket = this.s3.bucketFor('editor');
+    const translations = await this.prisma.assetTranslation.findMany({
+      select: { longDescription: true },
+    });
+    for (const t of translations) {
+      walkTipTap(t.longDescription as Prisma.JsonValue, (key) => referenced.add(key), editorBucket);
+    }
+    return referenced;
+  }
+}
+
+function walkTipTap(
+  node: Prisma.JsonValue,
+  collect: (key: string) => void,
+  editorBucket: string,
+): void {
+  if (!node) return;
+  if (Array.isArray(node)) {
+    for (const child of node) walkTipTap(child, collect, editorBucket);
+    return;
+  }
+  if (typeof node !== 'object') return;
+  const obj = node as Record<string, Prisma.JsonValue>;
+  const attrs = obj.attrs as Record<string, unknown> | undefined;
+  if (attrs) {
+    for (const field of ['src', 'href']) {
+      const value = attrs[field];
+      if (typeof value === 'string') {
+        const key = extractEditorKey(value, editorBucket);
+        if (key) collect(key);
+      }
+    }
+  }
+  if (obj.content) walkTipTap(obj.content, collect, editorBucket);
+  if (obj.marks) walkTipTap(obj.marks as Prisma.JsonValue, collect, editorBucket);
+}
+
+/**
+ * Returns the key path if the URL points at our editor bucket; otherwise
+ * null. Handles both path-style (MinIO) and virtual-hosted (AWS) endpoints.
+ */
+function extractEditorKey(url: string, editorBucket: string): string | null {
+  try {
