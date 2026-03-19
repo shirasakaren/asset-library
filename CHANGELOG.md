@@ -100,3 +100,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Discover landing page with featured carousel and per-category rows.
 - Library and save flows; downloads with signed-URL issuance.
 - Meilisearch-backed search with filters and tag autocomplete.
+
+## [0.2.0] - 2025-12-15
+
+### Added
+
+- Keycloak authentication with Auth.js v5 and middleware gating.
+- Design system tokens, UI primitives, and the geometric pattern tiles.
+- Internationalization (English + Bahasa Indonesia) with locale switcher.
