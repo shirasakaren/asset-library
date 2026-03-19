@@ -39,3 +39,15 @@ export function AssetTabs({ asset, activeVersion, onDownloadVersion }: AssetTabs
   }, []);
 
   const handleChange = (next: string) => {
+    setValue(next as TabKey);
+    const url = `${window.location.pathname}${window.location.search}#${next}`;
+    router.replace(url, { scroll: false });
+  };
+
+  return (
+    <div id="asset-tabs" className="scroll-mt-24">
+      <Tabs value={value} onValueChange={handleChange}>
+        <TabsList className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <TabsTrigger value="description">{t('description')}</TabsTrigger>
+          <TabsTrigger value="package">{t('package')}</TabsTrigger>
+          <TabsTrigger value="compatibility">{t('compatibility')}</TabsTrigger>
