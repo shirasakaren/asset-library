@@ -86,3 +86,24 @@ export function ThumbnailImage({
             onLoad={() => setLoaded(true)}
             onError={() => setErrored(true)}
           />
+        ) : (
+          <Image
+            src={url}
+            alt={alt}
+            fill={fill}
+            width={fill ? undefined : width}
+            height={fill ? undefined : height}
+            priority={priority}
+            sizes={fill ? sizes : undefined}
+            className={cn(
+              'object-cover transition-opacity duration-200',
+              loaded ? 'opacity-100' : 'opacity-0',
+            )}
+            onLoad={() => setLoaded(true)}
+            onError={() => setErrored(true)}
+          />
+        )
+      ) : null}
+      {errored || !url ? <ThumbnailPlaceholder alt={alt} /> : null}
+    </div>
+  );
