@@ -227,3 +227,4 @@ export function DownloadPopup({
               </p>
               <div className="mt-6 flex items-center justify-center gap-2">
                 <Button variant="secondary" onClick={() => setState({ step: 'browse' })}>
+                  {t('downloadAnother')}
