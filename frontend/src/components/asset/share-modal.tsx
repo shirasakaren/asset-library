@@ -58,3 +58,6 @@ export function ShareModal({ open, onOpenChange, assetTitle, url }: ShareModalPr
       /* user cancelled — fine */
     }
   };
+
+  return (
+    <Modal open={open} onOpenChange={onOpenChange}>
