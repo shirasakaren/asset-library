@@ -207,3 +207,48 @@ function FeatureCard({
   isSaved = false,
   isOwner = false,
   className,
+  href,
+  priority,
+}: FeatureProps) {
+  return (
+    <article
+      className={cn(
+        'group relative isolate flex flex-col overflow-hidden rounded-[28px] bg-surface-inverse text-white',
+        'min-h-[420px] md:min-h-[480px]',
+        className,
+      )}
+    >
+      <div className="absolute inset-0">
+        <ThumbnailImage
+          src={bannerUrl || asset.thumbnailUrl}
+          fallback={fallbackThumbnail}
+          alt={asset.title}
+          priority={priority}
+          className="!rounded-[28px] !after:hidden"
+          unoptimized
+        />
+      </div>
+      {/* Gradient overlay — DS-safe legibility */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-tr from-[rgba(14,17,22,0.82)] via-[rgba(14,17,22,0.42)] to-transparent"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
+      />
+      <div className="relative mt-auto p-7 md:p-10 max-w-[640px]">
+        <Badge variant="solid" size="md" className="mb-4 bg-white/15 text-white border-white/0">
+          Featured
+        </Badge>
+        <h2 className="display-lg !text-white leading-[1.05]">
+          <NextLink
+            href={href ?? assetHref(asset)}
+            prefetch={true}
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e1116] after:absolute after:inset-0 after:rounded-[28px]"
+          >
+            {asset.title}
+          </NextLink>
+        </h2>
+        <p className="mt-3 text-body-lg text-white/85 line-clamp-2 max-w-[520px]">
+          {asset.shortDescription}
