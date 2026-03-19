@@ -78,3 +78,24 @@ export class AdminQueueAuthGuard implements CanActivate {
   private async upsertUser(claims: KeycloakClaims): Promise<User> {
     const email = (claims.email ?? '').toLowerCase();
     if (!email) {
+      throw new UnauthorizedException('Keycloak token has no email claim.');
+    }
+    const displayName = claims.name ?? claims.preferred_username ?? email.split('@')[0];
+    const isBootstrapAdmin = email === this.config.get('ADMIN_BOOTSTRAP_EMAIL').toLowerCase();
+    return this.prisma.user.upsert({
+      where: { keycloakSub: claims.sub },
+      create: {
+        keycloakSub: claims.sub,
+        email,
+        displayName,
+        locale: Locale.en,
+        isAdmin: isBootstrapAdmin,
+      },
+      update: {
+        email,
+        displayName,
+        ...(isBootstrapAdmin ? { isAdmin: true } : {}),
+      },
+    });
+  }
+}
