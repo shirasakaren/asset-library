@@ -48,5 +48,3 @@ export function DataTable<T extends { id: string }>({
                   col.align === 'center' && 'text-center',
                   col.className,
                 )}
-              >
-                {col.header}
