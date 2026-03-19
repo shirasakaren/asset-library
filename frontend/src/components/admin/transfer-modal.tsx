@@ -87,6 +87,3 @@ export function AdminTransferModal({ asset, onOpenChange, onDone }: Props) {
         </Field>
 
         {!picked && users.data?.items && users.data.items.length > 0 ? (
-          <ul className="mt-2 max-h-[200px] overflow-y-auto rounded-[12px] border border-line bg-surface">
-            {users.data.items
-              .filter((u) => u.id !== asset.ownerId)
