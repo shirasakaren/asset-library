@@ -91,3 +91,20 @@ export class AnalyzeWorker extends JobWorkerBase<AnalyzeFileJob> {
           })),
         });
       }
+      if (analyzed.requiresEmptyProject) {
+        const version = await tx.assetVersion.findUnique({
+          where: { id: versionId },
+          select: { assetId: true },
+        });
+        if (version) {
+          await tx.asset.update({
+            where: { id: version.assetId },
+            data: { requiresEmptyProject: true },
+          });
+        }
+      }
+    });
+
+    await this.decrementAndMaybeRollup(versionId);
+  }
+

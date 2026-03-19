@@ -93,3 +93,41 @@ export class AnalyzeService {
           venvBin: this.config.get('PYANALYZE_VENV') + '/bin',
           timeoutMs,
         });
+        return { ...base, meta: (mesh ?? {}) as Record<string, unknown> };
+      }
+      case AssetFileKind.BLEND: {
+        const mesh = await extractBlendViaBlender(filePath, {
+          blenderBin: this.config.get('BLENDER_BIN'),
+          timeoutMs,
+        });
+        return { ...base, meta: (mesh ?? {}) as Record<string, unknown> };
+      }
+      case AssetFileKind.UNITYPACKAGE: {
+        const pkg = await extractUnityPackage(filePath);
+        return {
+          ...base,
+          meta: {
+            unityVersion: pkg.unityVersion,
+            contents: pkg.contents,
+            renderPipelineHints: pkg.renderPipelineHints,
+          },
+          dependencies: pkg.dependencies.map((d) => ({
+            name: d.name,
+            version: d.version,
+            source: 'UnityPackageManager',
+          })),
+          requiresEmptyProject: pkg.hasProjectSettings,
+        };
+      }
+      case AssetFileKind.UPLUGIN: {
+        const plugin = await extractUPlugin(filePath);
+        return {
+          ...base,
+          meta: (plugin ?? {}) as Record<string, unknown>,
+          dependencies:
+            plugin?.plugins
+              .filter((p) => p.enabled)
+              .map((p) => ({ name: p.name, source: 'UnrealPlugin' })) ?? [],
+        };
+      }
+      case AssetFileKind.UPROJECT: {
