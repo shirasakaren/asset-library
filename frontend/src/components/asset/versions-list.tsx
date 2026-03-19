@@ -32,3 +32,16 @@ export function VersionsList({ versions, onDownload }: VersionsListProps) {
         return (
           <li
             key={v.id}
+            className="rounded-[16px] border border-line p-5 bg-surface"
+          >
+            <div className="flex flex-wrap items-center gap-3 justify-between">
+              <div className="flex items-center gap-2">
+                <VersionBadge semver={v.semver} isLatest={v.isLatest} />
+                <span className="text-caption text-ink-3 geist-tnum">
+                  {v.publishedAt
+                    ? t('publishedAt', { when: formatDate(v.publishedAt, locale, { dateStyle: 'medium' }) })
+                    : null}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-caption text-ink-3 geist-tnum">
+                <span>{v.fileCount} files</span>
