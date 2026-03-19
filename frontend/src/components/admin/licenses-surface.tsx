@@ -133,3 +133,44 @@ function LicenseEditModal({
 }: {
   license?: AdminLicense | null;
   onOpenChange: (o: boolean) => void;
+  onDone: () => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const editing = Boolean(license);
+  const [slug, setSlug] = useState(license?.slug ?? '');
+  const [name, setName] = useState(license?.name ?? '');
+  const [descEn, setDescEn] = useState(license?.description?.en ?? '');
+  const [descId, setDescId] = useState(license?.description?.id ?? '');
+  const [textEn, setTextEn] = useState(license?.fullText?.en ?? '');
+  const [textId, setTextId] = useState(license?.fullText?.id ?? '');
+  const [isActive, setIsActive] = useState(license?.isActive ?? true);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    setBusy(true);
+    try {
+      const payload = {
+        slug,
+        name,
+        description: { en: descEn, id: descId || descEn },
+        fullText: { en: textEn, id: textId || textEn },
+        isActive,
+      };
+      if (editing && license) {
+        await fetcher(`/admin/licenses/${license.id}`, { method: 'PATCH', body: payload });
+      } else {
+        await fetcher('/admin/licenses', { method: 'POST', body: payload });
+      }
+      toast.success(editing ? 'Saved' : 'Created');
+      onDone();
+    } catch (err) {
+      toast.error('Could not save', { description: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal open onOpenChange={onOpenChange}>
+      <ModalContent size="lg">
+        <ModalHeader>
