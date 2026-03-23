@@ -51,3 +51,22 @@ export function StepRail() {
                   )}
                 >
                   {idx}
+                </span>
+                <span className="flex-1 min-w-0 text-[13.5px] font-medium truncate">
+                  {t(s)}
+                </span>
+                {blocker ? (
+                  <AlertCircle
+                    aria-label={`Blocked: ${blocker}`}
+                    className="h-3.5 w-3.5 text-brand-red shrink-0"
+                    strokeWidth={2.25}
+                  />
+                ) : null}
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="mt-8 rounded-[14px] border border-line bg-surface p-4">
+        <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
