@@ -74,20 +74,3 @@ export function NotificationBell({ initialUnreadCount }: NotificationBellProps) 
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label={tc('openNotifications')}
-          className={cn(
-            'relative inline-flex h-10 w-10 items-center justify-center rounded-[12px]',
-            'text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
-          )}
-        >
-          <Bell className="h-[18px] w-[18px]" strokeWidth={2.25} />
-          {unread > 0 ? (
-            <span
-              aria-label={`${unread} unread`}
-              className="absolute top-1.5 right-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand-red text-white text-[10px] font-semibold px-1 border-2 border-bg"
-            >
-              {unread > 99 ? '99+' : unread}
