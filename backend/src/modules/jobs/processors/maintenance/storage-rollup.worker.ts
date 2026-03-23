@@ -111,3 +111,30 @@ export class StorageRollupWorker extends JobWorkerBase<StorageRollupJob> impleme
     }
     for (const [assetId, bytes] of perAsset) {
       await this.prisma.storageAssetDaily.upsert({
+        where: { date_assetId: { date, assetId } },
+        create: { date, assetId, bytes },
+        update: { bytes },
+      });
+    }
+    this.logger.log(
+      `storage-rollup: ${perAsset.size} assets, ${perUser.size} users summarized for ${date.toISOString().slice(0, 10)}`,
+    );
+  }
+
+  /**
+   * Returns the high-level prefix bucket an object falls into. We don't store
+   * every key — just the buckets a dashboard cares about:
+   *   - `source`     — publisher uploads (assets/{id}/v.../<not __derived__>)
+   *   - `derived`    — assets/{id}/v.../__derived__/* (Part 3 conversions)
+   *   - `thumbs`     — publisher-supplied thumbnails
+   *   - `featured`   — featured-slot banner uploads
+   *   - `editor`     — TipTap inline media
+   */
+  private normalizePrefix(role: 'assets' | 'thumbs' | 'editor', key: string): string {
+    if (role === 'assets') return key.includes('/__derived__/') ? 'derived' : 'source';
+    if (role === 'thumbs') return key.startsWith('featured-banners/') ? 'featured' : 'thumbs';
+    return 'editor';
+  }
+
+  private assetIdFromKey(key: string): string | null {
+    // assets/{assetId}/v{semver}/...

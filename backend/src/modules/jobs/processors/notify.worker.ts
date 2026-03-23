@@ -88,3 +88,29 @@ export class NotifyWorker extends JobWorkerBase<NotifyJob> {
       type: data.type,
       payload: data.payload,
     });
+    await this.wsFanout.publish({ userId, ...envelope });
+  }
+
+  private async sendEmail(recipient: User, data: NotifyJob): Promise<void> {
+    const rendered = await this.emails.render(data.type, recipient.locale, {
+      ...data.payload,
+      recipient: { id: recipient.id, displayName: recipient.displayName, email: recipient.email },
+      links: this.buildLinks(data),
+    });
+    await this.mailer.send({
+      to: recipient.email,
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+    });
+  }
+
+  /**
+   * Deep-link URLs the email templates can reference. Kept centralized so
+   * the canonical paths live in one place; the frontend route map mirrors
+   * these.
+   */
+  private buildLinks(data: NotifyJob): Record<string, string> {
+    const base = this.config.get('PUBLIC_BASE_URL').replace(/\/api$/, '');
+    const p = data.payload as Record<string, unknown>;
+    const assetSlug = (p.assetSlug as string) ?? '';
