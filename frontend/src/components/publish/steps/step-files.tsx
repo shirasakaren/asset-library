@@ -370,20 +370,3 @@ function SavedRow({
       >
         <GripVertical className="h-4 w-4" strokeWidth={2.25} />
       </button>
-      <div className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-brand-green-50 text-brand-green">
-        <Check className="h-4 w-4" strokeWidth={2.5} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-3">
-          <span className="truncate text-[13.5px] font-medium text-ink" title={file.relativePath}>
-            {name}
-          </span>
-          <span className="geist-tnum shrink-0 text-caption text-ink-3">
-            {formatBytes(file.bytes, locale)}
-          </span>
-        </div>
-        <p className="mt-1 inline-flex items-center gap-1 text-caption font-medium text-brand-green">
-          <Check className="h-3 w-3" strokeWidth={2.5} /> Uploaded
-        </p>
-      </div>
-      <button
