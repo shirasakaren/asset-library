@@ -86,3 +86,93 @@ export class JobsProducer implements OnModuleInit, OnModuleDestroy {
       jobId: `${job.versionId}__${job.reason}`,
     });
   }
+
+  // ─── Conversion / thumbnails ────────────────────────────────────────────
+
+  enqueueGltfConvert(job: GltfConvertJob): Promise<unknown> {
+    return this.queue(QUEUE.GLTF_CONVERT).add('convert', job, { jobId: job.fileId });
+  }
+
+  enqueueThumbnailVariants(job: ThumbnailVariantsJob): Promise<unknown> {
+    // BullMQ rejects custom job IDs containing ':' (it's the Redis key
+    // separator); sanitize any colons we might see in S3 keys.
+    return this.queue(QUEUE.THUMBNAIL_VARIANTS).add('process', job, {
+      jobId: job.sourceKey.replace(/:/g, '__'),
+    });
+  }
+
+  enqueueThumbnailRender(job: ThumbnailRenderJob): Promise<unknown> {
+    return this.queue(QUEUE.THUMBNAIL_RENDER).add('render', job, {
+      jobId: `${job.versionId}__${job.glbKey}`,
+    });
+  }
+
+  /**
+   * Backwards-compat shim — Part 2 controllers may still call this. The new
+   * name is `enqueueThumbnailVariants` (per the locked queue catalog).
+   */
+  enqueueThumbProcess(job: { assetId: string; thumbnailKey: string }): Promise<unknown> {
+    return this.enqueueThumbnailVariants({ assetId: job.assetId, sourceKey: job.thumbnailKey });
+  }
+
+  // ─── Search ─────────────────────────────────────────────────────────────
+
+  /**
+   * Marks an asset dirty. The actual Meilisearch update is debounced — the
+   * `search-index-batch` repeatable job picks up the Redis set every
+   * SEARCH_INDEX_BATCH_INTERVAL_MS.
+   */
+  async enqueueSearchIndex(job: SearchIndexJob): Promise<void> {
+    await this.queue(QUEUE.SEARCH_INDEX).add('mark-dirty', job, {
+      jobId: `${job.assetId}__${job.reason}`,
+    });
+  }
+
+  private async scheduleSearchIndexBatch(): Promise<void> {
+    const queue = this.queue(QUEUE.SEARCH_INDEX_BATCH);
+    await queue.add(
+      'batch',
+      { triggeredAt: new Date().toISOString() } satisfies SearchIndexBatchJob,
+      {
+        repeat: { every: 5000 },
+        jobId: 'search-index-batch',
+        removeOnComplete: { age: 60 },
+        removeOnFail: { age: 60 * 60 },
+      },
+    );
+  }
+
+  // ─── Notify ─────────────────────────────────────────────────────────────
+
+  enqueueNotify(job: NotifyJob): Promise<unknown> {
+    return this.queue(QUEUE.NOTIFY).add('deliver', job);
+  }
+
+  // ─── Webhook ────────────────────────────────────────────────────────────
+
+  enqueueWebhook(job: WebhookDeliveryJob): Promise<unknown> {
+    return this.queue(QUEUE.WEBHOOK).add('deliver', job);
+  }
+
+  // ─── Crons ──────────────────────────────────────────────────────────────
+
+  enqueueArchivePurge(job: ArchivePurgeJob): Promise<unknown> {
+    return this.queue(QUEUE.ARCHIVE_PURGE).add('purge', job);
+  }
+
+  enqueueAuditPurge(job: AuditPurgeJob): Promise<unknown> {
+    return this.queue(QUEUE.AUDIT_PURGE).add('purge', job);
+  }
+
+  enqueueEditorMediaGc(job: EditorMediaGcJob): Promise<unknown> {
+    return this.queue(QUEUE.EDITOR_MEDIA_GC).add('gc', job);
+  }
+
+  enqueueAnalyticsRollup(job: AnalyticsRollupJob): Promise<unknown> {
+    return this.queue(QUEUE.ANALYTICS_ROLLUP).add('rollup', job);
+  }
+
+  enqueueStorageRollup(job: { triggeredAt: string }): Promise<unknown> {
+    return this.queue(QUEUE.STORAGE_ROLLUP).add('rollup', job);
+  }
+}
