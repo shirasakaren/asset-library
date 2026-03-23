@@ -156,3 +156,12 @@ export function SearchFilterSidebar() {
           values={categoryIds}
           onChange={(next) => setParams({ categoryIds: next })}
         />
+      </FilterSection>
+
+      <FilterSection title={t('fileTypes')} activeCount={fileKinds.length}>
+        <ChipFilter
+          options={FILE_KINDS.map((k) => ({
+            label: tSearch(`fileKind.${k}` as 'fileKind.GLB'),
+            value: k,
+          }))}
+          values={fileKinds}
