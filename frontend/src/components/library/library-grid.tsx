@@ -158,3 +158,52 @@ export function LibraryGrid() {
               'inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors duration-120',
               view === 'grid' ? 'bg-ink text-white' : 'text-ink-2 hover:bg-surface-muted',
             )}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" strokeWidth={2.25} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setView('list')}
+            aria-pressed={view === 'list'}
+            aria-label={t('viewList')}
+            className={cn(
+              'inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors duration-120',
+              view === 'list' ? 'bg-ink text-white' : 'text-ink-2 hover:bg-surface-muted',
+            )}
+          >
+            <List className="h-3.5 w-3.5" strokeWidth={2.25} />
+          </button>
+        </div>
+      </div>
+
+      {query.isPending ? (
+        <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'flex flex-col gap-3'}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <AssetCardSkeleton key={i} variant={view === 'grid' ? 'grid' : 'row'} />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          title={isFiltered ? t('noMatchTitle') : t('emptyTitle')}
+          description={isFiltered ? undefined : t('emptyBody')}
+          seed="library-empty"
+          primaryAction={
+            isFiltered ? (
+              <Button asChild variant="ghost">
+                <a href="/library">{tCommon('clearFilters')}</a>
+              </Button>
+            ) : (
+              <Button asChild>
+                <NextLink href="/">{t('browseAssets')}</NextLink>
+              </Button>
+            )
+          }
+        />
+      ) : view === 'grid' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {items.map((item) => (
+            <AssetCard
+              key={item.asset.id}
+              variant="grid"
+              asset={item.asset}
+              isSaved
