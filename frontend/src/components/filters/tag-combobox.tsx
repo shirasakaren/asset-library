@@ -55,15 +55,3 @@ export function TagCombobox({ values, onChange, placeholder }: TagComboboxProps)
             variant="neutral"
             className="inline-flex items-center gap-1 pr-1"
           >
-            {slug}
-            <button
-              type="button"
-              onClick={() => remove(slug)}
-              aria-label={`Remove tag ${slug}`}
-              className="inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-line"
-            >
-              <X className="h-3 w-3" strokeWidth={2.25} />
-            </button>
-          </Badge>
-        ))}
-        <input
