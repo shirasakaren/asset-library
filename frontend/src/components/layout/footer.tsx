@@ -65,3 +65,7 @@ export async function Footer() {
             <nav key={col.heading} aria-label={col.heading} className="text-body-sm">
               <h3 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
                 {col.heading}
+              </h3>
+              <ul className="flex flex-col gap-2.5">
+                {col.links.map((link) => (
+                  <li key={`${col.heading}-${link.label}`}>
