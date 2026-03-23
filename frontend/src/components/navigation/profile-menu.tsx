@@ -62,7 +62,3 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
             </div>
             <div className="text-[12px] text-ink-3 truncate" title={user.email}>
               {user.email}
-            </div>
-            <div className="mt-1.5">
-              <Badge variant={roleVariant} size="sm">
-                {roleLabel}
