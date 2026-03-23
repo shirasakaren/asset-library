@@ -61,3 +61,11 @@ export class QueueDashboardController {
     const adapter = this.adapter as unknown as {
       getRouter?: () => { lookup: (req: FastifyRequest['raw'], res: FastifyReply['raw']) => void };
     };
+    const router = adapter.getRouter?.();
+    if (router) {
+      await router.lookup(req.raw, res.raw);
+    } else {
+      void res.status(503).send({ message: 'Queue dashboard router not available.' });
+    }
+  }
+}
