@@ -102,9 +102,3 @@ export function NewVersionForm({ asset }: Props) {
             <div>
               <div className="flex items-center gap-1 border-b border-line mb-3">
                 {(['en', 'id'] as LocaleCode[]).map((l) => {
-                  const active = activeLocale === l;
-                  return (
-                    <button
-                      key={l}
-                      type="button"
-                      onClick={() => setActiveLocale(l)}
