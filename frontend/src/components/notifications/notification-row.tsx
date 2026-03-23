@@ -51,17 +51,3 @@ function renderMessage(
   payload: Record<string, unknown>,
   t: (key: string, vars?: Record<string, unknown>) => string,
 ): React.ReactNode {
-  const known: NotificationType[] = [
-    'COMMENT_CREATED',
-    'COMMENT_REPLY',
-    'ISSUE_CREATED',
-    'ISSUE_STATUS_CHANGED',
-    'REQUEST_STATUS_CHANGED',
-    'REQUEST_CREATED',
-    'REPORT_RECEIVED_FOR_YOUR_ASSET',
-    'REPORT_CREATED',
-    'FEATURED_FEATURED',
-    'VERSION_PUBLISHED',
-    'ANALYZER_FAILED',
-    'ADMIN_PROMOTED',
-    'ADMIN_DEMOTED',
