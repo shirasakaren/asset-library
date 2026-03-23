@@ -74,24 +74,3 @@ export function StepDescription() {
     schedulePatch();
   };
 
-  const current = drafts[activeLocale];
-  const isFallback = !current.short && !current.long?.content?.length;
-
-  return (
-    <div className="space-y-5 max-w-[820px]">
-      <div role="tablist" aria-label="Description languages" className="flex items-center gap-1 border-b border-line">
-        {LOCALES.map((l) => {
-          const active = activeLocale === l.code;
-          return (
-            <button
-              key={l.code}
-              role="tab"
-              aria-selected={active}
-              onClick={() => setActiveLocale(l.code)}
-              className={cn(
-                'relative h-10 px-3 text-[14px] font-medium',
-                active ? 'text-ink' : 'text-ink-3 hover:text-ink',
-                'after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px]',
-                active ? 'after:bg-brand-blue' : 'after:bg-transparent',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
-              )}
