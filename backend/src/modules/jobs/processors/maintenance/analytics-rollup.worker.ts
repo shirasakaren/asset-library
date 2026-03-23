@@ -117,3 +117,18 @@ export class AnalyticsRollupWorker
   }
 }
 
+interface DailyRow {
+  assetId: string;
+  count: number;
+  uniqueUsers: number;
+  byCountry: Record<string, number> | null;
+  bySource: Record<string, number> | null;
+}
+
+interface TotalRow {
+  assetId: string;
+  totalDownloads: number;
+  totalSaves: number;
+  last7dDownloads: number;
+  last30dDownloads: number;
+}
