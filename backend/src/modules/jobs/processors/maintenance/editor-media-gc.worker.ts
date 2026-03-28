@@ -119,3 +119,17 @@ function walkTipTap(
  */
 function extractEditorKey(url: string, editorBucket: string): string | null {
   try {
+    const parsed = new URL(url);
+    // Virtual-hosted: <bucket>.s3.<region>.amazonaws.com/<key>
+    if (parsed.hostname.startsWith(`${editorBucket}.`)) {
+      return decodeURIComponent(parsed.pathname.replace(/^\//, ''));
+    }
+    // Path-style: /<bucket>/<key>
+    if (parsed.pathname.startsWith(`/${editorBucket}/`)) {
+      return decodeURIComponent(parsed.pathname.slice(editorBucket.length + 2));
+    }
+  } catch {
+    // not a URL — could be a bare key (rare); ignore for safety
+  }
+  return null;
+}
