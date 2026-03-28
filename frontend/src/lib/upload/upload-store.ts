@@ -219,24 +219,3 @@ export const useUploadStore = create<UploadStoreState>((set, get) => {
     });
   }
 
-  function putWithProgress(
-    taskId: string,
-    url: string,
-    blob: Blob,
-    contentType: string,
-    ctrl: AbortController,
-    onProgress: (loaded: number) => void,
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      controllers.get(taskId)?.xhrs.add(xhr);
-      xhr.open('PUT', url);
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) onProgress(e.loaded);
-      };
-      xhr.onload = () => {
-        controllers.get(taskId)?.xhrs.delete(xhr);
-        if (xhr.status >= 200 && xhr.status < 300) {
-          onProgress(blob.size);
-          resolve();
-        } else reject(new Error(`PUT failed: ${xhr.status}`));
