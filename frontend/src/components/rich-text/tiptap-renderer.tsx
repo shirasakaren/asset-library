@@ -160,38 +160,3 @@ function applyMark(mark: TipTapMark, child: ReactNode): ReactNode {
     case 'underline':
       return <u className="underline underline-offset-2">{child}</u>;
     case 'strike':
-      return <s>{child}</s>;
-    case 'code':
-      return (
-        <code className="font-mono text-[0.92em] bg-surface-muted px-1.5 py-0.5 rounded-[6px] border border-line text-ink">
-          {child}
-        </code>
-      );
-    case 'highlight': {
-      const color = typeof mark.attrs?.color === 'string' ? mark.attrs.color : '#fef6e0';
-      return <mark style={{ background: color }}>{child}</mark>;
-    }
-    case 'textStyle': {
-      const style: CSSProperties = {};
-      if (typeof mark.attrs?.color === 'string') style.color = mark.attrs.color as string;
-      return <span style={style}>{child}</span>;
-    }
-    case 'link': {
-      const href = typeof mark.attrs?.href === 'string' ? (mark.attrs.href as string) : '#';
-      const safe = sanitizeUrl(href);
-      const isExternal = /^https?:\/\//.test(safe);
-      return (
-        <a
-          href={safe}
-          className="link-inline"
-          {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        >
-          {child}
-        </a>
-      );
-    }
-    default:
-      return <Fragment>{child}</Fragment>;
-  }
-}
-
