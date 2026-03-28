@@ -80,3 +80,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       leadingIcon,
       trailingIcon,
       children,
+      type,
+      ...props
+    },
+    ref,
+  ) => {
+    const Comp = asChild ? Slot : 'button';
+    const resolvedSize = iconOnly && !size ? 'icon' : size;
+    return (
+      <Comp
+        ref={ref}
+        type={asChild ? undefined : (type ?? 'button')}
+        disabled={disabled || loading}
+        aria-busy={loading || undefined}
+        className={cn(buttonStyles({ variant, size: resolvedSize, fullWidth }), className)}
