@@ -96,3 +96,15 @@ export function GifPicker({ open, onOpenChange, onPick }: GifPickerProps) {
                 </button>
               ))}
             </div>
+          ) : null}
+        </div>
+
+        {available.length === 0 && !loading ? (
+          <p className="py-12 text-center text-body-sm text-ink-3">
+            GIF search isn&apos;t configured on the server.
+          </p>
+        ) : loading && results.length === 0 ? (
+          <div className="py-16 flex items-center justify-center text-ink-3">
+            <Loader2 className="h-5 w-5 animate-spin" strokeWidth={2.25} />
+          </div>
+        ) : results.length === 0 ? (
