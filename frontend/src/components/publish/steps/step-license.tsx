@@ -62,9 +62,3 @@ export function StepLicense() {
           <select
             id="license-pick"
             value={wiz.asset.license?.id ?? ''}
-            onChange={(e) => wiz.patch({ licenseId: e.target.value })}
-            className="h-11 w-full rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
-          >
-            <option value="">—</option>
-            {licenses.data?.map((l) => (
-              <option key={l.id} value={l.id}>
