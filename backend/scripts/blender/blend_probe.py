@@ -68,3 +68,7 @@ def probe(path: str) -> dict:
         animations.append(
             {
                 "name": action.name,
+                "lengthSec": round(float(length_sec), 4),
+                "hasRootMotion": False,
+            }
+        )
