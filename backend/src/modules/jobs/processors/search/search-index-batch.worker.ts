@@ -158,3 +158,41 @@ export class SearchIndexBatchWorker
       shortDescription: t.shortDescription,
       ...baseDoc,
     }));
+  }
+
+  /**
+   * Mirrors TagUsage rows into the `tags` Meilisearch index so the
+   * autocomplete endpoint has fresh usageCount values.
+   */
+  private async mirrorTagUsage(): Promise<void> {
+    const rows = await this.prisma.tagUsage.findMany({
+      include: { tag: true },
+      orderBy: { usageCount: 'desc' },
+      take: 5000,
+    });
+    if (rows.length === 0) return;
+    const docs = rows.map((r) => ({
+      id: r.tagId,
+      slug: r.tag.slug,
+      displayName: r.tag.displayName,
+      usageCount: r.usageCount,
+    }));
+    await this.meili.client.index(MEILI_INDEX_TAGS).addDocuments(docs);
+  }
+
+  private pickJsonLocalized(value: Prisma.JsonValue, locale: Locale): string | undefined {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+    const obj = value as Record<string, unknown>;
+    const v = obj[locale] ?? obj.en;
+    return typeof v === 'string' ? v : undefined;
+  }
+
+  private async ensureSettings(): Promise<void> {
+    const assets = this.meili.client.index(MEILI_INDEX_ASSETS);
+    try {
+      await assets.updateSearchableAttributes([
+        'title',
+        'shortDescription',
+        'tagsDisplay',
+        'ownerDisplayName',
+        'categoryName',
