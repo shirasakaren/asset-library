@@ -29,3 +29,7 @@ const PublicEnvSchema = z.object({
     .or(z.literal('').transform(() => undefined)),
 
   NEXT_PUBLIC_AUTH_MOCK: z
+    .union([z.literal('true'), z.literal('false'), z.literal('')])
+    .default('false')
+    .transform((v) => v === 'true'),
+
