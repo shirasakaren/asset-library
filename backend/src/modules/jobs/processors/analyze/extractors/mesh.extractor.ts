@@ -38,3 +38,23 @@ export async function extractMesh(
     return JSON.parse(result.stdout) as MeshMeta;
   } catch {
     return null;
+  }
+}
+
+/**
+ * The `.blend` format is opaque to pyassimp; this calls Blender headless to
+ * export a temp glTF + read its stats via the same probe.
+ */
+export async function extractBlendViaBlender(
+  filePath: string,
+  opts: { blenderBin: string; timeoutMs: number },
+): Promise<MeshMeta | null> {
+  // Blender script lives in scripts/blender/blend_probe.py — emits the same
+  // JSON shape on stdout as the pyassimp wrapper.
+  const script = join(process.cwd(), 'scripts', 'blender', 'blend_probe.py');
+  try {
+    const result = await runSubprocess(opts.blenderBin, ['-b', '-P', script, '--', filePath], {
+      timeoutMs: opts.timeoutMs,
+    });
+    if (result.exitCode !== 0) return null;
+    // Blender prints license headers and its own logs — find the JSON line.
