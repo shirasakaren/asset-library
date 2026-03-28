@@ -37,15 +37,3 @@ function readCreds(persona: Persona): PersonaCreds | null {
   if (!email || !password) return null;
   return { email, password };
 }
-
-async function loginViaUi(
-  page: import('@playwright/test').Page,
-  creds: PersonaCreds,
-): Promise<void> {
-  // Go to a gated route; the middleware redirects to /auth/signin which
-  // immediately bounces to Keycloak's hosted login.
-  await page.goto('/');
-  await page.locator('input[name="username"], input[id="username"]').fill(creds.email);
-  await page.locator('input[name="password"]').fill(creds.password);
-  await Promise.all([
-    page.waitForURL((url) => !url.pathname.startsWith('/auth/'), { timeout: 20_000 }),
