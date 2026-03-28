@@ -266,3 +266,49 @@ generator resolves its source in this order: `OPENAPI_SOURCE` env var →
 `frontend/openapi.json`. CI fails the build if the checked-in schema is
 stale.
 
+---
+
+## 5. Backend guide
+
+### 5.1 Running the worker
+
+The worker container runs alongside the API with the same environment plus
+`PROCESS_ROLE=worker`. The heavy media toolchain (Blender, ClamAV, ffmpeg,
+`gltf-pipeline`, `gltfpack`, and a Python venv with `trimesh`/`pyassimp`) is
+baked into `backend/Dockerfile.worker` — nothing extra to install on the
+worker host.
+
+`/readyz` on the worker also reports `avDefinitionsUpdatedAt` so ops can
+watch freshclam staleness without paging into the container.
+
+### 5.2 Search reindex
+
+`pnpm reindex` ensures the `assets` and `tags` indexes exist with canonical
+settings. Runtime updates are handled by a debounced 5-second batch worker;
+manual reindexing is reserved for cold-start and disaster recovery.
+
+### 5.3 WebSocket gateway
+
+`WSS /ws` authenticates via `?token=<keycloakToken>` or
+`?pluginToken=<deviceToken>`. The message envelope is specified in
+[WS_PROTOCOL.md](./WS_PROTOCOL.md), shared by both workspace members.
+
+### 5.4 Plugin device tokens
+
+Unity/Unreal clients exchange a Keycloak token for a long-lived device
+token (`POST /auth/plugin/exchange`) and slide/revoke it via
+`/auth/plugin/{refresh,devices,revoke}`. `PLUGIN_TOKEN_PEPPER` is required
+in production.
+
+---
+
+## 6. Environment reference
+
+Both apps validate their environment at boot and fail fast with an
+aggregated error. Canonical, commented lists live in
+[`backend/.env.example`](./backend/.env.example) and
+[`frontend/.env.example`](./frontend/.env.example). Highlights:
+
+| Group              | App      | Notes                                                                  |
+| ------------------ | -------- | ---------------------------------------------------------------------- |
+| Runtime            | backend  | `NODE_ENV`, `PROCESS_ROLE`, `PORT`, `PUBLIC_BASE_URL`, `CORS_ORIGINS`.  |
