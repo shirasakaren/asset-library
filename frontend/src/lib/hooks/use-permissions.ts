@@ -53,3 +53,13 @@ const DEFAULT: Permissions = {
 export function usePermissions(ctx: PermissionContext): Permissions {
   return useMemo(() => {
     const me = ctx.me;
+    if (!me) return DEFAULT;
+
+    const asset = ctx.asset;
+    const isOwner = Boolean(asset && me.id === asset.owner.id);
+    const isAdmin = me.isAdmin;
+
+    const status: AssetStatus | undefined = asset?.status;
+
+    const ownerOrAdmin = isOwner || isAdmin;
+
