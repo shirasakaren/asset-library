@@ -114,3 +114,27 @@ The database schema ships as **one consolidated migration script** at
 `backend/prisma/migrations/0001_init/migration.sql`, managed through
 `backend/prisma/schema.prisma` as the single source of truth.
 
+The API image applies it automatically on boot (`prisma migrate deploy`
+is baked into the container CMD), so deploys are migration-safe by default:
+
+```bash
+# Manually, inside the freshly built image, before swapping traffic:
+docker run --rm --env-file backend/.env $IMAGE pnpm prisma migrate deploy
+```
+
+`prisma migrate deploy` is what the `production.yml` / `staging.yml`
+workflows' images run on start. Migrations are forward-only — see Rollback
+for emergency reversal.
+
+## 5. Rollback
+
+The image tag is the rollback unit. Every deploy logs the tag to
+`/srv/mgm-asset-library/.image-tag` on the host. To roll back:
+
+```bash
+cd /srv/mgm-asset-library
+export IMAGE=ghcr.io/mgm-laboratory/mgm-asset-library-api:latest-<prev-sha>
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
