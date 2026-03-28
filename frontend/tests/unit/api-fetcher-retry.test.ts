@@ -33,3 +33,7 @@ describe('apiFetch — 401 retry-once', () => {
       accessToken: 'stale-token',
       tokenRefresher: refresher,
     });
+
+    expect(res).toEqual({ id: 'u1' });
+    expect(refresher).toHaveBeenCalledTimes(1);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
