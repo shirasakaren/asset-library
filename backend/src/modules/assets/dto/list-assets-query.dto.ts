@@ -34,4 +34,3 @@ export class ListAssetsQueryDto extends ListQueryDto {
   @IsArray()
   categoryIds?: string[];
   @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
