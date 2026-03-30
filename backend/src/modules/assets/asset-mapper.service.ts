@@ -154,3 +154,18 @@ export class AssetMapperService {
                 mime: typeof m.mime === 'string' ? m.mime : undefined,
                 viewUrl: displayUrl ?? originalUrl,
                 originalUrl,
+                visibility: visibility as 'visible' | 'blur' | 'hidden',
+                warning: typeof m.warning === 'string' ? m.warning : undefined,
+              };
+            }),
+        )
+      : [];
+
+    const versions: AssetVersionPayloadDto[] = asset.versions
+      .slice()
+      .sort((a, b) => this.compareSemverDesc(a.semver, b.semver))
+      .map((v) => ({
+        id: v.id,
+        semver: v.semver,
+        releaseNotes: v.releaseNotes as object,
+        publishedAt: v.publishedAt?.toISOString(),
