@@ -160,3 +160,53 @@ export class PreviewMediaInputDto {
   @ApiProperty() @IsString() key!: string;
   /** Compressed display variant key (images only). */
   @ApiPropertyOptional() @IsOptional() @IsString() displayKey?: string;
+  @ApiProperty() @IsString() label!: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() mime?: string;
+  /** visible (default) | blur (NSFW, click to reveal) | hidden. */
+  @ApiPropertyOptional({ enum: ['visible', 'blur', 'hidden'] })
+  @IsOptional()
+  @IsIn(['visible', 'blur', 'hidden'])
+  visibility?: 'visible' | 'blur' | 'hidden';
+  /** Optional warning label shown over a blurred item. */
+  @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(120) warning?: string;
+}
+
+export class PublishAssetDto {}
+
+export class PreviewMediaItemDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ enum: ['image', 'video', 'audio', '3d'] })
+  kind!: 'image' | 'video' | 'audio' | '3d';
+  @ApiProperty() key!: string;
+  @ApiPropertyOptional() displayKey?: string;
+  @ApiProperty() label!: string;
+  /** Fast display URL (compressed variant if present, else the original). */
+  @ApiProperty() viewUrl!: string;
+  /** Full-resolution URL — used when the viewer clicks to enlarge. */
+  @ApiProperty() originalUrl!: string;
+  @ApiPropertyOptional() mime?: string;
+  @ApiPropertyOptional({ enum: ['visible', 'blur', 'hidden'] })
+  visibility?: 'visible' | 'blur' | 'hidden';
+  @ApiPropertyOptional() warning?: string;
+}
+
+export class AssetSummaryDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() title!: string;
+  @ApiProperty() shortDescription!: string;
+  @ApiProperty({ enum: AssetEngine }) engine!: AssetEngine;
+  @ApiProperty({ enum: AssetStatus }) status!: AssetStatus;
+  @ApiPropertyOptional() thumbnailUrl?: string;
+  @ApiProperty() ownerDisplayName!: string;
+  @ApiProperty() categoryName!: string;
+  @ApiProperty() totalDownloads!: number;
+  @ApiProperty() totalSaves!: number;
+  @ApiProperty() updatedAt!: string;
+  @ApiPropertyOptional() publishedAt?: string;
+}
+
+export class AssetOwnerDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() displayName!: string;
+  @ApiProperty({ type: AvatarDto }) avatar!: AvatarDto;
