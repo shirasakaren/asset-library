@@ -76,6 +76,3 @@ export class AnalyticsController {
       last7dDownloads: r.last7dDownloads,
       last30dDownloads: r.last30dDownloads,
     }));
-  }
-
-  @Get('admin/analytics/users')
