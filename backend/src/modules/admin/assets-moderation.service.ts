@@ -93,3 +93,45 @@ export class AdminAssetsModerationService {
         'A reason is required when an admin soft-deletes.',
       );
     }
+    const asset = await this.findOrThrow(id);
+    await this.prisma.asset.update({
+      where: { id },
+      data: { status: 'DELETED', archivedAt: new Date() },
+    });
+    await this.categories.invalidateCache();
+    await this.producer.enqueueSearchIndex({ reason: 'asset.delete', assetId: id });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'asset.admin_delete',
+      subjectType: 'Asset',
+      subjectId: id,
+      metadata: { previousStatus: asset.status, reason },
+    });
+  }
+
+  /**
+   * Immediate hard delete — bypasses the 30-day archive clock. Used only for
+   * legal takedowns / catastrophic content. Guarded by `@RequireConfirmation()`
+   * at the controller.
+   */
+  async forceDelete(id: string, admin: User, reason: string): Promise<void> {
+    const asset = await this.findOrThrow(id);
+    await this.deleteS3Prefix('assets', `assets/${asset.id}/`);
+    await this.deleteS3Prefix('thumbs', `thumbs/${asset.id}/`);
+    if (asset.thumbnailKey && !asset.thumbnailKey.startsWith(`thumbs/${asset.id}/`)) {
+      await this.s3.deleteObject('thumbs', asset.thumbnailKey).catch(() => undefined);
+    }
+    await this.prisma.asset.delete({ where: { id } });
+    await this.meili.client
+      .index(MEILI_INDEX_ASSETS)
+      .deleteDocuments([`${id}:en`, `${id}:id`])
+      .catch(() => undefined);
+    await this.categories.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'asset.force_delete',
+      subjectType: 'Asset',
+      subjectId: id,
+      metadata: { reason, previousStatus: asset.status, ownerId: asset.ownerId },
+    });
+  }
