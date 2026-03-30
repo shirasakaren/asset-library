@@ -63,5 +63,3 @@ export class AdminCategoriesController {
   @Patch(':id')
   @AuditAction({ action: 'category.update_request', subjectType: 'Category' })
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Partial update; reindexes affected assets.' })
-  @ApiOkResponse({ type: AdminCategoryDto })
