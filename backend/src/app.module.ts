@@ -76,3 +76,4 @@ import { WsModule } from './modules/ws/ws.module';
     S3Module,
     MeilisearchModule,
     MailerModule,
+    N8nModule,
