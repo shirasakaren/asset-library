@@ -28,7 +28,3 @@ export class PluginTokenGuard implements CanActivate {
       context.getClass(),
     ]);
     if (isPublic) return true;
-    const req = context.switchToHttp().getRequest<FastifyRequest>();
-    const token = extractPluginToken(req);
-    if (!token) {
-      throw new UnauthorizedException('Missing plugin token.');
