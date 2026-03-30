@@ -80,3 +80,13 @@ export class WebhookDeliveriesController {
       .lean()
       .exec()) as unknown as LeanDelivery[];
     const hasMore = rows.length > take;
+    const items = rows.slice(0, take);
+    const last = items[items.length - 1];
+
+    return {
+      items: items.map((r) => this.toDto(r)),
+      pageInfo: {
+        hasMore,
+        nextCursor: hasMore && last ? encodeCursor(last.createdAt.toISOString()) : null,
+      },
+    };
