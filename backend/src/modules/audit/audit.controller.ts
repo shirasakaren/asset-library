@@ -63,15 +63,3 @@ export class AdminAuditController {
   @Get(':id')
   @ApiOperation({ summary: 'Full audit entry detail incl. metadata payload.' })
   @ApiOkResponse({ type: AuditEntryDto })
-  async detail(@Param('id') id: string): Promise<AuditEntryDto> {
-    const row = await this.prisma.auditLog.findUnique({ where: { id }, include: { actor: true } });
-    if (!row)
-      throw new NotFoundDomainException(
-        ErrorCode.REQUEST_NOT_FOUND,
-        `Audit entry ${id} not found.`,
-      );
-    return this.toDto(row);
-  }
-
-  private toDto(row: {
-    id: string;
