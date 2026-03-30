@@ -82,3 +82,5 @@ export class AssetsListService {
         : null;
     return { items, pageInfo: { nextCursor, hasMore } };
   }
+
+  /**
