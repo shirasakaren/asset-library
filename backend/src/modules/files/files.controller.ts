@@ -112,3 +112,8 @@ export class FilesController {
     return this.files.initiateThumbnail(dto, principal.user);
   }
 
+  @Post('thumbnails/complete')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Wire a freshly uploaded thumbnail key to the asset, queue resize variants.',
+  })
