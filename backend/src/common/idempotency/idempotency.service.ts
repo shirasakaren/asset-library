@@ -37,3 +37,6 @@ export class IdempotencyService {
   /** Returns a cached response if this `(user, route, key)` already ran. */
   async lookup(
     userId: string,
+    route: string,
+    key: string,
+    body: unknown,
