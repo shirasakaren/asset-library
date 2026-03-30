@@ -137,3 +137,16 @@ export class AnalyticsService {
     `);
     const byFileRaw = await this.prisma.$queryRaw<
       Array<{ fileId: string; relativePath: string; downloads: bigint }>
+    >(Prisma.sql`
+      SELECT af.id AS "fileId", af."relativePath", COUNT(d.id)::bigint AS downloads
+      FROM asset_files af
+      JOIN asset_versions av ON av.id = af."versionId"
+      LEFT JOIN downloads d ON d."fileId" = af.id
+      WHERE av."assetId" = ${assetId}
+      GROUP BY af.id, af."relativePath"
+      ORDER BY downloads DESC
+      LIMIT 50
+    `);
+
+    return {
+      asset: { id: asset.id, title: asset.title },
