@@ -50,5 +50,3 @@ export class KeycloakAuthGuard implements CanActivate {
     }
 
     let claims: KeycloakClaims;
-    try {
-      claims = await this.jwks.verify(token);
