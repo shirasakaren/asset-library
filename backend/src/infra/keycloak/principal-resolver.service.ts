@@ -73,3 +73,10 @@ export class PrincipalResolverService {
       }
     } catch {
       /* cache miss / parse error — fall through to the DB */
+    }
+    const user = await this.upsertUser(claims);
+    const role = await this.roleResolver.resolve(user);
+    try {
+      await this.redis.client.set(
+        cacheKey,
+        JSON.stringify({ user: serializeUser(user), role }),
