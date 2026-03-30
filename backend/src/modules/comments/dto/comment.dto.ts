@@ -40,8 +40,3 @@ export class UpdateCommentDto {
   @ApiProperty({ description: 'Lite TipTap JSON document.' })
   @IsObject()
   body!: object;
-}
-
-export class UpdateIssueStatusDto {
-  @ApiProperty({ enum: IssueStatus })
-  @IsEnum(IssueStatus)
