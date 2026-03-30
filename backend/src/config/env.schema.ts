@@ -101,3 +101,12 @@ export const envSchema = z
     FFPROBE_BIN: z.string().default('/usr/bin/ffprobe'),
     GLTF_PIPELINE_BIN: z.string().default('/usr/local/bin/gltf-pipeline'),
     GLTFPACK_BIN: z.string().default('/usr/local/bin/gltfpack'),
+    PYANALYZE_VENV: z.string().default('/opt/mgm-py'),
+    HDRI_PATH: z.string().default('/opt/mgm/hdri/studio_small_03.hdr'),
+    WORKER_SCRATCH_DIR: z.string().default('/tmp/mgm-analyze'),
+
+    // ─────────── Worker job limits ──────────────────────────────────────────
+    ANALYZE_TIMEOUT_SEC: z.coerce.number().int().positive().default(300),
+    GLTF_CONVERT_TIMEOUT_SEC: z.coerce.number().int().positive().default(600),
+    GLTFPACK_KTX2: booleanFromString.default(false),
+
