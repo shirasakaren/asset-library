@@ -94,7 +94,3 @@ export class InitiateThumbnailResponseDto {
   @ApiProperty() key!: string;
   @ApiProperty() expiresAt!: string;
 }
-
-export class CompleteThumbnailDto {
-  @ApiProperty() @IsString() assetId!: string;
-  @ApiProperty() @IsString() key!: string;
