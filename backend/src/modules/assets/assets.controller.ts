@@ -139,11 +139,3 @@ export class AssetsController {
       );
     }
     return created;
-  }
-
-  @Patch('assets/:id')
-  @UseGuards(KeycloakAuthGuard)
-  @ApiBearerAuth('keycloak')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Partial update; engine is immutable after publish.' })
-  @ApiNoContentResponse()
