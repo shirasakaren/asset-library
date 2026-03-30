@@ -37,4 +37,3 @@ export class KeycloakJwksProvider {
       cacheMaxAge: config.get('KEYCLOAK_JWKS_CACHE_TTL_SEC') * 1000,
     });
   }
-
