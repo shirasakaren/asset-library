@@ -84,3 +84,25 @@ async function bootstrapApi(env: ReturnType<typeof validateEnv>): Promise<void> 
   await app.register(multipart, { limits: { fileSize: 10 * 1024 * 1024 } });
   await app.register(cors, {
     origin: env.CORS_ORIGINS,
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+    allowedHeaders: ['authorization', 'content-type', 'idempotency-key', 'x-request-id'],
+    exposedHeaders: [
+      'x-request-id',
+      'retry-after',
+      'x-total-draft',
+      'x-total-published',
+      'x-total-archived',
+      'x-total-deleted',
+    ],
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: false },
+    }),
+  );
+  app.enableShutdownHooks();
