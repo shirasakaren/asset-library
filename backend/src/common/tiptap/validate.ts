@@ -132,3 +132,11 @@ function walk(node: TipTapNode | TipTapDoc, path: string, state: WalkState): Tip
   if (!state.allowlist.nodes.has(node.type)) {
     state.violations.push({
       path,
+      code: 'node.disallowed',
+      message: `Node type "${node.type}" is not allowed.`,
+    });
+    return out;
+  }
+  if (node.type === 'heading' && typeof typedNode.attrs?.level === 'number') {
+    const max = state.allowlist.maxHeadingLevel ?? 3;
+    if (typedNode.attrs.level < 1 || typedNode.attrs.level > max) {
