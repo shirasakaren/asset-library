@@ -50,3 +50,9 @@ export class RateLimitGuard implements CanActivate {
         res.header('Retry-After', String(Math.max(retryAfter, 1)));
       } catch {
         // Fastify reply already shipped; safe to ignore.
+      }
+      throw new DomainException(
+        HttpStatus.TOO_MANY_REQUESTS,
+        ErrorCode.RATE_LIMIT_EXCEEDED,
+        `Rate limit exceeded — at most ${config.max} per ${config.windowSec}s on ${name}.`,
+      );
