@@ -108,3 +108,23 @@ const LICENSES: LicenseSeed[] = [
     slug: 'commercial',
     name: 'Commercial License',
     description: {
+      en: 'Custom commercial terms — contact owner.',
+      id: 'Ketentuan komersial khusus — hubungi pemilik.',
+    },
+    fullText: {
+      en: 'Contact the asset owner for the full commercial license terms.',
+      id: 'Hubungi pemilik aset untuk ketentuan lisensi komersial lengkap.',
+    },
+    sortOrder: 60,
+  },
+  {
+    slug: 'internal-use-only',
+    name: 'Internal Use Only',
+    description: {
+      en: 'Restricted to MGM Laboratory internal projects.',
+      id: 'Terbatas untuk proyek internal MGM Laboratory.',
+    },
+    fullText: {
+      en: 'For internal use within MGM Laboratory and its partners only. Redistribution outside the organization is prohibited.',
+      id: 'Hanya untuk penggunaan internal di MGM Laboratory dan mitranya. Distribusi ulang ke luar organisasi dilarang.',
+    },
