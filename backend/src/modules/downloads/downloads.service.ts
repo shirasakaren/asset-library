@@ -122,7 +122,3 @@ export class DownloadsService {
           userAgent: truncatedUa,
           source,
         })),
-      }),
-      this.prisma.libraryItem.upsert({
-        where: { userId_assetId: { userId: requester.id, assetId } },
-        create: { userId: requester.id, assetId },
