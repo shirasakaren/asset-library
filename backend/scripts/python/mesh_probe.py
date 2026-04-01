@@ -65,3 +65,39 @@ def probe(path: str) -> Dict[str, Any]:
         for anim in scene.animations:
             try:
                 # FPS may be 0 in some FBX exports; fall back to 30.
+                ticks_per_sec = anim.ticks_per_second if anim.ticks_per_second and anim.ticks_per_second > 0 else 30
+                length_sec = float(anim.duration) / float(ticks_per_sec)
+            except Exception:
+                length_sec = 0.0
+            has_root_motion = False
+            try:
+                if anim.channels:
+                    first = anim.channels[0]
+                    if first.position_keys and len(first.position_keys) > 1:
+                        first_p = first.position_keys[0].value
+                        last_p = first.position_keys[-1].value
+                        if any(abs(a - b) > 1e-3 for a, b in zip(first_p, last_p)):
+                            has_root_motion = True
+            except Exception:
+                pass
+            animations.append(
+                {
+                    "name": str(anim.name) if anim.name else "",
+                    "lengthSec": round(length_sec, 4),
+                    "hasRootMotion": has_root_motion,
+                }
+            )
+        for mesh in scene.meshes:
+            if getattr(mesh, "bones", None):
+                has_skeleton = True
+                break
+
+        return {
+            "triangles": triangles,
+            "quads": quads,
+            "vertices": vertices_total,
+            "materials": len(scene.materials),
+            "hasSkeleton": has_skeleton,
+            "animations": animations,
+            "boundingBox": _bbox_from_vertices(all_vertices),
+            "textureRefs": list(dict.fromkeys(texture_refs)),
