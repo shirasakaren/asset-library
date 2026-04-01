@@ -181,3 +181,12 @@ export class ReportsService {
       metadata: { action: dto.action, assetId: row.asset.id, adminNotes: dto.adminNotes },
     });
   }
+
+  async dismiss(id: string, admin: User, dto: DismissReportDto): Promise<void> {
+    const row = await this.prisma.report.findUnique({ where: { id } });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.REQUEST_NOT_FOUND, `Report ${id} not found.`);
+    await this.prisma.report.update({
+      where: { id },
+      data: { status: 'DISMISSED', adminNotes: dto.adminNotes, resolvedAt: new Date() },
+    });
