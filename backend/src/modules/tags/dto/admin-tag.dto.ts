@@ -32,4 +32,3 @@ export class ListTagsQueryDto extends ListQueryDto {
 
 export class MergeTagsDto {
   @ApiProperty({ type: [String] })
-  @IsArray()
