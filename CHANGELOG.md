@@ -108,3 +108,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Keycloak authentication with Auth.js v5 and middleware gating.
 - Design system tokens, UI primitives, and the geometric pattern tiles.
 - Internationalization (English + Bahasa Indonesia) with locale switcher.
+
+## [0.1.0] - 2025-11-30
+
+### Added
+
+- Asset lifecycle API: create, upload, publish, archive, restore,
+  soft-delete, transfer.
+- Catalog endpoints for categories, tags, and licenses.
+- NestJS foundation: config validation, logging, health endpoints, and the
+  Prisma schema.
