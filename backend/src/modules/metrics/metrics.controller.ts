@@ -49,15 +49,3 @@ export class MetricsController {
     void res.header('content-type', 'text/plain; version=0.0.4').send(body);
   }
 }
-
-interface ParsedCidr {
-  family: 4 | 6;
-  base: bigint;
-  mask: bigint;
-  bits: number;
-}
-
-function parseCidr(raw: string): ParsedCidr | null {
-  const [ip, prefix] = raw.split('/');
-  if (!ip) return null;
-  const family = isIP(ip);
