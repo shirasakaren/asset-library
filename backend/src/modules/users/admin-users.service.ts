@@ -92,8 +92,3 @@ export class AdminUsersService {
       subjectType: 'User',
       subjectId: id,
       metadata: { email: target.email },
-    });
-  }
-
-  async demote(id: string, admin: User): Promise<void> {
-    const target = await this.prisma.user.findUnique({ where: { id } });
