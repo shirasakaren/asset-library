@@ -81,19 +81,3 @@ export class LibraryService {
       include: LIBRARY_INCLUDE,
       take: limit + 1,
       orderBy,
-      ...(cursor ? { skip: 1, cursor: { id: cursor.id } } : {}),
-    });
-    const hasMore = rows.length > limit;
-    const itemsRaw = rows.slice(0, limit);
-    const assetSummaries = await this.mapper.toSummaryMany(
-      itemsRaw.map((row) => row.asset),
-      locale,
-    );
-    const items: LibraryItemDto[] = itemsRaw.map((row, i) => ({
-      addedAt: row.addedAt.toISOString(),
-      hidden: row.hidden,
-      asset: assetSummaries[i],
-    }));
-    const last = itemsRaw[itemsRaw.length - 1];
-    const nextCursor =
-      hasMore && last ? encodeCursor({ id: last.id, createdAt: last.addedAt.toISOString() }) : null;
