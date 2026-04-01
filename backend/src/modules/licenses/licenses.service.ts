@@ -42,3 +42,11 @@ export class LicensesService {
       where: { isActive: true },
       orderBy: { sortOrder: 'asc' },
     });
+    return rows.map((row) => this.toSummary(row, locale));
+  }
+
+  async getDetail(id: string, locale: Locale): Promise<LicenseDetailDto> {
+    const row = await this.findByIdOrThrow(id);
+    const summary = this.toSummary(row, locale);
+    return {
+      ...summary,
