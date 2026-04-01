@@ -43,3 +43,29 @@ export class ListAssetRequestsQueryDto extends ListQueryDto {
   /** Admins-only convenience flag; ignored for non-admins. */
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  requesterId?: string;
+}
+
+export class AssetRequestDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() assetLink!: string;
+  @ApiProperty() assetType!: string;
+  @ApiProperty() intendedUse!: string;
+  @ApiPropertyOptional() price?: number | null;
+  @ApiPropertyOptional() notes?: string | null;
+  @ApiProperty({ enum: AssetRequestStatus }) status!: AssetRequestStatus;
+  @ApiPropertyOptional() adminComment?: string | null;
+  @ApiProperty() createdAt!: string;
+  @ApiProperty() updatedAt!: string;
+  @ApiProperty() requester!: { id: string; displayName: string };
+}
+
+import {
+  IsIn as IsIn2,
+  IsOptional as IsOptional2,
+  IsString as IsString2,
+  MaxLength as MaxLength2,
+} from 'class-validator';
+
+const ADMIN_REVIEW_STATUSES: AssetRequestStatus[] = [
