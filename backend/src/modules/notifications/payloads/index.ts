@@ -46,4 +46,3 @@ export interface RequestCreatedPayload {
   assetLink: string;
   assetType: string;
   intendedUse: string;
-}
