@@ -88,31 +88,3 @@ export class SearchService {
       usageCount: number;
     }>(q, {
       limit: Math.min(Math.max(limit, 1), 20),
-    });
-    return result.hits.map((h) => ({
-      id: h.id,
-      slug: h.slug,
-      displayName: h.displayName,
-      usageCount: h.usageCount,
-    }));
-  }
-
-  // ─── Indexer side ───────────────────────────────────────────────────────
-
-  /**
-   * Builds the denormalized Meilisearch document for an asset. Called by the
-   * Part 3 search-index worker; we expose it here so Part 2 controllers can
-   * use it for eager (synchronous) reindex when latency matters (e.g. publish).
-   */
-  async buildDocument(assetId: string): Promise<AssetIndexDocument | null> {
-    const asset = await this.prisma.asset.findUnique({
-      where: { id: assetId },
-      include: {
-        owner: true,
-        category: true,
-        translations: true,
-        tags: { include: { tag: true } },
-        versions: {
-          include: { files: true, compatibility: true },
-          orderBy: { createdAt: 'desc' },
-          take: 1,
