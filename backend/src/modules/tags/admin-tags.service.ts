@@ -131,18 +131,3 @@ export class AdminTagsService {
       data: {
         slug: dto.slug ?? row.slug,
         displayName: dto.displayName ?? row.displayName,
-      },
-      include: { usage: true },
-    });
-    // Tag rename → ripple every asset using it through the search indexer.
-    const assets = await this.prisma.assetTag.findMany({
-      where: { tagId: id },
-      select: { assetId: true },
-    });
-    await Promise.all(
-      assets.map((a) =>
-        this.producer.enqueueSearchIndex({ reason: 'asset.update', assetId: a.assetId }),
-      ),
-    );
-    await this.tags.invalidatePopularCache();
-    await this.audit.record({
