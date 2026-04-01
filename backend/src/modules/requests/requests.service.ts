@@ -115,17 +115,3 @@ export class RequestsService {
 
   /**
    * Admin transitions a request through its review lifecycle. Reject requires
-   * a non-empty `adminComment`; every transition fires REQUEST_STATUS_CHANGED
-   * to the requester and writes an audit row.
-   */
-  async adminUpdate(
-    id: string,
-    admin: User,
-    dto: AdminUpdateAssetRequestDto,
-  ): Promise<AssetRequestDto> {
-    if (
-      dto.status === AssetRequestStatus.REJECTED &&
-      (!dto.adminComment || dto.adminComment.trim().length === 0)
-    ) {
-      throw new BadRequestDomainException(
-        ErrorCode.REQUEST_NOT_FOUND,
