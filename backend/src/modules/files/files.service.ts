@@ -323,15 +323,3 @@ export class FilesService {
         this.prisma.assetFile.update({
           where: { id: f.id },
           data: { sortOrder: rank.get(f.id) ?? orderedFileIds.length },
-        }),
-      ),
-    );
-  }
-
-  /** Hard-deletes a single uploaded file (S3 object + row). Owner/admin only. */
-  async deleteFile(fileId: string, requester: User): Promise<void> {
-    const file = await this.prisma.assetFile.findUnique({
-      where: { id: fileId },
-      include: { version: { include: { asset: true } } },
-    });
-    if (!file)
