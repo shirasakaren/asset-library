@@ -42,4 +42,3 @@ export class AdminTagsController {
   }
 
   @Patch(':id')
-  @AuditAction({ action: 'tag.update_request', subjectType: 'Tag' })
