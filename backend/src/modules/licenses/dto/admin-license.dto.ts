@@ -59,3 +59,12 @@ export class UpdateLicenseDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsObject()
+  fullText?: { en?: string; id?: string };
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  sortOrder?: number;
+
+  @ApiPropertyOptional()
