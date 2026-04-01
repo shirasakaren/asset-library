@@ -55,3 +55,11 @@ export class NotificationsService {
     const hasMore = rows.length > limit;
     const slice = rows.slice(0, limit);
     return {
+      items: slice.map((r) => this.toDto(r)),
+      pageInfo: {
+        nextCursor:
+          hasMore && slice.length
+            ? encodeCursor({
+                id: slice[slice.length - 1].id,
+                createdAt: slice[slice.length - 1].createdAt.toISOString(),
+              })
