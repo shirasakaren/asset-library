@@ -42,3 +42,6 @@ export class AdminLicensesController {
   @AuditAction({
     action: 'license.create_request',
     subjectType: 'License',
+    subjectParam: 'body.slug',
+  })
+  @HttpCode(HttpStatus.CREATED)
