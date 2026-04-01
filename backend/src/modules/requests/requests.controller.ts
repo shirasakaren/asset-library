@@ -33,3 +33,5 @@ import { RequestsService } from './requests.service';
 @ApiBearerAuth('keycloak')
 @Controller('asset-requests')
 @UseGuards(KeycloakAuthGuard)
+export class RequestsController {
+  constructor(private readonly requests: RequestsService) {}
