@@ -48,3 +48,15 @@ const EXT_TO_KIND: Record<string, AssetFileKind> = {
   h: AssetFileKind.SCRIPT_CPP,
   hpp: AssetFileKind.SCRIPT_CPP,
   py: AssetFileKind.SCRIPT_PY,
+  txt: AssetFileKind.DOCUMENT,
+  md: AssetFileKind.DOCUMENT,
+  pdf: AssetFileKind.DOCUMENT,
+  rtf: AssetFileKind.DOCUMENT,
+  zip: AssetFileKind.ARCHIVE,
+  '7z': AssetFileKind.ARCHIVE,
+  rar: AssetFileKind.ARCHIVE,
+  tar: AssetFileKind.ARCHIVE,
+  gz: AssetFileKind.ARCHIVE,
+  tgz: AssetFileKind.ARCHIVE,
+};
+

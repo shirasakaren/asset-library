@@ -46,3 +46,7 @@ export async function extractUPlugin(filePath: string): Promise<UPluginMeta | nu
     return null;
   }
 }
+
+export async function extractUProject(filePath: string): Promise<UProjectMeta | null> {
+  try {
+    const raw = await readFile(filePath, 'utf8');
