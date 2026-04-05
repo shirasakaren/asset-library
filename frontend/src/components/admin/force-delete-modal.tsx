@@ -78,4 +78,3 @@ export function AdminForceDeleteModal({ asset, onOpenChange, onDone }: Props) {
               id="fd-confirm"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
-              placeholder={asset.title}
