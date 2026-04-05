@@ -55,3 +55,4 @@ export function DemoteAdminModal({ user, onOpenChange, onDone }: Props) {
       <ModalContent size="sm">
         <ModalHeader>
           <ModalTitle>Demote {user.displayName}?</ModalTitle>
+        </ModalHeader>
