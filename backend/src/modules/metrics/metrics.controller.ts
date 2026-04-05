@@ -49,3 +49,37 @@ export class MetricsController {
     void res.header('content-type', 'text/plain; version=0.0.4').send(body);
   }
 }
+
+interface ParsedCidr {
+  family: 4 | 6;
+  base: bigint;
+  mask: bigint;
+  bits: number;
+}
+
+function parseCidr(raw: string): ParsedCidr | null {
+  const [ip, prefix] = raw.split('/');
+  if (!ip) return null;
+  const family = isIP(ip);
+  if (family !== 4 && family !== 6) return null;
+  const bits = Number(prefix ?? (family === 4 ? 32 : 128));
+  if (!Number.isInteger(bits) || bits < 0 || bits > (family === 4 ? 32 : 128)) return null;
+  const ipBig = ipToBigInt(ip, family);
+  const width = family === 4 ? 32 : 128;
+  const mask = ((1n << BigInt(width)) - 1n) ^ ((1n << BigInt(width - bits)) - 1n);
+  return { family, base: ipBig & mask, mask, bits };
+}
+
+function ipToBigInt(ip: string, family: 4 | 6): bigint {
+  if (family === 4) {
+    return ip.split('.').reduce((acc, oct) => (acc << 8n) | BigInt(Number(oct)), 0n);
+  }
+  // Naïve v6 expansion — fine for the small allow-lists we expect.
+  const groups = ip.split(':');
+  const full = expandV6(groups);
+  return full.reduce((acc, g) => (acc << 16n) | BigInt(parseInt(g, 16)), 0n);
+}
+
+function expandV6(groups: string[]): string[] {
+  const idx = groups.indexOf('');
+  if (idx === -1) return groups;
