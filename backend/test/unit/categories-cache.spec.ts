@@ -77,3 +77,14 @@ describe('CategoriesService — Redis cache', () => {
     expect(calls.groupBy).toBe(1);
 
     // Let the fire-and-forget SET resolve.
+    await new Promise((r) => setImmediate(r));
+
+    const second = await svc.list('en');
+    expect(second).toEqual(first);
+    // Prisma must not be touched again — verified via spy counts.
+    expect(calls.findMany).toBe(1);
+    expect(calls.groupBy).toBe(1);
+  });
+
+  it('different locale uses a different cache key and re-runs the query', async () => {
+    const { svc, calls } = build();
