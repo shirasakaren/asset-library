@@ -108,17 +108,3 @@ Load from Google Fonts / Vercel:
 A modular, slightly compressed scale. All values use `rem` (1rem = 16px).
 
 | Token         | Size              | Line-height | Tracking | Weight  | Use                               |
-| ------------- | ----------------- | ----------- | -------- | ------- | --------------------------------- |
-| `display-2xl` | 4.5rem (72px)     | 1.02        | -0.03em  | 600     | Marketing hero                    |
-| `display-xl`  | 3.5rem (56px)     | 1.05        | -0.025em | 600     | Sub-hero, section opener          |
-| `display-lg`  | 2.5rem (40px)     | 1.1         | -0.02em  | 600     | Page H1 in product                |
-| `h1`          | 2rem (32px)       | 1.15        | -0.015em | 600     | Section heading                   |
-| `h2`          | 1.5rem (24px)     | 1.25        | -0.01em  | 600     | Subsection                        |
-| `h3`          | 1.25rem (20px)    | 1.3         | -0.005em | 600     | Card titles, modal titles         |
-| `h4`          | 1.0625rem (17px)  | 1.4         | 0        | 600     | Inline headings                   |
-| `body-lg`     | 1.125rem (18px)   | 1.6         | 0        | 400     | Marketing body, intros            |
-| `body`        | 1rem (16px)       | 1.6         | 0        | 400     | Default product body              |
-| `body-sm`     | 0.9375rem (15px)  | 1.55        | 0        | 400     | Dense UI                          |
-| `caption`     | 0.8125rem (13px)  | 1.5         | 0.005em  | 500     | Labels, helper text, table heads  |
-| `mono`        | 0.875rem (14px)   | 1.5         | 0        | 400     | Code, IDs, technical numerals     |
-| `eyebrow`     | 0.75rem (12px)    | 1.4         | 0.12em   | 600 UC  | Section eyebrows, all-caps tags   |
