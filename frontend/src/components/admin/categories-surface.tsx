@@ -150,11 +150,3 @@ export function AdminCategoriesSurface() {
             void list.refetch();
           }}
         />
-      ) : null}
-    </>
-  );
-}
-
-function SortableRow({
-  cat,
-  onEdit,
