@@ -32,3 +32,9 @@ export class FakeKeycloak {
       .setIssuer(this.issuer)
       .setAudience(this.audience)
       .setIssuedAt()
+      .setExpirationTime('1h')
+      .sign(key);
+  }
+
+  /** Override that returns the decoded claims for any token we just minted. */
+  asProvider(): KeycloakJwksProvider {
