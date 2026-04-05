@@ -60,3 +60,28 @@ export class AdminStorageController {
       orderBy: { bytes: 'desc' },
       take,
     });
+    const ids = rows.map((r) => r.assetId);
+    const assets = await this.prisma.asset.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, slug: true, title: true, ownerId: true, status: true },
+    });
+    const byId = new Map(assets.map((a) => [a.id, a]));
+    return {
+      date: targetDate.toISOString().slice(0, 10),
+      items: rows.map((r) => ({
+        assetId: r.assetId,
+        slug: byId.get(r.assetId)?.slug,
+        title: byId.get(r.assetId)?.title,
+        ownerId: byId.get(r.assetId)?.ownerId,
+        status: byId.get(r.assetId)?.status,
+        bytes: r.bytes.toString(),
+      })),
+    };
+  }
+
+  private async resolveDate(raw: string | undefined, kind: 'user' | 'asset'): Promise<Date | null> {
+    if (raw) {
+      const parsed = new Date(raw);
+      if (!Number.isFinite(parsed.getTime())) return null;
+      return new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()));
+    }
