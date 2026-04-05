@@ -117,3 +117,20 @@ export class AdminAssetsController {
   @AuditAction({ action: 'asset.admin_soft_delete_request', subjectType: 'Asset' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Soft delete with mandatory reason; physical purge after 30 days.' })
+  softDelete(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminAssetActionDto,
+  ): Promise<void> {
+    return this.moderation.softDelete(id, principal.user, dto.reason);
+  }
+
+  @Post(':id/force-delete')
+  @RequireConfirmation()
+  @AuditAction({ action: 'asset.force_delete_request', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Immediate hard delete including S3. Requires confirmation phrase.' })
+  forceDelete(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminAssetForceDeleteDto,
