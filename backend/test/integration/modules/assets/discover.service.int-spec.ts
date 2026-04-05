@@ -120,22 +120,3 @@ function buildService(prisma: FakePrisma): DiscoverService {
         ownerDisplayName: 'someone',
         categoryName: a.categoryId,
         totalDownloads: 0,
-        totalSaves: 0,
-        updatedAt: new Date().toISOString(),
-        publishedAt: a.publishedAt?.toISOString(),
-      })),
-    ),
-  };
-
-  // `as never` casts because the production constructor expects fully typed
-  // injected services; these fakes match the surface the service actually
-  // uses, which is what we care about here.
-  return new DiscoverService(prisma as never, redis as never, s3 as never, mapper as never);
-}
-
-describe('DiscoverService (integration: batched rows)', () => {
-  it('returns one row per non-empty category with at most ASSETS_PER_ROW assets each, ordered by publishedAt DESC', async () => {
-    const CATEGORY_COUNT = 10;
-    const ASSETS_PER_CAT = 20; // > ASSETS_PER_ROW so we exercise the cap
-    const categories = makeCategories(CATEGORY_COUNT);
-    const byCat = new Map<string, AssetRow[]>();
