@@ -35,3 +35,5 @@ describe('PublishChecklistService', () => {
     const violations = await svc.evaluate(asset);
     const codes = violations.map((v) => v.code).sort();
     expect(codes).toEqual(
+      expect.arrayContaining([
+        'category.missing',
