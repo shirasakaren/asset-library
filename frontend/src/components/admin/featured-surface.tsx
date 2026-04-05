@@ -157,3 +157,46 @@ export function AdminFeaturedSurface() {
                 key={slot.id}
                 slot={slot}
                 onEdit={() => setEditing(slot)}
+                onToggle={(next) => {
+                  if (next && active.length >= MAX_ACTIVE) {
+                    toast.error('Featured slot cap is 5.');
+                    return;
+                  }
+                  toggleActive.mutate({ id: slot.id, isActive: next });
+                }}
+                onDelete={() => remove.mutate(slot.id)}
+              />
+            ))}
+          </div>
+        </details>
+      ) : null}
+
+      {(editing || creating) ? (
+        <FeaturedEditModal
+          slot={editing}
+          onOpenChange={(o) => {
+            if (!o) {
+              setEditing(null);
+              setCreating(false);
+            }
+          }}
+          onDone={() => {
+            setEditing(null);
+            setCreating(false);
+            void list.refetch();
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function SortableSlot({
+  slot,
+  onEdit,
+  onToggle,
+  onDelete,
+}: {
+  slot: AdminFeaturedSlot;
+  onEdit: () => void;
+  onToggle: (next: boolean) => void;
