@@ -104,14 +104,3 @@ export class NotificationsGateway
     });
     socket.on('message', () => {
       // Client → server messages are not part of the protocol. Treat any
-      // inbound traffic as a liveness signal but don't act on it.
-      socket.lastSeenAt = Date.now();
-    });
-
-    socket.send(
-      JSON.stringify(
-        this.notifications.newWsEnvelope('hello', {
-          userId,
-          serverTime: new Date().toISOString(),
-        }),
-      ),
