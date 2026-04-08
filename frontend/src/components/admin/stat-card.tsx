@@ -39,3 +39,10 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
         >
           {trend.delta >= 0 ? (
             <ArrowUp className="h-3 w-3" strokeWidth={2.25} />
+          ) : (
+            <ArrowDown className="h-3 w-3" strokeWidth={2.25} />
+          )}
+          {Math.abs(trend.delta)}
+          {trend.suffix ?? '%'}
+        </p>
+      ) : null}
