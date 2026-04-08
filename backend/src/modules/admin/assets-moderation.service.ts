@@ -135,3 +135,33 @@ export class AdminAssetsModerationService {
       metadata: { reason, previousStatus: asset.status, ownerId: asset.ownerId },
     });
   }
+
+  /** Reassigns ownership (rare; useful when a contributor leaves the lab). */
+  async transfer(id: string, admin: User, newOwnerId: string): Promise<void> {
+    const asset = await this.findOrThrow(id);
+    const target = await this.prisma.user.findUnique({ where: { id: newOwnerId } });
+    if (!target || target.deletedAt) {
+      throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${newOwnerId} not found.`);
+    }
+    await this.prisma.asset.update({ where: { id }, data: { ownerId: newOwnerId } });
+    await this.producer.enqueueSearchIndex({ reason: 'asset.update', assetId: id });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'asset.transfer',
+      subjectType: 'Asset',
+      subjectId: id,
+      metadata: { previousOwnerId: asset.ownerId, newOwnerId },
+    });
+  }
+
+  /** Returns a sequence of header values for X-Total-<Status> on the list. */
+  async statusCounts(): Promise<Record<AssetStatus, number>> {
+    const rows = await this.prisma.asset.groupBy({ by: ['status'], _count: { _all: true } });
+    const out: Record<AssetStatus, number> = { DRAFT: 0, PUBLISHED: 0, ARCHIVED: 0, DELETED: 0 };
+    for (const r of rows) out[r.status] = r._count._all;
+    return out;
+  }
+
+  private async deleteS3Prefix(role: 'assets' | 'thumbs', prefix: string): Promise<void> {
+    let continuationToken: string | undefined;
+    do {

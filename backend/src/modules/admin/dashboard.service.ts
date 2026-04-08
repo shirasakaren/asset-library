@@ -185,3 +185,28 @@ export class DashboardService {
       Array<{ assetId: string; downloads: bigint }>
     >(Prisma.sql`
       SELECT "assetId", COUNT(*)::bigint AS downloads
+      FROM downloads
+      WHERE "createdAt" >= ${since}
+      GROUP BY "assetId"
+      ORDER BY downloads DESC
+      LIMIT 10
+    `);
+    if (rows.length === 0) return [];
+    const ids = rows.map((r) => r.assetId);
+    const assets = await this.prisma.asset.findMany({
+      where: { id: { in: ids } },
+      include: { owner: true },
+    });
+    const byId = new Map(assets.map((a) => [a.id, a]));
+    return rows
+      .map((r) => {
+        const a = byId.get(r.assetId);
+        if (!a) return null;
+        return {
+          id: a.id,
+          title: a.title,
+          downloads: Number(r.downloads),
+          ownerDisplayName: a.owner.displayName,
+        };
+      })
+      .filter((r): r is TopAssetRow => !!r);
