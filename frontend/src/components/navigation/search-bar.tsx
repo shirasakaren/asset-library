@@ -199,3 +199,31 @@ export function SearchBar({ className }: SearchBarProps) {
                       {tNav('tags')}
                     </p>
                   </div>
+                ) : null}
+                {tagsQ.data?.map((tag, i) => {
+                  const rowIndex = i;
+                  const active = rows[activeIndex]?.id === `tag-${tag.slug}`;
+                  return (
+                    <NextLink
+                      key={tag.slug}
+                      href={`/search?tags=${encodeURIComponent(tag.slug)}`}
+                      id={`tag-${tag.slug}`}
+                      role="option"
+                      aria-selected={active}
+                      onMouseEnter={() => setActiveIndex(rowIndex)}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        'flex items-center gap-2.5 px-3 h-9 text-[13.5px] text-ink hover:bg-surface-muted/60 transition-colors duration-120',
+                        active && 'bg-surface-muted/60',
+                      )}
+                    >
+                      <TagIcon className="h-3.5 w-3.5 text-ink-3" strokeWidth={2.25} />
+                      <span className="font-medium">{tag.displayName}</span>
+                      <span className="ml-auto text-caption text-ink-3 geist-tnum">
+                        {tag.usageCount}
+                      </span>
+                    </NextLink>
+                  );
+                })}
+
+                {(assetsQ.data?.hits?.length ?? 0) > 0 ? (
