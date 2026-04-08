@@ -43,9 +43,3 @@ export async function Navbar({ user }: NavbarProps) {
               ))}
               <CommunityDropdown />
               <NavLink href="/about">{t('about')}</NavLink>
-            </nav>
-          </div>
-
-          {/* Right: utilities */}
-          <div className="ml-auto flex items-center gap-1">
-            <SearchBar />
