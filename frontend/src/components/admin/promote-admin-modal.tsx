@@ -97,3 +97,16 @@ export function PromoteAdminModal({ onOpenChange, onDone }: Props) {
                   ))}
               </ul>
             ) : null}
+          </Field>
+        ) : (
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-3 p-3 rounded-[12px] border border-line bg-surface-muted/60">
+              <Avatar
+                data={
+                  picked.avatar
+                    ? avatarFromServer(picked.avatar)
+                    : getAvatarTokens({ id: picked.id, displayName: picked.displayName, email: picked.email })
+                }
+                size={32}
+              />
+              <span>
