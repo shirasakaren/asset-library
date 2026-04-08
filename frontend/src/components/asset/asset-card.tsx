@@ -252,3 +252,29 @@ function FeatureCard({
         </h2>
         <p className="mt-3 text-body-lg text-white/85 line-clamp-2 max-w-[520px]">
           {asset.shortDescription}
+        </p>
+        <div className="mt-6 flex items-center gap-3 text-[13px] text-white/70">
+          <span className="inline-flex items-center gap-1.5">
+            <EngineLogo engine={asset.engine} size="sm" className="text-white/80" />
+            <span>{asset.categoryName}</span>
+          </span>
+          <span aria-hidden>·</span>
+          <span>by {asset.ownerDisplayName}</span>
+        </div>
+      </div>
+      {!isOwner ? (
+        <SaveButton
+          assetId={asset.id}
+          initialSaved={isSaved}
+          className="top-5 right-5 h-10 w-10 z-20"
+          hideUntilHover={false}
+        />
+      ) : null}
+    </article>
+  );
+}
+
+/* ------------------------------- ROW ------------------------------- */
+
+function RowCard({
+  asset,
