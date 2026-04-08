@@ -33,3 +33,4 @@ export function AssetCardSkeleton({ variant = 'grid', className }: AssetCardSkel
     );
   }
   if (variant === 'row') {
+    return (
