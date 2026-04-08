@@ -96,14 +96,3 @@ export function ThumbnailImage({
             priority={priority}
             sizes={fill ? sizes : undefined}
             className={cn(
-              'object-cover transition-opacity duration-200',
-              loaded ? 'opacity-100' : 'opacity-0',
-            )}
-            onLoad={() => setLoaded(true)}
-            onError={() => setErrored(true)}
-          />
-        )
-      ) : null}
-      {errored || !url ? <ThumbnailPlaceholder alt={alt} /> : null}
-    </div>
-  );
