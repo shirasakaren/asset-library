@@ -84,3 +84,30 @@ export function LibraryFilters() {
             >
               <input
                 type="radio"
+                name="library-engine"
+                checked={engine === e.value}
+                onChange={() => setParams({ engine: e.value || null })}
+                className="h-4 w-4 accent-ink"
+              />
+              {e.label}
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title={t('category')} activeCount={categoryIds.length}>
+        <ChipFilter
+          options={(categoriesQuery.data ?? []).map((c) => ({ label: c.name, value: c.id }))}
+          values={categoryIds}
+          onChange={(next) => setParams({ categoryIds: next })}
+        />
+      </FilterSection>
+
+      <FilterSection title={t('tags')} activeCount={tags.length}>
+        <TagCombobox
+          values={tags}
+          onChange={(next) => setParams({ tags: next })}
+          placeholder="Type to add a tag"
+        />
+      </FilterSection>
+
