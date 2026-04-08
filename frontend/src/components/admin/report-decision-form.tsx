@@ -86,3 +86,25 @@ export function ReportDecisionForm({ report }: Props) {
       router.push('/admin/reports');
     } catch (err) {
       toast.error('Decision failed', { description: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <Field label="Action">
+        <div className="flex flex-col gap-1.5">
+          {ACTIONS.map((opt) => {
+            const active = action === opt.value;
+            return (
+              <label
+                key={opt.value}
+                className={`inline-flex items-center gap-2.5 px-3 h-9 rounded-[10px] border cursor-pointer transition-colors ${
+                  active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="report-action"
+                  checked={active}
