@@ -110,11 +110,3 @@ export function FeaturedCarousel({ slots, className }: FeaturedCarouselProps) {
           className="absolute inset-0 bg-gradient-to-tr from-[rgba(14,17,22,0.85)] via-[rgba(14,17,22,0.45)] to-transparent"
         />
         <div
-          aria-hidden
-          className="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
-        />
-        <div className="relative mt-auto h-full flex flex-col justify-end p-7 md:p-10 max-w-[680px]">
-          <Badge variant="solid" size="md" className="mb-4 bg-white/15 text-white border-white/0 backdrop-blur-[6px]">
-            {t('featuredEyebrow')}
-          </Badge>
-          <h2 className="display-lg !text-white leading-[1.04]">
