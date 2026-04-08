@@ -72,3 +72,6 @@ export function CommunityDropdown() {
                     <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-[8px] bg-brand-blue-50 text-brand-blue">
                       <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.25} />
                     </span>
+                    <div className="min-w-0">
+                      <div className="text-[14px] font-medium text-ink">{it.label}</div>
+                      <div className="text-[12.5px] text-ink-3 mt-0.5">{it.hint}</div>
