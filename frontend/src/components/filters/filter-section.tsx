@@ -51,3 +51,17 @@ interface ChipFilterProps {
   values: string[];
   onChange: (next: string[]) => void;
   multi?: boolean;
+}
+
+export function ChipFilter({ options, values, onChange, multi = true }: ChipFilterProps) {
+  const toggle = (value: string) => {
+    if (multi) {
+      onChange(values.includes(value) ? values.filter((v) => v !== value) : [...values, value]);
+    } else {
+      onChange(values.includes(value) ? [] : [value]);
+    }
+  };
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {options.map((opt) => {
+        const active = values.includes(opt.value);
