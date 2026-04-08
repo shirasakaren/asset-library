@@ -62,3 +62,13 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
           )}
         >
           <Globe className="h-[18px] w-[18px]" strokeWidth={2.25} />
+          <span className="sr-only">{tCommon('openMenu')}</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="min-w-[220px] p-1.5">
+        <div className="px-2.5 py-1 text-eyebrow uppercase tracking-[0.12em] text-ink-3">
+          {t('switchLabel')}
+        </div>
+        {LOCALES.map((opt) => {
+          const active = opt.code === current;
+          return (
