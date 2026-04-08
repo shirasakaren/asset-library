@@ -99,3 +99,33 @@ export function PackageTree({ files }: PackageTreeProps) {
 
   return (
     <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <p className="text-caption text-ink-3 geist-tnum">
+          {t('summary', { count: files.length, size: formatBytes(totalBytes.toString(), locale) })}
+        </p>
+        <Input
+          inputSize="sm"
+          type="search"
+          placeholder={t('searchPlaceholder')}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="max-w-[280px]"
+        />
+      </div>
+      {filtered.length === 0 ? (
+        <p className="text-body-sm text-ink-3">{t('emptyMatch', { query })}</p>
+      ) : (
+        <div className="rounded-[14px] border border-line bg-surface overflow-hidden">
+          <ul role="tree" className="text-[13.5px]">
+            {Array.from(tree.children?.values() ?? []).map((node) => (
+              <TreeRow key={node.path} node={node} depth={0} defaultOpen={!!query} />
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface TreeRowProps {
+  node: TreeNode;
