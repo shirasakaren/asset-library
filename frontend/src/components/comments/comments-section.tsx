@@ -152,3 +152,4 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
               {(
                 [
                   { value: 'ALL', label: t('filter.all') },
+                  { value: 'OPEN', label: t('filter.open') },
