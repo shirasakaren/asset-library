@@ -70,21 +70,3 @@ export function CategoryRow({
         <div
           ref={scrollerRef}
           className={cn(
-            'flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth',
-            '[-ms-overflow-style:none] [scrollbar-width:none]',
-            '[&::-webkit-scrollbar]:hidden',
-            '-mx-1 px-1 py-1',
-          )}
-        >
-          {assets.map((asset) => (
-            <div key={asset.id} className="snap-start">
-              <AssetCard
-                variant="compact"
-                asset={asset}
-                isSaved={savedIds.has(asset.id)}
-                isOwner={ownAssetIds.has(asset.id)}
-              />
-            </div>
-          ))}
-        </div>
-
