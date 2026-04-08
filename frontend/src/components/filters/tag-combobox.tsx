@@ -55,3 +55,5 @@ export function TagCombobox({ values, onChange, placeholder }: TagComboboxProps)
             variant="neutral"
             className="inline-flex items-center gap-1 pr-1"
           >
+            {slug}
+            <button
