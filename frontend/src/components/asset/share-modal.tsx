@@ -54,10 +54,3 @@ export function ShareModal({ open, onOpenChange, assetTitle, url }: ShareModalPr
     try {
       await navigator.share({ title: assetTitle, url });
       logEvent('asset.share_native', { url });
-    } catch {
-      /* user cancelled — fine */
-    }
-  };
-
-  return (
-    <Modal open={open} onOpenChange={onOpenChange}>
