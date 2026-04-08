@@ -171,15 +171,3 @@ export function CommentThread(props: CommentThreadProps) {
                     >
                       <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                       {t('delete')}
-                    </DropdownMenuItem>
-                  ) : null}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </footer>
-          ) : null}
-
-          {replying ? (
-            <div className="mt-3 pl-4 border-l-2 border-line">
-              <CommentComposer
-                me={me}
-                defaultKind="COMMENT"
