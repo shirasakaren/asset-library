@@ -55,3 +55,11 @@ export const useAnalyzerStore = create<AnalyzerState>((set) => ({
           [versionId]: { ...v, analysisStatus: 'READY', updatedAt: Date.now() },
         },
       };
+    }),
+  reset: (versionId) =>
+    set((state) => {
+      const next = { ...state.versions };
+      delete next[versionId];
+      return { versions: next };
+    }),
+}));
