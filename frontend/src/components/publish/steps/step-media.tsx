@@ -281,3 +281,149 @@ export function StepMedia() {
           {uploadingPreview ? (
             <span className="inline-flex items-center gap-2 text-caption text-ink-3">
               <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2.25} />
+              <span>{t('uploading')}{previewProgress != null ? ` · ${previewProgress}%` : ''}</span>
+              <span className="w-24 h-1 rounded-full bg-line overflow-hidden align-middle">
+                <span className="block h-full bg-brand-blue transition-[width] duration-150" style={{ width: `${previewProgress ?? 0}%` }} />
+              </span>
+            </span>
+          ) : null}
+        </div>
+        <input
+          ref={previewInputRef}
+          type="file"
+          hidden
+          accept={
+            previewKind === 'image' ? 'image/*'
+              : previewKind === 'video' ? 'video/*'
+                : previewKind === 'audio' ? 'audio/*'
+                  : previewKind === '3d' ? '.glb,.fbx,.obj'
+                    : undefined
+          }
+          onChange={(e) => {
+            const f = e.currentTarget.files?.[0];
+            e.currentTarget.value = '';
+            if (f) void handlePreviewMedia(f);
+          }}
+        />
+        {previewMedia.length === 0 ? (
+          <div className="rounded-[14px] border border-dashed border-line bg-surface-muted/30 p-8 text-center text-body-sm text-ink-3">
+            No preview media yet. Use the buttons above to upload images, video, audio, or 3D files.
+          </div>
+        ) : (
+          <>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={reorder}>
+              <SortableContext items={previewMedia.map((m) => m.id)} strategy={rectSortingStrategy}>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {previewMedia.map((m, i) => (
+                    <PreviewMediaCard
+                      key={m.id}
+                      item={m}
+                      index={i}
+                      onRemove={() => removePreview(m.id)}
+                      onSettings={() => setSettingsItem(m)}
+                    />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
+            <p className="mt-2 text-caption text-ink-3">
+              Drag tiles to reorder slides. Use the gear to blur or hide sensitive media.
+            </p>
+          </>
+        )}
+      </section>
+
+      {settingsItem ? (
+        <MediaSettingsModal
+          item={settingsItem}
+          onClose={() => setSettingsItem(null)}
+          onSave={(patch) => {
+            saveSettings(settingsItem.id, patch);
+            setSettingsItem(null);
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function PreviewMediaCard({
+  item,
+  index,
+  onRemove,
+  onSettings,
+}: {
+  item: PreviewMediaItem;
+  index: number;
+  onRemove: () => void;
+  onSettings: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  });
+  const blurred = item.visibility === 'blur';
+  const hidden = item.visibility === 'hidden';
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        'relative rounded-[12px] overflow-hidden border border-line bg-surface-muted group',
+        item.kind === 'audio' ? '' : 'aspect-[16/9]',
+        isDragging && 'opacity-80 shadow-2 z-10',
+      )}
+    >
+      <span className="absolute top-1.5 left-1.5 z-20 inline-flex h-6 min-w-6 px-1.5 items-center justify-center rounded-full bg-ink/70 text-white text-[10px] font-semibold geist-tnum">
+        {index + 1}
+      </span>
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        aria-label="Drag to reorder"
+        className="absolute top-1.5 left-1/2 -translate-x-1/2 z-20 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/80 backdrop-blur-[6px] text-ink-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="h-3.5 w-3.5" strokeWidth={2.25} />
+      </button>
+
+      <div className={cn('absolute inset-0', blurred && 'blur-xl scale-110')}>
+        {item.kind === 'image' ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.viewUrl} alt={item.label} className="absolute inset-0 h-full w-full object-cover" />
+        ) : item.kind === 'video' ? (
+          <video src={item.viewUrl} controls={!blurred} preload="metadata" className="absolute inset-0 h-full w-full object-contain bg-ink" />
+        ) : item.kind === 'audio' ? (
+          <div className="p-3 flex flex-col gap-2">
+            <div className="inline-flex items-center gap-2 text-caption text-ink-2">
+              <Music className="h-4 w-4" strokeWidth={2.25} />
+              <span className="font-medium text-ink truncate">{item.label}</span>
+            </div>
+            <audio src={item.viewUrl} controls preload="metadata" className="w-full" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-ink-3 px-4 text-center">
+            <FileBox className="h-6 w-6" strokeWidth={2.25} />
+            <span className="text-[12.5px] font-medium text-ink truncate max-w-full">{item.label}</span>
+            <span className="text-caption">3D model</span>
+          </div>
+        )}
+      </div>
+
+      {(blurred || hidden) && item.kind !== 'audio' ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-center px-4 pointer-events-none">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-ink/70 text-white">
+            <EyeOff className="h-4 w-4" strokeWidth={2.25} />
+          </span>
+          <span className="text-[12px] font-semibold text-white drop-shadow">
+            {hidden ? 'Hidden' : item.warning?.trim() || 'Sensitive content'}
+          </span>
+        </div>
+      ) : null}
+
+      <div className="absolute top-1.5 right-1.5 z-20 flex items-center gap-1">
+        <button
+          type="button"
+          aria-label="Media settings"
+          onClick={onSettings}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-[6px] text-ink-2 hover:text-ink shadow-1"
+        >
