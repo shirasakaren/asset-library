@@ -70,3 +70,12 @@ export function StepRail() {
 
       <div className="mt-8 rounded-[14px] border border-line bg-surface p-4">
         <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
+          {tChecklist('title')}
+        </p>
+        <ul className="space-y-2">
+          {Object.entries(wiz.checklist)
+            .filter(([k]) => k !== 'compatibility' || wiz.asset.engine !== 'ENGINE_AGNOSTIC')
+            .map(([k, item]) => (
+              <ChecklistRow key={k} item={item} />
+            ))}
+        </ul>
