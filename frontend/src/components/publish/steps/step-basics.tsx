@@ -124,3 +124,4 @@ export function StepBasics() {
               {c.name}
             </option>
           ))}
+        </select>
