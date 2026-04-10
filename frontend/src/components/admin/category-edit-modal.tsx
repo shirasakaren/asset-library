@@ -77,5 +77,3 @@ export function CategoryEditModal({ category, onOpenChange, onDone }: Props) {
                   const v = e.target.value;
                   setNameEn(v);
                   if (!editing) setSlug(slugify(v));
-                }}
-              />
