@@ -110,3 +110,19 @@ export function PromoteAdminModal({ onOpenChange, onDone }: Props) {
                 size={32}
               />
               <span>
+                <span className="text-[14px] font-semibold text-ink">{picked.displayName}</span>
+                <span className="block text-caption text-ink-3 font-mono">{picked.email}</span>
+              </span>
+              <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setPicked(null)}>
+                Change
+              </Button>
+            </div>
+            <Field id="pm-confirm" label="Type their email to confirm" required>
+              <Input
+                id="pm-confirm"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                placeholder={picked.email}
+              />
+            </Field>
+          </div>
