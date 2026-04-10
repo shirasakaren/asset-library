@@ -102,15 +102,3 @@ export function AnalyticsCharts({ data }: Props) {
         </h2>
         <div className="h-[220px]">
           <ResponsiveContainer>
-            <BarChart data={bySource} layout="vertical" margin={{ left: 12 }}>
-              <CartesianGrid stroke="#ececea" strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" stroke="#9aa1ad" fontSize={11} />
-              <YAxis dataKey="source" type="category" stroke="#9aa1ad" fontSize={11} width={70} />
-              <Tooltip
-                contentStyle={{
-                  background: '#0e1116',
-                  borderRadius: 12,
-                  border: 'none',
-                  color: '#fff',
-                  fontSize: 12,
-                }}
