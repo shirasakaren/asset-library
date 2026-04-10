@@ -81,17 +81,3 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
             (list.data ?? []).map((d) => (
               <li key={d.id} className="flex items-center gap-3 px-4 py-3">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-surface-muted text-ink-2">
-                  <Cpu className="h-4 w-4" strokeWidth={2.25} />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-medium text-ink truncate">{d.deviceLabel}</p>
-                  <p className="text-caption text-ink-3 geist-tnum truncate">
-                    Created {formatDate(d.createdAt, locale)} ·{' '}
-                    {d.lastUsedAt
-                      ? `Last used ${formatRelative(d.lastUsedAt, locale)}`
-                      : 'Never used'}{' '}
-                    · Expires {formatDate(d.expiresAt, locale)}
-                  </p>
-                </div>
-                <Badge variant={new Date(d.expiresAt) < new Date() ? 'danger' : 'neutral'}>
-                  {new Date(d.expiresAt) < new Date() ? 'Expired' : 'Active'}
