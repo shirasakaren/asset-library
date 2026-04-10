@@ -148,3 +148,15 @@ export function StepCompatibility() {
                       options={RENDER_PIPELINES_BY_ENGINE[wiz.asset.engine].map((rp) => ({
                         label: tSearch(`renderPipeline.${rp}`),
                         value: rp,
+                      }))}
+                      values={row.renderPipelines}
+                      onChange={(next) => {
+                        const updated = rows.map((r, i) =>
+                          i === idx ? { ...r, renderPipelines: next as RenderPipeline[] } : r,
+                        );
+                        void persist(updated);
+                      }}
+                    />
+                  </Field>
+                ) : null}
+
