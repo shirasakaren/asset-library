@@ -200,3 +200,69 @@ function SortableSlot({
   slot: AdminFeaturedSlot;
   onEdit: () => void;
   onToggle: (next: boolean) => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: slot.id,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(isDragging && 'opacity-70')}
+    >
+      <SlotCard
+        slot={slot}
+        onEdit={onEdit}
+        onToggle={onToggle}
+        onDelete={onDelete}
+        dragHandle={
+          <button
+            {...attributes}
+            {...listeners}
+            type="button"
+            aria-label="Drag to reorder"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] text-ink-3 hover:bg-surface-muted hover:text-ink cursor-grab active:cursor-grabbing"
+          >
+            <GripVertical className="h-4 w-4" strokeWidth={2.25} />
+          </button>
+        }
+      />
+    </div>
+  );
+}
+
+function SlotCard({
+  slot,
+  onEdit,
+  onToggle,
+  onDelete,
+  dragHandle,
+}: {
+  slot: AdminFeaturedSlot;
+  onEdit: () => void;
+  onToggle: (next: boolean) => void;
+  onDelete: () => void;
+  dragHandle?: React.ReactNode;
+}) {
+  const banner = slot.customBannerUrl ?? null;
+  return (
+    <Card padding="none" className="overflow-hidden">
+      <div className="relative aspect-[16/9] bg-surface-muted">
+        {banner ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={banner} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-ink-3 text-caption">
+            Uses asset thumbnail
+          </div>
+        )}
+        <div className="absolute top-2 left-2 right-2 flex items-center gap-2">
+          {dragHandle}
+          <Badge variant="solid" className="bg-white/85 !text-ink border-white/0">
+            #{slot.sortOrder + 1}
+          </Badge>
+          {slot.isActive ? (
+            <Badge variant="success">Active</Badge>
+          ) : (
+            <Badge variant="neutral">Inactive</Badge>
