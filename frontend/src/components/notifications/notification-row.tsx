@@ -43,11 +43,3 @@ export function NotificationRow({ item, onActivate, dense }: Props) {
         <span aria-label="Unread" className="mt-2 inline-block h-2 w-2 rounded-full bg-brand-blue shrink-0" />
       ) : null}
     </NextLink>
-  );
-}
-
-function renderMessage(
-  type: string,
-  payload: Record<string, unknown>,
-  t: (key: string, vars?: Record<string, unknown>) => string,
-): React.ReactNode {
