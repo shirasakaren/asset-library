@@ -48,3 +48,31 @@ export function DataTable<T extends { id: string }>({
                   col.align === 'center' && 'text-center',
                   col.className,
                 )}
+              >
+                {col.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr
+              key={row.id}
+              className={cn(
+                'border-t border-line transition-colors duration-120',
+                onRowClick && 'hover:bg-surface-muted/40 cursor-pointer',
+              )}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+            >
+              {columns.map((col) => (
+                <td
+                  key={col.key}
+                  className={cn(
+                    'px-4 py-3 align-middle text-ink-2',
+                    col.align === 'right' && 'text-right',
+                    col.align === 'center' && 'text-center',
+                    col.className,
+                  )}
+                >
+                  {col.cell(row)}
+                </td>
