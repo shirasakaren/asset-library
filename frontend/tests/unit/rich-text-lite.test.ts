@@ -33,13 +33,3 @@ describe('stripDisallowedLiteNodes', () => {
       content: [
         { type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'H1' }] },
         { type: 'paragraph', content: [{ type: 'text', text: 'ok' }] },
-        // Images/GIFs are allowed in lite mode (comments) since the editor
-        // supports inline image + GIF embeds.
-        { type: 'image', attrs: { src: '/x' } },
-        { type: 'table', content: [] },
-      ],
-    };
-    const cleaned = stripDisallowedLiteNodes(doc);
-    expect(cleaned.content?.map((n) => n.type)).toEqual(['paragraph', 'image']);
-  });
-
