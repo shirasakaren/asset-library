@@ -101,3 +101,44 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               {leadingIcon}
             </span>
           ) : null}
+          <input
+            ref={ref}
+            type={type}
+            className={cn(
+              inputBase,
+              sizeMap[inputSize],
+              leadingIcon && 'pl-10',
+              trailingIcon && 'pr-10',
+              invalid && 'border-brand-red focus-visible:ring-brand-red',
+              className,
+            )}
+            aria-invalid={invalid || undefined}
+            {...props}
+          />
+          {trailingIcon ? (
+            <span className="absolute right-3 inline-flex text-ink-3" aria-hidden>
+              {trailingIcon}
+            </span>
+          ) : null}
+        </div>
+      );
+    }
+    return (
+      <input
+        ref={ref}
+        type={type}
+        className={cn(
+          inputBase,
+          sizeMap[inputSize],
+          invalid && 'border-brand-red focus-visible:ring-brand-red',
+          className,
+        )}
+        aria-invalid={invalid || undefined}
+        {...props}
+      />
+    );
+  },
+);
+Input.displayName = 'Input';
+
+/* ===================== Textarea ===================== */
