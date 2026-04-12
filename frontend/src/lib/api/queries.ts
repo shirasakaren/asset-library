@@ -41,38 +41,3 @@ export const STALE_TIMES = {
 
 export const queryKeys = {
   me: ['me'] as const,
-
-  notifications: (params: { unreadOnly?: boolean } = {}) =>
-    ['notifications', params] as const,
-  notificationsUnreadCount: ['notifications', 'unread-count'] as const,
-
-  discover: (locale: LocaleCode) => ['discover', locale] as const,
-
-  assets: (filters: Record<string, unknown> = {}) => ['assets', filters] as const,
-  asset: (idOrSlug: string, locale: LocaleCode) => ['asset', idOrSlug, locale] as const,
-  assetRecommended: (idOrSlug: string, locale: LocaleCode) =>
-    ['asset', idOrSlug, 'recommended', locale] as const,
-
-  library: (filters: Record<string, unknown> = {}) => ['library', filters] as const,
-  libraryAll: ['library'] as const,
-  savedIds: ['library', 'saved-ids'] as const,
-
-  searchAssets: (q: string, filters: Record<string, unknown> = {}) =>
-    ['search', 'assets', q, filters] as const,
-  searchTags: (q: string) => ['search', 'tags', q] as const,
-  searchTypeahead: (q: string) => ['search', 'typeahead', q] as const,
-
-  categories: (locale: LocaleCode) => ['categories', locale] as const,
-  tags: (q: string) => ['tags', q] as const,
-  licenses: (locale: LocaleCode) => ['licenses', locale] as const,
-
-  downloadOptions: (assetId: string, versionId: string) =>
-    ['download-options', assetId, versionId] as const,
-
-  assetVersions: (assetId: string) => ['asset', assetId, 'versions'] as const,
-
-  comments: (assetId: string, filter: { kind?: 'ALL' | 'COMMENT' | 'ISSUE' } = {}) =>
-    ['comments', assetId, filter] as const,
-
-  notificationsInbox: (params: { unreadOnly?: boolean } = {}) =>
-    ['notifications-inbox', params] as const,
