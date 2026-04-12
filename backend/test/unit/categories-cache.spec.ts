@@ -88,3 +88,20 @@ describe('CategoriesService — Redis cache', () => {
 
   it('different locale uses a different cache key and re-runs the query', async () => {
     const { svc, calls } = build();
+
+    await svc.list('en');
+    await new Promise((r) => setImmediate(r));
+    expect(calls.findMany).toBe(1);
+
+    // Different locale → different cache key → fresh DB call.
+    await svc.list('id');
+    expect(calls.findMany).toBe(2);
+    expect(calls.groupBy).toBe(2);
+
+    // ...but the second `id` call hits the cache.
+    await new Promise((r) => setImmediate(r));
+    await svc.list('id');
+    expect(calls.findMany).toBe(2);
+  });
+
+  it('invalidateCache() forces a fresh Prisma query on the next list()', async () => {
