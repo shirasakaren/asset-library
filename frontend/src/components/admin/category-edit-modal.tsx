@@ -42,38 +42,3 @@ export function CategoryEditModal({ category, onOpenChange, onDone }: Props) {
   const submit = async () => {
     if (!slug || !nameEn) {
       toast.error('Slug and English name are required.');
-      return;
-    }
-    setBusy(true);
-    try {
-      const payload = { slug, name: { en: nameEn, id: nameId || nameEn }, isActive };
-      if (editing && category) {
-        await fetcher(`/admin/categories/${category.id}`, { method: 'PATCH', body: payload });
-      } else {
-        await fetcher('/admin/categories', { method: 'POST', body: payload });
-      }
-      toast.success(editing ? 'Category updated' : 'Category created');
-      onDone();
-    } catch (err) {
-      toast.error('Could not save', { description: err instanceof Error ? err.message : String(err) });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Modal open onOpenChange={onOpenChange}>
-      <ModalContent size="md">
-        <ModalHeader>
-          <ModalTitle>{editing ? 'Edit category' : 'New category'}</ModalTitle>
-        </ModalHeader>
-        <div className="space-y-4">
-          <div className="grid sm:grid-cols-2 gap-3">
-            <Field id="cat-name-en" label="Name (EN)" required>
-              <Input
-                id="cat-name-en"
-                value={nameEn}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setNameEn(v);
-                  if (!editing) setSlug(slugify(v));
