@@ -66,3 +66,18 @@ describe('E2E [16] idempotency on POST /assets', () => {
     const category = await prisma.category.findFirstOrThrow();
     const license = await prisma.license.findFirstOrThrow();
     const body = {
+      title: `Idem Conflict ${Date.now()}`,
+      engine: 'UNITY',
+      categoryId: category.id,
+      licenseId: license.id,
+      semver: '1.0.0',
+      translations: [
+        { locale: 'en', shortDescription: 'x', longDescription: { type: 'doc', content: [] } },
+      ],
+    };
+    await supertest(app.getHttpServer())
+      .post('/assets')
+      .set('Authorization', `Bearer ${token}`)
+      .set('Idempotency-Key', idemKey)
+      .send(body)
+      .expect(201);
