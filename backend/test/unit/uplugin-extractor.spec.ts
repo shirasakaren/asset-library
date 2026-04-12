@@ -50,3 +50,8 @@ describe('Unreal extractors', () => {
       JSON.stringify({
         EngineAssociation: '5.4',
         Plugins: [{ Name: 'X', Enabled: true }],
+        Modules: [{ Name: 'Main' }],
+      }),
+    );
+    const meta = await extractUProject(path);
+    expect(meta).toMatchObject({ engineVersion: '5.4', plugins: [{ name: 'X', enabled: true }] });
