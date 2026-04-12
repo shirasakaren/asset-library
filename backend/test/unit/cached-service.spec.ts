@@ -86,3 +86,40 @@ describe('CachedService', () => {
 
     // Hitting the same keys again — both fetchers stay at one call.
     await svc.getOrFetch('k-en', 60, a);
+    await svc.getOrFetch('k-id', 60, b);
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).toHaveBeenCalledTimes(1);
+  });
+
+  it('invalidate() drops the cached entry so the next call re-runs the fetcher', async () => {
+    const { svc, client } = build();
+    const fetcher = jest.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(2);
+
+    expect(await svc.getOrFetch('k', 60, fetcher)).toBe(1);
+    await new Promise((r) => setImmediate(r));
+    expect(client.store.has('k')).toBe(true);
+
+    await svc.invalidate('k');
+    expect(client.store.has('k')).toBe(false);
+
+    expect(await svc.getOrFetch('k', 60, fetcher)).toBe(2);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it('SET failure does not bubble up — caller still gets the fetched value', async () => {
+    const client = new FakeRedisClient();
+    client.failNextSet = true;
+    // Swap set for the failing variant on this one client.
+    client.set = client.setFailing.bind(client);
+    const svc = new CachedService({ client } as unknown as RedisService);
+
+    const fetcher = jest.fn().mockResolvedValue('value');
+    await expect(svc.getOrFetch('k', 60, fetcher)).resolves.toBe('value');
+    // Microtask drain so the rejected SET's .catch() runs.
+    await new Promise((r) => setImmediate(r));
+  });
+
+  it('GET failure falls through to the fetcher (treated as a miss)', async () => {
+    const client = new FakeRedisClient();
+    // First GET throws; subsequent GETs use the normal path.
+    let thrown = false;
