@@ -100,3 +100,4 @@ export function StepReview() {
 
       {wiz.asset.engine !== 'ENGINE_AGNOSTIC' ? (
         <Card>
+          <SectionHead title={tCompat('title')} onEdit={() => goto('compatibility')} />
