@@ -81,5 +81,3 @@ export function RequestForm({ me, open, onOpenChange, onCreated }: Props) {
       <ModalContent size="md">
         <ModalHeader>
           <ModalTitle>{t('newRequest')}</ModalTitle>
-          <ModalDescription>{t('subtitle')}</ModalDescription>
-        </ModalHeader>
