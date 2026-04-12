@@ -35,5 +35,3 @@ function readCreds(persona: Persona): PersonaCreds | null {
   const email = process.env[`${PREFIX[persona]}_EMAIL`];
   const password = process.env[`${PREFIX[persona]}_PASSWORD`];
   if (!email || !password) return null;
-  return { email, password };
-}
