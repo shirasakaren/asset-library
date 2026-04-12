@@ -282,3 +282,9 @@ export interface DownloadOptionsFile {
   bytes: string;
   getUrl: string | null;
   expiresAt: string | null;
+}
+
+export interface DownloadOptions {
+  asset: { id: string; title: string };
+  version: { id: string; semver: string; releaseNotes: TipTapDoc | null };
+  files: DownloadOptionsFile[];
