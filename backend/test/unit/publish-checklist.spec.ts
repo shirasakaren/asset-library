@@ -37,3 +37,25 @@ describe('PublishChecklistService', () => {
     expect(codes).toEqual(
       expect.arrayContaining([
         'category.missing',
+        'license.missing',
+        'thumbnail.missing',
+        'translations.empty',
+        'version.missing',
+      ]),
+    );
+  });
+
+  it('requires compatibility for engine-specific assets', async () => {
+    const prisma = {
+      assetTranslation: { count: jest.fn().mockResolvedValue(1) },
+      assetVersion: {
+        findFirst: jest.fn().mockResolvedValue({
+          id: 'v1',
+          semver: '1.0.0',
+          analysisStatus: 'READY',
+          avStatus: 'CLEAN',
+          _count: { files: 2, compatibility: 0 },
+        }),
+      },
+    } as never;
+    const svc = new PublishChecklistService(prisma);

@@ -82,3 +82,27 @@ describe('TipTap validators', () => {
           content: [
             { type: 'heading', attrs: { level: 5 }, content: [{ type: 'text', text: 'h5' }] },
           ],
+        }),
+      ).toThrow(/disallowed/i);
+    });
+
+    it('allows images, tables, and embeds', () => {
+      const doc = {
+        type: 'doc',
+        content: [
+          {
+            type: 'table',
+            content: [
+              {
+                type: 'tableRow',
+                content: [
+                  {
+                    type: 'tableHeader',
+                    content: [{ type: 'paragraph', content: [{ type: 'text', text: 'A' }] }],
+                  },
+                ],
+              },
+            ],
+          },
+          { type: 'image', attrs: { src: 'https://cdn.example.com/x.png', alt: 'x' } },
+          { type: 'embed', attrs: { src: 'https://youtube.com/embed/abc', provider: 'youtube' } },
