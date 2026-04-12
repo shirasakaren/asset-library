@@ -44,3 +44,17 @@ describe('E2E [15] TipTap lite enforcement on comments', () => {
         status: 'PUBLISHED',
         publishedAt: new Date(),
         translations: { create: { locale: 'en', shortDescription: 'x', longDescription: {} } },
+      },
+    });
+    assetId = asset.id;
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('rejects a comment with an image node and surfaces the Lite TipTap error code', async () => {
+    const offendingBody = {
+      type: 'doc',
+      content: [{ type: 'image', attrs: { src: 'https://x.test/y.png' } }],
+    };
