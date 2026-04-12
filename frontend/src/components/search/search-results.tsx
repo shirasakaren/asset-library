@@ -66,16 +66,3 @@ export function SearchResults() {
     }
   }, [isIntersecting, query]);
 
-  useEffect(() => {
-    logEvent('search.filter_change', filters);
-  }, [filters]);
-
-  const items = query.data?.pages.flatMap((p) => p.items) ?? [];
-  const total = query.data?.pages[0]?.items.length ?? 0;
-  const q = (filters.q as string) ?? '';
-
-  return (
-    <div>
-      <div className="flex flex-wrap items-baseline gap-3 mb-5">
-        <h1 className="font-display text-h1 text-ink tracking-[-0.015em]">{t('title')}</h1>
-        {!query.isPending ? (
