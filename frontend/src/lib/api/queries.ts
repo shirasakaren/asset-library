@@ -41,3 +41,19 @@ export const STALE_TIMES = {
 
 export const queryKeys = {
   me: ['me'] as const,
+
+  notifications: (params: { unreadOnly?: boolean } = {}) =>
+    ['notifications', params] as const,
+  notificationsUnreadCount: ['notifications', 'unread-count'] as const,
+
+  discover: (locale: LocaleCode) => ['discover', locale] as const,
+
+  assets: (filters: Record<string, unknown> = {}) => ['assets', filters] as const,
+  asset: (idOrSlug: string, locale: LocaleCode) => ['asset', idOrSlug, locale] as const,
+  assetRecommended: (idOrSlug: string, locale: LocaleCode) =>
+    ['asset', idOrSlug, 'recommended', locale] as const,
+
+  library: (filters: Record<string, unknown> = {}) => ['library', filters] as const,
+  libraryAll: ['library'] as const,
+  savedIds: ['library', 'saved-ids'] as const,
+
