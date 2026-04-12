@@ -58,6 +58,3 @@ export function usePermissions(ctx: PermissionContext): Permissions {
     const asset = ctx.asset;
     const isOwner = Boolean(asset && me.id === asset.owner.id);
     const isAdmin = me.isAdmin;
-
-    const status: AssetStatus | undefined = asset?.status;
-
