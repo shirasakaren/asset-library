@@ -46,3 +46,15 @@ describe('AssetCard (grid)', () => {
 describe('AssetCard (compact)', () => {
   it('renders title and download count', () => {
     render(<AssetCard variant="compact" asset={asset} />);
+    expect(screen.getByText('Demo asset')).toBeInTheDocument();
+    // 1234 formatted as "1.2k"
+    expect(screen.getByText(/1\.2k/)).toBeInTheDocument();
+  });
+});
+
+describe('AssetCard (feature)', () => {
+  it('renders title and category in feature variant', () => {
+    render(<AssetCard variant="feature" asset={asset} bannerUrl={null} />);
+    expect(screen.getByText('Demo asset')).toBeInTheDocument();
+    expect(screen.getByText('Tools')).toBeInTheDocument();
+  });
