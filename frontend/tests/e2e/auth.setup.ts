@@ -35,3 +35,31 @@ function readCreds(persona: Persona): PersonaCreds | null {
   const email = process.env[`${PREFIX[persona]}_EMAIL`];
   const password = process.env[`${PREFIX[persona]}_PASSWORD`];
   if (!email || !password) return null;
+  return { email, password };
+}
+
+async function loginViaUi(
+  page: import('@playwright/test').Page,
+  creds: PersonaCreds,
+): Promise<void> {
+  // Go to a gated route; the middleware redirects to /auth/signin which
+  // immediately bounces to Keycloak's hosted login.
+  await page.goto('/');
+  await page.locator('input[name="username"], input[id="username"]').fill(creds.email);
+  await page.locator('input[name="password"]').fill(creds.password);
+  await Promise.all([
+    page.waitForURL((url) => !url.pathname.startsWith('/auth/'), { timeout: 20_000 }),
+    page.locator('button[type="submit"], input[type="submit"]').first().click(),
+  ]);
+  await expect(page.locator('nav[aria-label="Primary"]')).toBeVisible();
+}
+
+for (const persona of PERSONAS) {
+  setup(`auth: ${persona}`, async ({ page, context }) => {
+    const creds = readCreds(persona);
+    if (!creds) {
+      setup.skip(true, `E2E creds missing for ${persona}`);
+      return;
+    }
+    await loginViaUi(page, creds);
+
