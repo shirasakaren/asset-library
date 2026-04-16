@@ -47,4 +47,3 @@ export class ProblemDto {
 /**
  * Thrown anywhere in services; caught by AllExceptionsFilter and rendered as
  * problem+json. Carrying the stable `code` separately from the HTTP status
- * lets us evolve messages without breaking clients.
