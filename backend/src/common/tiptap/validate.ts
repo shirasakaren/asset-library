@@ -140,3 +140,25 @@ function walk(node: TipTapNode | TipTapDoc, path: string, state: WalkState): Tip
   if (node.type === 'heading' && typeof typedNode.attrs?.level === 'number') {
     const max = state.allowlist.maxHeadingLevel ?? 3;
     if (typedNode.attrs.level < 1 || typedNode.attrs.level > max) {
+      state.violations.push({
+        path: `${path}.attrs.level`,
+        code: 'heading.level_out_of_range',
+        message: `Heading level must be 1..${max}.`,
+      });
+    }
+  }
+  if (typedNode.attrs) {
+    const allowedAttrs = state.allowlist.nodeAttrs[node.type];
+    if (allowedAttrs) {
+      const filtered: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(typedNode.attrs)) {
+        if (allowedAttrs.has(k)) filtered[k] = v;
+      }
+      if (Object.keys(filtered).length > 0) out.attrs = filtered;
+    }
+  }
+  if (typedNode.marks) {
+    const safeMarks: TipTapNode['marks'] = [];
+    for (const [i, mark] of typedNode.marks.entries()) {
+      if (!state.allowlist.marks.has(mark.type)) {
+        state.violations.push({
