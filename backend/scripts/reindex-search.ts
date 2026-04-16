@@ -53,10 +53,3 @@ async function main(): Promise<void> {
 
   const tags = client.index('tags');
   await tags.updateSearchableAttributes(['slug', 'displayName']);
-  await tags.updateSortableAttributes(['usageCount', 'displayName']);
-
-  // TODO(Part 2): fetch published assets and tags from Postgres, then
-  // documents.push(...) into both indexes in batches.
-
-  // eslint-disable-next-line no-console
-  console.log('[reindex] done.');
