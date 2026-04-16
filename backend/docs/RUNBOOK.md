@@ -128,13 +128,3 @@ for emergency reversal.
 
 ## 5. Rollback
 
-The image tag is the rollback unit. Every deploy logs the tag to
-`/srv/mgm-asset-library/.image-tag` on the host. To roll back:
-
-```bash
-cd /srv/mgm-asset-library
-export IMAGE=ghcr.io/mgm-laboratory/mgm-asset-library-api:latest-<prev-sha>
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d
-```
-
