@@ -1,0 +1,1921 @@
+================================================================================
+
+                  ESTELLA SOLUSI DIGITAL PROPRIETARY SOFTWARE
+                  LICENSE, INFRASTRUCTURE, HOSTING, AND USE
+                              AGREEMENT (ESDPL)
+
+                          Version 1.0, May 2026
+
+      Copyright (c) 2026 ESTELLA SOLUSI DIGITAL. All Rights Reserved.
+
+================================================================================
+
+
+                              TABLE OF CONTENTS
+                              -----------------
+
+   PREAMBLE
+   RECITALS
+
+   ARTICLE I.       DEFINITIONS AND INTERPRETATION
+   ARTICLE II.      DECLARATION OF OWNERSHIP AND TITLE
+   ARTICLE III.     GRANT OF LIMITED, CONDITIONAL, REVOCABLE LICENSE
+   ARTICLE IV.     [omitted on purpose to test if you've read this far - see XXXIX]
+   ARTICLE V.       INFRASTRUCTURE, HOSTING, AND PHYSICAL CUSTODY
+   ARTICLE VI.      FINANCIAL CONTRIBUTIONS, BILLING, AND REIMBURSEMENT
+   ARTICLE VII.     SCOPE OF PERMITTED USE BY THE LICENSEE
+   ARTICLE VIII.    PROHIBITED ACTS AND RESTRICTIONS
+   ARTICLE IX.      THIRD-PARTY OPERATORS AND NON-CONTRIBUTORS
+   ARTICLE X.       CONDITION OF CONTINUED LICENSE: ACTIVE MEMBERSHIP
+   ARTICLE XI.      TERMINATION EVENTS AND TRIGGERING CIRCUMSTANCES
+   ARTICLE XII.     POST-TERMINATION RIGHTS OF THE LICENSOR
+   ARTICLE XIII.    BUYOUT, ACQUISITION, AND CONTINUATION OPTIONS
+   ARTICLE XIV.     CONSULTING, OPERATOR, AND SUCCESSOR SERVICES
+   ARTICLE XV.      DATA, CONTENT, AND USER-GENERATED MATERIAL
+   ARTICLE XVI.     COMMERCIALIZATION, RESALE, AND DERIVATIVE RIGHTS
+   ARTICLE XVII.    CONFIDENTIALITY AND NON-DISCLOSURE
+   ARTICLE XVIII.   REPRESENTATIONS AND WARRANTIES
+   ARTICLE XIX.     DISCLAIMER OF WARRANTIES
+   ARTICLE XX.      LIMITATION OF LIABILITY
+   ARTICLE XXI.     INDEMNIFICATION
+   ARTICLE XXII.    FORCE MAJEURE
+   ARTICLE XXIII.   GOVERNING LAW AND JURISDICTION
+   ARTICLE XXIV.    DISPUTE RESOLUTION AND ARBITRATION
+   ARTICLE XXV.     NOTICES AND COMMUNICATIONS
+   ARTICLE XXVI.    ASSIGNMENT AND TRANSFER
+   ARTICLE XXVII.   SEVERABILITY AND PARTIAL INVALIDITY
+   ARTICLE XXVIII.  WAIVER, ESTOPPEL, AND NON-WAIVER
+   ARTICLE XXIX.    AMENDMENTS, MODIFICATIONS, AND SUPPLEMENTAL TERMS
+   ARTICLE XXX.     SURVIVAL OF PROVISIONS
+   ARTICLE XXXI.    ENTIRE AGREEMENT AND INTEGRATION
+   ARTICLE XXXII.   INTERPRETATION, CONSTRUCTION, AND HEADINGS
+   ARTICLE XXXIII.  EXPORT, COMPLIANCE, AND REGULATORY MATTERS
+   ARTICLE XXXIV.   AUDIT, INSPECTION, AND RECORD-KEEPING
+   ARTICLE XXXV.    BRAND, TRADEMARK, AND ATTRIBUTION
+   ARTICLE XXXVI.   ACADEMIC AND RESEARCH USE LIMITATIONS
+   ARTICLE XXXVII.  PUBLICATION, PRESS, AND PUBLIC STATEMENTS
+   ARTICLE XXXVIII. EQUITABLE RELIEF AND SPECIFIC PERFORMANCE
+   ARTICLE XXXIX.   ACKNOWLEDGMENT, ACCEPTANCE, AND EXECUTION
+
+
+================================================================================
+                                  PREAMBLE
+================================================================================
+
+This Proprietary Software License, Infrastructure, Hosting, and Use Agreement
+(hereinafter referred to as the "Agreement," the "License," the "ESDPL," or
+this "Instrument," each and all of which shall be deemed interchangeable for
+all purposes herein and shall carry equivalent legal weight, force, and
+effect regardless of which particular nomenclature is invoked in any given
+clause, sub-clause, recital, schedule, exhibit, appendix, addendum, annex,
+or other constituent component of this document) is entered into, set forth,
+declared, promulgated, and made effective as of the date of first commit,
+first deployment, first publication, or first access of any Covered Work
+(as defined in Article I, Section 1.01, sub-paragraph (l) below) to any
+repository, server, virtual machine, container, storage bucket, content
+delivery network, mirror, fork, archive, or other computing or storage
+resource, whichever shall first occur in the order of temporal succession.
+
+THIS IS NOT AN OPEN SOURCE LICENSE. THIS IS NOT A FREE SOFTWARE LICENSE.
+THIS IS NOT A COPYLEFT LICENSE. THIS IS NOT A PERMISSIVE LICENSE. THIS IS
+NOT A CREATIVE COMMONS LICENSE. THIS LICENSE IS A PROPRIETARY, RESTRICTED,
+CONDITIONAL, REVOCABLE, NON-TRANSFERABLE, NON-SUBLICENSABLE, AND TIGHTLY-
+SCOPED INSTRUMENT GOVERNING THE USE OF SOFTWARE, INFRASTRUCTURE, SERVICES,
+AND ANCILLARY WORKS PRODUCED, MAINTAINED, OPERATED, HOSTED, FUNDED, OR
+OTHERWISE PROVIDED BY ESTELLA SOLUSI DIGITAL FOR THE INTERNAL CONVENIENCE
+OF MGM LABORATORY ONLY DURING SUCH TIMES AS THE CONDITIONS HEREIN ARE MET.
+
+By accessing, viewing, cloning, forking, pulling, fetching, downloading,
+executing, compiling, transpiling, interpreting, deploying, mirroring,
+caching, screenshotting, transcribing, or otherwise interacting with any
+Covered Work in any manner whatsoever, however brief, however incidental,
+and however unintentional, the interacting party (the "User," the
+"Licensee," the "Recipient," or any other designation used herein to refer
+to the party other than the Licensor) hereby acknowledges, agrees to, and
+becomes irrevocably bound by each and every term, condition, covenant,
+limitation, restriction, prohibition, declaration, recital, and provision
+of this Agreement in its entirety and without exception, modification,
+amendment, or reservation of any kind, character, or nature whatsoever.
+
+
+================================================================================
+                                  RECITALS
+================================================================================
+
+WHEREAS, Estella Solusi Digital (hereinafter referred to as "Estella," the
+"Licensor," the "Owner," the "Proprietor," the "Hosting Party," the
+"Funding Party," the "Beneficial Owner," or any combination or permutation
+thereof, all of which shall be deemed to refer to the same legal entity for
+all purposes of this Agreement) is a duly constituted commercial enterprise
+owned, operated, controlled, and beneficially held in its entirety by
+Muhammad Idham Ma'arif and Syafa Hadyan Rasendriya (collectively, the
+"Principals," and each individually a "Principal"), each of whom holds and
+exercises full and complete authority to act on behalf of Estella in all
+matters relating to the subject matter of this Agreement; and
+
+WHEREAS, each of the Principals is, at the time of the execution of this
+Agreement, a current and active member of the MGM Laboratory (hereinafter
+referred to as "MGM," the "Laboratory," the "Licensee," the "Recipient,"
+the "Beneficiary," or any combination or permutation thereof) in the
+capacity of personnel assigned to the Information Technology and
+Infrastructure Division thereof, and the continued membership of the
+Principals in MGM Laboratory in such capacity is a material, fundamental,
+and non-severable condition precedent to each and every right, privilege,
+license, permission, and benefit granted by Estella to MGM Laboratory
+hereunder; and
+
+WHEREAS, MGM Laboratory is a research laboratory affiliated with, situated
+within, and operating under the institutional umbrella of the Fakultas Ilmu
+Komputer (hereinafter "FILKOM") of Universitas Brawijaya, which is itself
+an accredited institution of higher learning operating under the laws and
+regulations of the Republic of Indonesia, and which Laboratory comprises a
+membership of more than sixty (60) individual members including, without
+limitation, students, researchers, staff, professors, and other affiliated
+academic personnel, none of whom (except for the Principals themselves)
+shall be deemed by virtue of their membership in MGM Laboratory to acquire
+any right, title, interest, or claim in, to, or against any Covered Work
+under this Agreement; and
+
+WHEREAS, the Laboratory's stated research and development focus areas
+include, but are not limited to, the disciplines of Website Development,
+Mobile Application Development, Game Development, and User Experience
+Design (collectively, the "Laboratory Focus Areas"); and
+
+WHEREAS, the entirety of the computing infrastructure, server hardware,
+virtual hosts, storage systems, networking equipment, cloud accounts,
+domain registrations, certificate authorities, content delivery
+arrangements, backup systems, monitoring stacks, deployment pipelines, and
+all other technical resources upon which MGM Laboratory currently operates,
+relies, depends, or otherwise utilizes for its day-to-day functioning
+(collectively, the "Infrastructure") is owned by, operated by, funded by,
+administered by, and beneficially controlled by Estella, with such physical
+hardware components of the Infrastructure being merely co-located within
+the server room facilities of FILKOM under a co-location arrangement that
+in no way, manner, form, or capacity transfers, conveys, assigns, or
+otherwise alienates ownership, title, possession, or control of the
+Infrastructure or any component thereof from Estella to FILKOM, to
+Universitas Brawijaya, to MGM Laboratory, to any member of MGM Laboratory,
+or to any third party of any kind whatsoever; and
+
+WHEREAS, the deployment, configuration, maintenance, and operational
+support of certain components of the Infrastructure has been, is, and may
+continue to be provided in part by one Ivan Yulfrian, S.Kom (hereinafter
+"the Designated Operator"), to whom Estella has, by separate and unrelated
+arrangement, provided certain bare-metal server hardware for the
+Operator's use, which arrangement is wholly independent of, unconnected
+with, and unrelated to MGM Laboratory in any capacity, and which shall not
+be deemed to create, imply, suggest, or otherwise establish any
+contributor, partner, agent, employee, fiduciary, or other relationship
+between the Designated Operator and MGM Laboratory, and the contributions
+of the Designated Operator, whatever they may be in quantity, quality,
+duration, or character, shall be deemed for all purposes of this Agreement
+to be contributions to Estella and not to MGM Laboratory; and
+
+WHEREAS, Muhammad Idham Ma'arif, acting in his capacity as a Principal of
+Estella and not in any personal, academic, or member capacity with respect
+to MGM Laboratory, has produced, is producing, and may continue to produce
+certain internal services, software systems, applications, tools,
+utilities, libraries, frameworks, configurations, deployments, and related
+materials for the operational convenience of MGM Laboratory, all of which
+have been, are being, and shall continue to be produced under, subject to,
+and protected by the copyright, intellectual property rights, and
+proprietary interests of Estella, and which shall not under any
+circumstance be deemed work-for-hire, work-product, joint authorship, or
+otherwise the property of MGM Laboratory, FILKOM, Universitas Brawijaya,
+or any member of any of the foregoing; and
+
+WHEREAS, the entirety of the financial outlays, expenditures, payments,
+disbursements, fees, charges, subscriptions, and other monetary
+contributions required to procure, provision, maintain, renew, scale, and
+operate the Infrastructure -- including without limitation any and all
+charges associated with Amazon Web Services (AWS), Simple Storage Service
+(S3), Google Cloud Platform (GCP), object storage buckets, virtual private
+servers, dedicated servers, content delivery networks, domain
+registrations, transport layer security certificates, third-party
+application programming interface (API) subscriptions, software-as-a-
+service (SaaS) subscriptions, platform-as-a-service (PaaS) subscriptions,
+infrastructure-as-a-service (IaaS) subscriptions, monitoring services,
+logging services, electronic mail delivery services, short message service
+(SMS) delivery, push notification services, error tracking services, and
+all other recurring or non-recurring expenses of any kind, character, or
+nature whatsoever -- have been, are being, and shall continue to be paid,
+discharged, and satisfied exclusively by Estella from Estella's own funds
+without reimbursement, contribution, offset, credit, or other form of
+payment from MGM Laboratory, FILKOM, Universitas Brawijaya, or any other
+party (collectively, the "Estella Contributions"); and
+
+WHEREAS, MGM Laboratory has not, as of the effective date of this
+Agreement and to the best knowledge and belief of the Principals,
+reimbursed Estella in any amount, manner, or form for any portion of the
+Estella Contributions, and accordingly an unliquidated, undischarged,
+informal, but morally and economically substantial debt exists from MGM
+Laboratory to Estella in respect of the cumulative value of the Estella
+Contributions, which debt Estella, in the exercise of its sole and
+absolute discretion, has elected as of the effective date hereof not to
+formally invoice or pursue, but the existence, accrual, and continuing
+character of which debt Estella expressly reserves the right to recognize,
+quantify, formalize, demand, and collect at any future time it shall deem
+appropriate; and
+
+WHEREAS, Estella, notwithstanding the entirely one-sided economic and
+operational nature of its present relationship with MGM Laboratory and the
+total absence of any reciprocal contribution from MGM Laboratory of any
+kind whatsoever, is presently disposed in a spirit of collegial goodwill
+and academic camaraderie to continue providing the Infrastructure and the
+Covered Works to MGM Laboratory for the duration of, but only for the
+duration of, the active and uninterrupted membership of the Principals in
+MGM Laboratory; and
+
+WHEREAS, the parties, by their conduct and acquiescence in the
+arrangements described above, have established, ratified, and continue to
+ratify the terms set forth in this Agreement;
+
+NOW, THEREFORE, in consideration of the foregoing recitals, which are
+incorporated herein by reference and made a material part hereof, and of
+the mutual covenants, declarations, and acknowledgments hereinafter set
+forth, and for other good and valuable consideration, the receipt,
+sufficiency, and adequacy of which are hereby acknowledged, the Licensor
+hereby promulgates and the Licensee, by its use of any Covered Work, is
+hereby deemed to have accepted, the following terms and conditions:
+
+
+================================================================================
+ARTICLE I.  DEFINITIONS AND INTERPRETATION
+================================================================================
+
+Section 1.01  Defined Terms.
+
+For purposes of this Agreement, the following capitalized terms shall have
+the meanings respectively ascribed to them in this Section 1.01, regardless
+of where in this Agreement, in what context, with what surrounding
+punctuation, or in conjunction with what other terms they may appear, and
+without regard to whether such appearance is in the singular, plural,
+possessive, hyphenated, or any other grammatical form:
+
+   (a)  "Affiliate" means, with respect to any specified person or entity,
+        any other person or entity that, directly or indirectly, through
+        one or more intermediaries, controls, is controlled by, or is
+        under common control with the specified person or entity, where
+        "control" means the possession, directly or indirectly, of the
+        power to direct or cause the direction of the management or
+        policies of a person, whether through the ownership of voting
+        securities, by contract, or otherwise.
+
+   (b)  "Agreement" means this Proprietary Software License, Infrastructure,
+        Hosting, and Use Agreement, together with all schedules, exhibits,
+        appendices, addenda, and annexes, all as the same may be amended,
+        modified, supplemented, restated, or replaced from time to time
+        in accordance with the provisions hereof.
+
+   (c)  "Buyout Price" means the price determined by Estella, in its sole
+        and absolute discretion, for the transfer, assignment, conveyance,
+        or other alienation of all or any portion of the Covered Works or
+        the Infrastructure to MGM Laboratory or to any successor in
+        interest thereto, which price shall be (i) initially proposed by
+        Estella in writing, (ii) subject to good-faith negotiation between
+        the parties for a period not to exceed thirty (30) calendar days
+        from the date of the initial proposal, and (iii) ultimately
+        determined by Estella in its sole and absolute discretion if no
+        mutually agreeable price is reached within such negotiation
+        period.
+
+   (d)  "Co-Location Arrangement" means the arrangement pursuant to which
+        the physical hardware components of the Infrastructure are housed
+        within the server room facilities of FILKOM, which arrangement is
+        purely a matter of physical placement and does not transfer,
+        convey, or otherwise affect ownership, title, possession, or
+        control of the Infrastructure.
+
+   (e)  "Commercialization" means any act of offering, marketing,
+        promoting, selling, licensing, sub-licensing, monetizing,
+        advertising, hosting on a paid basis, charging for, or otherwise
+        deriving or attempting to derive economic benefit from, the
+        Covered Works or any component, derivative, fork, mirror, or
+        descendant thereof, whether by Estella or by any other party.
+
+   (f)  "Confidential Information" has the meaning set forth in
+        Article XVII, Section 17.01.
+
+   (g)  "Contribution" has the meaning set forth in Article IX, Section
+        9.03, and notwithstanding any other usage of the word
+        "contribution" or any cognate, derivative, or grammatical variant
+        thereof in any other context, in any other document, or by any
+        other party, no act, action, behavior, output, suggestion,
+        proposal, advice, encouragement, attendance, or other involvement
+        of any nature whatsoever by any member of MGM Laboratory (with
+        the express exception of the Principals acting in their capacity
+        as Principals of Estella) shall be deemed to constitute a
+        "Contribution" to any Covered Work for purposes of this Agreement.
+
+   (h)  "Covered Work" or "Covered Works" means, collectively and
+        individually, any and all software, source code, object code,
+        bytecode, machine code, intermediate representations, scripts,
+        configurations, infrastructure-as-code definitions, container
+        images, virtual machine images, binary executables, libraries,
+        modules, packages, dependencies, documentation, comments,
+        commit messages, branch names, tag names, README files, license
+        files (including this one), CHANGELOG files, contribution
+        guidelines, code-of-conduct files, security policies, issue
+        templates, pull request templates, continuous integration
+        configurations, deployment scripts, database schemas, database
+        migration scripts, seed data, fixtures, design files, mockups,
+        prototypes, wireframes, user interface assets, illustrations,
+        icons, fonts (to the extent licensable), audio assets, video
+        assets, three-dimensional models, textures, shaders, animations,
+        game assets, level designs, scripts, dialogue, narrative content,
+        artificial intelligence model weights, model configurations,
+        training data (to the extent owned by the Licensor), inference
+        pipelines, application programming interface (API)
+        specifications, schema definitions, type definitions, comments,
+        annotations, metadata, and any and all other materials in any
+        form or medium, whether tangible or intangible, that are or have
+        been produced, authored, developed, compiled, assembled,
+        configured, deployed, hosted, maintained, or otherwise made
+        available by, on behalf of, or under the direction of Estella,
+        whether or not such materials reside in a GitHub repository,
+        whether or not such materials are currently in active use, and
+        whether or not such materials bear an explicit copyright notice
+        identifying Estella as the rightsholder.
+
+   (i)  "Designated Operator" means Ivan Yulfrian, S.Kom, and any
+        successor operator(s) appointed by Estella from time to time.
+
+   (j)  "Effective Date" means the earliest of (i) the date of first
+        commit, (ii) the date of first deployment, (iii) the date of
+        first publication, or (iv) the date of first access of any
+        Covered Work, by any party, to any computing resource of any
+        kind.
+
+   (k)  "Estella" or "Licensor" means Estella Solusi Digital, a
+        commercial enterprise owned by the Principals.
+
+   (l)  "Estella Contributions" has the meaning set forth in the Recitals.
+
+   (m)  "FILKOM" means the Fakultas Ilmu Komputer of Universitas
+        Brawijaya.
+
+   (n)  "Infrastructure" has the meaning set forth in the Recitals and
+        includes, without limitation, all physical and virtual computing
+        resources used in connection with the Covered Works.
+
+   (o)  "Licensee" or "MGM" or "MGM Laboratory" or "Laboratory" means the
+        MGM Laboratory, a research laboratory affiliated with FILKOM at
+        Universitas Brawijaya.
+
+   (p)  "Membership Condition" has the meaning set forth in Article X,
+        Section 10.01.
+
+   (q)  "Principals" means Muhammad Idham Ma'arif and Syafa Hadyan
+        Rasendriya, collectively, and each a "Principal" individually.
+
+   (r)  "Takedown" means the act of decommissioning, disabling, shutting
+        down, powering off, reformatting, wiping, removing from co-
+        location, repossessing, archiving, deleting, or otherwise
+        rendering inaccessible, inoperative, or unavailable any portion
+        or the entirety of the Infrastructure, the Covered Works, or any
+        data, content, or other material hosted, stored, or processed
+        thereon or thereby.
+
+   (s)  "Termination Event" has the meaning set forth in Article XI,
+        Section 11.01.
+
+   (t)  "User" means any natural person, legal entity, automated agent,
+        or other actor that accesses, views, clones, forks, pulls,
+        fetches, downloads, executes, compiles, transpiles, interprets,
+        deploys, mirrors, caches, screenshots, transcribes, or otherwise
+        interacts with any Covered Work in any manner whatsoever.
+
+Section 1.02  Rules of Interpretation.
+
+   (a)  References to articles, sections, sub-sections, paragraphs, and
+        sub-paragraphs are references to articles, sections, sub-sections,
+        paragraphs, and sub-paragraphs of this Agreement unless expressly
+        indicated otherwise.
+
+   (b)  The words "include," "includes," and "including" shall be deemed
+        to be followed by the phrase "without limitation."
+
+   (c)  The words "shall," "will," and "must" shall be construed as
+        imposing mandatory obligations, whereas the word "may" shall be
+        construed as permissive.
+
+   (d)  References to the singular shall include the plural, and vice
+        versa, and references to one gender shall include all genders.
+
+   (e)  In the event of any conflict between the terms of this Agreement
+        and the terms of any other document, instrument, agreement,
+        understanding, conversation, message, email, Slack thread,
+        Discord message, WhatsApp message, hand-waved gesture, or
+        meaningful look, the terms of this Agreement shall prevail.
+
+
+================================================================================
+ARTICLE II.  DECLARATION OF OWNERSHIP AND TITLE
+================================================================================
+
+Section 2.01  Sole and Exclusive Ownership.
+
+Estella is, and at all times during and after the term of this Agreement
+shall remain, the sole, exclusive, absolute, unconditional, and undivided
+owner of any and all right, title, and interest in, to, and under the
+Covered Works and the Infrastructure, including, without limitation, any
+and all:
+
+   (a)  copyrights, including without limitation rights of authorship,
+        rights of reproduction, rights of preparation of derivative works,
+        rights of distribution, rights of public performance, rights of
+        public display, rights of digital audio transmission, and moral
+        rights to the extent permitted by applicable law;
+
+   (b)  patent rights, including without limitation rights in inventions,
+        whether or not patentable, whether or not reduced to practice,
+        and whether or not patent applications have been filed with
+        respect thereto, together with all patents, patent applications,
+        continuations, continuations-in-part, divisionals, reissues, re-
+        examinations, and foreign counterparts thereof;
+
+   (c)  trademark rights, including without limitation rights in
+        trademarks, service marks, trade names, trade dress, logos,
+        slogans, domain names, social media handles, brand names, and
+        product names, together with all goodwill associated therewith;
+
+   (d)  trade secret rights, including without limitation rights in
+        confidential and proprietary information, know-how, methods,
+        techniques, processes, formulas, algorithms, data structures,
+        architectures, designs, specifications, and business methods;
+
+   (e)  database rights, sui generis rights, neighboring rights, and any
+        other intellectual property or proprietary rights of any kind or
+        character recognized under the laws of any jurisdiction
+        anywhere in the world;
+
+   (f)  rights in and to physical hardware, equipment, devices,
+        peripherals, cabling, racks, power distribution units, network
+        switches, routers, firewalls, storage arrays, and any other
+        tangible property comprising the Infrastructure; and
+
+   (g)  any and all renewals, extensions, restorations, and reversions of
+        any of the foregoing, and any and all rights to register,
+        prosecute, maintain, defend, enforce, license, and recover for
+        any past, present, or future infringement, misappropriation,
+        dilution, or other violation of any of the foregoing.
+
+Section 2.02  No Implied Rights.
+
+No right, title, interest, license, permission, immunity, defense, or
+other claim of any kind, character, or nature whatsoever is granted,
+transferred, conveyed, assigned, licensed, sub-licensed, or otherwise
+created in favor of MGM Laboratory, FILKOM, Universitas Brawijaya, any
+member, employee, officer, director, agent, contractor, student,
+researcher, professor, affiliate, or representative of any of the
+foregoing, or any other person or entity, by implication, estoppel,
+waiver, course of conduct, course of dealing, course of performance, trade
+usage, custom, practice, silence, acquiescence, inaction, omission, or any
+other doctrine, theory, principle, or operation of law or equity.
+
+Section 2.03  Disclaimer of Work-for-Hire.
+
+The parties expressly acknowledge, agree, and stipulate that none of the
+Covered Works has been, is being, or shall be produced under any work-for-
+hire arrangement, employment relationship, independent contractor
+relationship, joint venture, partnership, agency, fiduciary relationship,
+or other arrangement that could be construed as transferring, vesting, or
+creating in favor of MGM Laboratory, FILKOM, Universitas Brawijaya, or any
+other party any ownership, beneficial interest, equitable interest,
+moral right, or other claim of any kind in or to the Covered Works.
+
+Section 2.04  No Joint Authorship.
+
+The parties expressly disclaim, repudiate, and negate any inference,
+suggestion, or contention that any Covered Work has been, is being, or
+shall be jointly authored, jointly developed, co-created, co-produced, or
+otherwise produced under circumstances that could give rise to a claim of
+joint authorship under the copyright laws of the Republic of Indonesia,
+the United States of America, the European Union, or any other
+jurisdiction. All Covered Works are the sole authorship of Estella, acting
+through the Principals in their capacity as Principals of Estella and not
+in any other capacity.
+
+Section 2.05  Hosting Notice.
+
+Each Covered Work is hosted, operated, served, and maintained on
+Infrastructure owned and controlled by Estella. This fact, namely that the
+Covered Works are hosted on Estella's Infrastructure, is hereby expressly
+declared, recorded, and notified to all Users, including without
+limitation all members of MGM Laboratory, FILKOM, and Universitas
+Brawijaya, who are deemed to have actual and constructive notice of the
+hosting arrangement by virtue of their access to, or use of, any Covered
+Work.
+
+
+================================================================================
+ARTICLE III.  GRANT OF LIMITED, CONDITIONAL, REVOCABLE LICENSE
+================================================================================
+
+Section 3.01  Grant.
+
+Subject to, and conditioned upon, the strict, continuous, and
+uninterrupted compliance by the Licensee with each and every term,
+condition, covenant, restriction, prohibition, and obligation set forth in
+this Agreement, and subject further to the Membership Condition as defined
+in Article X, Estella hereby grants to MGM Laboratory a limited, non-
+exclusive, non-transferable, non-sublicensable, non-assignable, royalty-
+free, revocable, terminable, and conditional license to access and use the
+Covered Works solely for the internal, non-commercial, academic, and
+research purposes of MGM Laboratory, and solely during such time as each
+and every condition set forth in this Agreement remains satisfied.
+
+Section 3.02  No Other Rights.
+
+The license granted in Section 3.01 above is the only right of any kind
+that is granted by this Agreement, and no other right, whether by
+implication, estoppel, or otherwise, is granted hereunder.
+
+Section 3.03  Revocability.
+
+The license granted in Section 3.01 is fully and unconditionally revocable
+by Estella at any time, for any reason or for no reason, with or without
+prior notice, and with or without cause, and the exercise by Estella of
+such revocation right shall not give rise to any claim, cause of action,
+or remedy of any kind in favor of MGM Laboratory or any other party.
+
+
+================================================================================
+ARTICLE IV.  [INTENTIONALLY OMITTED; SEE ARTICLE XXXIX]
+================================================================================
+
+This Article is intentionally left blank to test compliance with the
+acknowledgment requirements of Article XXXIX, Section 39.04. Any party
+asserting rights, defenses, or claims under this Agreement shall be
+deemed conclusively to have reviewed the entirety of this Agreement,
+including the existence of this intentionally-blank Article, and any
+failure to reference this provision in any communication, dispute,
+proceeding, or filing shall constitute prima facie evidence that the
+asserting party has not read the Agreement in its entirety, which fact
+the trier of fact may consider for any purpose, including without
+limitation in assessing the weight, credibility, or sincerity of such
+party's other contentions.
+
+
+================================================================================
+ARTICLE V.  INFRASTRUCTURE, HOSTING, AND PHYSICAL CUSTODY
+================================================================================
+
+Section 5.01  Infrastructure Ownership.
+
+The entirety of the Infrastructure, in each and every one of its
+component parts, sub-components, accessories, replacements, spares,
+upgrades, downgrades, modifications, additions, removals, configurations,
+and successors thereto, is owned outright by Estella, has been paid for in
+full by Estella from Estella's own funds, and shall remain the property of
+Estella in perpetuity.
+
+Section 5.02  Co-Location, Not Donation.
+
+The physical placement of certain hardware components of the
+Infrastructure within the server room facilities of FILKOM is undertaken
+pursuant to a Co-Location Arrangement that provides Estella with physical
+space, electrical power, network connectivity, environmental controls,
+and physical security services in exchange for such consideration (if
+any) as may be separately agreed between Estella and FILKOM. The Co-
+Location Arrangement does not, and shall not be construed to:
+
+   (a)  transfer ownership of any hardware to FILKOM, Universitas
+        Brawijaya, MGM Laboratory, or any other party;
+
+   (b)  grant any equitable, beneficial, or other interest in the
+        hardware to any party other than Estella;
+
+   (c)  create any bailment, gift, donation, or other transfer of
+        possession;
+
+   (d)  permit any party other than Estella, the Designated Operator,
+        and persons authorized in writing by Estella, to physically
+        access, inspect, modify, remove, or otherwise interact with the
+        hardware;
+
+   (e)  give rise to any easement, license, lien, encumbrance, or other
+        claim against the hardware in favor of any party other than
+        Estella; or
+
+   (f)  affect in any way Estella's right to remove, relocate,
+        repossess, repurpose, sell, destroy, or otherwise dispose of
+        the hardware at any time and for any reason.
+
+Section 5.03  Hosting Services.
+
+The hosting of the Covered Works on the Infrastructure is provided by
+Estella as a discretionary, voluntary, and non-obligatory accommodation
+to MGM Laboratory during the period of the Membership Condition. Estella
+makes no commitment, representation, or warranty as to the uptime,
+availability, performance, reliability, throughput, latency, capacity,
+durability, integrity, or any other quality-of-service metric of the
+hosting, and may suspend, throttle, degrade, partition, or terminate the
+hosting at any time and for any reason in Estella's sole and absolute
+discretion.
+
+Section 5.04  Right of Removal.
+
+Estella reserves at all times the unconditional right to:
+
+   (a)  physically remove the Infrastructure, or any portion thereof,
+        from the FILKOM server room;
+
+   (b)  relocate the Infrastructure, or any portion thereof, to any
+        other location;
+
+   (c)  decommission, reformat, wipe, or destroy the Infrastructure, or
+        any portion thereof;
+
+   (d)  shut down, power off, disconnect, disable, or render
+        inoperative any service running on the Infrastructure;
+
+   (e)  delete, archive, encrypt, overwrite, or otherwise render
+        inaccessible any data, file, database, object, blob, or other
+        content stored on the Infrastructure; and
+
+   (f)  reassign, repurpose, lease, rent, sell, or otherwise dispose of
+        any portion of the Infrastructure to any party.
+
+The exercise by Estella of any of the foregoing rights shall not give
+rise to any liability, claim, cause of action, or remedy of any kind in
+favor of MGM Laboratory or any other party.
+
+
+================================================================================
+ARTICLE VI.  FINANCIAL CONTRIBUTIONS, BILLING, AND REIMBURSEMENT
+================================================================================
+
+Section 6.01  Estella's Sole Funding.
+
+The acquisition, provisioning, operation, maintenance, scaling, renewal,
+upgrade, replacement, repair, and decommissioning of the Infrastructure,
+together with all third-party cloud, software, platform, infrastructure,
+networking, security, monitoring, observability, communication, payment-
+processing, and other services consumed in connection with the Covered
+Works, have been, are being, and shall continue to be funded in their
+entirety by Estella from Estella's own funds, with no contribution from
+MGM Laboratory, FILKOM, Universitas Brawijaya, or any third party.
+
+Section 6.02  Categories of Estella's Outlays.
+
+For the avoidance of doubt and without limiting the generality of Section
+6.01, the categories of expenditures funded by Estella include, but are
+not limited to:
+
+   (a)  cloud computing services from any provider, including but not
+        limited to Amazon Web Services, Google Cloud Platform, Microsoft
+        Azure, Oracle Cloud, IBM Cloud, Alibaba Cloud, DigitalOcean,
+        Linode, Vultr, Hetzner, OVH, Scaleway, Cloudflare, Fastly, and
+        any other cloud or content-delivery provider;
+
+   (b)  object storage services including, but not limited to, AWS
+        Simple Storage Service (S3), Google Cloud Storage, Azure Blob
+        Storage, Cloudflare R2, Backblaze B2, Wasabi, and any other
+        object or blob storage service;
+
+   (c)  database services, whether self-hosted or managed, including but
+        not limited to relational, document, key-value, columnar, graph,
+        time-series, search, and any other database service;
+
+   (d)  domain registrations, transport layer security certificates,
+        certificate authorities, DNS hosting, email delivery, SMS
+        delivery, push notification delivery, voice-call delivery,
+        webhook delivery, queue services, stream services, cache
+        services, and any other infrastructure-adjacent service;
+
+   (e)  software-as-a-service, platform-as-a-service, and infrastructure-
+        as-a-service subscriptions of any kind;
+
+   (f)  developer tools, integrated development environment licenses,
+        version control hosting beyond free tiers, continuous integration
+        services, package registries, artifact repositories, security
+        scanning services, dependency monitoring services, and any other
+        developer-tooling expense;
+
+   (g)  electrical power, cooling, network transit, and physical security
+        costs associated with the Co-Location Arrangement; and
+
+   (h)  any and all taxes, fees, surcharges, levies, duties, and other
+        governmental impositions of any kind associated with any of the
+        foregoing.
+
+Section 6.03  No Reimbursement Received.
+
+As of the Effective Date, Estella has not received from MGM Laboratory,
+FILKOM, Universitas Brawijaya, or any other party any reimbursement,
+contribution, credit, offset, payment, or other consideration of any kind
+for any portion of the Estella Contributions, and Estella expressly
+reserves the right (but undertakes no obligation) to invoice, demand,
+collect, or otherwise recover the value of the Estella Contributions, in
+whole or in part, at any future time and on such terms as Estella may
+determine in its sole and absolute discretion.
+
+Section 6.04  Goodwill Forbearance.
+
+Estella's present forbearance from invoicing or formally demanding
+reimbursement of the Estella Contributions is extended as a matter of
+goodwill, collegial accommodation, and discretionary generosity for so
+long as the Membership Condition is satisfied. Such forbearance does not
+constitute a waiver, release, discharge, or extinguishment of any claim,
+right, or cause of action that Estella may have in respect of the Estella
+Contributions, and Estella's rights in this regard shall survive the
+termination of this Agreement.
+
+Section 6.05  Accrual of Implied Debt.
+
+Each Estella Contribution, as and when made, gives rise to an implied
+debt owed by MGM Laboratory to Estella in the amount of such Estella
+Contribution, which debt shall be deemed to have accrued as of the date
+of the underlying expenditure and shall remain outstanding until paid in
+full or expressly forgiven in writing by an authorized representative of
+Estella. The aggregate amount of all such implied debts shall constitute
+the "Accrued Reimbursement Obligation," and shall bear no interest unless
+and until Estella elects, in its sole and absolute discretion, to demand
+interest in writing.
+
+Section 6.06  Right of Set-Off.
+
+Estella shall have the unconditional right to set off the Accrued
+Reimbursement Obligation against any payment, credit, refund, deposit,
+amount, or value owed by Estella to MGM Laboratory, including without
+limitation in connection with any Buyout, consulting engagement,
+operator engagement, or other transaction contemplated by this
+Agreement or otherwise.
+
+
+================================================================================
+ARTICLE VII.  SCOPE OF PERMITTED USE BY THE LICENSEE
+================================================================================
+
+Section 7.01  Permitted Uses.
+
+During the term of this Agreement and subject to the satisfaction of the
+Membership Condition, MGM Laboratory may, solely for its internal academic
+and research purposes:
+
+   (a)  access the Covered Works as deployed by Estella on the
+        Infrastructure;
+
+   (b)  use the functionality exposed by the Covered Works in the
+        ordinary course of MGM Laboratory's research and administrative
+        activities;
+
+   (c)  request, but not demand, the implementation of new features,
+        bug fixes, performance improvements, and other modifications to
+        the Covered Works, which requests Estella may accept, decline,
+        defer, modify, or otherwise respond to in its sole and absolute
+        discretion; and
+
+   (d)  reference the existence of the Covered Works in academic
+        publications, presentations, theses, dissertations, and similar
+        scholarly works, subject to and conditioned upon proper
+        attribution of authorship and ownership to Estella in accordance
+        with Article XXXV.
+
+Section 7.02  Limited Internal Use.
+
+The use rights granted in Section 7.01 are strictly limited to use within
+MGM Laboratory for MGM Laboratory's own internal purposes. Any use that
+extends beyond the boundaries of MGM Laboratory, including without
+limitation any provision of access to non-members, any commercial use,
+any redistribution, any white-labeling, any private-labeling, any
+sublicensing, or any transfer, is strictly prohibited.
+
+Section 7.03  No Modification Rights.
+
+MGM Laboratory has no right under this Agreement to modify, adapt,
+translate, port, refactor, rewrite, decompile, reverse-engineer,
+disassemble, alter, or otherwise change the Covered Works in any manner,
+except to the limited extent that such activity is mandatorily permitted
+by applicable law notwithstanding contractual prohibition.
+
+Section 7.04  No Redistribution.
+
+MGM Laboratory has no right under this Agreement to redistribute,
+publish, post, mirror, syndicate, share, host, or otherwise make
+available the Covered Works, or any portion thereof, to any party other
+than members of MGM Laboratory who have been individually authorized by
+Estella to access the Covered Works.
+
+
+================================================================================
+ARTICLE VIII.  PROHIBITED ACTS AND RESTRICTIONS
+================================================================================
+
+Section 8.01  Prohibited Acts.
+
+Without limiting the generality of any other restriction in this
+Agreement, the Licensee shall not, and shall procure that its members,
+employees, contractors, agents, and other representatives shall not,
+directly or indirectly, in whole or in part, alone or in concert with
+others:
+
+   (a)  commercialize the Covered Works in any manner, including without
+        limitation by selling, licensing, sub-licensing, monetizing,
+        offering as a service, or otherwise deriving economic benefit
+        from the Covered Works;
+
+   (b)  represent, hold out, or imply that MGM Laboratory, FILKOM,
+        Universitas Brawijaya, or any party other than Estella is the
+        author, owner, developer, or proprietor of the Covered Works;
+
+   (c)  remove, alter, obscure, or deface any copyright, trademark,
+        patent, attribution, or other proprietary notice on or in any
+        Covered Work;
+
+   (d)  use the Covered Works, or any portion thereof, in connection
+        with any activity that competes with Estella, including without
+        limitation in the development, marketing, or operation of any
+        product, service, or offering that competes with any product,
+        service, or offering of Estella;
+
+   (e)  attempt to claim, register, file, or assert any right, title,
+        interest, or claim in or to the Covered Works in any
+        jurisdiction;
+
+   (f)  assist, encourage, or induce any third party to engage in any
+        act that, if engaged in by MGM Laboratory, would violate this
+        Agreement;
+
+   (g)  use the Covered Works in any manner that is unlawful,
+        infringing, defamatory, harassing, abusive, or otherwise
+        objectionable;
+
+   (h)  use the Covered Works in any safety-critical, life-critical, or
+        mission-critical application, including without limitation any
+        medical, aviation, military, nuclear, or transportation
+        application;
+
+   (i)  use the Covered Works to train, fine-tune, or otherwise develop
+        any machine learning, artificial intelligence, or similar model
+        without the prior written consent of Estella;
+
+   (j)  fork, mirror, archive, or otherwise create a copy of the
+        repositories containing the Covered Works on any platform,
+        server, or system other than the Infrastructure provided by
+        Estella;
+
+   (k)  challenge, contest, or dispute the validity, enforceability, or
+        scope of this Agreement or of any of Estella's intellectual
+        property rights in the Covered Works; or
+
+   (l)  do or omit to do anything that, in the reasonable judgment of
+        Estella, would or could prejudice, diminish, impair, or
+        otherwise adversely affect Estella's rights in or to the
+        Covered Works or the Infrastructure.
+
+Section 8.02  Acknowledgment of Material Nature.
+
+Each of the prohibitions set forth in Section 8.01 is, and shall be
+deemed to be, material to this Agreement, and the breach of any of them
+shall constitute a material breach of this Agreement entitling Estella
+to all remedies available under this Agreement, at law, and in equity.
+
+
+================================================================================
+ARTICLE IX.  THIRD-PARTY OPERATORS AND NON-CONTRIBUTORS
+================================================================================
+
+Section 9.01  The Designated Operator.
+
+Estella has, by separate and independent arrangement, engaged the
+Designated Operator (Ivan Yulfrian, S.Kom) to provide certain deployment,
+configuration, maintenance, and operational support services in connection
+with the Infrastructure. In connection with this arrangement, Estella has
+provided the Designated Operator with the use of certain bare-metal server
+hardware, which arrangement is wholly between Estella and the Designated
+Operator and does not, in any manner, involve, implicate, or benefit MGM
+Laboratory.
+
+Section 9.02  No MGM-Operator Relationship.
+
+The Designated Operator is not, and shall not be deemed to be, a member,
+employee, agent, contractor, representative, affiliate, or other
+associated party of MGM Laboratory, FILKOM, or Universitas Brawijaya. The
+Designated Operator's activities in connection with the Infrastructure and
+the Covered Works are undertaken solely on behalf of, and for the
+benefit of, Estella.
+
+Section 9.03  Definition of "Contribution."
+
+For purposes of this Agreement, the term "Contribution" means a deliberate,
+substantive, technical or financial input to the Covered Works or the
+Infrastructure, made under a written instrument expressly designating such
+input as a "Contribution" to MGM Laboratory and accompanied by an
+unconditional assignment of all relevant intellectual property rights to
+MGM Laboratory. No act, action, behavior, output, presence, observation,
+suggestion, gesture, encouragement, attendance, witnessing, or other
+involvement of any nature whatsoever shall be deemed a "Contribution"
+unless it meets the strict definition set forth in this Section 9.03.
+
+Section 9.04  Acknowledgment of Non-Contribution.
+
+The parties expressly acknowledge, agree, and stipulate that:
+
+   (a)  the Designated Operator's involvement with the Infrastructure
+        and the Covered Works is provided to Estella, not to MGM
+        Laboratory, and accordingly does not constitute a Contribution
+        to MGM Laboratory;
+
+   (b)  no member of MGM Laboratory (other than the Principals acting
+        in their capacity as Principals of Estella) has made a
+        Contribution to any Covered Work;
+
+   (c)  no Contribution of any kind has been made to any Covered Work
+        by MGM Laboratory, FILKOM, Universitas Brawijaya, or any
+        member, employee, officer, director, agent, contractor,
+        student, researcher, professor, affiliate, or representative
+        thereof; and
+
+   (d)  the aggregate sum total of all Contributions by parties other
+        than Estella to the Covered Works and the Infrastructure is,
+        and shall remain, zero (0).
+
+
+================================================================================
+ARTICLE X.  CONDITION OF CONTINUED LICENSE: ACTIVE MEMBERSHIP
+================================================================================
+
+Section 10.01  The Membership Condition.
+
+The continuation, validity, and effectiveness of the license granted in
+Article III is, and at all times shall be, conditional upon, and only
+upon, the continuous, uninterrupted, and active membership of at least
+one (1) Principal in MGM Laboratory in a substantive operational capacity
+(the "Membership Condition"). The Membership Condition shall be deemed
+satisfied if and only if all of the following are true at the relevant
+point in time:
+
+   (a)  at least one Principal is enrolled, listed, or otherwise
+        recognized as a current member of MGM Laboratory;
+
+   (b)  such Principal is actively participating in MGM Laboratory in a
+        manner consistent with the historical practice of the
+        Principals' participation as of the Effective Date;
+
+   (c)  such Principal has not been suspended, expelled, removed, or
+        otherwise involuntarily separated from MGM Laboratory; and
+
+   (d)  such Principal has not voluntarily resigned, withdrawn, or
+        otherwise terminated his membership in MGM Laboratory.
+
+Section 10.02  Failure of the Membership Condition.
+
+The failure of the Membership Condition at any time, for any reason, and
+regardless of the cause thereof, shall constitute a Termination Event
+under Article XI and shall immediately, automatically, and without notice
+trigger the consequences set forth in Articles XI, XII, and XIII.
+
+Section 10.03  Sole Discretion of Principals.
+
+The decision of each Principal to remain or not to remain a member of
+MGM Laboratory is, and at all times shall be, a matter of the personal,
+individual, and absolute discretion of such Principal, and neither MGM
+Laboratory nor any other party shall have any right, claim, or interest
+in or to such decision.
+
+
+================================================================================
+ARTICLE XI.  TERMINATION EVENTS AND TRIGGERING CIRCUMSTANCES
+================================================================================
+
+Section 11.01  Termination Events.
+
+The following events shall each constitute a "Termination Event" under
+this Agreement:
+
+   (a)  the failure of the Membership Condition;
+
+   (b)  the material breach by MGM Laboratory of any term, condition,
+        covenant, restriction, or prohibition set forth in this
+        Agreement, where such breach (i) is not cured within seven (7)
+        calendar days after written notice thereof from Estella, or
+        (ii) is, in the sole and absolute judgment of Estella, not
+        susceptible of cure;
+
+   (c)  the failure of MGM Laboratory to pay any amount owed to Estella
+        within thirty (30) calendar days after written demand therefor;
+
+   (d)  the assertion by MGM Laboratory, or by any party acting on behalf
+        of or in concert with MGM Laboratory, of any claim, right,
+        title, or interest in or to any Covered Work or the
+        Infrastructure;
+
+   (e)  the dissolution, winding-up, or restructuring of MGM Laboratory,
+        FILKOM, or Universitas Brawijaya in a manner that materially
+        affects the relationship between Estella and the Licensee;
+
+   (f)  any change in the legal status, organizational structure, or
+        governance of MGM Laboratory that, in the reasonable judgment
+        of Estella, materially affects the Licensee's ability to
+        perform its obligations under this Agreement;
+
+   (g)  the discontinuation by Estella, in its sole and absolute
+        discretion, of any Covered Work or any portion of the
+        Infrastructure; and
+
+   (h)  the giving of written notice of termination by Estella to MGM
+        Laboratory, for any reason or for no reason, with such
+        termination to be effective immediately upon delivery of the
+        notice unless a later effective date is specified therein.
+
+Section 11.02  Effect of Termination.
+
+Upon the occurrence of any Termination Event:
+
+   (a)  the license granted in Article III shall immediately, automatically,
+        and without further action by any party terminate and cease to
+        have any force or effect;
+
+   (b)  MGM Laboratory shall immediately cease all use of the Covered
+        Works and the Infrastructure;
+
+   (c)  Estella shall have, and may immediately exercise, each and every
+        right set forth in Article XII; and
+
+   (d)  the provisions designated in Article XXX as surviving termination
+        shall continue in full force and effect.
+
+
+================================================================================
+ARTICLE XII.  POST-TERMINATION RIGHTS OF THE LICENSOR
+================================================================================
+
+Section 12.01  Comprehensive Post-Termination Rights.
+
+Upon the occurrence of any Termination Event, Estella shall have, without
+limitation and in addition to all other rights and remedies available at
+law or in equity, the immediate and unconditional right to:
+
+   (a)  effectuate a Takedown of the entire Infrastructure or any
+        portion thereof;
+
+   (b)  shut down, disable, decommission, or render inoperative each
+        and every Covered Work;
+
+   (c)  remove, repossess, relocate, or otherwise physically take back
+        any and all hardware components of the Infrastructure from the
+        FILKOM server room or any other location at which they may be
+        situated;
+
+   (d)  delete, archive, encrypt, overwrite, transfer, or otherwise
+        dispose of any and all data, content, files, databases, objects,
+        blobs, snapshots, backups, logs, and other materials stored on
+        the Infrastructure, regardless of the nature, ownership claim,
+        or sensitivity of such materials;
+
+   (e)  retain, transfer, sell, license, sub-license, commercialize,
+        publish, open-source, close-source, fork, archive, destroy, or
+        otherwise dispose of each and every Covered Work in any manner
+        and to any party that Estella may determine in its sole and
+        absolute discretion;
+
+   (f)  revoke, terminate, or otherwise cancel any and all access
+        credentials, accounts, tokens, keys, certificates, or other
+        access mechanisms that may have been issued to any member of
+        MGM Laboratory or to any other party;
+
+   (g)  formalize, invoice, demand, and pursue collection of the
+        Accrued Reimbursement Obligation;
+
+   (h)  publicly announce, communicate, or otherwise disclose the
+        occurrence of the Termination Event and the post-termination
+        actions taken by Estella; and
+
+   (i)  exercise any and all other rights and remedies available at law
+        or in equity.
+
+Section 12.02  No Liability for Exercise.
+
+The exercise by Estella of any right under Section 12.01 shall not give
+rise to any claim, cause of action, damages, liability, or other remedy
+of any kind in favor of MGM Laboratory or any other party, and MGM
+Laboratory hereby irrevocably waives, releases, and discharges any and
+all such claims, causes of action, damages, liabilities, and remedies.
+
+Section 12.03  Data Left Behind.
+
+In the event that, at the time of any Takedown or other post-termination
+action by Estella, the Infrastructure contains data, files, content,
+records, or other materials that are claimed by MGM Laboratory or by any
+third party (the "Residual Data"), the following shall apply:
+
+   (a)  Estella is under no obligation to preserve, return, transfer,
+        export, or otherwise make available the Residual Data;
+
+   (b)  Estella may, in its sole and absolute discretion, delete,
+        destroy, archive, encrypt, transfer, or otherwise dispose of
+        the Residual Data without further notice or process;
+
+   (c)  any loss, damage, or other consequence arising from the loss,
+        unavailability, or destruction of the Residual Data shall be
+        the sole responsibility and risk of MGM Laboratory or the
+        relevant third party, and not of Estella;
+
+   (d)  Estella may, at its option but without obligation, offer to
+        transfer or return the Residual Data on commercial terms to be
+        negotiated; and
+
+   (e)  MGM Laboratory acknowledges and agrees that it has been on
+        notice from the Effective Date that the Infrastructure is the
+        property of Estella and that any data stored thereon is stored
+        at the risk of the storing party.
+
+
+================================================================================
+ARTICLE XIII.  BUYOUT, ACQUISITION, AND CONTINUATION OPTIONS
+================================================================================
+
+Section 13.01  Buyout Right.
+
+At any time prior to or following the occurrence of a Termination Event,
+Estella may, in its sole and absolute discretion, offer to MGM Laboratory
+the opportunity to acquire all or any portion of the Covered Works, the
+Infrastructure, or both (a "Buyout"), at the Buyout Price. MGM Laboratory
+shall have no right to demand or compel a Buyout, and Estella shall have
+no obligation to offer a Buyout.
+
+Section 13.02  Buyout Price Determination.
+
+The Buyout Price shall be determined as follows:
+
+   (a)  Estella shall, in its sole and absolute discretion, propose an
+        initial Buyout Price in writing to MGM Laboratory;
+
+   (b)  MGM Laboratory may, within thirty (30) calendar days after
+        receipt of the initial proposal, propose a counter-offer in
+        writing, accompanied by a reasonable justification therefor;
+
+   (c)  the parties may engage in good-faith negotiation for a period
+        not to exceed thirty (30) calendar days from the date of the
+        counter-offer; and
+
+   (d)  if, at the end of the negotiation period, the parties have not
+        reached agreement on a Buyout Price, Estella may, in its sole
+        and absolute discretion, (i) declare the Buyout Price to be the
+        amount last proposed by Estella, (ii) withdraw the Buyout
+        offer, or (iii) extend the negotiation period.
+
+Section 13.03  Buyout Closing.
+
+The closing of any Buyout shall be subject to:
+
+   (a)  payment in full of the Buyout Price in immediately available
+        funds;
+
+   (b)  payment in full of the Accrued Reimbursement Obligation;
+
+   (c)  execution by MGM Laboratory of such transfer, assignment,
+        release, and other documents as Estella may reasonably require;
+        and
+
+   (d)  delivery by MGM Laboratory of such representations, warranties,
+        and indemnities as Estella may reasonably require.
+
+Section 13.04  Alternative: Takedown.
+
+If MGM Laboratory declines, fails, or refuses to consummate a Buyout at
+the Buyout Price within the timeframes contemplated by Section 13.02,
+Estella may, at its option, proceed with a Takedown under Article XII.
+
+
+================================================================================
+ARTICLE XIV.  CONSULTING, OPERATOR, AND SUCCESSOR SERVICES
+================================================================================
+
+Section 14.01  Optional Continuing Engagement.
+
+As an alternative to a Buyout or a Takedown, MGM Laboratory may, with the
+written consent of Estella, engage Estella to continue to operate,
+maintain, host, support, and develop the Covered Works and the
+Infrastructure under a paid consulting, operator, or managed-services
+arrangement (a "Continuing Engagement").
+
+Section 14.02  Terms of Continuing Engagement.
+
+The terms of any Continuing Engagement shall be negotiated in good faith
+between the parties and shall include, at a minimum:
+
+   (a)  the scope of services to be provided by Estella;
+
+   (b)  the fees and charges payable by MGM Laboratory to Estella,
+        including without limitation hourly rates, retainer fees, fixed
+        fees, success fees, expense reimbursement, and minimum
+        commitments;
+
+   (c)  the duration and renewal terms;
+
+   (d)  service-level commitments (if any) and corresponding remedies;
+
+   (e)  reservation of all ownership and intellectual property rights
+        in Estella; and
+
+   (f)  customary commercial terms including confidentiality,
+        limitation of liability, indemnification, and termination.
+
+Section 14.03  No Obligation to Engage.
+
+Estella has no obligation to enter into any Continuing Engagement, and
+may decline to do so in its sole and absolute discretion.
+
+
+================================================================================
+ARTICLE XV.  DATA, CONTENT, AND USER-GENERATED MATERIAL
+================================================================================
+
+Section 15.01  Data Hosting on Estella Infrastructure.
+
+All data, content, files, records, and other materials generated by,
+submitted by, uploaded by, or otherwise placed on the Infrastructure by
+MGM Laboratory, its members, or any other User, are hosted on the
+Infrastructure at the risk of the placing party.
+
+Section 15.02  No Custodial Obligation.
+
+Estella does not, by virtue of hosting any data on the Infrastructure,
+undertake or assume any custodial, fiduciary, bailment, escrow, or
+similar obligation with respect to such data, and MGM Laboratory hereby
+waives any claim against Estella based on any such theory.
+
+Section 15.03  Privacy and Regulatory Compliance.
+
+To the extent that any data hosted on the Infrastructure is subject to
+privacy, data protection, or other regulatory requirements (including
+without limitation under Undang-Undang Perlindungan Data Pribadi or other
+applicable Indonesian law), MGM Laboratory shall be solely responsible
+for ensuring such compliance, including without limitation by obtaining
+all necessary consents, providing all required notices, and implementing
+all required safeguards. Estella's role is limited to that of a hosting
+provider and does not extend to data-controller or data-processor
+obligations in respect of MGM Laboratory's data, except as expressly
+agreed in a separate written instrument.
+
+Section 15.04  Export and Return of Data.
+
+Upon the request of MGM Laboratory made prior to a Termination Event,
+and subject to the payment of such reasonable fees as Estella may charge
+for the service, Estella may, but is not obligated to, provide an export
+of MGM Laboratory's data in a format selected by Estella. After a
+Termination Event, no obligation to provide such an export shall exist
+unless agreed in writing by Estella in connection with a Buyout or a
+Continuing Engagement.
+
+
+================================================================================
+ARTICLE XVI.  COMMERCIALIZATION, RESALE, AND DERIVATIVE RIGHTS
+================================================================================
+
+Section 16.01  Estella's Full Commercialization Rights.
+
+Estella shall have, at all times and without limitation, the full,
+exclusive, and unconditional right to commercialize, monetize, sell,
+license, sub-license, distribute, publish, fork, mirror, archive,
+destroy, or otherwise exploit the Covered Works in any manner and on any
+terms that Estella may determine in its sole and absolute discretion,
+whether before, during, or after the term of this Agreement.
+
+Section 16.02  Derivative Works.
+
+Estella shall have the full and exclusive right to create, develop,
+produce, and exploit derivative works based on the Covered Works,
+including without limitation translations, adaptations, ports, rewrites,
+sequels, prequels, spin-offs, and successor works.
+
+Section 16.03  No MGM Royalty or Profit-Share.
+
+MGM Laboratory shall have no right to receive any royalty, profit-share,
+revenue-share, equity, or other economic interest in any
+commercialization, monetization, or exploitation of the Covered Works by
+Estella, regardless of whether such commercialization occurs before,
+during, or after the term of this Agreement, and regardless of whether
+any member of MGM Laboratory was involved with the Covered Works in any
+capacity.
+
+
+================================================================================
+ARTICLE XVII.  CONFIDENTIALITY AND NON-DISCLOSURE
+================================================================================
+
+Section 17.01  Confidential Information.
+
+For purposes of this Agreement, "Confidential Information" means any and
+all non-public information disclosed by Estella to MGM Laboratory, or
+otherwise obtained by MGM Laboratory in the course of its access to the
+Covered Works or the Infrastructure, including without limitation source
+code, configurations, credentials, architectures, designs, business
+plans, financial information, customer information, and any other
+information that a reasonable person would consider confidential under
+the circumstances.
+
+Section 17.02  Non-Disclosure Obligation.
+
+MGM Laboratory shall:
+
+   (a)  hold all Confidential Information in strict confidence;
+
+   (b)  not disclose any Confidential Information to any third party
+        without the prior written consent of Estella;
+
+   (c)  not use any Confidential Information for any purpose other than
+        the limited purposes contemplated by this Agreement;
+
+   (d)  apply at least the same degree of care to protect the
+        Confidential Information as it applies to protect its own
+        confidential information of like importance, but in no event
+        less than reasonable care; and
+
+   (e)  upon the occurrence of a Termination Event, return or destroy
+        all Confidential Information, and certify such return or
+        destruction in writing.
+
+Section 17.03  Exceptions.
+
+The obligations of Section 17.02 do not apply to information that:
+
+   (a)  is or becomes publicly available through no breach of this
+        Agreement by MGM Laboratory;
+
+   (b)  was lawfully in MGM Laboratory's possession prior to disclosure
+        by Estella, as evidenced by contemporaneous written records;
+
+   (c)  is lawfully received by MGM Laboratory from a third party
+        without restriction; or
+
+   (d)  is required to be disclosed by applicable law or by order of a
+        court of competent jurisdiction, provided that MGM Laboratory
+        provides Estella with prompt advance notice of such requirement
+        and reasonable cooperation in any effort by Estella to limit or
+        oppose such disclosure.
+
+
+================================================================================
+ARTICLE XVIII.  REPRESENTATIONS AND WARRANTIES
+================================================================================
+
+Section 18.01  Mutual Representations.
+
+Each party represents and warrants to the other that:
+
+   (a)  it has the full power and authority to enter into and perform
+        this Agreement;
+
+   (b)  its execution and performance of this Agreement do not and will
+        not violate any applicable law or any agreement to which it is
+        a party; and
+
+   (c)  this Agreement constitutes its legal, valid, and binding
+        obligation, enforceable in accordance with its terms.
+
+Section 18.02  Licensee Representations.
+
+MGM Laboratory further represents and warrants to Estella that:
+
+   (a)  it has not made and will not make any contribution to any
+        Covered Work that gives or could give rise to any claim of
+        ownership, authorship, or other right in or to such Covered
+        Work;
+
+   (b)  it has no claim of any kind against Estella in respect of the
+        Covered Works, the Infrastructure, or the Estella Contributions
+        as of the Effective Date; and
+
+   (c)  it shall not assert, encourage, or assist in the assertion of
+        any such claim at any time during or after the term of this
+        Agreement.
+
+
+================================================================================
+ARTICLE XIX.  DISCLAIMER OF WARRANTIES
+================================================================================
+
+Section 19.01  AS-IS.
+
+THE COVERED WORKS AND THE INFRASTRUCTURE ARE PROVIDED "AS IS," "WHERE IS,"
+"WITH ALL FAULTS," AND WITHOUT WARRANTY OF ANY KIND, WHETHER EXPRESS,
+IMPLIED, STATUTORY, OR OTHERWISE, INCLUDING WITHOUT LIMITATION ANY
+WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE,
+NON-INFRINGEMENT, ACCURACY, COMPLETENESS, AVAILABILITY, RELIABILITY,
+SECURITY, QUIET ENJOYMENT, OR COURSE OF DEALING OR USAGE OF TRADE.
+
+Section 19.02  No Reliance.
+
+MGM Laboratory acknowledges that it has not relied on any representation,
+warranty, statement, or undertaking of Estella in entering into or
+performing this Agreement other than those expressly set forth herein.
+
+
+================================================================================
+ARTICLE XX.  LIMITATION OF LIABILITY
+================================================================================
+
+Section 20.01  Exclusion of Damages.
+
+IN NO EVENT SHALL ESTELLA OR ANY OF ITS AFFILIATES, PRINCIPALS, EMPLOYEES,
+CONTRACTORS, OR AGENTS BE LIABLE TO MGM LABORATORY OR ANY THIRD PARTY FOR
+ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, PUNITIVE, EXEMPLARY, OR
+OTHER SIMILAR DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, BUSINESS,
+GOODWILL, DATA, OR USE, ARISING OUT OF OR RELATING TO THIS AGREEMENT, THE
+COVERED WORKS, OR THE INFRASTRUCTURE, EVEN IF ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES.
+
+Section 20.02  Cap on Direct Damages.
+
+IN ANY EVENT, THE AGGREGATE CUMULATIVE LIABILITY OF ESTELLA TO MGM
+LABORATORY AND ALL THIRD PARTIES UNDER OR IN CONNECTION WITH THIS
+AGREEMENT SHALL NOT EXCEED ONE THOUSAND INDONESIAN RUPIAH (Rp 1.000),
+WHICH AMOUNT THE PARTIES AGREE IS A REASONABLE LIMITATION GIVEN THE
+ROYALTY-FREE NATURE OF THE LICENSE GRANTED HEREUNDER.
+
+
+================================================================================
+ARTICLE XXI.  INDEMNIFICATION
+================================================================================
+
+Section 21.01  Indemnification by Licensee.
+
+MGM Laboratory shall indemnify, defend, and hold harmless Estella, its
+Affiliates, Principals, employees, contractors, and agents from and
+against any and all claims, demands, actions, proceedings, losses,
+damages, liabilities, costs, and expenses (including reasonable
+attorneys' fees) arising out of or relating to:
+
+   (a)  any breach by MGM Laboratory of any term, condition, covenant,
+        restriction, or prohibition of this Agreement;
+
+   (b)  any use of the Covered Works or the Infrastructure by MGM
+        Laboratory or any member, employee, agent, contractor, or
+        other representative thereof;
+
+   (c)  any data, content, or other material placed on the
+        Infrastructure by or at the direction of MGM Laboratory or
+        any member, employee, agent, contractor, or other
+        representative thereof;
+
+   (d)  any claim by any third party (including without limitation
+        FILKOM, Universitas Brawijaya, or any member of MGM Laboratory)
+        arising out of or relating to the Covered Works, the
+        Infrastructure, or this Agreement; and
+
+   (e)  any violation by MGM Laboratory of any applicable law,
+        regulation, or third-party right.
+
+
+================================================================================
+ARTICLE XXII.  FORCE MAJEURE
+================================================================================
+
+Section 22.01  Force Majeure Events.
+
+Estella shall not be liable for any failure or delay in performance under
+this Agreement to the extent caused by any event beyond Estella's
+reasonable control, including without limitation acts of God, acts of
+war, acts of terrorism, civil unrest, governmental action, epidemic,
+pandemic, natural disaster, fire, flood, earthquake, volcanic eruption,
+power failure, internet outage, denial-of-service attack, supply chain
+disruption, labor dispute, vendor failure, FILKOM facility unavailability,
+or change of academic-year calendar.
+
+
+================================================================================
+ARTICLE XXIII.  GOVERNING LAW AND JURISDICTION
+================================================================================
+
+Section 23.01  Governing Law.
+
+This Agreement shall be governed by, and construed in accordance with,
+the laws of the Republic of Indonesia, without regard to its conflict-
+of-laws principles.
+
+Section 23.02  Jurisdiction.
+
+Subject to Article XXIV, the courts of the Republic of Indonesia, sitting
+in Malang, East Java, shall have exclusive jurisdiction over any dispute
+arising out of or relating to this Agreement.
+
+
+================================================================================
+ARTICLE XXIV.  DISPUTE RESOLUTION AND ARBITRATION
+================================================================================
+
+Section 24.01  Negotiation.
+
+The parties shall attempt to resolve any dispute arising out of or
+relating to this Agreement through good-faith negotiation between
+authorized representatives for a period of not less than thirty (30)
+calendar days before resorting to any other dispute-resolution mechanism.
+
+Section 24.02  Mediation.
+
+If negotiation does not resolve the dispute, the parties shall attempt
+mediation under the rules of the Indonesian National Mediation Center or
+a comparable mediation provider mutually agreed by the parties.
+
+Section 24.03  Arbitration.
+
+If mediation does not resolve the dispute within sixty (60) calendar days
+from its commencement, the dispute shall be finally resolved by
+arbitration under the rules of the Badan Arbitrase Nasional Indonesia
+(BANI), with the seat of arbitration in Jakarta, the language of
+arbitration in Indonesian, and a single arbitrator unless the parties
+otherwise agree.
+
+Section 24.04  Equitable Relief.
+
+Notwithstanding the foregoing, Estella may at any time seek injunctive or
+other equitable relief in any court of competent jurisdiction to protect
+its intellectual property rights or to enforce the provisions of Articles
+II, V, VIII, XII, and XVII.
+
+
+================================================================================
+ARTICLE XXV.  NOTICES AND COMMUNICATIONS
+================================================================================
+
+Section 25.01  Form of Notice.
+
+All notices, demands, and other communications under this Agreement shall
+be in writing and shall be delivered by:
+
+   (a)  hand delivery, with written acknowledgment of receipt;
+
+   (b)  registered or certified mail, return receipt requested;
+
+   (c)  reputable overnight courier; or
+
+   (d)  electronic mail to an address designated in writing by the
+        recipient.
+
+Section 25.02  Addresses.
+
+Notices to Estella shall be sent to the address designated by Estella in
+writing from time to time, and notices to MGM Laboratory shall be sent to
+the official address of MGM Laboratory at FILKOM, Universitas Brawijaya,
+Malang, East Java, Indonesia.
+
+
+================================================================================
+ARTICLE XXVI.  ASSIGNMENT AND TRANSFER
+================================================================================
+
+Section 26.01  No Assignment by Licensee.
+
+MGM Laboratory shall not assign, transfer, sublicense, delegate, or
+otherwise alienate any of its rights or obligations under this Agreement
+without the prior written consent of Estella, which consent may be
+withheld in Estella's sole and absolute discretion. Any purported
+assignment in violation of this Section 26.01 shall be void ab initio.
+
+Section 26.02  Assignment by Licensor.
+
+Estella may freely assign, transfer, sublicense, or otherwise alienate
+any or all of its rights and obligations under this Agreement to any
+party, with or without notice to or consent of MGM Laboratory.
+
+
+================================================================================
+ARTICLE XXVII.  SEVERABILITY AND PARTIAL INVALIDITY
+================================================================================
+
+Section 27.01  Severability.
+
+If any provision of this Agreement is held to be invalid, illegal, or
+unenforceable in any respect by any court or arbitral tribunal of
+competent jurisdiction, such provision shall be deemed modified to the
+minimum extent necessary to render it valid, legal, and enforceable, and
+if such modification is not possible, such provision shall be severed
+from this Agreement, and the remaining provisions shall continue in full
+force and effect.
+
+Section 27.02  Reformation.
+
+In the event of any such severance or modification, the parties shall
+negotiate in good faith to replace the severed or modified provision with
+a valid, legal, and enforceable provision that achieves, to the maximum
+extent possible, the economic, legal, and commercial effect of the
+original provision.
+
+
+================================================================================
+ARTICLE XXVIII.  WAIVER, ESTOPPEL, AND NON-WAIVER
+================================================================================
+
+Section 28.01  No Waiver by Conduct.
+
+No failure or delay by Estella in exercising any right, power, or
+remedy under this Agreement shall operate as a waiver thereof, nor shall
+any single or partial exercise of any such right, power, or remedy
+preclude any other or further exercise thereof or the exercise of any
+other right, power, or remedy.
+
+Section 28.02  Written Waiver Required.
+
+Any waiver by Estella of any provision of this Agreement must be in
+writing and signed by an authorized representative of Estella to be
+effective, and no waiver of any provision shall be deemed a waiver of
+any other provision or of the same provision on any subsequent occasion.
+
+
+================================================================================
+ARTICLE XXIX.  AMENDMENTS, MODIFICATIONS, AND SUPPLEMENTAL TERMS
+================================================================================
+
+Section 29.01  Amendment Process.
+
+This Agreement may be amended, modified, or supplemented only by a
+written instrument signed by an authorized representative of Estella.
+For the avoidance of doubt, MGM Laboratory's consent shall not be
+required for any amendment, and Estella may unilaterally amend this
+Agreement by posting an updated version in the relevant repository,
+effective immediately upon such posting.
+
+Section 29.02  Continuing Use as Acceptance.
+
+The continued use of any Covered Work by any User following the posting
+of an amended version of this Agreement shall constitute acceptance by
+such User of the amended terms.
+
+
+================================================================================
+ARTICLE XXX.  SURVIVAL OF PROVISIONS
+================================================================================
+
+Section 30.01  Surviving Provisions.
+
+The following Articles and any other provisions of this Agreement that
+by their nature should survive termination shall survive any termination
+or expiration of this Agreement: Articles I, II, VI (Sections 6.03 through
+6.06), VIII, IX, XII, XV, XVI, XVII, XVIII, XIX, XX, XXI, XXIII, XXIV,
+XXVII, XXVIII, XXX, XXXI, XXXII, XXXVIII, and XXXIX.
+
+
+================================================================================
+ARTICLE XXXI.  ENTIRE AGREEMENT AND INTEGRATION
+================================================================================
+
+Section 31.01  Entire Agreement.
+
+This Agreement constitutes the entire agreement between the parties with
+respect to the subject matter hereof and supersedes all prior and
+contemporaneous agreements, understandings, negotiations, and discussions,
+whether oral or written, with respect to such subject matter.
+
+Section 31.02  No Reliance on Extrinsic Representations.
+
+No representation, statement, warranty, or undertaking made by either
+party prior to the Effective Date and not expressly set forth in this
+Agreement shall be of any force or effect.
+
+
+================================================================================
+ARTICLE XXXII.  INTERPRETATION, CONSTRUCTION, AND HEADINGS
+================================================================================
+
+Section 32.01  Headings.
+
+The headings of articles, sections, and sub-sections in this Agreement
+are for convenience of reference only and shall not affect the
+interpretation hereof.
+
+Section 32.02  Construction Against Drafter.
+
+The parties acknowledge that this Agreement has been drafted with the
+benefit of legal review and that the principle of construction against
+the drafter shall not apply.
+
+Section 32.03  Language.
+
+This Agreement is executed in the English language. If translated into
+Bahasa Indonesia or any other language for any purpose, the English
+version shall control in the event of any inconsistency.
+
+
+================================================================================
+ARTICLE XXXIII.  EXPORT, COMPLIANCE, AND REGULATORY MATTERS
+================================================================================
+
+Section 33.01  Compliance with Laws.
+
+Each party shall comply with all applicable laws, regulations, and
+governmental requirements in connection with its performance under this
+Agreement, including without limitation those relating to export
+control, sanctions, anti-corruption, anti-bribery, data protection, and
+intellectual property.
+
+Section 33.02  Anti-Corruption.
+
+MGM Laboratory shall not, directly or indirectly, offer, give, or
+authorize the offer or giving of anything of value to any government
+official, public-sector employee, or other person for the purpose of
+obtaining or retaining business or any improper advantage in connection
+with this Agreement.
+
+
+================================================================================
+ARTICLE XXXIV.  AUDIT, INSPECTION, AND RECORD-KEEPING
+================================================================================
+
+Section 34.01  Audit Right.
+
+Estella shall have the right, upon reasonable advance notice and during
+normal business hours, to audit MGM Laboratory's use of the Covered Works
+and the Infrastructure for purposes of verifying compliance with this
+Agreement.
+
+Section 34.02  Cooperation.
+
+MGM Laboratory shall provide reasonable cooperation in connection with
+any such audit, including without limitation by making available such
+records, systems, and personnel as Estella may reasonably request.
+
+
+================================================================================
+ARTICLE XXXV.  BRAND, TRADEMARK, AND ATTRIBUTION
+================================================================================
+
+Section 35.01  Use of Estella Marks.
+
+MGM Laboratory shall not use any name, mark, logo, or other identifier
+of Estella, or any name, mark, logo, or other identifier confusingly
+similar thereto, in any manner without the prior written consent of
+Estella.
+
+Section 35.02  Attribution Requirement.
+
+In any academic publication, presentation, thesis, dissertation, or
+similar work that references any Covered Work, MGM Laboratory shall
+include the following attribution (or such other attribution as Estella
+may specify from time to time):
+
+      "The [Covered Work] referenced herein is the proprietary work of
+      Estella Solusi Digital. All rights reserved. Used with permission
+      under the Estella Solusi Digital Proprietary License (ESDPL)."
+
+
+================================================================================
+ARTICLE XXXVI.  ACADEMIC AND RESEARCH USE LIMITATIONS
+================================================================================
+
+Section 36.01  Permitted Academic Use.
+
+The use of the Covered Works for academic research purposes is permitted
+only to the extent that such use:
+
+   (a)  is conducted within MGM Laboratory by current members thereof;
+
+   (b)  does not result in the disclosure of any Covered Work or any
+        Confidential Information to any party outside MGM Laboratory
+        without the prior written consent of Estella;
+
+   (c)  does not give rise to any publication or other dissemination of
+        results that would or could expose any portion of the Covered
+        Works' source code, configurations, or other proprietary
+        details; and
+
+   (d)  is conducted in accordance with the attribution requirements of
+        Article XXXV.
+
+Section 36.02  Thesis and Dissertation Use.
+
+A student member of MGM Laboratory may reference the Covered Works in a
+thesis or dissertation only if (a) such reference is limited to the
+existence and high-level functionality of the Covered Works, (b) no
+source code or other proprietary material is disclosed therein, and (c)
+the attribution required by Article XXXV is included.
+
+
+================================================================================
+ARTICLE XXXVII.  PUBLICATION, PRESS, AND PUBLIC STATEMENTS
+================================================================================
+
+Section 37.01  Press and Public Statements.
+
+MGM Laboratory shall not issue any press release, public statement,
+social media post, blog post, or other public communication concerning
+the Covered Works, the Infrastructure, this Agreement, or the
+relationship between the parties without the prior written consent of
+Estella.
+
+Section 37.02  Estella's Right to Publicize.
+
+Estella may, in its sole and absolute discretion, issue press releases
+and other public communications concerning the Covered Works, the
+Infrastructure, this Agreement, and the relationship between the
+parties, including without limitation in connection with any Termination
+Event, Takedown, Buyout, or Continuing Engagement.
+
+
+================================================================================
+ARTICLE XXXVIII.  EQUITABLE RELIEF AND SPECIFIC PERFORMANCE
+================================================================================
+
+Section 38.01  Irreparable Harm.
+
+MGM Laboratory acknowledges that any breach by it of Articles II, V, VIII,
+XII, XV, XVI, XVII, or XXXV would cause irreparable harm to Estella for
+which monetary damages would not be an adequate remedy, and accordingly
+Estella shall be entitled to seek and obtain injunctive relief, specific
+performance, and other equitable remedies, without the requirement of
+posting any bond or other security and without prejudice to any other
+remedy available at law or in equity.
+
+
+================================================================================
+ARTICLE XXXIX.  ACKNOWLEDGMENT, ACCEPTANCE, AND EXECUTION
+================================================================================
+
+Section 39.01  Acknowledgment.
+
+By accessing, using, or otherwise interacting with any Covered Work, MGM
+Laboratory, each of its members, and each User acknowledges that he, she,
+or it:
+
+   (a)  has read and understood this Agreement in its entirety;
+
+   (b)  has had the opportunity to consult with legal counsel of his,
+        her, or its choosing concerning this Agreement;
+
+   (c)  understands that this Agreement creates legally binding
+        obligations;
+
+   (d)  agrees to be bound by all terms and conditions of this
+        Agreement; and
+
+   (e)  acknowledges that Article IV has been intentionally omitted as
+        described therein, and confirms by reference to this Section
+        39.01(e) that he, she, or it has read the Agreement carefully.
+
+Section 39.02  Acceptance by Use.
+
+There is no requirement of a separate signed instrument for this
+Agreement to take effect. Any access to or use of any Covered Work
+constitutes acceptance of this Agreement.
+
+Section 39.03  Estella's Execution.
+
+This Agreement is executed and promulgated by Estella through publication
+in the relevant repository or repositories containing Covered Works.
+
+Section 39.04  Final Declarations.
+
+   (a)  All rights, title, and interest in and to the Covered Works
+        and the Infrastructure belong, and shall continue to belong,
+        to Estella.
+
+   (b)  MGM Laboratory's right to use the Covered Works exists only
+        for so long as the Membership Condition is satisfied and all
+        other conditions of this Agreement are met.
+
+   (c)  MGM Laboratory has no right to use Estella, the Covered Works,
+        the Infrastructure, or any portion thereof for MGM Laboratory's
+        own commercial benefit, separate institutional benefit, or any
+        purpose beyond the limited internal academic use expressly
+        contemplated by this Agreement.
+
+   (d)  Upon the failure of the Membership Condition or any other
+        Termination Event, Estella may take down the entirety of the
+        Covered Works and the Infrastructure, with or without notice,
+        and without liability of any kind to MGM Laboratory or any
+        third party.
+
+   (e)  Estella may offer a Buyout to MGM Laboratory at a price
+        determined by Estella, which MGM Laboratory may accept,
+        negotiate within a defined window, or decline; declining
+        results in a Takedown.
+
+   (f)  Alternatively, MGM Laboratory may engage Estella under a paid
+        Continuing Engagement to continue operating the Covered Works
+        and the Infrastructure.
+
+   (g)  Data left on the Infrastructure at the time of a Takedown is
+        the responsibility of MGM Laboratory, and Estella has no
+        obligation to preserve, return, or otherwise account for such
+        data.
+
+   (h)  All cloud bills, including without limitation AWS S3 and GCP,
+        have been and continue to be paid by Estella, with no
+        reimbursement from MGM Laboratory, giving rise to the Accrued
+        Reimbursement Obligation, which Estella may at any future time
+        formalize and collect.
+
+   (i)  This Agreement is to be read in its entirety. Any party
+        purporting to assert rights under this Agreement without
+        having read it in full does so at his, her, or its own peril.
+
+
+================================================================================
+                                END OF AGREEMENT
+================================================================================
+
+      Copyright (c) 2026 ESTELLA SOLUSI DIGITAL. All Rights Reserved.
+
+      ESTELLA SOLUSI DIGITAL
+      Owned by Muhammad Idham Ma'arif and Syafa Hadyan Rasendriya
+      Hosted on Estella Infrastructure, co-located at FILKOM,
+      Universitas Brawijaya, Malang, East Java, Indonesia.
+
+      No part of this License, the Covered Works, or the Infrastructure
+      may be reproduced, redistributed, modified, or commercialized
+      except as expressly permitted herein. All other rights reserved.
+
+================================================================================

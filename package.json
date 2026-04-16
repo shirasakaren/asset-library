@@ -1,0 +1,57 @@
+{
+  "name": "mgm-asset-library",
+  "version": "0.1.0",
+  "description": "MGM Asset Library — monorepo for the Next.js web client and the NestJS API, workers, and database.",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter mgm-asset-library-backend --filter mgm-asset-library-frontend dev",
+    "dev:backend": "pnpm --filter mgm-asset-library-backend start:dev",
+    "dev:frontend": "pnpm --filter mgm-asset-library-frontend dev",
+    "build": "pnpm --filter mgm-asset-library-backend build && pnpm --filter mgm-asset-library-frontend build",
+    "build:backend": "pnpm --filter mgm-asset-library-backend build",
+    "build:frontend": "pnpm --filter mgm-asset-library-frontend build",
+    "lint": "pnpm --filter mgm-asset-library-backend lint && pnpm --filter mgm-asset-library-frontend lint",
+    "lint:fix": "pnpm --filter mgm-asset-library-backend lint:fix && pnpm --filter mgm-asset-library-frontend lint:fix",
+    "typecheck": "pnpm --filter mgm-asset-library-backend typecheck && pnpm --filter mgm-asset-library-frontend typecheck",
+    "test": "pnpm --filter mgm-asset-library-backend test && pnpm --filter mgm-asset-library-frontend test",
+    "test:e2e": "pnpm --filter mgm-asset-library-backend test:e2e",
+    "test:e2e:web": "pnpm --filter mgm-asset-library-frontend test:e2e",
+    "format": "pnpm -r format",
+    "db:migrate": "pnpm --filter mgm-asset-library-backend prisma:deploy",
+    "db:migrate:dev": "pnpm --filter mgm-asset-library-backend prisma:migrate",
+    "db:generate": "pnpm --filter mgm-asset-library-backend prisma:generate",
+    "db:seed": "pnpm --filter mgm-asset-library-backend seed",
+    "db:studio": "pnpm --filter mgm-asset-library-backend prisma:studio",
+    "openapi:export": "pnpm --filter mgm-asset-library-backend openapi:export",
+    "openapi:gen": "pnpm --filter mgm-asset-library-frontend openapi:gen",
+    "openapi:sync": "pnpm openapi:export && pnpm openapi:gen",
+    "reindex": "pnpm --filter mgm-asset-library-backend reindex",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d",
+    "prepare": "husky || true"
+  },
+  "devDependencies": {
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10"
+  },
+  "lint-staged": {
+    "backend/**/*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "frontend/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
