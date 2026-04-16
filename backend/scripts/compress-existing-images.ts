@@ -123,35 +123,3 @@ async function processThumbnail(key: string): Promise<void> {
     thumbsSkipped++;
     return;
   }
-  console.log(`  thumb ${key}: ${obj.body.length} -> ${out.length} bytes${DRY ? ' (dry)' : ''}`);
-  if (!DRY) {
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: THUMBS_BUCKET,
-        Key: key,
-        Body: out,
-        ContentType: 'image/webp',
-      }),
-    );
-  }
-  thumbsDone++;
-}
-
-async function main(): Promise<void> {
-  if (!THUMBS_BUCKET || !EDITOR_BUCKET) {
-    throw new Error('Missing S3 bucket env (S3_BUCKET_THUMBS / S3_BUCKET_EDITOR_MEDIA).');
-  }
-  console.log(`compress-existing-images${DRY ? ' (DRY RUN)' : ''}`);
-
-  const assets = await prisma.asset.findMany({
-    select: { id: true, slug: true, thumbnailKey: true, previewMedia: true },
-  });
-  console.log(`scanning ${assets.length} assets…`);
-
-  for (const asset of assets) {
-    // 1) Thumbnail — compress in place.
-    if (asset.thumbnailKey) {
-      try {
-        await processThumbnail(asset.thumbnailKey);
-      } catch (err) {
-        console.warn(`  thumb error ${asset.thumbnailKey}: ${(err as Error).message}`);
