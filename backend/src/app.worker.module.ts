@@ -38,3 +38,12 @@ import { MetricsModule } from './modules/metrics/metrics.module';
           transport: config.isDevelopment
             ? { target: 'pino-pretty', options: { singleLine: true } }
             : undefined,
+          base: { role: 'worker' },
+        },
+      }),
+    }),
+    SentryModule,
+    PrismaModule,
+    MongoModule,
+    RedisModule,
+    S3Module,
