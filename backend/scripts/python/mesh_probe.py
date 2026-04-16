@@ -55,3 +55,16 @@ def probe(path: str) -> Dict[str, Any]:
             for face in mesh.faces:
                 if len(face) == 3:
                     triangles += 1
+                elif len(face) == 4:
+                    quads += 1
+        for material in scene.materials:
+            texture_refs.extend(_walk_textures(material))
+
+        animations = []
+        has_skeleton = False
+        for anim in scene.animations:
+            try:
+                # FPS may be 0 in some FBX exports; fall back to 30.
+                ticks_per_sec = anim.ticks_per_second if anim.ticks_per_second and anim.ticks_per_second > 0 else 30
+                length_sec = float(anim.duration) / float(ticks_per_sec)
+            except Exception:
