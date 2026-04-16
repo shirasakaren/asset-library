@@ -83,9 +83,3 @@ export class AuditInterceptor implements NestInterceptor {
           void this.audit.record({
             actorId: req.user?.user.id,
             action: config.action,
-            subjectType: config.subjectType,
-            subjectId,
-            metadata,
-          });
-        },
-      }),
