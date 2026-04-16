@@ -72,3 +72,13 @@ def probe(path: str) -> dict:
                 "hasRootMotion": False,
             }
         )
+
+    return {
+        "triangles": triangles,
+        "quads": quads,
+        "vertices": vertices_total,
+        "materials": len(materials),
+        "hasSkeleton": has_skeleton,
+        "animations": animations,
+        "boundingBox": bbox,
+        "textureRefs": list(dict.fromkeys(texture_refs)),
