@@ -69,3 +69,22 @@ def setup_camera(min_v: Vector, max_v: Vector) -> None:
         math.cos(el) * math.cos(az) * distance,
         math.cos(el) * math.sin(az) * distance,
         math.sin(el) * distance,
+    ))
+    direction = (center - cam_obj.location)
+    cam_obj.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam_obj
+
+
+def setup_eevee(out_path: str) -> None:
+    scene = bpy.context.scene
+    scene.render.engine = "BLENDER_EEVEE"
+    scene.render.resolution_x = 1280
+    scene.render.resolution_y = 720
+    scene.render.image_settings.file_format = "PNG"
+    scene.render.filepath = out_path
+    scene.eevee.use_gtao = True
+    scene.eevee.use_bloom = False
+
+
+def main() -> int:
+    args = _argv_after_dash()
