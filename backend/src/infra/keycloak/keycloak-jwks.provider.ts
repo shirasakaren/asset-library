@@ -37,3 +37,8 @@ export class KeycloakJwksProvider {
       cacheMaxAge: config.get('KEYCLOAK_JWKS_CACHE_TTL_SEC') * 1000,
     });
   }
+
+  /**
+   * Verifies a Keycloak-issued bearer token end-to-end (signature, issuer,
+   * audience, expiry with configurable skew). Throws on any failure so the
+   * guard can map it to a 401.
