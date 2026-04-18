@@ -62,21 +62,3 @@ export class PrincipalResolverService {
    * Caching the resolution — not the verification — keeps token expiry strictly
    * enforced by the caller. Cache reads/writes are best-effort: a Redis failure
    * falls back to the Postgres upsert + role query.
-   */
-  async resolvePrincipal(claims: KeycloakClaims): Promise<{ user: User; role: AppRole }> {
-    const cacheKey = PrincipalResolverService.cacheKey(claims.sub);
-    try {
-      const cached = await this.redis.client.get(cacheKey);
-      if (cached) {
-        const parsed = JSON.parse(cached) as { user: SerializedUser; role: AppRole };
-        return { user: deserializeUser(parsed.user), role: parsed.role };
-      }
-    } catch {
-      /* cache miss / parse error — fall through to the DB */
-    }
-    const user = await this.upsertUser(claims);
-    const role = await this.roleResolver.resolve(user);
-    try {
-      await this.redis.client.set(
-        cacheKey,
-        JSON.stringify({ user: serializeUser(user), role }),
