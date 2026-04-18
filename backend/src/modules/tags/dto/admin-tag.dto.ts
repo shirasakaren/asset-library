@@ -32,3 +32,35 @@ export class ListTagsQueryDto extends ListQueryDto {
 
 export class MergeTagsDto {
   @ApiProperty({ type: [String] })
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsString({ each: true })
+  fromTagIds!: string[];
+
+  @ApiProperty()
+  @IsString()
+  intoTagId!: string;
+}
+
+export class UpdateTagDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @Matches(SLUG_REGEX)
+  @MaxLength(80)
+  slug?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  displayName?: string;
+}
+
+export class AdminTagDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() displayName!: string;
+  @ApiProperty() usageCount!: number;
+  @ApiProperty() createdAt!: string;
+}
