@@ -33,3 +33,28 @@ export class MailerService implements OnModuleDestroy {
     if (!this.enabled) {
       this.logger.warn('SMTP_HOST is blank — MailerService is a no-op.');
     }
+  }
+
+  async send(opts: {
+    to: string | string[];
+    subject: string;
+    html: string;
+    text?: string;
+  }): Promise<void> {
+    if (!this.transporter) {
+      this.logger.debug(`[mail-noop] to=${opts.to} subject=${opts.subject}`);
+      return;
+    }
+    await this.transporter.sendMail({
+      from: this.from,
+      to: opts.to,
+      subject: opts.subject,
+      html: opts.html,
+      text: opts.text,
+    });
+  }
+
+  onModuleDestroy(): void {
+    this.transporter?.close();
+  }
+}
