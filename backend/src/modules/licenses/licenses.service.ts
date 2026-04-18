@@ -50,3 +50,22 @@ export class LicensesService {
     const summary = this.toSummary(row, locale);
     return {
       ...summary,
+      fullText: resolveLocalized(row.fullText as LocalizedJson, locale) ?? '',
+    };
+  }
+
+  /** Drops the cached listings — call after admin mutations. */
+  async invalidateCache(): Promise<void> {
+    await this.cached.invalidate(LIST_CACHE_KEY('en'), LIST_CACHE_KEY('id'));
+  }
+
+  private toSummary(row: License, locale: Locale): LicenseSummaryDto {
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      description: resolveLocalized(row.description as LocalizedJson, locale) ?? '',
+      sortOrder: row.sortOrder,
+    };
+  }
+}
