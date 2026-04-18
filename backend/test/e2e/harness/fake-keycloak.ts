@@ -58,3 +58,9 @@ export class FakeKeycloak {
  */
 export async function buildTestModuleWithFakeKeycloak() {
   const fake = new FakeKeycloak();
+  const builder = Test.createTestingModule({
+    imports: [(await import('../../../src/app.module')).AppModule],
+  });
+  builder.overrideProvider(KeycloakJwksProvider).useValue(fake.asProvider());
+  return { fake, builder };
+}
