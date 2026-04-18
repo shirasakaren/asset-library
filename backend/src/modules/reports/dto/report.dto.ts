@@ -38,3 +38,43 @@ export class ActionReportDto {
   @IsString()
   @MinLength(4)
   @MaxLength(1000)
+  adminNotes!: string;
+
+  @ApiProperty({ enum: ['NOTHING', 'ARCHIVE_ASSET', 'DELETE_ASSET', 'FORCE_DELETE_ASSET'] })
+  @IsIn(['NOTHING', 'ARCHIVE_ASSET', 'DELETE_ASSET', 'FORCE_DELETE_ASSET'])
+  action!: ReportActionKind;
+
+  @ApiPropertyOptional({
+    description: 'Required when action=FORCE_DELETE_ASSET — value: "I understand".',
+  })
+  @IsOptional()
+  @IsString()
+  confirm?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  confirmedAt?: string;
+}
+
+export class DismissReportDto {
+  @ApiProperty()
+  @IsString()
+  @MinLength(4)
+  @MaxLength(1000)
+  adminNotes!: string;
+}
+
+export class ReportDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ enum: ReportCategory }) category!: ReportCategory;
+  @ApiProperty() notes!: string;
+  @ApiProperty({ enum: ReportStatus }) status!: ReportStatus;
+  @ApiProperty() assetId!: string;
+  @ApiProperty() assetTitle!: string;
+  @ApiProperty() assetSlug!: string;
+  @ApiProperty() reporter!: { id: string; displayName: string; email?: string };
+  @ApiPropertyOptional() adminNotes?: string | null;
+  @ApiProperty() createdAt!: string;
+  @ApiPropertyOptional() resolvedAt?: string;
+}
