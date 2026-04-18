@@ -38,3 +38,37 @@ export class CompatibilityRowDto {
   engineVersion!: string;
 
   @ApiPropertyOptional({
+    type: [String],
+    description: 'Unity render pipelines: URP|HDRP|SRP|BUILT_IN',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  renderPipelines?: string[];
+
+  @ApiProperty({ type: [String], description: 'Platform targets (WINDOWS|MAC|...).' })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  targets!: string[];
+}
+
+export class SetCompatibilityDto {
+  @ApiProperty({ type: CompatibilityRowDto, isArray: true })
+  @IsArray()
+  @ArrayMaxSize(20)
+  @ValidateNested({ each: true })
+  @Type(() => CompatibilityRowDto)
+  rows!: CompatibilityRowDto[];
+}
+
+export class VersionSummaryDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() semver!: string;
+  @ApiProperty() isLatest!: boolean;
+  @ApiProperty() analysisStatus!: string;
+  @ApiPropertyOptional() publishedAt?: string;
+  @ApiProperty() bytesTotal!: string;
+  @ApiProperty() fileCount!: number;
+  @ApiProperty() createdAt!: string;
+}
