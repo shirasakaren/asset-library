@@ -81,3 +81,72 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
             (list.data ?? []).map((d) => (
               <li key={d.id} className="flex items-center gap-3 px-4 py-3">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-surface-muted text-ink-2">
+                  <Cpu className="h-4 w-4" strokeWidth={2.25} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[14px] font-medium text-ink truncate">{d.deviceLabel}</p>
+                  <p className="text-caption text-ink-3 geist-tnum truncate">
+                    Created {formatDate(d.createdAt, locale)} ·{' '}
+                    {d.lastUsedAt
+                      ? `Last used ${formatRelative(d.lastUsedAt, locale)}`
+                      : 'Never used'}{' '}
+                    · Expires {formatDate(d.expiresAt, locale)}
+                  </p>
+                </div>
+                <Badge variant={new Date(d.expiresAt) < new Date() ? 'danger' : 'neutral'}>
+                  {new Date(d.expiresAt) < new Date() ? 'Expired' : 'Active'}
+                </Badge>
+                <Button size="sm" variant="ghost" onClick={() => setConfirmRevoke(d)}>
+                  Revoke
+                </Button>
+              </li>
+            ))
+          )}
+        </ul>
+      </Card>
+
+      <Card padding="lg" className="mt-6">
+        <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">Account</h2>
+        <p className="mt-1 text-body-sm text-ink-3">
+          Signing out also revokes the active Keycloak session.
+        </p>
+        <Button
+          variant="ghost"
+          className="mt-4 !text-brand-red hover:!bg-brand-red-50"
+          onClick={handleSignOut}
+          leadingIcon={<LogOut className="h-4 w-4" strokeWidth={2.25} />}
+        >
+          Sign out
+        </Button>
+      </Card>
+
+      {confirmRevoke ? (
+        <Modal open onOpenChange={(o) => !o && setConfirmRevoke(null)}>
+          <ModalContent size="sm">
+            <ModalHeader>
+              <ModalTitle>Revoke {confirmRevoke.deviceLabel}?</ModalTitle>
+              <ModalDescription>
+                The plugin will sign out immediately. You can re-authenticate it from inside Unity
+                or Unreal later.
+              </ModalDescription>
+            </ModalHeader>
+            <ModalFooter>
+              <Button variant="ghost" onClick={() => setConfirmRevoke(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  revoke.mutate(confirmRevoke.id);
+                  setConfirmRevoke(null);
+                }}
+              >
+                Revoke
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      ) : null}
+    </>
+  );
+}
