@@ -72,3 +72,23 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
         {LOCALES.map((opt) => {
           const active = opt.code === current;
           return (
+            <button
+              key={opt.code}
+              type="button"
+              onClick={() => change(opt.code)}
+              className="flex items-center justify-between w-full px-2.5 h-9 rounded-[8px] text-[13.5px] text-ink hover:bg-surface-muted text-left focus-visible:outline-none focus-visible:bg-surface-muted"
+            >
+              <span className="flex items-center gap-2">
+                <span className="font-mono text-[11px] text-ink-3 uppercase">{opt.code}</span>
+                {t(opt.labelKey)}
+              </span>
+              {active ? (
+                <Check className="h-4 w-4 text-brand-blue" strokeWidth={2.5} />
+              ) : null}
+            </button>
+          );
+        })}
+      </PopoverContent>
+    </Popover>
+  );
+}
