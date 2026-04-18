@@ -69,6 +69,3 @@ export class MeilisearchService implements OnModuleInit {
 
   private async ensureTagsIndex(): Promise<void> {
     const index = this.client.index(MEILI_INDEX_TAGS);
-    await this.client.createIndex(MEILI_INDEX_TAGS, { primaryKey: 'id' }).catch(() => undefined);
-    await index.updateSearchableAttributes(['slug', 'displayName']);
-    await index.updateSortableAttributes(['usageCount', 'displayName']);
