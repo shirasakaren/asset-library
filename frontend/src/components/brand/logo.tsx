@@ -47,3 +47,16 @@ export function Logo({
           Asset Library
         </span>
       ) : null}
+    </span>
+  );
+  if (!href) return content;
+  return (
+    <Link
+      href={href}
+      aria-label="MGM Asset Library home"
+      className="inline-flex items-center rounded-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+    >
+      {content}
+    </Link>
+  );
+}
