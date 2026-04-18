@@ -234,3 +234,148 @@ export function DownloadPopup({
                 </Button>
               </div>
             </motion.div>
+          ) : state.step === 'error' ? (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            >
+              <Alert variant="danger" title={t('failedTitle')} icon={<AlertTriangle className="h-5 w-5 text-brand-red" strokeWidth={2.25} />}>
+                {state.message}
+              </Alert>
+              <div className="mt-5 flex items-center justify-end gap-2">
+                <Button variant="ghost" onClick={() => onOpenChange(false)}>
+                  {tCommon('close')}
+                </Button>
+                <Button onClick={() => setState({ step: 'browse' })}>{tCommon('tryAgain')}</Button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="browse"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+            >
+              {versionsQuery.isPending && needsLatestLookup ? (
+                <div className="py-10 text-center text-ink-3 inline-flex items-center justify-center w-full gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                  {tCommon('loading')}
+                </div>
+              ) : versionsQuery.isError && needsLatestLookup ? (
+                <Alert variant="danger" title={t('failedTitle')}>
+                  {t('failedBody')}
+                </Alert>
+              ) : options.isPending ? (
+                <div className="py-10 text-center text-ink-3 inline-flex items-center justify-center w-full gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                  {tCommon('loading')}
+                </div>
+              ) : options.isError ? (
+                <Alert variant="danger" title={t('failedTitle')}>
+                  {t('failedBody')}
+                </Alert>
+              ) : !options.data || options.data.files.length === 0 ? (
+                <p className="py-8 text-center text-body-sm text-ink-3">{t('noFiles')}</p>
+              ) : (
+                <div className="space-y-5">
+                  {filesGrouped.map(([groupName, files]) => (
+                    <div key={groupName}>
+                      <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
+                        {groupName}
+                      </p>
+                      <ul className="flex flex-col gap-1.5">
+                        {files.map((file) => {
+                          const Icon = kindIcon(file.kind);
+                          const downloading = state.step === 'downloading' && state.fileId === file.id;
+                          const disabled = state.step === 'downloading';
+                          return (
+                            <li key={file.id}>
+                              <button
+                                type="button"
+                                onClick={() => handlePick(file)}
+                                disabled={disabled}
+                                className={cn(
+                                  'group w-full flex items-center gap-4 p-3 rounded-[14px] border border-line bg-surface text-left',
+                                  'hover:border-ink/30 hover:bg-surface-muted/40 transition-colors duration-120',
+                                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+                                  disabled && !downloading && 'opacity-60 cursor-not-allowed',
+                                )}
+                              >
+                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-surface-muted text-ink-2 shrink-0">
+                                  <Icon className="h-4 w-4" strokeWidth={2.25} />
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-[14px] font-medium text-ink truncate">
+                                    {file.relativePath}
+                                  </span>
+                                  <span className="block text-caption text-ink-3 geist-tnum">
+                                    {formatBytes(file.bytes, locale)} · {friendlyKind(file.kind)}
+                                  </span>
+                                </span>
+                                {downloading ? (
+                                  <Loader2 className="h-4 w-4 animate-spin text-ink-2" strokeWidth={2.25} />
+                                ) : (
+                                  <Download className="h-4 w-4 text-ink-3 group-hover:text-ink transition-colors duration-120" strokeWidth={2.25} />
+                                )}
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  ))}
+
+                  {options.data.olderVersions.length > 0 ? (
+                    <div className="pt-3 border-t border-line">
+                      <button
+                        type="button"
+                        onClick={() => setShowOlder((s) => !s)}
+                        className="inline-flex items-center gap-1 text-[13px] font-medium text-ink-2 hover:text-ink transition-colors duration-120"
+                      >
+                        <ChevronDown
+                          className={cn('h-3.5 w-3.5 transition-transform duration-200', showOlder && 'rotate-180')}
+                          strokeWidth={2.25}
+                        />
+                        {showOlder ? t('hideOlderVersions') : t('showOlderVersions')}
+                      </button>
+                      {showOlder ? (
+                        <ul className="mt-3 flex flex-col gap-1.5">
+                          {options.data.olderVersions.map((v) => (
+                            <li key={v.id}>
+                              <button
+                                type="button"
+                                onClick={() => setVersionId(v.id)}
+                                className={cn(
+                                  'w-full flex items-center justify-between p-2.5 rounded-[10px] border border-line text-left text-[13.5px]',
+                                  'hover:bg-surface-muted/60 transition-colors duration-120',
+                                )}
+                              >
+                                <VersionBadge semver={v.semver} size="sm" />
+                                <span className="text-caption text-ink-3 geist-tnum">
+                                  {v.publishedAt
+                                    ? new Date(v.publishedAt).toLocaleDateString(
+                                        locale === 'id' ? 'id-ID' : 'en-US',
+                                        { dateStyle: 'medium' },
+                                      )
+                                    : '—'}
+                                </span>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </ModalContent>
+    </Modal>
+  );
+}
