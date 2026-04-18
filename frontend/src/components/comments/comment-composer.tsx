@@ -62,3 +62,53 @@ export function CommentComposer({
   return (
     <div className="rounded-[16px] border border-line bg-surface p-4">
       <div className="flex items-start gap-3">
+        <Avatar data={avatarFromServer(me.avatar)} size={32} />
+        <div className="flex-1 min-w-0">
+          <RichTextEditor
+            key={editorEpoch}
+            mode="lite"
+            value={doc}
+            onChange={setDoc}
+            autoFocus={autoFocus}
+            placeholder="Share what you think…"
+            minHeight={92}
+            maxHeight={240}
+          />
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <fieldset className="inline-flex items-center gap-3">
+          <legend className="sr-only">{t('kindLabel')}</legend>
+          <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+            <input
+              type="radio"
+              checked={kind === 'COMMENT'}
+              onChange={() => setKind('COMMENT')}
+              className="h-4 w-4 accent-ink"
+            />
+            {t('kindComment')}
+          </label>
+          <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+            <input
+              type="radio"
+              checked={kind === 'ISSUE'}
+              onChange={() => setKind('ISSUE')}
+              className="h-4 w-4 accent-ink"
+            />
+            {t('kindIssue')}
+          </label>
+        </fieldset>
+        <Button onClick={handleSubmit} disabled={!ready} loading={submitting} className="ml-auto">
+          {t('submit')}
+        </Button>
+      </div>
+
+      {kind === 'ISSUE' ? (
+        <Alert variant="warning" className="mt-3">
+          {t('issueBanner')}
+        </Alert>
+      ) : null}
+    </div>
+  );
+}
