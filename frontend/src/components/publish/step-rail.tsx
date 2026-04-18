@@ -79,3 +79,26 @@ export function StepRail() {
               <ChecklistRow key={k} item={item} />
             ))}
         </ul>
+      </div>
+    </nav>
+  );
+}
+
+function ChecklistRow({ item }: { item: ChecklistItem }) {
+  return (
+    <li className="flex items-center gap-2 text-[13px]">
+      {item.status === 'done' ? (
+        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-brand-green text-white shrink-0">
+          <Check className="h-3 w-3" strokeWidth={3} />
+        </span>
+      ) : item.status === 'in-progress' ? (
+        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-brand-yellow text-ink shrink-0 animate-pulse">
+          <Loader2 className="h-3 w-3" strokeWidth={3} />
+        </span>
+      ) : (
+        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-line-strong shrink-0" aria-hidden />
+      )}
+      <span className={cn(item.status === 'done' ? 'text-ink' : 'text-ink-2')}>{item.label}</span>
+    </li>
+  );
+}
