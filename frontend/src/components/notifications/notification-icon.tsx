@@ -57,3 +57,34 @@ export function NotificationIcon({ type, className }: { type: string; className?
     </span>
   );
 }
+
+export function notificationLink(type: string, payload: Record<string, unknown>): string {
+  const t = (type as NotificationType) ?? 'COMMENT_CREATED';
+  const slug = String(payload.assetSlug ?? '');
+  const commentId = String(payload.commentId ?? '');
+  switch (t) {
+    case 'COMMENT_CREATED':
+    case 'COMMENT_REPLY':
+      return slug ? `/assets/${slug}#comment-${commentId}` : '/notifications';
+    case 'ISSUE_CREATED':
+    case 'ISSUE_STATUS_CHANGED':
+      return slug ? `/assets/${slug}#issues` : '/notifications';
+    case 'REQUEST_STATUS_CHANGED':
+    case 'REQUEST_CREATED':
+      return '/request';
+    case 'REPORT_RECEIVED_FOR_YOUR_ASSET':
+      return slug ? `/assets/${slug}` : '/notifications';
+    case 'REPORT_CREATED':
+      return '/admin/reports';
+    case 'FEATURED_FEATURED':
+    case 'VERSION_PUBLISHED':
+      return slug ? `/assets/${slug}` : '/notifications';
+    case 'ANALYZER_FAILED':
+      return payload.assetId ? `/publish/${payload.assetId}` : '/notifications';
+    case 'ADMIN_PROMOTED':
+    case 'ADMIN_DEMOTED':
+      return '/admin';
+    default:
+      return '/notifications';
+  }
+}
