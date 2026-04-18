@@ -116,3 +116,34 @@ export class S3Service {
   async createMultipart(role: S3BucketRole, key: string, contentType: string): Promise<string> {
     const bucket = this.bucketFor(role);
     const out = await this.client.send(
+      new CreateMultipartUploadCommand({ Bucket: bucket, Key: key, ContentType: contentType }),
+    );
+    if (!out.UploadId) throw new Error('S3 did not return an UploadId.');
+    return out.UploadId;
+  }
+
+  async presignParts(
+    role: S3BucketRole,
+    key: string,
+    uploadId: string,
+    partNumbers: number[],
+  ): Promise<Array<{ partNumber: number; url: string }>> {
+    const bucket = this.bucketFor(role);
+    const expiresIn = this.config.get('S3_PRESIGN_EXPIRES_SEC');
+    return Promise.all(
+      partNumbers.map(async (partNumber) => {
+        const command = new UploadPartCommand({
+          Bucket: bucket,
+          Key: key,
+          UploadId: uploadId,
+          PartNumber: partNumber,
+        });
+        const url = await getSignedUrl(this.client, command, { expiresIn });
+        return { partNumber, url };
+      }),
+    );
+  }
+
+  async completeMultipart(
+    role: S3BucketRole,
+    key: string,
