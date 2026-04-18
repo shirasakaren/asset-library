@@ -41,3 +41,24 @@ export async function extractUPlugin(filePath: string): Promise<UPluginMeta | nu
       plugins: (parsed.Plugins ?? [])
         .map((p) => ({ name: p.Name ?? '', enabled: !!p.Enabled }))
         .filter((p) => p.name),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function extractUProject(filePath: string): Promise<UProjectMeta | null> {
+  try {
+    const raw = await readFile(filePath, 'utf8');
+    const parsed = JSON.parse(raw) as UProjectFile;
+    return {
+      engineVersion: parsed.EngineAssociation,
+      modules: (parsed.Modules ?? []).map((m) => m.Name ?? '').filter(Boolean),
+      plugins: (parsed.Plugins ?? [])
+        .map((p) => ({ name: p.Name ?? '', enabled: !!p.Enabled }))
+        .filter((p) => p.name),
+    };
+  } catch {
+    return null;
+  }
+}
