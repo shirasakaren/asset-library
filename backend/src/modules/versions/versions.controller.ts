@@ -63,3 +63,50 @@ export class VersionsController {
   @Patch(':vid')
   @UseGuards(KeycloakAuthGuard)
   @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Update release notes; semver is immutable post-publish.' })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+    @Body() dto: UpdateVersionDto,
+  ): Promise<void> {
+    return this.versions.update(vid, dto, principal.user);
+  }
+
+  @Post(':vid/publish')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Publish a version; transactionally flips isLatest.' })
+  publish(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+  ): Promise<void> {
+    return this.versions.publish(vid, principal.user);
+  }
+
+  @Post(':vid/reanalyze')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Re-run analyzer + AV scan for every file in this version.' })
+  reanalyze(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+  ): Promise<void> {
+    return this.versions.reanalyze(vid, principal.user);
+  }
+
+  @Post(':vid/compatibility')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Replace the engine/version/pipeline/target matrix.' })
+  setCompatibility(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+    @Body() dto: SetCompatibilityDto,
+  ): Promise<void> {
+    return this.versions.setCompatibility(vid, dto.rows, principal.user);
+  }
+}
