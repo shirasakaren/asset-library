@@ -67,3 +67,11 @@ describe('E2E [08] featured slot active cap', () => {
         .send({ assetId: assetIds[i], isActive: true })
         .expect(201);
     }
+    const res = await supertest(app.getHttpServer())
+      .post('/admin/featured')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ assetId: assetIds[5], isActive: true })
+      .expect(409);
+    expect(res.body.code).toBe('featured.active_cap_reached');
+  });
+});
