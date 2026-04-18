@@ -319,3 +319,224 @@ export function StepFiles() {
 
       <label className="hover:border-ink/40 inline-flex max-w-[640px] cursor-pointer items-start gap-3 rounded-[12px] border border-line p-3 transition-colors duration-120">
         <Checkbox
+          checked={wiz.latestVersion.requiresEmptyProject}
+          onCheckedChange={(c) => wiz.patch({ requiresEmptyProject: c === true })}
+        />
+        <div>
+          <p className="text-[14px] font-medium text-ink">{t('requiresEmptyProjectLabel')}</p>
+          <p className="mt-0.5 text-caption text-ink-3">{t('requiresEmptyProjectHint')}</p>
+        </div>
+      </label>
+
+      {deleteTarget ? (
+        <DeleteFileModal
+          file={deleteTarget}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function SavedRow({
+  file,
+  locale,
+  onDelete,
+}: {
+  file: SavedFile;
+  locale: LocaleCode;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: file.id,
+  });
+  const name = file.relativePath.split('/').pop() || file.relativePath;
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        'flex items-center gap-3 bg-surface p-3',
+        isDragging && 'rounded-[10px] opacity-70 shadow-2',
+      )}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        aria-label="Drag to reorder"
+        className="cursor-grab touch-none text-ink-3 hover:text-ink active:cursor-grabbing"
+      >
+        <GripVertical className="h-4 w-4" strokeWidth={2.25} />
+      </button>
+      <div className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-brand-green-50 text-brand-green">
+        <Check className="h-4 w-4" strokeWidth={2.5} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3">
+          <span className="truncate text-[13.5px] font-medium text-ink" title={file.relativePath}>
+            {name}
+          </span>
+          <span className="geist-tnum shrink-0 text-caption text-ink-3">
+            {formatBytes(file.bytes, locale)}
+          </span>
+        </div>
+        <p className="mt-1 inline-flex items-center gap-1 text-caption font-medium text-brand-green">
+          <Check className="h-3 w-3" strokeWidth={2.5} /> Uploaded
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={onDelete}
+        aria-label="Delete file"
+        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] text-ink-3 transition-colors hover:bg-brand-red-50 hover:text-brand-red"
+      >
+        <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+      </button>
+    </li>
+  );
+}
+
+function TaskRow({
+  task,
+  locale,
+  onCancel,
+  onRetry,
+}: {
+  task: UploadTask;
+  locale: LocaleCode;
+  onCancel: () => void;
+  onRetry: () => void;
+}) {
+  const pct = task.totalBytes
+    ? Math.min(100, Math.round((task.bytesUploaded / task.totalBytes) * 100))
+    : 0;
+  const isDone = task.status === 'analyzing' || task.status === 'ready';
+  const isFailed = task.status === 'failed' || task.status === 'cancelled';
+  return (
+    <li className="flex items-center gap-3 p-3">
+      <div className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-surface-muted text-ink-2">
+        <FileBox className="h-4 w-4" strokeWidth={2.25} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3">
+          <span className="truncate text-[13.5px] font-medium text-ink">
+            {task.input.relativePath}
+          </span>
+          <span className="geist-tnum shrink-0 text-caption text-ink-3">
+            {formatBytes(task.totalBytes, locale)}
+            {task.status === 'uploading' ? ` · ${pct}%` : ''}
+          </span>
+        </div>
+        <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-line">
+          <div
+            className={cn(
+              'h-full transition-all duration-200',
+              isFailed ? 'bg-brand-red/70' : isDone ? 'bg-brand-green' : 'bg-brand-blue',
+            )}
+            style={{ width: `${isDone ? 100 : pct}%` }}
+          />
+        </div>
+        <div className="mt-1.5 flex items-center gap-2 text-caption text-ink-3">
+          <TaskStatusPill status={task.status} />
+          {task.error ? <span className="truncate text-brand-red">· {task.error}</span> : null}
+        </div>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        {task.status === 'failed' ? (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-ink-2 transition-colors hover:bg-surface-muted hover:text-ink"
+            aria-label="Retry"
+          >
+            <RefreshCcw className="h-4 w-4" strokeWidth={2.25} />
+          </button>
+        ) : null}
+        <button
+          type="button"
+          onClick={onCancel}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-ink-2 transition-colors hover:bg-surface-muted hover:text-ink"
+          aria-label="Remove"
+        >
+          <X className="h-4 w-4" strokeWidth={2.25} />
+        </button>
+      </div>
+    </li>
+  );
+}
+
+function TaskStatusPill({ status }: { status: UploadStatus }) {
+  if (status === 'ready' || status === 'analyzing') {
+    return (
+      <span className="inline-flex items-center gap-1 font-medium text-brand-green">
+        <Check className="h-3 w-3" strokeWidth={2.25} />
+        Uploaded
+      </span>
+    );
+  }
+  if (status === 'uploading') {
+    return (
+      <span className="inline-flex items-center gap-1 font-medium text-brand-blue">
+        <Loader2 className="h-3 w-3 animate-spin" strokeWidth={2.25} />
+        Uploading
+      </span>
+    );
+  }
+  if (status === 'failed') return <span className="text-brand-red">Failed</span>;
+  if (status === 'cancelled') return <span>Cancelled</span>;
+  return <span>Queued</span>;
+}
+
+function DeleteFileModal({
+  file,
+  onCancel,
+  onConfirm,
+}: {
+  file: SavedFile;
+  onCancel: () => void;
+  onConfirm: () => void | Promise<void>;
+}) {
+  const name = file.relativePath.split('/').pop() || file.relativePath;
+  const [typed, setTyped] = useState('');
+  const [busy, setBusy] = useState(false);
+  const ok = typed.trim() === name;
+  return (
+    <Modal open onOpenChange={(o) => !o && onCancel()}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>Delete this file?</ModalTitle>
+          <ModalDescription>
+            This permanently removes <span className="font-medium text-ink">{name}</span> from the
+            asset, including from S3. This can&apos;t be undone. Type the file name to confirm.
+          </ModalDescription>
+        </ModalHeader>
+        <Input
+          autoFocus
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          placeholder={name}
+          aria-label="Type the file name to confirm"
+        />
+        <ModalFooter>
+          <Button variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            disabled={!ok || busy}
+            loading={busy}
+            onClick={async () => {
+              setBusy(true);
+              await onConfirm();
+              setBusy(false);
+            }}
+          >
+            Delete file
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
