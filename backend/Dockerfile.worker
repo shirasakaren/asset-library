@@ -1,0 +1,104 @@
+# =============================================================================
+# MGM Asset Library — worker image (monorepo). Same Nest container as the API
+# but with the heavy media-processing toolchain baked in. Defaults to
+# PROCESS_ROLE=worker.
+#
+# Build context MUST be the repository root:
+#   docker build -f backend/Dockerfile.worker .
+# =============================================================================
+
+# ─── 1. Builder ──────────────────────────────────────────────────────────────
+FROM node:20-bookworm-slim AS builder
+WORKDIR /app
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN corepack enable
+
+# Workspace manifests first (both members so the lockfile stays satisfiable).
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/package.json
+COPY frontend/package.json ./frontend/package.json
+COPY backend/prisma ./backend/prisma
+RUN pnpm install --frozen-lockfile --filter mgm-asset-library-backend
+
+COPY backend/tsconfig*.json backend/nest-cli.json ./backend/
+COPY backend/src ./backend/src
+COPY backend/scripts ./backend/scripts
+
+RUN pnpm --filter mgm-asset-library-backend prisma generate \
+ && pnpm --filter mgm-asset-library-backend build
+
+# ─── 2. Runtime — Debian-based to pull in Blender / ClamAV / ffmpeg ──────────
+FROM node:20-bookworm AS runtime
+WORKDIR /app
+
+# Heavy OS deps. The API image deliberately doesn't carry these.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      ca-certificates curl dumb-init gnupg \
+      blender ffmpeg \
+      clamav clamav-daemon clamav-freshclam \
+      python3 python3-venv python3-pip \
+      unzip \
+ && rm -rf /var/lib/apt/lists/*
+
+# Python venv for the analyzer probe.
+RUN python3 -m venv /opt/mgm-py \
+ && /opt/mgm-py/bin/pip install --upgrade pip \
+ && /opt/mgm-py/bin/pip install trimesh pyassimp pillow
+ENV PYANALYZE_VENV=/opt/mgm-py
+
+# Node-based glTF tooling.
+RUN npm -g install gltf-pipeline
+
+# gltfpack (Linux x64 binary from meshoptimizer releases).
+RUN curl -fsSL https://github.com/zeux/meshoptimizer/releases/download/v0.21/gltfpack-ubuntu.zip -o /tmp/gltfpack.zip \
+ && unzip /tmp/gltfpack.zip -d /usr/local/bin \
+ && chmod +x /usr/local/bin/gltfpack \
+ && rm /tmp/gltfpack.zip
+
+# HDRI placeholder. Ops mounts the real one at runtime; default is a 1×1 stub
+# so the renderer still runs (just with a flat environment).
+RUN mkdir -p /opt/mgm/hdri \
+ && curl -fsSL https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr -o /opt/mgm/hdri/studio_small_03.hdr || true
+
+ENV NODE_ENV=production \
+    PROCESS_ROLE=worker \
+    PORT=4001 \
+    BLENDER_BIN=/usr/bin/blender \
+    CLAMSCAN_BIN=/usr/bin/clamscan \
+    FFMPEG_BIN=/usr/bin/ffmpeg \
+    FFPROBE_BIN=/usr/bin/ffprobe \
+    GLTF_PIPELINE_BIN=/usr/local/bin/gltf-pipeline \
+    GLTFPACK_BIN=/usr/local/bin/gltfpack \
+    HDRI_PATH=/opt/mgm/hdri/studio_small_03.hdr
+
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/backend/node_modules ./backend/node_modules
+COPY --from=builder --chown=node:node /app/backend/dist ./backend/dist
+COPY --from=builder --chown=node:node /app/backend/prisma ./backend/prisma
+COPY --from=builder --chown=node:node /app/backend/scripts ./backend/scripts
+COPY --from=builder --chown=node:node /app/backend/package.json ./backend/package.json
+COPY --from=builder --chown=node:node /app/package.json ./package.json
+COPY --from=builder --chown=node:node /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+
+# clamd + freshclam run as the `node` user is overkill; keep them as the
+# `clamav` user with default paths. We start them via supervisor-style shell.
+RUN mkdir -p /var/run/clamav \
+ && chown -R clamav:clamav /var/run/clamav /var/lib/clamav
+
+EXPOSE 4001
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:${PORT:-4001}/healthz || exit 1
+
+# Entrypoint: start clamd + freshclam in the background, then run the Nest
+# worker as PID 1's child via dumb-init.
+COPY --chown=root:root backend/scripts/docker/worker-entrypoint.sh /usr/local/bin/worker-entrypoint.sh
+RUN chmod +x /usr/local/bin/worker-entrypoint.sh
+
+USER root
+WORKDIR /app/backend
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/usr/local/bin/worker-entrypoint.sh"]
+CMD ["node", "dist/main.js"]
