@@ -210,3 +210,28 @@ export class DashboardService {
         };
       })
       .filter((r): r is TopAssetRow => !!r);
+  }
+
+  private async loadRecentAudit(): Promise<AuditRow[]> {
+    const rows = await this.prisma.auditLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 15,
+      include: { actor: true },
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      action: r.action,
+      subjectType: r.subjectType,
+      subjectId: r.subjectId,
+      actorId: r.actorId,
+      actorDisplayName: r.actor?.displayName ?? null,
+      createdAt: r.createdAt.toISOString(),
+    }));
+  }
+
+  // Hook called by mutating admin actions to bust the cache mid-cycle when a
+  // change is meaningful enough to want immediate reflection.
+  async invalidate(): Promise<void> {
+    await this.redis.client.del(CACHE_KEY);
+  }
+}
