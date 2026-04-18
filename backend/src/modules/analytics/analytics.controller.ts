@@ -73,6 +73,3 @@ export class AnalyticsController {
       ownerDisplayName: r.asset.owner.displayName,
       totalDownloads: r.totalDownloads,
       totalSaves: r.totalSaves,
-      last7dDownloads: r.last7dDownloads,
-      last30dDownloads: r.last30dDownloads,
-    }));
