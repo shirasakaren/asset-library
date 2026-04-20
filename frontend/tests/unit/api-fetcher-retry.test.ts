@@ -60,3 +60,10 @@ describe('apiFetch — 401 retry-once', () => {
     const fetchSpy = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(jsonResponse(401, { code: 'auth.unauthenticated' }));
+    const refresher = vi.fn().mockResolvedValue(undefined);
+    await expect(
+      apiFetch('/me', { accessToken: 'stale', tokenRefresher: refresher }),
+    ).rejects.toBeInstanceOf(ApiError);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+});
