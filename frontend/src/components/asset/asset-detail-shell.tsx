@@ -236,3 +236,93 @@ export function AssetDetailShell({
 
                 {latestVersion ? (
                   <>
+                    <div className="mt-6 pt-5 border-t border-line">
+                      <p className="text-caption text-ink-3 mb-2">{t('latestVersion')}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <VersionBadge semver={latestVersion.semver} isLatest size="md" />
+                        <span className="text-caption text-ink-3 geist-tnum">
+                          {latestVersion.publishedAt
+                            ? formatDate(latestVersion.publishedAt, locale, { dateStyle: 'medium' })
+                            : '—'}
+                        </span>
+                      </div>
+                      <Button
+                        size="lg"
+                        fullWidth
+                        className="mt-4"
+                        onClick={() => openDownload()}
+                        leadingIcon={<Download className="h-4 w-4" strokeWidth={2.25} />}
+                      >
+                        {t('download')}
+                      </Button>
+                      {asset.versions.length > 1 ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const tabs = document.getElementById('asset-tabs');
+                            if (tabs) tabs.scrollIntoView({ behavior: 'smooth' });
+                            window.location.hash = 'versions';
+                          }}
+                          className="mt-3 inline-flex items-center text-[13px] font-medium text-brand-blue hover:underline"
+                        >
+                          {t('viewOlderVersions')}
+                        </button>
+                      ) : null}
+                    </div>
+                  </>
+                ) : null}
+
+                <p className="mt-5 text-caption text-ink-3">
+                  {t('availableIn', {
+                    locales: asset.availableLocales
+                      .map((l) => t(`languageName.${l}` as 'languageName.en'))
+                      .join(', '),
+                  })}
+                </p>
+              </Card>
+
+              {/* Mobile-only sticky bottom CTA */}
+              <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-bg/95 backdrop-blur-[8px] border-t border-line p-3 flex items-center gap-2">
+                {!isOwner ? (
+                  <SaveButton assetId={asset.id} initialSaved={asset.isSaved} variant="ghost-pill" />
+                ) : null}
+                <Button
+                  fullWidth
+                  onClick={() => openDownload()}
+                  leadingIcon={<Download className="h-4 w-4" strokeWidth={2.25} />}
+                >
+                  {t('download')}
+                </Button>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </Container>
+
+      {latestVersion ? (
+        <DownloadPopup
+          open={downloadOpen}
+          onOpenChange={setDownloadOpen}
+          assetId={asset.id}
+          assetTitle={asset.title}
+          initialVersionId={requestedVersionId ?? latestVersion.id}
+        />
+      ) : null}
+      <ShareModal
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        assetTitle={asset.title}
+        url={shareUrl}
+      />
+      {showReport ? (
+        <ReportModal
+          open={reportOpen}
+          onOpenChange={setReportOpen}
+          assetId={asset.id}
+          assetTitle={asset.title}
+        />
+      ) : null}
+    </>
+  );
+}
+
