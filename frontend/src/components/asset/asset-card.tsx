@@ -278,3 +278,100 @@ function FeatureCard({
 
 function RowCard({
   asset,
+  isSaved = false,
+  isOwner = false,
+  fallbackThumbnail,
+  className,
+  href,
+  hidden,
+  onHide,
+  onQuickDownload,
+  trailingAction,
+}: RowProps) {
+  return (
+    <article
+      className={cn(
+        'group relative grid grid-cols-[200px_1fr_auto] gap-5 items-center p-3 rounded-[16px] border border-line bg-surface',
+        'transition-colors duration-200 ease-out-soft hover:border-line-strong',
+        'focus-within:ring-2 focus-within:ring-focus focus-within:ring-offset-2',
+        hidden && 'opacity-60',
+        className,
+      )}
+    >
+      <div className="relative aspect-[16/9] w-[200px]">
+        <ThumbnailImage
+          src={asset.thumbnailUrl}
+          fallback={fallbackThumbnail}
+          alt={asset.title}
+          className="rounded-[12px]"
+          unoptimized
+        />
+      </div>
+      <div className="min-w-0">
+        <div className="flex items-center gap-1.5 text-caption text-ink-3 mb-1">
+          <EngineLogo engine={asset.engine} size="sm" />
+          <span className="truncate">{asset.categoryName}</span>
+        </div>
+        <h3 className="font-display text-[18px] font-semibold text-ink tracking-[-0.005em] line-clamp-1">
+          <NextLink
+            href={href ?? assetHref(asset)}
+            prefetch={true}
+            className="focus-visible:outline-none after:absolute after:inset-0 after:rounded-[16px]"
+          >
+            {asset.title}
+          </NextLink>
+        </h3>
+        <p className="mt-1 text-[13.5px] text-ink-2 line-clamp-2 max-w-[640px]">
+          {asset.shortDescription}
+        </p>
+        <div className="mt-2 flex items-center gap-3 text-caption text-ink-3 geist-tnum">
+          <span>by {asset.ownerDisplayName}</span>
+          <span aria-hidden>·</span>
+          <span className="inline-flex items-center gap-1">
+            <Download className="h-3 w-3" strokeWidth={2.25} />
+            {formatCount(asset.totalDownloads)}
+          </span>
+          <span aria-hidden>·</span>
+          <span className="inline-flex items-center gap-1">
+            <Bookmark className="h-3 w-3" strokeWidth={2.25} />
+            {formatCount(asset.totalSaves)}
+          </span>
+        </div>
+      </div>
+      <div className="relative z-10 flex items-center gap-1">
+        {onQuickDownload ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onQuickDownload();
+            }}
+            aria-label="Quick download"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            <Download className="h-4 w-4" strokeWidth={2.25} />
+          </button>
+        ) : null}
+        {!isOwner ? (
+          <SaveButton assetId={asset.id} initialSaved={isSaved} variant="ghost-pill" />
+        ) : null}
+        {onHide ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onHide();
+            }}
+            aria-label={hidden ? 'Unhide' : 'Hide'}
+            className="inline-flex h-9 px-3 items-center rounded-[10px] text-[13px] font-medium text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            {hidden ? 'Unhide' : 'Hide'}
+          </button>
+        ) : null}
+        {trailingAction}
+      </div>
+    </article>
+  );
+}
