@@ -92,3 +92,141 @@ export function AdminLicensesSurface() {
                 aria-label="Delete"
                 title={lic.assetCount > 0 ? 'License in use' : 'Delete license'}
                 className={cn(
+                  'inline-flex h-8 w-8 items-center justify-center rounded-[8px]',
+                  lic.assetCount === 0
+                    ? 'text-ink-3 hover:bg-brand-red-50 hover:text-brand-red'
+                    : 'text-ink-4 cursor-not-allowed',
+                )}
+              >
+                <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </Card>
+      )}
+
+      {(editing || creating) ? (
+        <LicenseEditModal
+          license={editing}
+          onOpenChange={(o) => {
+            if (!o) {
+              setEditing(null);
+              setCreating(false);
+            }
+          }}
+          onDone={() => {
+            setEditing(null);
+            setCreating(false);
+            void list.refetch();
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function LicenseEditModal({
+  license,
+  onOpenChange,
+  onDone,
+}: {
+  license?: AdminLicense | null;
+  onOpenChange: (o: boolean) => void;
+  onDone: () => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const editing = Boolean(license);
+  const [slug, setSlug] = useState(license?.slug ?? '');
+  const [name, setName] = useState(license?.name ?? '');
+  const [descEn, setDescEn] = useState(license?.description?.en ?? '');
+  const [descId, setDescId] = useState(license?.description?.id ?? '');
+  const [textEn, setTextEn] = useState(license?.fullText?.en ?? '');
+  const [textId, setTextId] = useState(license?.fullText?.id ?? '');
+  const [isActive, setIsActive] = useState(license?.isActive ?? true);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    setBusy(true);
+    try {
+      const payload = {
+        slug,
+        name,
+        description: { en: descEn, id: descId || descEn },
+        fullText: { en: textEn, id: textId || textEn },
+        isActive,
+      };
+      if (editing && license) {
+        await fetcher(`/admin/licenses/${license.id}`, { method: 'PATCH', body: payload });
+      } else {
+        await fetcher('/admin/licenses', { method: 'POST', body: payload });
+      }
+      toast.success(editing ? 'Saved' : 'Created');
+      onDone();
+    } catch (err) {
+      toast.error('Could not save', { description: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal open onOpenChange={onOpenChange}>
+      <ModalContent size="lg">
+        <ModalHeader>
+          <ModalTitle>{editing ? 'Edit license' : 'New license'}</ModalTitle>
+        </ModalHeader>
+        <div className="space-y-4">
+          <div className="grid sm:grid-cols-[1fr_2fr] gap-3">
+            <Field id="l-slug" label="Slug" required>
+              <Input id="l-slug" value={slug} onChange={(e) => setSlug(e.target.value)} disabled={editing} />
+            </Field>
+            <Field id="l-name" label="Name" required>
+              <Input id="l-name" value={name} onChange={(e) => setName(e.target.value)} />
+            </Field>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field id="l-desc-en" label="Description (EN)" required>
+              <Textarea id="l-desc-en" rows={2} value={descEn} onChange={(e) => setDescEn(e.target.value)} />
+            </Field>
+            <Field id="l-desc-id" label="Description (ID)">
+              <Textarea id="l-desc-id" rows={2} value={descId} onChange={(e) => setDescId(e.target.value)} />
+            </Field>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field id="l-text-en" label="Full text (EN)" required>
+              <Textarea
+                id="l-text-en"
+                rows={10}
+                value={textEn}
+                onChange={(e) => setTextEn(e.target.value)}
+                className="font-mono text-[12.5px]"
+              />
+            </Field>
+            <Field id="l-text-id" label="Full text (ID)">
+              <Textarea
+                id="l-text-id"
+                rows={10}
+                value={textId}
+                onChange={(e) => setTextId(e.target.value)}
+                className="font-mono text-[12.5px]"
+              />
+            </Field>
+          </div>
+          <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+            <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4 accent-ink" />
+            Active
+          </label>
+        </div>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button loading={busy} onClick={submit}>
+            {editing ? 'Save' : 'Create'}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
