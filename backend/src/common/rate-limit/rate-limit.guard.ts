@@ -56,3 +56,22 @@ export class RateLimitGuard implements CanActivate {
         ErrorCode.RATE_LIMIT_EXCEEDED,
         `Rate limit exceeded — at most ${config.max} per ${config.windowSec}s on ${name}.`,
       );
+    }
+    return true;
+  }
+
+  private identifierFor(
+    config: RateLimitConfig,
+    req: FastifyRequest,
+    userId: string | undefined,
+  ): string | null {
+    switch (config.scope) {
+      case 'user':
+        return userId ?? null;
+      case 'ip':
+        return req.ip;
+      case 'global':
+        return 'all';
+    }
+  }
+}
