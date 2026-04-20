@@ -73,3 +73,42 @@ export class AnalyticsController {
       ownerDisplayName: r.asset.owner.displayName,
       totalDownloads: r.totalDownloads,
       totalSaves: r.totalSaves,
+      last7dDownloads: r.last7dDownloads,
+      last30dDownloads: r.last30dDownloads,
+    }));
+  }
+
+  @Get('admin/analytics/users')
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Leaderboard of contributors by uploaded count + downloads.' })
+  @ApiOkResponse()
+  async userLeaderboard(@Query('limit') limit?: string) {
+    const take = Math.min(Math.max(Number(limit ?? '25'), 1), 200);
+    const rows = await this.analytics['prisma'].$queryRaw<
+      Array<{ ownerId: string; published: bigint; downloads: bigint }>
+    >`
+      SELECT a."ownerId" AS "ownerId",
+             COUNT(*)::bigint AS published,
+             COALESCE(SUM(s."totalDownloads"), 0)::bigint AS downloads
+      FROM assets a
+      LEFT JOIN asset_stats s ON s."assetId" = a.id
+      WHERE a.status = 'PUBLISHED'
+      GROUP BY a."ownerId"
+      ORDER BY downloads DESC
+      LIMIT ${take}
+    `;
+    if (rows.length === 0) return [];
+    const users = await this.analytics['prisma'].user.findMany({
+      where: { id: { in: rows.map((r) => r.ownerId) } },
+      select: { id: true, displayName: true, email: true },
+    });
+    const byId = new Map(users.map((u) => [u.id, u]));
+    return rows.map((r) => ({
+      ownerId: r.ownerId,
+      displayName: byId.get(r.ownerId)?.displayName,
+      email: byId.get(r.ownerId)?.email,
+      publishedAssets: Number(r.published),
+      totalDownloads: Number(r.downloads),
+    }));
+  }
+}
