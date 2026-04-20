@@ -133,3 +133,41 @@ function StatusPill({ status }: { status: string }) {
     <Badge variant={variant as 'success'}>
       {status.charAt(0) + status.slice(1).toLowerCase()}
     </Badge>
+  );
+}
+
+function SaveIndicator({
+  saving,
+  lastSavedAt,
+  locale,
+}: {
+  saving: 'idle' | 'saving' | 'saved' | 'error';
+  lastSavedAt: number | null;
+  locale: LocaleCode;
+}) {
+  if (saving === 'saving') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-caption text-ink-3">
+        <Loader2 className="h-3 w-3 animate-spin" strokeWidth={2.25} />
+        Saving…
+      </span>
+    );
+  }
+  if (saving === 'error') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-caption text-brand-red">
+        <AlertTriangle className="h-3 w-3" strokeWidth={2.25} />
+        Could not save
+      </span>
+    );
+  }
+  if (lastSavedAt) {
+    return (
+      <span className={cn('inline-flex items-center gap-1.5 text-caption text-ink-3')}>
+        <CheckCircle2 className="h-3 w-3 text-brand-green" strokeWidth={2.25} />
+        {formatRelative(lastSavedAt, locale)}
+      </span>
+    );
+  }
+  return null;
+}
