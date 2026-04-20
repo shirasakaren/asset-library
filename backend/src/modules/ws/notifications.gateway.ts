@@ -104,3 +104,63 @@ export class NotificationsGateway
     });
     socket.on('message', () => {
       // Client → server messages are not part of the protocol. Treat any
+      // inbound traffic as a liveness signal but don't act on it.
+      socket.lastSeenAt = Date.now();
+    });
+
+    socket.send(
+      JSON.stringify(
+        this.notifications.newWsEnvelope('hello', {
+          userId,
+          serverTime: new Date().toISOString(),
+        }),
+      ),
+    );
+  }
+
+  handleDisconnect(socket: AuthedSocket): void {
+    if (socket.userId) this.registry.remove(socket.userId, socket);
+  }
+
+  private async authenticate(request: IncomingMessage): Promise<string | null> {
+    const fullUrl = new URL(request.url ?? '/', `http://${request.headers.host ?? 'localhost'}`);
+    const bearer = fullUrl.searchParams.get('token');
+    const pluginToken = fullUrl.searchParams.get('pluginToken');
+    if (bearer) {
+      const claims = await this.jwks.verify(bearer);
+      // Reuse the HTTP guard's Redis-cached principal resolution (same
+      // `authz:principal:<sub>` key) so reconnects within the cache window skip
+      // the Postgres lookup and admin promote/demote invalidation covers WS too.
+      const { user } = await this.principals.resolvePrincipal(claims);
+      return user.id;
+    }
+    if (pluginToken) {
+      const verified = await this.pluginTokens.verifyAndTouch(pluginToken);
+      return verified?.user.id ?? null;
+    }
+    return null;
+  }
+
+  private tick(): void {
+    const now = Date.now();
+    for (const [userId, set] of (
+      this.registry as unknown as {
+        sockets: Map<string, Set<AuthedSocket>>;
+      }
+    ).sockets.entries()) {
+      for (const socket of set) {
+        if (!socket.isAlive || (socket.lastSeenAt && now - socket.lastSeenAt > IDLE_TIMEOUT_MS)) {
+          this.registry.remove(userId, socket);
+          socket.terminate();
+          continue;
+        }
+        socket.isAlive = false;
+        try {
+          socket.ping();
+        } catch {
+          // ignore — next tick will close it via the liveness flag
+        }
+      }
+    }
+  }
+}
