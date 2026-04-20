@@ -63,3 +63,11 @@ for (const persona of PERSONAS) {
     }
     await loginViaUi(page, creds);
 
+    const outPath = resolve('tests/e2e/auth-states', `${persona}.json`);
+    if (!existsSync(dirname(outPath))) mkdirSync(dirname(outPath), { recursive: true });
+    const state = await context.storageState();
+    writeFileSync(outPath, JSON.stringify(state, null, 2), 'utf8');
+  });
+}
+
+export { PERSONAS };
