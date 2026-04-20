@@ -49,3 +49,28 @@ export class LibraryController {
   add(
     @AuthUser() principal: AuthenticatedRequestUser,
     @Body() dto: AddLibraryItemDto,
+  ): Promise<void> {
+    return this.library.add(principal.user, dto.assetId);
+  }
+
+  @Delete('items/:assetId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: "Remove an asset from the current user's library." })
+  remove(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('assetId') assetId: string,
+  ): Promise<void> {
+    return this.library.remove(principal.user, assetId);
+  }
+
+  @Patch('items/:assetId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Toggle the `hidden` flag on a library entry.' })
+  setHidden(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('assetId') assetId: string,
+    @Body() dto: UpdateLibraryItemDto,
+  ): Promise<void> {
+    return this.library.setHidden(principal.user, assetId, dto.hidden);
+  }
+}
