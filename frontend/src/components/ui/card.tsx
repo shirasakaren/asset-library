@@ -40,3 +40,30 @@ export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={cn(
+        'font-display text-h3 text-ink tracking-[-0.005em] font-semibold',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function CardDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={cn('text-body-sm text-ink-3 mt-1', className)} {...props} />;
+}
+
+export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('text-body-sm text-ink-2', className)} {...props} />;
+}
+
+export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn('mt-4 pt-4 border-t border-line flex items-center justify-between gap-3', className)}
+      {...props}
+    />
+  );
+}
