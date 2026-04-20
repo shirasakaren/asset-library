@@ -125,3 +125,95 @@ export class VersionsService {
     if (!version)
       throw new NotFoundDomainException(
         ErrorCode.VERSION_NOT_FOUND,
+        `Version ${versionId} not found.`,
+      );
+    this.assets.assertCanEdit(version.asset, requester);
+
+    if (dto.releaseNotes) {
+      const releaseNotes = this.validateReleaseNotes(dto.releaseNotes);
+      await this.prisma.assetVersion.update({
+        where: { id: versionId },
+        data: { releaseNotes: releaseNotes as unknown as Prisma.InputJsonValue },
+      });
+    }
+  }
+
+  async publish(versionId: string, requester: User): Promise<void> {
+    const version = await this.prisma.assetVersion.findUnique({
+      where: { id: versionId },
+      include: { asset: true, _count: { select: { files: true } } },
+    });
+    if (!version)
+      throw new NotFoundDomainException(
+        ErrorCode.VERSION_NOT_FOUND,
+        `Version ${versionId} not found.`,
+      );
+    this.assets.assertCanEdit(version.asset, requester);
+
+    if (version._count.files === 0) {
+      throw new BadRequestDomainException(
+        ErrorCode.ASSET_PUBLISH_BLOCKED,
+        'Version has no files — upload at least one before publishing.',
+      );
+    }
+    // Async publish: we no longer block on analyzer / AV completion. Both run
+    // in the background and surface their status (PENDING / READY / FAILED /
+    // CLEAN / INFECTED / SKIPPED_SIZE) on the asset detail page. Files flagged
+    // INFECTED are quarantined separately by the AV worker.
+
+    // Transactionally flip isLatest off on the previous winner, then on this row.
+    await this.prisma.$transaction([
+      this.prisma.assetVersion.updateMany({
+        where: { assetId: version.assetId, isLatest: true, id: { not: versionId } },
+        data: { isLatest: false },
+      }),
+      this.prisma.assetVersion.update({
+        where: { id: versionId },
+        data: { isLatest: true, publishedAt: new Date() },
+      }),
+    ]);
+    await this.jobs.enqueueSearchIndex({ reason: 'asset.update', assetId: version.assetId });
+  }
+
+  async setCompatibility(
+    versionId: string,
+    rows: CompatibilityRowDto[],
+    requester: User,
+  ): Promise<void> {
+    const version = await this.prisma.assetVersion.findUnique({
+      where: { id: versionId },
+      include: { asset: true },
+    });
+    if (!version)
+      throw new NotFoundDomainException(
+        ErrorCode.VERSION_NOT_FOUND,
+        `Version ${versionId} not found.`,
+      );
+    this.assets.assertCanEdit(version.asset, requester);
+
+    await this.prisma.$transaction([
+      this.prisma.engineCompatibility.deleteMany({ where: { versionId } }),
+      this.prisma.engineCompatibility.createMany({
+        data: rows.map((r) => ({
+          versionId,
+          engineVersion: r.engineVersion,
+          renderPipelines: r.renderPipelines ?? [],
+          targets: r.targets,
+        })),
+      }),
+    ]);
+  }
+
+  /**
+   * Release notes are `{ en?: TipTapDoc, id?: TipTapDoc }`. Validate each locale's
+   * doc against the Lite TipTap schema. Unknown keys are stripped.
+   */
+  private validateReleaseNotes(input: object): object {
+    const out: Record<string, unknown> = {};
+    for (const locale of ['en', 'id'] as const) {
+      const doc = (input as Record<string, unknown>)[locale];
+      if (doc) out[locale] = validateLiteTipTap(doc);
+    }
+    return out;
+  }
+}
