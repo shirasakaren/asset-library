@@ -390,3 +390,229 @@ function Toolbar({ editor, mode, onLink, onImage, onEmbed, onGif }: ToolbarProps
             icon={Minus}
           />
         </>
+      ) : null}
+      <div className="ml-auto flex items-center gap-2">
+        <span className="text-caption text-ink-4 geist-tnum hidden sm:inline">
+          {editor.storage.characterCount?.characters?.() ?? plainTextLength(editor)} chars
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function BlockDropdown({ editor }: { editor: Editor }) {
+  const options: { label: string; check: () => boolean; apply: () => void; icon: typeof Heading1 }[] = [
+    {
+      label: 'Paragraph',
+      icon: Type,
+      check: () => editor.isActive('paragraph') && !editor.isActive('heading'),
+      apply: () => editor.chain().focus().setParagraph().run(),
+    },
+    {
+      label: 'H1',
+      icon: Heading1,
+      check: () => editor.isActive('heading', { level: 1 }),
+      apply: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+    },
+    {
+      label: 'H2',
+      icon: Heading2,
+      check: () => editor.isActive('heading', { level: 2 }),
+      apply: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    },
+    {
+      label: 'H3',
+      icon: Heading3,
+      check: () => editor.isActive('heading', { level: 3 }),
+      apply: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+    },
+    {
+      label: 'Quote',
+      icon: Quote,
+      check: () => editor.isActive('blockquote'),
+      apply: () => editor.chain().focus().toggleBlockquote().run(),
+    },
+    {
+      label: 'Code',
+      icon: Code,
+      check: () => editor.isActive('codeBlock'),
+      apply: () => editor.chain().focus().toggleCodeBlock().run(),
+    },
+  ];
+  const active = options.find((o) => o.check()) ?? options[0]!;
+  return (
+    <select
+      value={active.label}
+      onChange={(e) => options.find((o) => o.label === e.target.value)?.apply()}
+      aria-label="Block type"
+      className="h-7 rounded-[8px] border border-line bg-surface text-[12.5px] px-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+    >
+      {options.map((o) => (
+        <option key={o.label} value={o.label}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function ToolButton({
+  active,
+  onClick,
+  label,
+  icon: Icon,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  label: string;
+  icon: typeof Bold;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      aria-pressed={active}
+      className={cn(
+        'inline-flex h-7 w-7 items-center justify-center rounded-[8px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120',
+        active && 'bg-ink text-white hover:bg-ink hover:text-white',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-1',
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" strokeWidth={2.25} />
+    </button>
+  );
+}
+
+function Divider() {
+  return <span aria-hidden className="mx-1 h-5 w-px bg-line" />;
+}
+
+function plainTextLength(editor: Editor): number {
+  return editor.getText().length;
+}
+
+/* =====================================================================
+ * Link + embed modals
+ * ===================================================================== */
+
+function LinkPromptModal({
+  open,
+  onOpenChange,
+  onSubmit,
+  initial,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (href: string) => void;
+  initial?: string;
+}) {
+  const [href, setHref] = useState(initial ?? '');
+  return (
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>Insert link</ModalTitle>
+        </ModalHeader>
+        <Field id="link-href" label="URL">
+          <Input
+            id="link-href"
+            type="url"
+            autoFocus
+            value={href}
+            onChange={(e) => setHref(e.target.value)}
+            placeholder="https://"
+          />
+        </Field>
+        <ModalFooter>
+          {initial ? (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                onSubmit('');
+                onOpenChange(false);
+              }}
+            >
+              Remove link
+            </Button>
+          ) : null}
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              onSubmit(href.trim());
+              onOpenChange(false);
+            }}
+            disabled={!isValidUrl(href)}
+          >
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+function EmbedPromptModal({
+  open,
+  onOpenChange,
+  onSubmit,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (url: string) => void;
+}) {
+  const [url, setUrl] = useState('');
+  const valid = /youtu(be\.com|\.be)/.test(url);
+  return (
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>Embed YouTube</ModalTitle>
+        </ModalHeader>
+        <Field
+          id="embed-url"
+          label="YouTube URL"
+          helper="Only YouTube and Vimeo links are accepted for security."
+        >
+          <Input
+            id="embed-url"
+            type="url"
+            autoFocus
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=…"
+          />
+        </Field>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            disabled={!valid}
+            onClick={() => {
+              onSubmit(url.trim());
+              onOpenChange(false);
+            }}
+          >
+            Embed
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+function isValidUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return u.protocol === 'https:' || u.protocol === 'http:' || u.protocol === 'mailto:';
+  } catch {
+    return false;
+  }
+}
+
+// Silence unused — only re-exported for tests
+export { Extension };
