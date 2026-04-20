@@ -138,3 +138,42 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
             <Button variant="ghost" onClick={() => setArchiveOpen(false)}>
               Cancel
             </Button>
+            <Button onClick={doArchive} loading={busy}>
+              {t('archiveConfirm')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <ModalContent size="sm">
+          <ModalHeader>
+            <ModalTitle>{t('deleteConfirmTitle')}</ModalTitle>
+            <ModalDescription>{t('deleteConfirmBody')}</ModalDescription>
+          </ModalHeader>
+          <Field id="del-confirm" label={t('deleteConfirmInput')}>
+            <Input
+              id="del-confirm"
+              value={deleteText}
+              onChange={(e) => setDeleteText(e.target.value)}
+              placeholder={asset.title}
+            />
+          </Field>
+          <ModalFooter>
+            <Button variant="ghost" onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={doDelete}
+              loading={busy}
+              disabled={deleteText !== asset.title}
+            >
+              {t('deleteConfirm')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
