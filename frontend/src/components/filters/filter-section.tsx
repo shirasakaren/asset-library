@@ -65,3 +65,24 @@ export function ChipFilter({ options, values, onChange, multi = true }: ChipFilt
     <div className="flex flex-wrap gap-1.5">
       {options.map((opt) => {
         const active = values.includes(opt.value);
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => toggle(opt.value)}
+            aria-pressed={active}
+            className={cn(
+              'inline-flex items-center h-7 px-2.5 rounded-full text-[12.5px] font-medium border transition-colors duration-120',
+              active
+                ? 'bg-ink text-white border-ink'
+                : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+            )}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
