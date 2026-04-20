@@ -51,3 +51,28 @@ export function AssetTabs({ asset, activeVersion, onDownloadVersion }: AssetTabs
           <TabsTrigger value="description">{t('description')}</TabsTrigger>
           <TabsTrigger value="package">{t('package')}</TabsTrigger>
           <TabsTrigger value="compatibility">{t('compatibility')}</TabsTrigger>
+          <TabsTrigger value="versions">{t('versions')}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="description" className="pt-6">
+          {asset.longDescription ? (
+            <TipTapRenderer doc={asset.longDescription} variant="full" />
+          ) : (
+            <Alert variant="neutral">No long description provided.</Alert>
+          )}
+        </TabsContent>
+        <TabsContent value="package" className="pt-6">
+          <PackageTree files={activeVersion.files} />
+        </TabsContent>
+        <TabsContent value="compatibility" className="pt-6">
+          <CompatibilityTable
+            rows={activeVersion.compatibility}
+            requiresEmptyProject={activeVersion.requiresEmptyProject}
+          />
+        </TabsContent>
+        <TabsContent value="versions" className="pt-6">
+          <VersionsList versions={asset.versions} onDownload={onDownloadVersion} />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
