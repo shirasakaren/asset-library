@@ -187,3 +187,52 @@ export class FeaturedService {
           where: { id },
           data: { sortOrder: idx },
         }),
+      ),
+    ]);
+    await this.discover.invalidate();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'featured.reorder',
+      subjectType: 'FeaturedSlot',
+      subjectId: 'reorder',
+      metadata: { orderedIds },
+    });
+  }
+
+  async initiateBannerUpload(
+    contentType: string,
+    _bytes: number,
+  ): Promise<FeaturedBannerInitiateResponseDto> {
+    const key = `featured-banners/${randomUUID()}`;
+    const presigned = await this.s3.presignPut('thumbs', key, contentType);
+    return {
+      putUrl: presigned.url,
+      key,
+      expiresAt: new Date(
+        Date.now() + this.config.get('S3_PRESIGN_EXPIRES_SEC') * 1000,
+      ).toISOString(),
+    };
+  }
+
+  private async toDto(
+    row: FeaturedSlot & { asset: { id: string; slug: string; title: string } },
+  ): Promise<AdminFeaturedSlotDto> {
+    return {
+      id: row.id,
+      assetId: row.asset.id,
+      assetTitle: row.asset.title,
+      assetSlug: row.asset.slug,
+      customBannerKey: row.customBannerKey ?? undefined,
+      customBannerUrl: row.customBannerKey
+        ? await this.s3.presignGet('thumbs', row.customBannerKey)
+        : undefined,
+      customTitle: row.customTitle ?? undefined,
+      customShortDescription:
+        (row.customShortDescription as Record<string, string> | null) ?? undefined,
+      sortOrder: row.sortOrder,
+      isActive: row.isActive,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    };
+  }
+}
