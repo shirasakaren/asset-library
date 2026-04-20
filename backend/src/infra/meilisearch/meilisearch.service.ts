@@ -69,3 +69,27 @@ export class MeilisearchService implements OnModuleInit {
 
   private async ensureTagsIndex(): Promise<void> {
     const index = this.client.index(MEILI_INDEX_TAGS);
+    await this.client.createIndex(MEILI_INDEX_TAGS, { primaryKey: 'id' }).catch(() => undefined);
+    await index.updateSearchableAttributes(['slug', 'displayName']);
+    await index.updateSortableAttributes(['usageCount', 'displayName']);
+  }
+
+  // ─── Method stubs filled in by Part 2 ──────────────────────────────────────
+  async indexAsset(_assetId: string): Promise<void> {
+    // TODO(Part 2): denormalize Asset + translations into a Meili document.
+  }
+
+  async removeAsset(_assetId: string): Promise<void> {
+    // TODO(Part 2): delete from `assets` index.
+  }
+
+  async ping(): Promise<boolean> {
+    try {
+      const health = await this.client.health();
+      return health.status === 'available';
+    } catch (err) {
+      this.logger.error('Meilisearch ping failed', err as Error);
+      return false;
+    }
+  }
+}
