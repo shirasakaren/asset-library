@@ -60,3 +60,24 @@ export function DemoteAdminModal({ user, onOpenChange, onDone }: Props) {
           <Alert variant="danger" className="mb-3">
             Cannot demote the last remaining admin.
           </Alert>
+        ) : null}
+        <Field id="dm-confirm" label="Type their email to confirm" required>
+          <Input id="dm-confirm" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder={user.email} />
+        </Field>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            loading={busy}
+            disabled={confirm !== user.email}
+            onClick={submit}
+          >
+            Demote
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
