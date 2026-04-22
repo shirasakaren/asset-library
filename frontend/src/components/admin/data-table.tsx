@@ -76,3 +76,11 @@ export function DataTable<T extends { id: string }>({
                 >
                   {col.cell(row)}
                 </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
