@@ -83,3 +83,44 @@ export function SaveButton({
         onClick={handleClick}
         disabled={isPending}
         className={cn(
+          'inline-flex items-center gap-2 h-10 px-4 rounded-[12px] text-[14px] font-medium transition-colors duration-120',
+          optimistic
+            ? 'bg-ink text-white hover:bg-[#1a1f29]'
+            : 'bg-surface text-ink border border-line-strong hover:border-ink/40',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+          className,
+        )}
+      >
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+        ) : (
+          <Icon className="h-4 w-4" strokeWidth={2.25} fill={optimistic ? 'currentColor' : 'none'} />
+        )}
+        {label}
+      </button>
+    );
+  }
+
+  // ghost-pill
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={optimistic}
+      onClick={handleClick}
+      disabled={isPending}
+      className={cn(
+        'inline-flex h-9 w-9 items-center justify-center rounded-[10px] transition-colors duration-120',
+        optimistic ? 'text-brand-blue bg-brand-blue-50' : 'text-ink-3 hover:bg-surface-muted hover:text-ink',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+        className,
+      )}
+    >
+      {isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+      ) : (
+        <Icon className="h-4 w-4" strokeWidth={2.25} fill={optimistic ? 'currentColor' : 'none'} />
+      )}
+    </button>
+  );
+}
