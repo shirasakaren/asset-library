@@ -95,3 +95,98 @@ export const EMAIL_SPECS: Record<NotificationType, EmailSpec> = {
       en: 'Your asset request is now {{newStatus}}',
       id: 'Permintaan aset Anda kini {{newStatus}}',
     },
+    eyebrow: { en: 'Request update', id: 'Pembaruan permintaan' },
+    title: { en: 'Your asset request was updated', id: 'Permintaan aset Anda diperbarui' },
+    body: {
+      en: 'Status: {{newStatus}}.\n{{adminComment}}',
+      id: 'Status: {{newStatus}}.\n{{adminComment}}',
+    },
+    cta: { label: { en: 'View request', id: 'Lihat permintaan' }, href: '{{links.requestUrl}}' },
+  },
+  [NotificationType.REPORT_CREATED]: {
+    subject: { en: 'New report on “{{assetTitle}}”', id: 'Laporan baru pada “{{assetTitle}}”' },
+    eyebrow: { en: 'New report', id: 'Laporan baru' },
+    title: { en: 'A new report needs moderation', id: 'Laporan baru perlu moderasi' },
+    body: {
+      en: '{{reporter.displayName}} filed a {{category}} report on “{{assetTitle}}”.',
+      id: '{{reporter.displayName}} melaporkan {{category}} pada “{{assetTitle}}”.',
+    },
+    cta: {
+      label: { en: 'Open in moderation queue', id: 'Buka di antrean moderasi' },
+      href: '{{links.adminReportUrl}}',
+    },
+  },
+  [NotificationType.REPORT_RECEIVED_FOR_YOUR_ASSET]: {
+    subject: { en: 'Your asset was reported', id: 'Aset Anda dilaporkan' },
+    eyebrow: { en: 'Asset reported', id: 'Aset dilaporkan' },
+    title: { en: 'Someone filed a report on your asset', id: 'Seseorang melaporkan aset Anda' },
+    body: {
+      en: 'A {{category}} report was filed on “{{assetTitle}}”. Admins will follow up if needed.',
+      id: 'Laporan {{category}} diajukan pada “{{assetTitle}}”. Admin akan menindaklanjuti jika perlu.',
+    },
+    cta: { label: { en: 'Open asset', id: 'Buka aset' }, href: '{{links.assetUrl}}' },
+  },
+  [NotificationType.FEATURED_FEATURED]: {
+    subject: { en: '“{{assetTitle}}” is featured!', id: '“{{assetTitle}}” telah ditampilkan!' },
+    eyebrow: { en: "You're featured", id: 'Anda ditampilkan' },
+    title: {
+      en: 'Your asset is featured on the landing page',
+      id: 'Aset Anda ditampilkan di halaman utama',
+    },
+    body: {
+      en: '“{{assetTitle}}” is now in the Discover carousel.',
+      id: '“{{assetTitle}}” kini ada di korsel Discover.',
+    },
+    cta: { label: { en: 'Open Discover', id: 'Buka Discover' }, href: '{{links.discoverUrl}}' },
+  },
+  [NotificationType.VERSION_PUBLISHED]: {
+    subject: {
+      en: '{{assetTitle}} v{{semver}} is available',
+      id: '{{assetTitle}} v{{semver}} kini tersedia',
+    },
+    eyebrow: { en: 'New version', id: 'Versi baru' },
+    title: {
+      en: 'A new version of an asset you saved is live',
+      id: 'Versi baru aset yang Anda simpan telah dirilis',
+    },
+    body: {
+      en: '“{{assetTitle}}” v{{semver}} is now available in your library.',
+      id: '“{{assetTitle}}” v{{semver}} kini tersedia di pustaka Anda.',
+    },
+    cta: { label: { en: 'Download', id: 'Unduh' }, href: '{{links.assetUrl}}' },
+  },
+  [NotificationType.ANALYZER_FAILED]: {
+    subject: {
+      en: 'Analysis failed for “{{assetTitle}}”',
+      id: 'Analisis gagal untuk “{{assetTitle}}”',
+    },
+    eyebrow: { en: 'Action needed', id: 'Perlu tindakan' },
+    title: {
+      en: "We couldn't finish analyzing your upload",
+      id: 'Kami tidak dapat menyelesaikan analisis unggahan Anda',
+    },
+    body: {
+      en: 'Analysis failed: {{reason}}. You can retry from the version page.',
+      id: 'Analisis gagal: {{reason}}. Anda dapat mengulang dari halaman versi.',
+    },
+    cta: { label: { en: 'Open version', id: 'Buka versi' }, href: '{{links.versionUrl}}' },
+  },
+  [NotificationType.ADMIN_PROMOTED]: {
+    subject: { en: 'You have been promoted to admin', id: 'Anda telah dipromosikan sebagai admin' },
+    eyebrow: { en: 'Role update', id: 'Pembaruan peran' },
+    title: { en: 'You are now an admin', id: 'Anda kini adalah admin' },
+    body: {
+      en: 'Your account has been granted admin privileges.',
+      id: 'Akun Anda telah diberikan hak akses admin.',
+    },
+  },
+  [NotificationType.ADMIN_DEMOTED]: {
+    subject: { en: 'Your admin role has been removed', id: 'Peran admin Anda telah dicabut' },
+    eyebrow: { en: 'Role update', id: 'Pembaruan peran' },
+    title: { en: 'Your admin role was removed', id: 'Peran admin Anda dihapus' },
+    body: {
+      en: 'Your admin privileges have been revoked.',
+      id: 'Hak akses admin Anda telah dicabut.',
+    },
+  },
+};
