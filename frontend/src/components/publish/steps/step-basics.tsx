@@ -125,3 +125,94 @@ export function StepBasics() {
             </option>
           ))}
         </select>
+      </Field>
+
+      <Field id="license" label={t('license')} required>
+        <div className="flex items-stretch gap-2">
+          <select
+            id="license"
+            value={wiz.asset.license?.id ?? ''}
+            onChange={(e) => wiz.patch({ licenseId: e.target.value })}
+            className="flex-1 h-11 rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            <option value="">—</option>
+            {licenses.data?.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
+            ))}
+          </select>
+          {license ? (
+            <Button variant="ghost" onClick={() => setLicensePreviewOpen(true)}>
+              {t('viewFullLicenseText')}
+            </Button>
+          ) : null}
+        </div>
+        {license ? (
+          <p className="mt-2 text-caption text-ink-3 max-w-prose">{license.description}</p>
+        ) : null}
+      </Field>
+
+      <Field id="semver" label={t('semver')} helper={t('semverHelper')} required>
+        <Input
+          id="semver"
+          defaultValue={wiz.latestVersion?.semver ?? ''}
+          placeholder="1.0.0"
+          onChange={(e) => wiz.patch({ semver: e.target.value })}
+          disabled={isPublished}
+          inputMode="numeric"
+        />
+      </Field>
+
+      {license && licensePreviewOpen ? (
+        <LicenseModal licenseId={license.id} onOpenChange={setLicensePreviewOpen} />
+      ) : null}
+
+      {!categories.data?.length && !categories.isPending ? (
+        <Alert variant="warning" title="No categories">
+          The backend hasn't seeded any categories yet. Ask an admin to run `pnpm seed`.
+        </Alert>
+      ) : null}
+
+      {!licenses.data?.length && !licenses.isPending ? (
+        <Alert variant="warning" title="No licenses">
+          {licenses.error
+            ? `Failed to load licenses: ${licenses.error instanceof Error ? licenses.error.message : String(licenses.error)}`
+            : 'No active licenses are configured. Ask an admin to run `pnpm seed`, or open Admin → Licenses and toggle `isActive` on existing rows.'}
+        </Alert>
+      ) : null}
+    </div>
+  );
+}
+
+function LicenseModal({
+  licenseId,
+  onOpenChange,
+}: {
+  licenseId: string;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const locale = useLocale() as LocaleCode;
+  const detail = useQuery({
+    queryKey: ['license', licenseId, locale],
+    queryFn: () =>
+      fetcher<{ id: string; name: string; fullText: string }>(`/licenses/${licenseId}`, {
+        query: { locale },
+      }),
+    staleTime: 60_000,
+  });
+  return (
+    <Modal open onOpenChange={onOpenChange}>
+      <ModalContent size="lg">
+        <ModalHeader>
+          <ModalTitle>{detail.data?.name ?? 'License'}</ModalTitle>
+          <ModalDescription>Standard MGM-Library license text.</ModalDescription>
+        </ModalHeader>
+        <pre className="whitespace-pre-wrap text-[13.5px] leading-[1.65] text-ink-2 font-sans max-h-[60vh] overflow-y-auto">
+          {detail.data?.fullText ?? 'Loading…'}
+        </pre>
+      </ModalContent>
+    </Modal>
+  );
+}
