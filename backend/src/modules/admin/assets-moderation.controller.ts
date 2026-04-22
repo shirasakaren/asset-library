@@ -90,3 +90,63 @@ export class AdminAssetsController {
     @Param('id') id: string,
     @Body() dto: UpdateAssetDto,
   ): Promise<void> {
+    await this.assets.update(id, dto, principal.user);
+  }
+
+  @Post(':id/archive')
+  @AuditAction({ action: 'asset.admin_archive_request', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Admin-forced archive with mandatory reason.' })
+  archive(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminAssetActionDto,
+  ): Promise<void> {
+    return this.moderation.archive(id, principal.user, dto.reason);
+  }
+
+  @Post(':id/restore')
+  @AuditAction({ action: 'asset.admin_restore_request', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Restore an archived or soft-deleted asset.' })
+  restore(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
+    return this.moderation.restore(id, principal.user);
+  }
+
+  @Delete(':id')
+  @AuditAction({ action: 'asset.admin_soft_delete_request', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Soft delete with mandatory reason; physical purge after 30 days.' })
+  softDelete(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminAssetActionDto,
+  ): Promise<void> {
+    return this.moderation.softDelete(id, principal.user, dto.reason);
+  }
+
+  @Post(':id/force-delete')
+  @RequireConfirmation()
+  @AuditAction({ action: 'asset.force_delete_request', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Immediate hard delete including S3. Requires confirmation phrase.' })
+  forceDelete(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminAssetForceDeleteDto,
+  ): Promise<void> {
+    return this.moderation.forceDelete(id, principal.user, dto.reason);
+  }
+
+  @Post(':id/transfer')
+  @AuditAction({ action: 'asset.transfer_request', subjectType: 'Asset' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Reassign ownership to another user.' })
+  transfer(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: AdminAssetTransferDto,
+  ): Promise<void> {
+    return this.moderation.transfer(id, principal.user, dto.newOwnerId);
+  }
+}
