@@ -1769,3 +1769,155 @@
         "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateLicense" } } } },
         "responses": { "201": { "description": "Created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminLicense" } } } } }
       }
+    },
+    "/admin/licenses/{id}": {
+      "patch": {
+        "tags": ["Admin"], "summary": "Partial update.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateLicense" } } } },
+        "responses": { "200": { "description": "OK.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminLicense" } } } } }
+      },
+      "delete": {
+        "tags": ["Admin"], "summary": "Delete; rejected if any asset uses it.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Deleted." }, "409": { "$ref": "#/components/responses/Problem409" } }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "tags": ["Admin"], "summary": "Paginated user list.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/Cursor" }, { "$ref": "#/components/parameters/Limit" },
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "isAdmin", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": { "200": { "description": "OK." } }
+      }
+    },
+    "/admin/users/{id}/promote": {
+      "post": {
+        "tags": ["Admin"], "summary": "Promote a user to admin (requires confirmation phrase).",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConfirmAction" } } } },
+        "responses": { "204": { "description": "Promoted." } }
+      }
+    },
+    "/admin/users/{id}/demote": {
+      "post": {
+        "tags": ["Admin"], "summary": "Demote an admin (refuses last admin or bootstrap admin).",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConfirmAction" } } } },
+        "responses": { "204": { "description": "Demoted." }, "409": { "$ref": "#/components/responses/Problem409" } }
+      }
+    },
+    "/admin/audit": {
+      "get": {
+        "tags": ["Admin"], "summary": "Filterable audit log read.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/Cursor" }, { "$ref": "#/components/parameters/Limit" },
+          { "name": "actorId", "in": "query", "schema": { "type": "string" } },
+          { "name": "action", "in": "query", "schema": { "type": "string" } },
+          { "name": "subjectType", "in": "query", "schema": { "type": "string" } },
+          { "name": "subjectId", "in": "query", "schema": { "type": "string" } },
+          { "name": "from", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+          { "name": "to", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+        ],
+        "responses": { "200": { "description": "OK." } }
+      }
+    },
+    "/admin/audit/{id}": {
+      "get": {
+        "tags": ["Admin"], "summary": "Audit entry detail incl. metadata.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuditEntry" } } } } }
+      }
+    },
+    "/admin/av/infected": {
+      "get": {
+        "tags": ["Admin"], "summary": "List versions flagged by the AV scanner.",
+        "security": [{ "keycloak": [] }],
+        "responses": { "200": { "description": "OK." } }
+      }
+    },
+    "/admin/av/{versionId}/quarantine": {
+      "post": {
+        "tags": ["Admin"], "summary": "Archive the parent asset with reason = AV quarantine.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "versionId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Quarantined." } }
+      }
+    },
+    "/admin/av/{versionId}/acknowledge": {
+      "post": {
+        "tags": ["Admin"], "summary": "Mark a false positive — flips avStatus to CLEAN.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "versionId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Acknowledged." } }
+      }
+    },
+    "/admin/av/{versionId}/rescan": {
+      "post": {
+        "tags": ["Admin"], "summary": "Re-enqueue AV scan for every file in this version.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "versionId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Enqueued." } }
+      }
+    },
+    "/admin/analytics/platform": {
+      "get": {
+        "tags": ["Admin"], "summary": "Platform-wide downloads / publishes / new-users for a date range.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [
+          { "name": "from", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "to", "in": "query", "schema": { "type": "string", "format": "date" } }
+        ],
+        "responses": { "200": { "description": "OK." } }
+      }
+    },
+    "/admin/analytics/assets": {
+      "get": {
+        "tags": ["Admin"], "summary": "Leaderboard by downloads/saves.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [
+          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["downloads", "saves", "last7d", "last30d"] } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "OK." } }
+      }
+    },
+    "/admin/analytics/users": {
+      "get": {
+        "tags": ["Admin"], "summary": "Leaderboard by uploads + total downloads.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [{ "name": "limit", "in": "query", "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "OK." } }
+      }
+    },
+    "/admin/queues": {
+      "get": {
+        "tags": ["Admin"], "summary": "Bull Board operational UI (admin only).",
+        "security": [{ "keycloak": [] }],
+        "responses": { "200": { "description": "HTML." }, "403": { "$ref": "#/components/responses/Problem403" } }
+      }
+    },
+    "/admin/webhook-deliveries": {
+      "get": {
+        "tags": ["Admin"], "summary": "Recent n8n webhook delivery attempts.",
+        "security": [{ "keycloak": [] }],
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["success", "failure"] } },
+          { "name": "type", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "OK." } }
+      }
+    }
+  }
+}
