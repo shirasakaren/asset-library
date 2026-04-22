@@ -180,37 +180,3 @@ export class AssetMapperService {
           bytes: f.bytes.toString(),
           meta: (f.meta as object | null) ?? undefined,
         })),
-        compatibility: v.compatibility.map((c) => ({
-          engineVersion: c.engineVersion,
-          renderPipelines: c.renderPipelines,
-          targets: c.targets,
-        })),
-        dependencies: v.dependencies.map((d) => ({
-          name: d.name,
-          version: d.version ?? undefined,
-          source: d.source,
-        })),
-        requiresEmptyProject: asset.requiresEmptyProject,
-      }));
-
-    const canEdit =
-      !!ctx.requester && (ctx.requester.id === asset.ownerId || ctx.requester.isAdmin);
-    return {
-      id: asset.id,
-      slug: asset.slug,
-      title: asset.title,
-      shortDescription: translation?.shortDescription ?? '',
-      longDescription: (translation?.longDescription as object) ?? null,
-      availableLocales: asset.translations.map((t) => t.locale),
-      engine: asset.engine,
-      category: {
-        id: asset.category.id,
-        slug: asset.category.slug,
-        name:
-          resolveLocalized(asset.category.name as LocalizedJson, ctx.locale) ?? asset.category.slug,
-      },
-      license: { id: asset.license.id, slug: asset.license.slug, name: asset.license.name },
-      tags: asset.tags.map((t) => ({
-        id: t.tag.id,
-        slug: t.tag.slug,
-        displayName: t.tag.displayName,
