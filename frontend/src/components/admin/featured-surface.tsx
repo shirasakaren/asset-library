@@ -266,3 +266,35 @@ function SlotCard({
             <Badge variant="success">Active</Badge>
           ) : (
             <Badge variant="neutral">Inactive</Badge>
+          )}
+        </div>
+      </div>
+      <div className="p-4">
+        <h3 className="font-display text-h3 text-ink tracking-[-0.005em] line-clamp-1">
+          {slot.customTitle ?? slot.assetTitle}
+        </h3>
+        <p className="text-caption text-ink-3 truncate mt-1 font-mono">{slot.assetSlug}</p>
+        <div className="mt-3 flex items-center gap-2">
+          <Switch checked={slot.isActive} onCheckedChange={(c) => onToggle(c === true)} />
+          <Button
+            size="sm"
+            variant="ghost"
+            leadingIcon={<Pencil className="h-3.5 w-3.5" strokeWidth={2.25} />}
+            onClick={onEdit}
+            className="ml-auto"
+          >
+            Edit
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            leadingIcon={<Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />}
+            onClick={onDelete}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+}
