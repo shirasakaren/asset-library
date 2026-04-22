@@ -70,3 +70,55 @@ export function CategoryRow({
         <div
           ref={scrollerRef}
           className={cn(
+            'flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth',
+            '[-ms-overflow-style:none] [scrollbar-width:none]',
+            '[&::-webkit-scrollbar]:hidden',
+            '-mx-1 px-1 py-1',
+          )}
+        >
+          {assets.map((asset) => (
+            <div key={asset.id} className="snap-start">
+              <AssetCard
+                variant="compact"
+                asset={asset}
+                isSaved={savedIds.has(asset.id)}
+                isOwner={ownAssetIds.has(asset.id)}
+              />
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          aria-label={t('scrollLeft')}
+          onClick={() => scrollBy(-1)}
+          disabled={!canPrev}
+          className={cn(
+            'hidden md:inline-flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full',
+            'bg-white text-ink border border-line shadow-2 transition-all duration-200',
+            'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
+            !canPrev && 'opacity-0 pointer-events-none',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+          )}
+        >
+          <ChevronLeft className="h-5 w-5" strokeWidth={2.25} />
+        </button>
+        <button
+          type="button"
+          aria-label={t('scrollRight')}
+          onClick={() => scrollBy(1)}
+          disabled={!canNext}
+          className={cn(
+            'hidden md:inline-flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full',
+            'bg-white text-ink border border-line shadow-2 transition-all duration-200',
+            'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
+            !canNext && 'opacity-0 pointer-events-none',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+          )}
+        >
+          <ChevronRight className="h-5 w-5" strokeWidth={2.25} />
+        </button>
+      </div>
+    </section>
+  );
+}
