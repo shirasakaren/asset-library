@@ -64,3 +64,25 @@ export function RequestDecisionForm({ request }: Props) {
                 <span className="text-[14px] text-ink">{s.replace('_', ' ')}</span>
               </label>
             );
+          })}
+        </div>
+      </Field>
+
+      <Field id="req-comment" label="Admin comment" required={status === 'REJECTED'}>
+        <Textarea
+          id="req-comment"
+          rows={4}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="What should the requester know?"
+        />
+      </Field>
+
+      <div className="flex items-center justify-end pt-2">
+        <Button onClick={submit} loading={busy}>
+          Save
+        </Button>
+      </div>
+    </div>
+  );
+}
