@@ -160,3 +160,53 @@ export function StepCompatibility() {
                   </Field>
                 ) : null}
 
+                <Field label={t('targets')} className="flex-[2] min-w-[320px]">
+                  <ChipFilter
+                    options={TARGETS.map((tg) => ({
+                      label: tSearch(`target.${tg}`),
+                      value: tg,
+                    }))}
+                    values={row.targets}
+                    onChange={(next) => {
+                      const updated = rows.map((r, i) =>
+                        i === idx ? { ...r, targets: next as TargetPlatform[] } : r,
+                      );
+                      void persist(updated);
+                    }}
+                  />
+                </Field>
+
+                <button
+                  type="button"
+                  aria-label={t('removeRow')}
+                  onClick={() => void persist(rows.filter((_, i) => i !== idx))}
+                  className="self-start inline-flex h-9 w-9 items-center justify-center rounded-[8px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors"
+                >
+                  <X className="h-4 w-4" strokeWidth={2.25} />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <Button
+        variant="secondary"
+        leadingIcon={<Plus className="h-4 w-4" strokeWidth={2.25} />}
+        onClick={() => {
+          const defaultPipelines = RENDER_PIPELINES_BY_ENGINE[wiz.asset.engine];
+          void persist([
+            ...rows,
+            {
+              engineVersion: suggested[0] ?? '',
+              renderPipelines: defaultPipelines?.length ? [defaultPipelines[0]] : [],
+              targets: ['WINDOWS'],
+            },
+          ]);
+        }}
+      >
+        {t('addRow')}
+      </Button>
+    </div>
+  );
+}
