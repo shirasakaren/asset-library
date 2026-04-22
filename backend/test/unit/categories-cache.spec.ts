@@ -105,3 +105,14 @@ describe('CategoriesService — Redis cache', () => {
   });
 
   it('invalidateCache() forces a fresh Prisma query on the next list()', async () => {
+    const { svc, calls } = build();
+
+    await svc.list('en');
+    await new Promise((r) => setImmediate(r));
+    expect(calls.findMany).toBe(1);
+
+    await svc.invalidateCache();
+    await svc.list('en');
+    expect(calls.findMany).toBe(2);
+  });
+});
