@@ -63,3 +63,54 @@ export class NotificationsService {
                 id: slice[slice.length - 1].id,
                 createdAt: slice[slice.length - 1].createdAt.toISOString(),
               })
+            : null,
+        hasMore,
+      },
+    };
+  }
+
+  async unreadCount(user: User): Promise<number> {
+    return this.prisma.notification.count({ where: { userId: user.id, readAt: null } });
+  }
+
+  async markRead(user: User, id: string): Promise<NotificationDto> {
+    const row = await this.prisma.notification.findUnique({ where: { id } });
+    if (!row || row.userId !== user.id) {
+      throw new NotFoundDomainException(
+        ErrorCode.IDEMPOTENCY_KEY_REUSED,
+        `Notification ${id} not found.`,
+      );
+    }
+    if (row.readAt) return this.toDto(row);
+    const updated = await this.prisma.notification.update({
+      where: { id },
+      data: { readAt: new Date() },
+    });
+    return this.toDto(updated);
+  }
+
+  async markAllRead(user: User): Promise<number> {
+    const result = await this.prisma.notification.updateMany({
+      where: { userId: user.id, readAt: null },
+      data: { readAt: new Date() },
+    });
+    return result.count;
+  }
+
+  newWsEnvelope(
+    type: string,
+    payload: unknown,
+  ): { type: string; id: string; ts: number; payload: unknown } {
+    return { type, id: randomUUID(), ts: Date.now(), payload };
+  }
+
+  private toDto(row: Notification): NotificationDto {
+    return {
+      id: row.id,
+      type: row.type,
+      payload: row.payload as Record<string, unknown>,
+      readAt: row.readAt?.toISOString() ?? null,
+      createdAt: row.createdAt.toISOString(),
+    };
+  }
+}
