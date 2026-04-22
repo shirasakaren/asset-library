@@ -69,3 +69,20 @@ import {
 } from 'class-validator';
 
 const ADMIN_REVIEW_STATUSES: AssetRequestStatus[] = [
+  AssetRequestStatus.IN_REVIEW,
+  AssetRequestStatus.PENDING,
+  AssetRequestStatus.APPROVED,
+  AssetRequestStatus.REJECTED,
+];
+
+export class AdminUpdateAssetRequestDto {
+  @ApiProperty({ enum: ADMIN_REVIEW_STATUSES })
+  @IsIn2(ADMIN_REVIEW_STATUSES)
+  status!: AssetRequestStatus;
+
+  @ApiPropertyOptional({ description: 'Required when transitioning to REJECTED.' })
+  @IsOptional2()
+  @IsString2()
+  @MaxLength2(2000)
+  adminComment?: string;
+}
