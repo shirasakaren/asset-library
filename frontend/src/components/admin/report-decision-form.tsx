@@ -132,3 +132,21 @@ export function ReportDecisionForm({ report }: Props) {
         <Field id="report-confirm" label='Type "I understand" to confirm' required>
           <Input id="report-confirm" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="I understand" />
         </Field>
+      ) : null}
+
+      <div className="flex flex-wrap items-center gap-2 pt-2">
+        {report.status === 'OPEN' ? (
+          <Button variant="secondary" onClick={startReview} loading={busy}>
+            Start review
+          </Button>
+        ) : null}
+        <Button variant="ghost" onClick={dismiss} loading={busy}>
+          Dismiss
+        </Button>
+        <Button onClick={submitDecision} loading={busy} className="ml-auto">
+          Submit decision
+        </Button>
+      </div>
+    </div>
+  );
+}
