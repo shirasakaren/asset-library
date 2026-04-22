@@ -40,3 +40,21 @@ export class ListLibraryQueryDto extends ListQueryDto {
   @IsIn(HIDDEN_MODES as unknown as string[])
   hidden?: 'true' | 'false' | 'all';
   @ApiPropertyOptional({ enum: LIBRARY_SORTS })
+  @IsOptional()
+  @IsIn(LIBRARY_SORTS as unknown as string[])
+  sort?: LibrarySort;
+}
+
+export class LibraryItemDto {
+  @ApiProperty() addedAt!: string;
+  @ApiProperty() hidden!: boolean;
+  @ApiProperty({ type: AssetSummaryDto }) asset!: AssetSummaryDto;
+}
+
+export class AddLibraryItemDto {
+  @ApiProperty() @IsString() assetId!: string;
+}
+
+export class UpdateLibraryItemDto {
+  @ApiProperty() @IsBoolean() hidden!: boolean;
+}
