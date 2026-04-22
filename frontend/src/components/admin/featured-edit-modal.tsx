@@ -267,3 +267,55 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
                   }}
                 />
               </div>
+            ) : null}
+          </div>
+        </Field>
+
+        <Field id="custom-title" label="Custom title (optional)">
+          <Input
+            id="custom-title"
+            value={customTitle}
+            onChange={(e) => setCustomTitle(e.target.value)}
+            placeholder={picked?.title}
+          />
+        </Field>
+
+        {bannerMode === 'custom' ? (
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field id="short-en" label="Short description (EN)">
+              <Textarea id="short-en" rows={2} value={shortEn} onChange={(e) => setShortEn(e.target.value)} />
+            </Field>
+            <Field id="short-id" label="Short description (ID)">
+              <Textarea id="short-id" rows={2} value={shortId} onChange={(e) => setShortId(e.target.value)} />
+            </Field>
+          </div>
+        ) : null}
+
+        {bannerMode === 'custom' && !haveBothLanguages ? (
+          <Alert variant="warning" className="mt-1">
+            Provide a short description in both languages.
+          </Alert>
+        ) : null}
+
+        <label className="inline-flex items-center gap-2 text-[13.5px] text-ink mt-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isActive}
+            onChange={(e) => setIsActive(e.target.checked)}
+            className="h-4 w-4 accent-ink"
+          />
+          Active
+        </label>
+
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button disabled={!picked} loading={busy} onClick={submit}>
+            {editing ? 'Save' : 'Add'}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
