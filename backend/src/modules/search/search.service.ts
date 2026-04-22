@@ -88,3 +88,83 @@ export class SearchService {
       usageCount: number;
     }>(q, {
       limit: Math.min(Math.max(limit, 1), 20),
+    });
+    return result.hits.map((h) => ({
+      id: h.id,
+      slug: h.slug,
+      displayName: h.displayName,
+      usageCount: h.usageCount,
+    }));
+  }
+
+  // ─── Indexer side ───────────────────────────────────────────────────────
+
+  /**
+   * Builds the denormalized Meilisearch document for an asset. Called by the
+   * Part 3 search-index worker; we expose it here so Part 2 controllers can
+   * use it for eager (synchronous) reindex when latency matters (e.g. publish).
+   */
+  async buildDocument(assetId: string): Promise<AssetIndexDocument | null> {
+    const asset = await this.prisma.asset.findUnique({
+      where: { id: assetId },
+      include: {
+        owner: true,
+        category: true,
+        translations: true,
+        tags: { include: { tag: true } },
+        versions: {
+          include: { files: true, compatibility: true },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+        _count: { select: { libraryItems: true, downloads: true } },
+      },
+    });
+    if (!asset || asset.status !== 'PUBLISHED') return null;
+    const latest = asset.versions[0];
+    const enTranslation = asset.translations.find((t) => t.locale === 'en');
+    const idTranslation = asset.translations.find((t) => t.locale === 'id');
+    return {
+      id: asset.id,
+      slug: asset.slug,
+      title: asset.title,
+      shortDescription_en: enTranslation?.shortDescription,
+      shortDescription_id: idTranslation?.shortDescription,
+      thumbnailKey: asset.thumbnailKey ?? undefined,
+      engine: asset.engine,
+      categoryId: asset.categoryId,
+      categoryName_en: resolveLocalized(asset.category.name as LocalizedJson, 'en') ?? undefined,
+      categoryName_id: resolveLocalized(asset.category.name as LocalizedJson, 'id') ?? undefined,
+      licenseId: asset.licenseId,
+      tags: asset.tags.map((t) => t.tag.slug),
+      renderPipelines: Array.from(
+        new Set(latest?.compatibility.flatMap((c) => c.renderPipelines) ?? []),
+      ),
+      targets: Array.from(new Set(latest?.compatibility.flatMap((c) => c.targets) ?? [])),
+      fileKinds: Array.from(new Set(latest?.files.map((f) => f.kind) ?? [])),
+      ownerDisplayName: asset.owner.displayName,
+      publishedAt: asset.publishedAt?.getTime() ?? 0,
+      createdAt: asset.createdAt.getTime(),
+      totalDownloads: asset._count.downloads,
+      totalSaves: asset._count.libraryItems,
+    };
+  }
+
+  // ─── Filter compiler (Meilisearch filter expression) ────────────────────
+
+  private buildFilter(query: SearchAssetsQueryDto): string[] {
+    const clauses: string[] = [];
+    if (query.engine) clauses.push(`engine = "${query.engine}"`);
+    if (query.licenseSlug) clauses.push(`licenseSlug = "${query.licenseSlug}"`);
+    if (query.categoryIds?.length)
+      clauses.push(`categoryId IN [${query.categoryIds.map((c) => `"${c}"`).join(',')}]`);
+    if (query.tags?.length) clauses.push(`tags IN [${query.tags.map((t) => `"${t}"`).join(',')}]`);
+    if (query.fileKinds?.length)
+      clauses.push(`fileKinds IN [${query.fileKinds.map((k) => `"${k}"`).join(',')}]`);
+    if (query.renderPipelines?.length)
+      clauses.push(`renderPipelines IN [${query.renderPipelines.map((p) => `"${p}"`).join(',')}]`);
+    if (query.targets?.length)
+      clauses.push(`targets IN [${query.targets.map((t) => `"${t}"`).join(',')}]`);
+    return clauses;
+  }
+}
