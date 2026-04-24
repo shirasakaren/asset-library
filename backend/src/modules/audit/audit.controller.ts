@@ -82,3 +82,17 @@ export class AdminAuditController {
     metadata: unknown;
     createdAt: Date;
     actor?: { displayName: string; email: string } | null;
+  }): AuditEntryDto {
+    return {
+      id: row.id,
+      action: row.action,
+      subjectType: row.subjectType,
+      subjectId: row.subjectId,
+      actorId: row.actorId ?? undefined,
+      actorDisplayName: row.actor?.displayName,
+      actorEmail: row.actor?.email,
+      metadata: (row.metadata as Record<string, unknown>) ?? undefined,
+      createdAt: row.createdAt.toISOString(),
+    };
+  }
+}
