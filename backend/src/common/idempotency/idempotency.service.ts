@@ -45,3 +45,32 @@ export class IdempotencyService {
     if (!raw) return null;
     const record = JSON.parse(raw) as IdempotencyRecord;
     if (record.bodyHash !== this.hashBody(body)) {
+      throw new ConflictDomainException(
+        ErrorCode.IDEMPOTENCY_KEY_REUSED,
+        'Idempotency-Key has been used with a different request body.',
+      );
+    }
+    return record;
+  }
+
+  async store(
+    userId: string,
+    route: string,
+    key: string,
+    body: unknown,
+    status: number,
+    response: unknown,
+  ): Promise<void> {
+    const record: IdempotencyRecord = {
+      bodyHash: this.hashBody(body),
+      status,
+      response,
+    };
+    await this.redis.client.set(
+      this.key(userId, route, key),
+      JSON.stringify(record),
+      'EX',
+      TTL_SECONDS,
+    );
+  }
+}
