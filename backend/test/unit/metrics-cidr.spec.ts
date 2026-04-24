@@ -50,3 +50,10 @@ describe('metrics CIDR matcher', () => {
     const cidr = parseCidr('10.0.0.1/32')!;
     expect(inCidr('10.0.0.1', cidr)).toBe(true);
     expect(inCidr('10.0.0.2', cidr)).toBe(false);
+  });
+
+  it('rejects nonsense inputs', () => {
+    expect(parseCidr('not.a.cidr/16')).toBeNull();
+    expect(parseCidr('10.0.0.0/99')).toBeNull();
+  });
+});
