@@ -87,3 +87,67 @@ export function NotificationInbox({ initial, initialCursor }: Props) {
                 )}
               >
                 {t(`tabs.${k}` as 'tabs.all')}
+              </button>
+            );
+          })}
+        </div>
+        <Button variant="ghost" onClick={handleMarkAll}>
+          {t('markAll')}
+        </Button>
+      </div>
+
+      {items.length === 0 ? (
+        <EmptyState
+          title={t('empty')}
+          description={t('emptyBody')}
+          seed="notifications-empty"
+          pattern={false}
+        />
+      ) : (
+        <div className="space-y-8">
+          {grouped.map((group) => (
+            <section key={group.key}>
+              <h2 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
+                {t(`group.${group.key}` as 'group.today')}
+              </h2>
+              <ul className="rounded-[14px] border border-line bg-surface overflow-hidden divide-y divide-line">
+                {group.items.map((item) => (
+                  <li key={item.id}>
+                    <NotificationRow item={item} onActivate={handleActivate} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
+
+      <div ref={sentinelRef} className="h-10 mt-6 text-center text-caption text-ink-3">
+        {query.isFetchingNextPage ? '…' : null}
+      </div>
+    </div>
+  );
+}
+
+type GroupKey = 'today' | 'yesterday' | 'thisWeek' | 'older';
+
+function groupByDate(items: NotificationItem[]): { key: GroupKey; items: NotificationItem[] }[] {
+  const now = Date.now();
+  const dayMs = 24 * 60 * 60 * 1000;
+  const buckets: Record<GroupKey, NotificationItem[]> = {
+    today: [],
+    yesterday: [],
+    thisWeek: [],
+    older: [],
+  };
+  for (const it of items) {
+    const age = now - new Date(it.createdAt).getTime();
+    if (age < dayMs) buckets.today.push(it);
+    else if (age < 2 * dayMs) buckets.yesterday.push(it);
+    else if (age < 7 * dayMs) buckets.thisWeek.push(it);
+    else buckets.older.push(it);
+  }
+  return (['today', 'yesterday', 'thisWeek', 'older'] as GroupKey[])
+    .map((k) => ({ key: k, items: buckets[k] }))
+    .filter((g) => g.items.length > 0);
+}
