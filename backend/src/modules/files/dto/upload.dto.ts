@@ -94,3 +94,40 @@ export class InitiateThumbnailResponseDto {
   @ApiProperty() key!: string;
   @ApiProperty() expiresAt!: string;
 }
+
+export class CompleteThumbnailDto {
+  @ApiProperty() @IsString() assetId!: string;
+  @ApiProperty() @IsString() key!: string;
+}
+
+export class InitiateEditorMediaDto {
+  @ApiProperty({ maxLength: 100 }) @IsString() @MaxLength(100) contentType!: string;
+  @ApiProperty() @IsInt() @Min(0) bytes!: number;
+}
+
+export class InitiateEditorMediaResponseDto {
+  @ApiProperty() putUrl!: string;
+  @ApiProperty() key!: string;
+  @ApiProperty() viewUrl!: string;
+  @ApiProperty() expiresAt!: string;
+}
+
+export class RefreshEditorMediaDto {
+  @ApiProperty({ maxLength: 512 })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(512)
+  key!: string;
+}
+
+export class RefreshEditorMediaResponseDto {
+  @ApiProperty() viewUrl!: string;
+  @ApiProperty() expiresAt!: string;
+}
+
+export class ReorderFilesDto {
+  @ApiProperty({ type: [String], description: 'File ids in the desired display order.' })
+  @IsArray()
+  @IsString({ each: true })
+  orderedFileIds!: string[];
+}
