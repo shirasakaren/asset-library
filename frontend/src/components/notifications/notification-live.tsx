@@ -81,3 +81,47 @@ export function NotificationsLive() {
   // Cross-tab read sync — when this tab marks one as read, broadcast it to others.
   const onBroadcast = useCallback<(evt: BroadcastEvent) => void>(
     (evt) => {
+      if (
+        evt.type === 'notification.read' &&
+        typeof (evt.payload as { id?: string })?.id === 'string'
+      ) {
+        markRead((evt.payload as { id: string }).id);
+      } else if (evt.type === 'notification.read-all') {
+        markAllRead();
+      }
+    },
+    [markRead, markAllRead],
+  );
+  useBroadcastChannel(onBroadcast);
+
+  // Polling fallback when WS is down.
+  useEffect(() => {
+    if (wsStatus === 'open') return;
+    const id = setInterval(async () => {
+      try {
+        const count = await fetcher<{ count: number }>('/notifications/unread-count');
+        useNotificationsStore.setState({ unreadCount: count.count });
+      } catch {
+        /* ignore */
+      }
+    }, POLL_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [wsStatus, fetcher]);
+
+  return null;
+}
+
+export function markNotificationReadAndBroadcast(id: string) {
+  useNotificationsStore.getState().markRead(id);
+  broadcast({ type: 'notification.read', payload: { id } });
+}
+
+export function markAllNotificationsReadAndBroadcast() {
+  useNotificationsStore.getState().markAllRead();
+  broadcast({ type: 'notification.read-all' });
+}
+
+function cryptoRandomId() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return Math.random().toString(36).slice(2);
+}
