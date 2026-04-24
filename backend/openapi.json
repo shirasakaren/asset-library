@@ -6744,3 +6744,596 @@
           "replies"
         ]
       },
+      "CommentListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommentNodeDto"
+            }
+          },
+          "pageInfo": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "items",
+          "pageInfo"
+        ]
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "COMMENT",
+              "ISSUE"
+            ]
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "object",
+            "description": "Lite TipTap JSON document."
+          }
+        },
+        "required": [
+          "kind",
+          "body"
+        ]
+      },
+      "UpdateCommentDto": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Lite TipTap JSON document."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "UpdateIssueStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ACKNOWLEDGED",
+              "RESOLVED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "CreateReportDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "MALICIOUS_FILE",
+              "BROKEN_ASSET"
+            ]
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "assetId",
+          "category",
+          "notes"
+        ]
+      },
+      "ReportDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "MALICIOUS_FILE",
+              "BROKEN_ASSET"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "REVIEWING",
+              "ACTIONED",
+              "DISMISSED"
+            ]
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "assetTitle": {
+            "type": "string"
+          },
+          "assetSlug": {
+            "type": "string"
+          },
+          "reporter": {
+            "type": "object"
+          },
+          "adminNotes": {
+            "type": "object"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "resolvedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "notes",
+          "status",
+          "assetId",
+          "assetTitle",
+          "assetSlug",
+          "reporter",
+          "createdAt"
+        ]
+      },
+      "ActionReportDto": {
+        "type": "object",
+        "properties": {
+          "adminNotes": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "NOTHING",
+              "ARCHIVE_ASSET",
+              "DELETE_ASSET",
+              "FORCE_DELETE_ASSET"
+            ]
+          },
+          "confirm": {
+            "type": "string",
+            "description": "Required when action=FORCE_DELETE_ASSET — value: \"I understand\"."
+          },
+          "confirmedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "adminNotes",
+          "action"
+        ]
+      },
+      "DismissReportDto": {
+        "type": "object",
+        "properties": {
+          "adminNotes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "adminNotes"
+        ]
+      },
+      "AdminAssetActionDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Required moderator reason recorded in the audit log."
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "AdminAssetForceDeleteDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Required moderator reason recorded in the audit log."
+          },
+          "confirm": {
+            "type": "string",
+            "example": "I understand"
+          },
+          "confirmedAt": {
+            "type": "string",
+            "example": "2026-05-20T03:00:00.000Z"
+          }
+        },
+        "required": [
+          "reason",
+          "confirm",
+          "confirmedAt"
+        ]
+      },
+      "AdminAssetTransferDto": {
+        "type": "object",
+        "properties": {
+          "newOwnerId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "newOwnerId"
+        ]
+      },
+      "CreateAssetRequestDto": {
+        "type": "object",
+        "properties": {
+          "assetLink": {
+            "type": "string"
+          },
+          "assetType": {
+            "type": "string",
+            "example": "Unity 3D model"
+          },
+          "intendedUse": {
+            "type": "string",
+            "description": "How will this asset be used internally?"
+          },
+          "price": {
+            "type": "number",
+            "description": "Indicative price the requester saw."
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetLink",
+          "assetType",
+          "intendedUse"
+        ]
+      },
+      "AssetRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "assetLink": {
+            "type": "string"
+          },
+          "assetType": {
+            "type": "string"
+          },
+          "intendedUse": {
+            "type": "string"
+          },
+          "price": {
+            "type": "object"
+          },
+          "notes": {
+            "type": "object"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SENT",
+              "IN_REVIEW",
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "adminComment": {
+            "type": "object"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "requester": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "assetLink",
+          "assetType",
+          "intendedUse",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "requester"
+        ]
+      },
+      "AdminUpdateAssetRequestDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_REVIEW",
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "adminComment": {
+            "type": "string",
+            "description": "Required when transitioning to REJECTED."
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "AdminFeaturedSlotDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "assetTitle": {
+            "type": "string"
+          },
+          "assetSlug": {
+            "type": "string"
+          },
+          "customBannerKey": {
+            "type": "string"
+          },
+          "customBannerUrl": {
+            "type": "string"
+          },
+          "customTitle": {
+            "type": "string"
+          },
+          "customShortDescription": {
+            "type": "object"
+          },
+          "sortOrder": {
+            "type": "number"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "assetId",
+          "assetTitle",
+          "assetSlug",
+          "sortOrder",
+          "isActive",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateFeaturedSlotDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "customBannerKey": {
+            "type": "string",
+            "description": "S3 key for a custom banner (use the initiate upload endpoint)."
+          },
+          "customTitle": {
+            "type": "string",
+            "description": "Overrides Asset.title in the carousel."
+          },
+          "customShortDescription": {
+            "type": "object",
+            "description": "{ en?, id? } overrides for the short description."
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "assetId"
+        ]
+      },
+      "UpdateFeaturedSlotDto": {
+        "type": "object",
+        "properties": {
+          "customBannerKey": {
+            "type": "string"
+          },
+          "customTitle": {
+            "type": "string"
+          },
+          "customShortDescription": {
+            "type": "object"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        }
+      },
+      "ReorderFeaturedSlotsDto": {
+        "type": "object",
+        "properties": {
+          "orderedIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "orderedIds"
+        ]
+      },
+      "FeaturedBannerInitiateDto": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "bytes": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "contentType",
+          "bytes"
+        ]
+      },
+      "FeaturedBannerInitiateResponseDto": {
+        "type": "object",
+        "properties": {
+          "putUrl": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "putUrl",
+          "key",
+          "expiresAt"
+        ]
+      },
+      "AuditEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "subjectType": {
+            "type": "string"
+          },
+          "subjectId": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorDisplayName": {
+            "type": "string"
+          },
+          "actorEmail": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "subjectType",
+          "subjectId",
+          "createdAt"
+        ]
+      },
+      "SearchAssetHitDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "thumbnailUrl": {
+            "type": "string"
+          },
+          "engine": {
+            "type": "string"
+          },
+          "categoryName": {
+            "type": "string"
+          },
+          "ownerName": {
+            "type": "string"
+          },
+          "totalDownloads": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "shortDescription",
+          "engine",
+          "categoryName",
+          "ownerName",
+          "totalDownloads"
+        ]
+      },
+      "SearchAssetsResponseDto": {
+        "type": "object",
+        "properties": {
+          "hits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchAssetHitDto"
+            }
+          },
+          "processingTimeMs": {
+            "type": "number"
+          },
+          "estimatedTotalHits": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "hits",
+          "processingTimeMs"
+        ]
+      }
+    }
+  }
+}
