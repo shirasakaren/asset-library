@@ -57,3 +57,53 @@ export function TagCombobox({ values, onChange, placeholder }: TagComboboxProps)
           >
             {slug}
             <button
+              type="button"
+              onClick={() => remove(slug)}
+              aria-label={`Remove tag ${slug}`}
+              className="inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-line"
+            >
+              <X className="h-3 w-3" strokeWidth={2.25} />
+            </button>
+          </Badge>
+        ))}
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={onKey}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setTimeout(() => setFocused(false), 150)}
+          placeholder={placeholder}
+          className="flex-1 min-w-[120px] bg-transparent outline-none text-[13.5px] placeholder:text-ink-4"
+        />
+      </div>
+      {focused && debouncedQuery && (suggestions.data?.length ?? 0) > 0 ? (
+        <ul
+          role="listbox"
+          className={cn(
+            'absolute z-10 left-0 right-0 mt-1.5 max-h-[240px] overflow-y-auto rounded-[12px] border border-line bg-surface shadow-2 p-1.5',
+          )}
+        >
+          {suggestions.data?.slice(0, 8).map((tag) => (
+            <li key={tag.slug}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  add(tag.slug);
+                }}
+                className="w-full flex items-center justify-between gap-2 px-2.5 h-9 rounded-[8px] text-left hover:bg-surface-muted/60 transition-colors duration-120"
+              >
+                <span className="inline-flex items-center gap-2 text-[13.5px]">
+                  <Plus className="h-3 w-3 text-ink-3" strokeWidth={2.25} />
+                  {tag.displayName}
+                  <span className="font-mono text-[11px] text-ink-3">{tag.slug}</span>
+                </span>
+                <span className="text-caption text-ink-3 geist-tnum">{tag.usageCount}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
