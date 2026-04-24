@@ -45,3 +45,30 @@ export class AdminLicensesController {
     subjectParam: 'body.slug',
   })
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: AdminLicenseDto })
+  create(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CreateLicenseDto,
+  ): Promise<AdminLicenseDto> {
+    return this.admin.create(principal.user, dto);
+  }
+
+  @Patch(':id')
+  @AuditAction({ action: 'license.update_request', subjectType: 'License' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AdminLicenseDto })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateLicenseDto,
+  ): Promise<AdminLicenseDto> {
+    return this.admin.update(id, principal.user, dto);
+  }
+
+  @Delete(':id')
+  @AuditAction({ action: 'license.delete_request', subjectType: 'License' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
+    return this.admin.remove(id, principal.user);
+  }
+}
