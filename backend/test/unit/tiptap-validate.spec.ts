@@ -106,3 +106,14 @@ describe('TipTap validators', () => {
           },
           { type: 'image', attrs: { src: 'https://cdn.example.com/x.png', alt: 'x' } },
           { type: 'embed', attrs: { src: 'https://youtube.com/embed/abc', provider: 'youtube' } },
+        ],
+      };
+      expect(() => validateFullTipTap(doc)).not.toThrow();
+    });
+  });
+
+  it('declares the expected allowlist sizes', () => {
+    expect(LITE_TIPTAP_ALLOWLIST.maxBytes).toBe(24 * 1024);
+    expect(FULL_TIPTAP_ALLOWLIST.maxBytes).toBe(100 * 1024);
+  });
+});
