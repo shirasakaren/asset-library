@@ -58,3 +58,9 @@ describe('stripDisallowedLiteNodes', () => {
           ],
         },
       ],
+    };
+    const cleaned = stripDisallowedLiteNodes(doc);
+    const textNode = cleaned.content?.[0]?.content?.[0];
+    expect(textNode?.marks?.map((m) => m.type)).toEqual(['bold']);
+  });
+});
