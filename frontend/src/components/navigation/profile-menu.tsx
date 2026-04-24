@@ -52,3 +52,35 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
         >
           <Avatar data={tokens} size={32} />
         </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-[260px] p-0 overflow-hidden">
+        <div className="flex items-start gap-3 px-4 pt-4 pb-3 border-b border-line">
+          <Avatar data={tokens} size={36} />
+          <div className="min-w-0 flex-1">
+            <div className="text-[13.5px] font-semibold text-ink truncate">
+              {user.displayName}
+            </div>
+            <div className="text-[12px] text-ink-3 truncate" title={user.email}>
+              {user.email}
+            </div>
+            <div className="mt-1.5">
+              <Badge variant={roleVariant} size="sm">
+                {roleLabel}
+              </Badge>
+            </div>
+          </div>
+        </div>
+        <div className="p-1.5">
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex w-full items-center gap-2.5 px-2.5 h-9 rounded-[8px] text-[13.5px] text-ink hover:bg-surface-muted focus-visible:outline-none focus-visible:bg-surface-muted transition-colors"
+          >
+            <LogOut className="h-4 w-4 text-ink-3" strokeWidth={2.25} />
+            {tc('signOut')}
+          </button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
