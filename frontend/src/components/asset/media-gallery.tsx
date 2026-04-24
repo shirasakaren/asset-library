@@ -196,3 +196,58 @@ export function MediaGallery({
             return (
               <button
                 key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                onClick={() => setActiveId(item.id)}
+                className={cn(
+                  'group relative shrink-0 h-[60px] w-[100px] overflow-hidden rounded-[10px] border bg-surface-muted',
+                  selected ? 'border-brand-blue ring-2 ring-brand-blue/40' : 'border-line hover:border-ink/30',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+                )}
+              >
+                {item.kind === 'image' && item.url ? (
+                  <Image src={item.url} alt="" fill sizes="100px" className="object-cover" unoptimized />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-ink-2">
+                    <Icon className="h-4 w-4" strokeWidth={2.25} />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {/* Lightbox */}
+      <Modal open={!!lightbox} onOpenChange={(o) => !o && setLightbox(null)}>
+        <ModalPortal>
+          <ModalOverlay className="!bg-ink/85 !backdrop-blur-[6px]" />
+          <DialogPrimitive.Content
+            className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] max-w-[1280px] outline-none data-[state=open]:animate-fade-in"
+          >
+            {lightbox?.kind === 'image' ? (
+              <Image
+                src={lightbox.fullUrl ?? lightbox.url}
+                alt={lightbox.label ?? assetTitle}
+                fill
+                sizes="100vw"
+                className="object-contain"
+                unoptimized
+              />
+            ) : null}
+            <DialogPrimitive.Close
+              aria-label="Close lightbox"
+              className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors backdrop-blur-[8px]"
+            >
+              <X className="h-4 w-4" strokeWidth={2.25} />
+            </DialogPrimitive.Close>
+          </DialogPrimitive.Content>
+        </ModalPortal>
+      </Modal>
+    </div>
+  );
+}
+
+// Re-export type so the asset detail page can build the items list.
+export type { MediaItem };
