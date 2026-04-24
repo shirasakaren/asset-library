@@ -59,3 +59,10 @@ describe('PublishChecklistService', () => {
       },
     } as never;
     const svc = new PublishChecklistService(prisma);
+    const violations = await svc.evaluate(makeAsset({ engine: 'UNITY' }));
+    expect(violations.find((v) => v.code === 'compatibility.missing')).toBeDefined();
+
+    const agnostic = await svc.evaluate(makeAsset({ engine: 'ENGINE_AGNOSTIC' }));
+    expect(agnostic.find((v) => v.code === 'compatibility.missing')).toBeUndefined();
+  });
+});
