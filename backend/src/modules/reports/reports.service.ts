@@ -190,3 +190,54 @@ export class ReportsService {
       where: { id },
       data: { status: 'DISMISSED', adminNotes: dto.adminNotes, resolvedAt: new Date() },
     });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'report.dismiss',
+      subjectType: 'Report',
+      subjectId: id,
+      metadata: { adminNotes: dto.adminNotes },
+    });
+  }
+
+  private async applyAction(
+    kind: ReportActionKind,
+    assetId: string,
+    admin: User,
+    adminNotes: string,
+    reportId: string,
+  ): Promise<void> {
+    const reason = `report:${reportId} — ${adminNotes.slice(0, 200)}`;
+    switch (kind) {
+      case 'NOTHING':
+        return;
+      case 'ARCHIVE_ASSET':
+        return this.moderation.archive(assetId, admin, reason);
+      case 'DELETE_ASSET':
+        return this.moderation.softDelete(assetId, admin, reason);
+      case 'FORCE_DELETE_ASSET':
+        return this.moderation.forceDelete(assetId, admin, reason);
+    }
+  }
+
+  private toDto(
+    row: Report & { asset: { id: string; slug: string; title: string }; reporter: User },
+  ): ReportDto {
+    return {
+      id: row.id,
+      category: row.category,
+      notes: row.notes,
+      status: row.status,
+      assetId: row.assetId,
+      assetTitle: row.asset.title,
+      assetSlug: row.asset.slug,
+      reporter: {
+        id: row.reporter.id,
+        displayName: row.reporter.displayName,
+        email: row.reporter.email,
+      },
+      adminNotes: row.adminNotes,
+      createdAt: row.createdAt.toISOString(),
+      resolvedAt: row.resolvedAt?.toISOString(),
+    };
+  }
+}
