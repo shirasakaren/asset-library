@@ -47,3 +47,14 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
         </p>
       ) : null}
     </div>
+  );
+  if (!href) return body;
+  return (
+    <NextLink
+      href={href}
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 rounded-[16px]"
+    >
+      {body}
+    </NextLink>
+  );
+}
