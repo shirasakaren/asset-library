@@ -47,3 +47,16 @@ export class AdminUsersController {
 
   @Post(':id/demote')
   @RequireConfirmation()
+  @AuditAction({ action: 'user.demote_request', subjectType: 'User' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Demote an admin. Refuses if it would leave zero admins or target is bootstrap.',
+  })
+  demote(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() _dto: ConfirmActionDto,
+  ): Promise<void> {
+    return this.admin.demote(id, principal.user);
+  }
+}
