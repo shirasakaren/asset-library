@@ -142,3 +142,58 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 
 /* ===================== Textarea ===================== */
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  invalid?: boolean;
+}
+
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, invalid, rows = 4, ...props }, ref) => (
+    <textarea
+      ref={ref}
+      rows={rows}
+      className={cn(
+        inputBase,
+        'py-2.5 px-3.5 text-[15px] resize-y min-h-[88px]',
+        invalid && 'border-brand-red focus-visible:ring-brand-red',
+        className,
+      )}
+      aria-invalid={invalid || undefined}
+      {...props}
+    />
+  ),
+);
+Textarea.displayName = 'Textarea';
+
+/* ===================== Field shell ===================== */
+
+interface FieldProps {
+  id?: string;
+  label?: ReactNode;
+  helper?: ReactNode;
+  error?: ReactNode;
+  required?: boolean;
+  children: ReactNode;
+  className?: string;
+}
+
+/**
+ * Convenience wrapper: <Field label helper error>...</Field>
+ * Wires aria-describedby / aria-invalid via DOM ids if provided.
+ */
+export function Field({ id, label, helper, error, required, children, className }: FieldProps) {
+  const helperId = id ? `${id}-helper` : undefined;
+  const errorId = id ? `${id}-error` : undefined;
+  return (
+    <div className={cn('flex flex-col gap-1.5', className)}>
+      {label ? (
+        <Label htmlFor={id} required={required}>
+          {label}
+        </Label>
+      ) : null}
+      {children}
+      {error ? <FieldError id={errorId}>{error}</FieldError> : null}
+      {!error && helper ? <HelperText id={helperId}>{helper}</HelperText> : null}
+    </div>
+  );
+}
