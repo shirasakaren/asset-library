@@ -62,3 +62,10 @@ export class MeController {
       subjectType: 'User',
       subjectId: principal.user.id,
     });
+    const envelope = this.notifications.newWsEnvelope('session:logout', {
+      userId: principal.user.id,
+      at: new Date().toISOString(),
+    });
+    await this.wsFanout.publish({ userId: principal.user.id, ...envelope });
+  }
+}
