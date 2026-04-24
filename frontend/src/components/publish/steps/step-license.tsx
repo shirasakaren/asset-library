@@ -85,3 +85,30 @@ export function StepLicense() {
 function LicenseFullText({
   licenseId,
   onOpenChange,
+}: {
+  licenseId: string;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const locale = useLocale() as LocaleCode;
+  const detail = useQuery({
+    queryKey: ['license', licenseId, locale],
+    queryFn: () =>
+      fetcher<{ id: string; name: string; fullText: string }>(`/licenses/${licenseId}`, {
+        query: { locale },
+      }),
+    staleTime: 60_000,
+  });
+  return (
+    <Modal open onOpenChange={onOpenChange}>
+      <ModalContent size="lg">
+        <ModalHeader>
+          <ModalTitle>{detail.data?.name ?? 'License'}</ModalTitle>
+        </ModalHeader>
+        <pre className="whitespace-pre-wrap text-[13.5px] leading-[1.65] text-ink-2 font-sans max-h-[60vh] overflow-y-auto">
+          {detail.data?.fullText ?? 'Loading…'}
+        </pre>
+      </ModalContent>
+    </Modal>
+  );
+}
