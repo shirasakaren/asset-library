@@ -83,3 +83,12 @@ function ipToBigInt(ip: string, family: 4 | 6): bigint {
 function expandV6(groups: string[]): string[] {
   const idx = groups.indexOf('');
   if (idx === -1) return groups;
+  const fill = Array(8 - (groups.length - 1)).fill('0');
+  return [...groups.slice(0, idx), ...fill, ...groups.slice(idx + 1)];
+}
+
+function ipInCidr(ip: string, cidr: ParsedCidr): boolean {
+  const family = isIP(ip);
+  if (family !== cidr.family) return false;
+  return (ipToBigInt(ip, family) & cidr.mask) === cidr.base;
+}
