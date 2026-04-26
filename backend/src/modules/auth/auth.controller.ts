@@ -93,3 +93,33 @@ export class AuthController {
   @Post('plugin/revoke')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @ApiOperation({ summary: 'Revoke one of your own plugin devices.' })
+  async revokePlugin(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() body: PluginRevokeDto,
+  ): Promise<void> {
+    await this.auth.revokePluginDevice(principal.user.id, body.deviceId);
+  }
+
+  @Get('plugin/devices')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @ApiOperation({ summary: 'List active plugin devices for the current user.' })
+  @ApiOkResponse({ type: PluginDeviceDto, isArray: true })
+  listPluginDevices(@AuthUser() principal: AuthenticatedRequestUser): Promise<PluginDeviceDto[]> {
+    return this.auth.listPluginDevices(principal.user.id);
+  }
+
+  @Delete('plugin/devices/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @ApiOperation({ summary: 'Revoke a plugin device by id.' })
+  async deletePluginDevice(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') deviceId: string,
+  ): Promise<void> {
+    await this.auth.revokePluginDevice(principal.user.id, deviceId);
+  }
+}
