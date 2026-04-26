@@ -62,3 +62,60 @@ export class PrincipalResolverService {
    * Caching the resolution — not the verification — keeps token expiry strictly
    * enforced by the caller. Cache reads/writes are best-effort: a Redis failure
    * falls back to the Postgres upsert + role query.
+   */
+  async resolvePrincipal(claims: KeycloakClaims): Promise<{ user: User; role: AppRole }> {
+    const cacheKey = PrincipalResolverService.cacheKey(claims.sub);
+    try {
+      const cached = await this.redis.client.get(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached) as { user: SerializedUser; role: AppRole };
+        return { user: deserializeUser(parsed.user), role: parsed.role };
+      }
+    } catch {
+      /* cache miss / parse error — fall through to the DB */
+    }
+    const user = await this.upsertUser(claims);
+    const role = await this.roleResolver.resolve(user);
+    try {
+      await this.redis.client.set(
+        cacheKey,
+        JSON.stringify({ user: serializeUser(user), role }),
+        'EX',
+        PRINCIPAL_CACHE_TTL_SEC,
+      );
+    } catch {
+      /* non-fatal — caching is best-effort */
+    }
+    return { user, role };
+  }
+
+  /**
+   * First-sight upsert of the application's User row. Bootstraps the admin
+   * flag when the email matches `ADMIN_BOOTSTRAP_EMAIL`; otherwise leaves the
+   * stored `isAdmin` value untouched on subsequent logins.
+   */
+  private async upsertUser(claims: KeycloakClaims): Promise<User> {
+    const email = (claims.email ?? '').toLowerCase();
+    if (!email) {
+      throw new UnauthorizedException('Keycloak token has no email claim.');
+    }
+    const displayName = claims.name ?? claims.preferred_username ?? email.split('@')[0];
+    const isBootstrapAdmin = email === this.config.get('ADMIN_BOOTSTRAP_EMAIL').toLowerCase();
+
+    return this.prisma.user.upsert({
+      where: { keycloakSub: claims.sub },
+      create: {
+        keycloakSub: claims.sub,
+        email,
+        displayName,
+        locale: Locale.en,
+        isAdmin: isBootstrapAdmin,
+      },
+      update: {
+        email,
+        displayName,
+        ...(isBootstrapAdmin ? { isAdmin: true } : {}),
+      },
+    });
+  }
+}
