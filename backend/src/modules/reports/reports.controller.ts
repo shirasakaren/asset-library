@@ -62,3 +62,53 @@ export class ReportsController {
   @ApiOkResponse()
   list(@Query() query: ListReportsQueryDto) {
     return this.reports.list(query);
+  }
+
+  @Get('admin/reports/:id')
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Report detail with linked asset snapshot.' })
+  @ApiOkResponse({ type: ReportDto })
+  detail(@Param('id') id: string): Promise<ReportDto> {
+    return this.reports.get(id);
+  }
+
+  @Post('admin/reports/:id/start-review')
+  @UseGuards(AdminGuard)
+  @AuditAction({ action: 'report.start_review_request', subjectType: 'Report' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Flip OPEN → REVIEWING.' })
+  startReview(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+  ): Promise<void> {
+    return this.reports.startReview(id, principal.user);
+  }
+
+  @Post('admin/reports/:id/action')
+  @UseGuards(AdminGuard)
+  @AuditAction({ action: 'report.action_request', subjectType: 'Report' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Action a report — archive / delete / force-delete the asset (atomically).',
+  })
+  action(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: ActionReportDto,
+  ): Promise<void> {
+    return this.reports.action(id, principal.user, dto);
+  }
+
+  @Post('admin/reports/:id/dismiss')
+  @UseGuards(AdminGuard)
+  @AuditAction({ action: 'report.dismiss_request', subjectType: 'Report' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Dismiss with admin notes.' })
+  dismiss(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: DismissReportDto,
+  ): Promise<void> {
+    return this.reports.dismiss(id, principal.user, dto);
+  }
+}
