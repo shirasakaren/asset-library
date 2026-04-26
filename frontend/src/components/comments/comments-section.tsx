@@ -153,3 +153,32 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
                 [
                   { value: 'ALL', label: t('filter.all') },
                   { value: 'OPEN', label: t('filter.open') },
+                  { value: 'ACKNOWLEDGED', label: t('filter.acknowledged') },
+                  { value: 'RESOLVED', label: t('filter.resolved') },
+                ] as const
+              ).map((opt) => {
+                const active = issueStatus === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setIssueStatus(opt.value as IssueStatus | 'ALL')}
+                    className={`inline-flex items-center h-7 px-2.5 rounded-full text-[12.5px] font-medium border transition-colors ${
+                      active
+                        ? 'bg-ink text-white border-ink'
+                        : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </TabsContent>
+        ) : null}
+      </Tabs>
+
+      <CommentComposer
+        me={me}
+        onSubmit={(input) => submitMutation.mutateAsync(input)}
+      />
