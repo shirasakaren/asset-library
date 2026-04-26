@@ -70,3 +70,43 @@ export const ModalContent = forwardRef<
         </DialogPrimitive.Close>
       ) : null}
     </DialogPrimitive.Content>
+  </ModalPortal>
+));
+ModalContent.displayName = 'ModalContent';
+
+export function ModalHeader({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn('mb-4 pr-9', className)}>{children}</div>;
+}
+
+export const ModalTitle = forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      'font-display text-h2 font-semibold text-ink tracking-[-0.01em] leading-tight',
+      className,
+    )}
+    {...props}
+  />
+));
+ModalTitle.displayName = 'ModalTitle';
+
+export const ModalDescription = forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description
+    ref={ref}
+    className={cn('text-body-sm text-ink-3 mt-1.5', className)}
+    {...props}
+  />
+));
+ModalDescription.displayName = 'ModalDescription';
+
+export function ModalFooter({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={cn('mt-6 flex items-center justify-end gap-2', className)}>{children}</div>
+  );
+}
