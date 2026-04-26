@@ -65,23 +65,3 @@ export class TagsService {
    * Most-used tags overall, ranked by `TagUsage.usageCount` (denormalised by
    * the search-index batch worker). Returned ordered desc by usage, then by
    * displayName as a tiebreaker. Cached in Redis for 10 minutes — usage
-   * shifts on a slow timescale and admin merge/rename calls
-   * `invalidatePopularCache()` directly.
-   */
-  async popular(limit?: number): Promise<TagDto[]> {
-    const cappedLimit = Math.min(Math.max(limit ?? POPULAR_DEFAULT_LIMIT, 1), POPULAR_MAX_LIMIT);
-    return this.cached.getOrFetch<TagDto[]>(
-      POPULAR_CACHE_KEY(cappedLimit),
-      POPULAR_CACHE_TTL_SECONDS,
-      () => this.computePopular(cappedLimit),
-    );
-  }
-
-  private async computePopular(limit: number): Promise<TagDto[]> {
-    const rows = await this.prisma.tag.findMany({
-      where: { usage: { is: { usageCount: { gt: 0 } } } },
-      include: { usage: true },
-      orderBy: [{ usage: { usageCount: 'desc' } }, { displayName: 'asc' }],
-      take: limit,
-    });
-    return rows.map((t) => ({
