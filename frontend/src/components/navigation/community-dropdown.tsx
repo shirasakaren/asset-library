@@ -75,3 +75,33 @@ export function CommunityDropdown() {
                     <div className="min-w-0">
                       <div className="text-[14px] font-medium text-ink">{it.label}</div>
                       <div className="text-[12.5px] text-ink-3 mt-0.5">{it.hint}</div>
+                    </div>
+                  </a>
+                ) : (
+                  <div
+                    aria-disabled="true"
+                    title="Coming soon"
+                    className="flex items-start gap-3 rounded-[10px] p-2.5 opacity-60 cursor-not-allowed"
+                  >
+                    <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-[8px] bg-surface-muted text-ink-3">
+                      <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-[14px] font-medium text-ink-2">
+                        {it.label}
+                        <span className="ml-2 inline-flex items-center h-4 px-1.5 rounded-full bg-surface-muted text-[10px] uppercase tracking-[0.12em] text-ink-3">
+                          Soon
+                        </span>
+                      </div>
+                      <div className="text-[12.5px] text-ink-3 mt-0.5">{it.hint}</div>
+                    </div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
+}
