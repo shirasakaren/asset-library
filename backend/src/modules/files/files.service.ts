@@ -323,3 +323,140 @@ export class FilesService {
         this.prisma.assetFile.update({
           where: { id: f.id },
           data: { sortOrder: rank.get(f.id) ?? orderedFileIds.length },
+        }),
+      ),
+    );
+  }
+
+  /** Hard-deletes a single uploaded file (S3 object + row). Owner/admin only. */
+  async deleteFile(fileId: string, requester: User): Promise<void> {
+    const file = await this.prisma.assetFile.findUnique({
+      where: { id: fileId },
+      include: { version: { include: { asset: true } } },
+    });
+    if (!file)
+      throw new NotFoundDomainException(
+        ErrorCode.FILE_UPLOAD_NOT_FOUND,
+        `File ${fileId} not found.`,
+      );
+    this.assets.assertCanEdit(file.version.asset, requester);
+    await this.s3.deleteObject('assets', file.s3Key).catch(() => undefined);
+    await this.prisma.assetFile.delete({ where: { id: fileId } });
+    await this.recountVersion(file.versionId);
+  }
+
+  // ─── Thumbnails ─────────────────────────────────────────────────────────
+
+  async initiateThumbnail(
+    dto: InitiateThumbnailDto,
+    requester: User,
+  ): Promise<InitiateThumbnailResponseDto> {
+    const asset = await this.prisma.asset.findUnique({ where: { id: dto.assetId } });
+    if (!asset)
+      throw new NotFoundDomainException(
+        ErrorCode.ASSET_NOT_FOUND,
+        `Asset ${dto.assetId} not found.`,
+      );
+    this.assets.assertCanEdit(asset, requester);
+    const key = `thumbs/${dto.assetId}/${randomUUID()}`;
+    const presigned = await this.s3.presignPut('thumbs', key, dto.contentType);
+    return { putUrl: presigned.url, key, expiresAt: this.expiresAt() };
+  }
+
+  async completeThumbnail(assetId: string, key: string, requester: User): Promise<void> {
+    const asset = await this.prisma.asset.findUnique({ where: { id: assetId } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${assetId} not found.`);
+    this.assets.assertCanEdit(asset, requester);
+    if (!key.startsWith(`thumbs/${assetId}/`)) {
+      throw new ForbiddenDomainException(
+        ErrorCode.AUTH_FORBIDDEN,
+        "Thumbnail key is not in this asset's prefix.",
+      );
+    }
+    await this.prisma.asset.update({ where: { id: assetId }, data: { thumbnailKey: key } });
+    await this.jobs.enqueueThumbProcess({ assetId, thumbnailKey: key });
+  }
+
+  // ─── Editor media (TipTap embeds) ───────────────────────────────────────
+
+  async initiateEditorMedia(
+    dto: InitiateEditorMediaDto,
+    requester: User,
+  ): Promise<InitiateEditorMediaResponseDto> {
+    const key = `editor/${requester.id}/${randomUUID()}`;
+    const [presigned, viewUrl] = await Promise.all([
+      this.s3.presignPut('editor', key, dto.contentType),
+      this.s3.presignLongLivedGet('editor', key, this.editorMediaTtlSec),
+    ]);
+    return { putUrl: presigned.url, key, viewUrl, expiresAt: this.expiresAt() };
+  }
+
+  async refreshEditorMedia(
+    key: string,
+    _requester: User,
+  ): Promise<{ viewUrl: string; expiresAt: string }> {
+    if (!key.startsWith('editor/')) {
+      throw new BadRequestDomainException(
+        ErrorCode.FILE_UPLOAD_INIT_FAILED,
+        'Editor-media key must live under the editor/ prefix.',
+      );
+    }
+    if (key.includes('..')) {
+      throw new ForbiddenDomainException(
+        ErrorCode.AUTH_FORBIDDEN,
+        'Editor-media key contains illegal segments.',
+      );
+    }
+    const viewUrl = await this.s3.presignLongLivedGet('editor', key, this.editorMediaTtlSec);
+    return { viewUrl, expiresAt: this.expiresAt() };
+  }
+
+  // ─── Shared post-completion plumbing ────────────────────────────────────
+
+  private async recountVersion(versionId: string): Promise<void> {
+    const agg = await this.prisma.assetFile.aggregate({
+      where: { versionId },
+      _sum: { bytes: true },
+      _count: { _all: true },
+    });
+    await this.prisma.assetVersion.update({
+      where: { id: versionId },
+      data: {
+        bytesTotal: agg._sum.bytes ?? BigInt(0),
+        fileCount: agg._count._all,
+      },
+    });
+  }
+
+  /**
+   * Schedules the analyzer for a freshly-completed file. Bumps the per-version
+   * fan-in counter in Redis so the analyzer rollup fires when the last
+   * per-file job for the version finishes.
+   */
+  private async enqueueAfterCompletion(file: AssetFile): Promise<void> {
+    await this.redis.client.incr(`analyze:version:${file.versionId}:remaining`);
+    await this.jobs.enqueueAnalyzeFile({ versionId: file.versionId, fileId: file.id });
+  }
+
+  /**
+   * Trims leading slashes and rejects `..` segments so a malicious relative
+   * path can't escape its version's S3 prefix.
+   */
+  private normalizeRelativePath(raw: string): string {
+    const stripped = raw.replace(/^\/+/, '').trim();
+    if (!stripped) {
+      throw new BadRequestDomainException(
+        ErrorCode.FILE_UPLOAD_INIT_FAILED,
+        'relativePath is empty.',
+      );
+    }
+    if (stripped.split('/').includes('..')) {
+      throw new BadRequestDomainException(
+        ErrorCode.FILE_UPLOAD_INIT_FAILED,
+        'relativePath cannot contain "..".',
+      );
+    }
+    return stripped;
+  }
+}
