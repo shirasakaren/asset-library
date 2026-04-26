@@ -42,3 +42,21 @@ export function CategoryEditModal({ category, onOpenChange, onDone }: Props) {
   const submit = async () => {
     if (!slug || !nameEn) {
       toast.error('Slug and English name are required.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const payload = { slug, name: { en: nameEn, id: nameId || nameEn }, isActive };
+      if (editing && category) {
+        await fetcher(`/admin/categories/${category.id}`, { method: 'PATCH', body: payload });
+      } else {
+        await fetcher('/admin/categories', { method: 'POST', body: payload });
+      }
+      toast.success(editing ? 'Category updated' : 'Category created');
+      onDone();
+    } catch (err) {
+      toast.error('Could not save', { description: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
