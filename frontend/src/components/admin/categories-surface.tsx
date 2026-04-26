@@ -105,3 +105,121 @@ export function AdminCategoriesSurface() {
           New category
         </Button>
       </div>
+
+      {list.isPending ? (
+        <AdminListSkeleton rows={6} />
+      ) : list.isError ? (
+        <Card padding="md" className="text-caption text-brand-red">
+          Failed to load categories: {list.error instanceof Error ? list.error.message : String(list.error)}
+        </Card>
+      ) : (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+          <SortableContext
+            items={(list.data ?? []).map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <Card padding="none">
+              <ul className="divide-y divide-line">
+                {(list.data ?? []).map((cat) => (
+                  <SortableRow
+                    key={cat.id}
+                    cat={cat}
+                    onEdit={() => setEditing(cat)}
+                    onToggle={(next) => toggle.mutate({ id: cat.id, isActive: next })}
+                    onDelete={() => remove.mutate(cat.id)}
+                  />
+                ))}
+              </ul>
+            </Card>
+          </SortableContext>
+        </DndContext>
+      )}
+
+      {(editing || creating) ? (
+        <CategoryEditModal
+          category={editing}
+          onOpenChange={(o) => {
+            if (!o) {
+              setEditing(null);
+              setCreating(false);
+            }
+          }}
+          onDone={() => {
+            setEditing(null);
+            setCreating(false);
+            void list.refetch();
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function SortableRow({
+  cat,
+  onEdit,
+  onToggle,
+  onDelete,
+}: {
+  cat: AdminCategory;
+  onEdit: () => void;
+  onToggle: (next: boolean) => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: cat.id,
+  });
+  const canDelete = cat.assetCount === 0;
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        'flex items-center gap-3 px-4 py-3',
+        isDragging && 'bg-surface-muted/50',
+      )}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        aria-label="Drag"
+        className="cursor-grab active:cursor-grabbing text-ink-3 hover:text-ink"
+      >
+        <GripVertical className="h-4 w-4" strokeWidth={2.25} />
+      </button>
+      {cat.iconUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={cat.iconUrl} alt="" className="h-7 w-7 rounded-[6px]" />
+      ) : (
+        <span className="h-7 w-7 rounded-[6px] bg-surface-muted border border-line" />
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-[14px] font-medium text-ink truncate">
+          {cat.name.en || cat.slug} <span className="text-ink-3 ml-1">· {cat.name.id ?? '—'}</span>
+        </p>
+        <p className="text-caption text-ink-3 font-mono truncate">{cat.slug}</p>
+      </div>
+      <Badge variant={cat.assetCount > 0 ? 'info' : 'neutral'}>
+        {cat.assetCount} assets
+      </Badge>
+      <Switch checked={cat.isActive} onCheckedChange={(c) => onToggle(c === true)} />
+      <Button variant="ghost" size="sm" onClick={onEdit} leadingIcon={<Pencil className="h-3.5 w-3.5" strokeWidth={2.25} />}>
+        Edit
+      </Button>
+      <button
+        type="button"
+        disabled={!canDelete}
+        onClick={onDelete}
+        aria-label="Delete"
+        title={canDelete ? 'Delete category' : 'Cannot delete a category with published assets.'}
+        className={cn(
+          'inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors',
+          canDelete ? 'text-ink-3 hover:bg-brand-red-50 hover:text-brand-red' : 'text-ink-4 cursor-not-allowed',
+        )}
+      >
+        <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+      </button>
+    </li>
+  );
+}
