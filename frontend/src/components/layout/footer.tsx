@@ -55,8 +55,3 @@ export async function Footer() {
 
   return (
     <footer className="mt-24 border-t border-line bg-bg">
-      <Container size="2xl">
-        <div className="grid grid-cols-2 md:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))] gap-10 py-14">
-          <div className="col-span-2 md:col-span-1">
-            <Logo size="md" href="/" />
-            <p className="mt-4 max-w-[280px] text-body-sm text-ink-3">{t('tagline')}</p>
