@@ -68,3 +68,20 @@ export class UpdateLicenseDto {
   sortOrder?: number;
 
   @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+export class AdminLicenseDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() name!: string;
+  @ApiProperty() description!: { en?: string; id?: string };
+  @ApiProperty() fullText!: { en?: string; id?: string };
+  @ApiProperty() sortOrder!: number;
+  @ApiProperty() isActive!: boolean;
+  @ApiProperty() assetCount!: number;
+  @ApiProperty() createdAt!: string;
+  @ApiProperty() updatedAt!: string;
+}
