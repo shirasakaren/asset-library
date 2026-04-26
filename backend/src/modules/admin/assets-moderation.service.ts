@@ -165,3 +165,23 @@ export class AdminAssetsModerationService {
   private async deleteS3Prefix(role: 'assets' | 'thumbs', prefix: string): Promise<void> {
     let continuationToken: string | undefined;
     do {
+      const list = await this.s3.client.send(
+        new ListObjectsV2Command({
+          Bucket: this.s3.bucketFor(role),
+          Prefix: prefix,
+          ContinuationToken: continuationToken,
+        }),
+      );
+      const objects = list.Contents ?? [];
+      if (objects.length > 0) {
+        await this.s3.client.send(
+          new DeleteObjectsCommand({
+            Bucket: this.s3.bucketFor(role),
+            Delete: { Objects: objects.map((o) => ({ Key: o.Key! })) },
+          }),
+        );
+      }
+      continuationToken = list.IsTruncated ? list.NextContinuationToken : undefined;
+    } while (continuationToken);
+  }
+}
