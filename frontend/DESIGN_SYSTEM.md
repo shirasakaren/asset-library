@@ -108,3 +108,7 @@ Load from Google Fonts / Vercel:
 A modular, slightly compressed scale. All values use `rem` (1rem = 16px).
 
 | Token         | Size              | Line-height | Tracking | Weight  | Use                               |
+| ------------- | ----------------- | ----------- | -------- | ------- | --------------------------------- |
+| `display-2xl` | 4.5rem (72px)     | 1.02        | -0.03em  | 600     | Marketing hero                    |
+| `display-xl`  | 3.5rem (56px)     | 1.05        | -0.025em | 600     | Sub-hero, section opener          |
+| `display-lg`  | 2.5rem (40px)     | 1.1         | -0.02em  | 600     | Page H1 in product                |
