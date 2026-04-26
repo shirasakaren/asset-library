@@ -110,3 +110,50 @@ export const envSchema = z
     GLTF_CONVERT_TIMEOUT_SEC: z.coerce.number().int().positive().default(600),
     GLTFPACK_KTX2: booleanFromString.default(false),
 
+    // ─────────── Search indexer ─────────────────────────────────────────────
+    SEARCH_INDEX_BATCH_INTERVAL_MS: z.coerce.number().int().positive().default(5000),
+
+    // ─────────── Retention ──────────────────────────────────────────────────
+    ARCHIVE_PURGE_DAYS: z.coerce.number().int().positive().default(30),
+    AUDIT_LOG_RETENTION_DAYS: z.coerce.number().int().positive().default(30),
+    WEBHOOK_LOG_RETENTION_DAYS: z.coerce.number().int().positive().default(30),
+    DOWNLOAD_RAW_RETENTION_DAYS: z.coerce.number().int().positive().default(90),
+
+    // ─────────── Feature flags ──────────────────────────────────────────────
+    FEATURE_SWAGGER_PUBLIC: booleanFromString.default(false),
+    FEATURE_QUEUE_DASHBOARD: booleanFromString.default(true),
+  })
+  .superRefine((env, ctx) => {
+    if (env.NODE_ENV === 'production') {
+      if (!env.PLUGIN_TOKEN_PEPPER || env.PLUGIN_TOKEN_PEPPER.length < 16) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['PLUGIN_TOKEN_PEPPER'],
+          message: 'PLUGIN_TOKEN_PEPPER is required (>= 16 chars) in production.',
+        });
+      }
+      if (!env.SENTRY_DSN) {
+        // not fatal — Sentry just no-ops — but warn loudly via Pino later.
+      }
+    }
+  });
+
+export type Env = z.infer<typeof envSchema>;
+
+/**
+ * Validate process.env and return a fully typed config object.
+ * Throws an aggregate error containing every issue so ops can fix them at once.
+ */
+export function validateEnv(raw: NodeJS.ProcessEnv): Env {
+  const result = envSchema.safeParse(raw);
+  if (!result.success) {
+    const lines = result.error.issues.map(
+      (issue) => `  - ${issue.path.join('.') || '(root)'}: ${issue.message}`,
+    );
+    throw new Error(
+      `Environment validation failed:\n${lines.join('\n')}\n` +
+        'Refer to .env.example for the complete reference.',
+    );
+  }
+  return result.data;
+}
