@@ -82,3 +82,51 @@ export class AdminLicensesService {
       },
       include: { _count: { select: { assets: true } } },
     });
+    await this.licenses.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'license.update',
+      subjectType: 'License',
+      subjectId: id,
+      metadata: { changes: dto },
+    });
+    return this.toDto(row);
+  }
+
+  async remove(id: string, admin: User): Promise<void> {
+    const usage = await this.prisma.asset.count({ where: { licenseId: id } });
+    if (usage > 0) {
+      throw new ConflictDomainException(
+        ErrorCode.LICENSE_IN_USE,
+        `License is referenced by ${usage} asset(s) — reassign first.`,
+      );
+    }
+    const row = await this.prisma.license.findUnique({ where: { id } });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.LICENSE_NOT_FOUND, `License ${id} not found.`);
+    await this.prisma.license.delete({ where: { id } });
+    await this.licenses.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'license.delete',
+      subjectType: 'License',
+      subjectId: id,
+      metadata: { slug: row.slug },
+    });
+  }
+
+  private toDto(row: License & { _count: { assets: number } }): AdminLicenseDto {
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      description: (row.description as { en?: string; id?: string }) ?? {},
+      fullText: (row.fullText as { en?: string; id?: string }) ?? {},
+      sortOrder: row.sortOrder,
+      isActive: row.isActive,
+      assetCount: row._count.assets,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    };
+  }
+}
