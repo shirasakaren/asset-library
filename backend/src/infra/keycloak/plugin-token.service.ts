@@ -79,3 +79,25 @@ export class PluginTokenService {
     const tokenHash = this.hash(token);
     const record = await this.prisma.pluginDeviceToken.findUnique({ where: { tokenHash } });
     if (!record || record.revokedAt || record.expiresAt < new Date()) return null;
+    const updated = await this.prisma.pluginDeviceToken.update({
+      where: { tokenHash },
+      data: { expiresAt: this.newExpiry(), lastUsedAt: new Date() },
+    });
+    return updated.expiresAt;
+  }
+
+  async revokeByDeviceId(userId: string, deviceId: string): Promise<boolean> {
+    const result = await this.prisma.pluginDeviceToken.updateMany({
+      where: { id: deviceId, userId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+    return result.count > 0;
+  }
+
+  listActiveDevices(userId: string): Promise<PluginDeviceToken[]> {
+    return this.prisma.pluginDeviceToken.findMany({
+      where: { userId, revokedAt: null, expiresAt: { gt: new Date() } },
+      orderBy: { lastUsedAt: 'desc' },
+    });
+  }
+}
