@@ -55,3 +55,29 @@ export class ReorderFeaturedSlotsDto {
   @IsString({ each: true })
   orderedIds!: string[];
 }
+
+export class FeaturedBannerInitiateDto {
+  @ApiProperty({ maxLength: 100 }) @IsString() @MaxLength(100) contentType!: string;
+  @ApiProperty() @IsInt() @Min(0) bytes!: number;
+}
+
+export class FeaturedBannerInitiateResponseDto {
+  @ApiProperty() putUrl!: string;
+  @ApiProperty() key!: string;
+  @ApiProperty() expiresAt!: string;
+}
+
+export class AdminFeaturedSlotDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() assetId!: string;
+  @ApiProperty() assetTitle!: string;
+  @ApiProperty() assetSlug!: string;
+  @ApiPropertyOptional() customBannerKey?: string;
+  @ApiPropertyOptional() customBannerUrl?: string;
+  @ApiPropertyOptional() customTitle?: string;
+  @ApiPropertyOptional() customShortDescription?: Record<string, string>;
+  @ApiProperty() sortOrder!: number;
+  @ApiProperty() isActive!: boolean;
+  @ApiProperty() createdAt!: string;
+  @ApiProperty() updatedAt!: string;
+}
