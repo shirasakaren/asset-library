@@ -74,3 +74,32 @@ export class PluginExchangeResponseDto {
   @ApiProperty()
   deviceId!: string;
 
+  @ApiProperty()
+  expiresAt!: string;
+}
+
+export class PluginRefreshDto {
+  @ApiProperty()
+  @IsString()
+  @Length(20, 512)
+  deviceToken!: string;
+}
+
+export class PluginRefreshResponseDto {
+  @ApiProperty()
+  expiresAt!: string;
+}
+
+export class PluginRevokeDto {
+  @ApiProperty()
+  @IsString()
+  deviceId!: string;
+}
+
+export class PluginDeviceDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() deviceLabel!: string;
+  @ApiProperty() createdAt!: string;
+  @ApiPropertyOptional() lastUsedAt?: string;
+  @ApiProperty() expiresAt!: string;
+}
