@@ -86,3 +86,5 @@ export function ReportModal({ open, onOpenChange, assetId, assetTitle }: ReportM
 
         {rateLimited ? (
           <Alert variant="warning" className="mb-4">
+            {t('rateLimited')}
+          </Alert>
