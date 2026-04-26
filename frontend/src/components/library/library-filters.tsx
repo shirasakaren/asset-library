@@ -111,3 +111,49 @@ export function LibraryFilters() {
         />
       </FilterSection>
 
+      <FilterSection title={t('hidden')} activeCount={hidden !== 'false' ? 1 : 0}>
+        <div className="flex flex-col gap-1.5">
+          {HIDDEN.map((h) => (
+            <label
+              key={h.value}
+              className="inline-flex items-center gap-2.5 text-[13.5px] text-ink cursor-pointer"
+            >
+              <input
+                type="radio"
+                name="library-hidden"
+                checked={hidden === h.value}
+                onChange={() => setParams({ hidden: h.value === 'false' ? null : h.value })}
+                className="h-4 w-4 accent-ink"
+              />
+              {h.value === 'true'
+                ? t('hiddenHidden')
+                : h.value === 'all'
+                  ? t('hiddenAll')
+                  : t('hiddenVisible')}
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title={t('sort')} defaultOpen>
+        <select
+          value={sort}
+          onChange={(e) => setParams({ sort: e.target.value === 'savedAt' ? null : e.target.value })}
+          className="w-full h-10 rounded-[10px] border border-line bg-surface text-[13.5px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        >
+          {SORTS.map((s) => (
+            <option key={s} value={s}>
+              {t(
+                s === 'savedAt'
+                  ? 'sortSavedAt'
+                  : s === 'alphabetical'
+                    ? 'sortAlphabetical'
+                    : 'sortRecentlyUpdated',
+              )}
+            </option>
+          ))}
+        </select>
+      </FilterSection>
+    </aside>
+  );
+}
