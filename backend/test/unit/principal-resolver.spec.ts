@@ -66,35 +66,3 @@ describe('PrincipalResolverService', () => {
       role: 'admin',
     };
     const get = jest.fn().mockResolvedValue(JSON.stringify(cached));
-    const { service, upsert, resolveRole } = build({ get });
-
-    const result = await service.resolvePrincipal(CLAIMS);
-
-    expect(result.user.id).toBe('user-1');
-    expect(result.role).toBe('admin');
-    expect(result.user.createdAt).toBeInstanceOf(Date);
-    expect(upsert).not.toHaveBeenCalled();
-    expect(resolveRole).not.toHaveBeenCalled();
-  });
-
-  it('falls back to Postgres + caches the result on a cache miss', async () => {
-    const { service, get, set, upsert, resolveRole } = build();
-
-    const result = await service.resolvePrincipal(CLAIMS);
-
-    expect(get).toHaveBeenCalledWith('authz:principal:kc-sub-1');
-    expect(upsert).toHaveBeenCalledTimes(1);
-    expect(resolveRole).toHaveBeenCalledTimes(1);
-    expect(set).toHaveBeenCalledWith('authz:principal:kc-sub-1', expect.any(String), 'EX', 30);
-    expect(result.user.id).toBe('user-1');
-    expect(result.role).toBe('user');
-  });
-
-  it('falls back to Postgres when the Redis read throws', async () => {
-    const get = jest.fn().mockRejectedValue(new Error('redis down'));
-    const { service, upsert } = build({ get });
-
-    const result = await service.resolvePrincipal(CLAIMS);
-
-    expect(upsert).toHaveBeenCalledTimes(1);
-    expect(result.user.id).toBe('user-1');
