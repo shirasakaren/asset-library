@@ -83,3 +83,35 @@ export class AuditInterceptor implements NestInterceptor {
           void this.audit.record({
             actorId: req.user?.user.id,
             action: config.action,
+            subjectType: config.subjectType,
+            subjectId,
+            metadata,
+          });
+        },
+      }),
+    );
+  }
+
+  private buildMetadata(
+    req: FastifyRequest & { body?: unknown; params?: unknown },
+  ): Record<string, unknown> {
+    const safe = (input: unknown): unknown => {
+      if (!input || typeof input !== 'object') return input;
+      const out: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
+        if (/token|secret|password|pepper|keycloakAccessToken|deviceToken/i.test(k)) {
+          out[k] = '[redacted]';
+        } else {
+          out[k] = v;
+        }
+      }
+      return out;
+    };
+    return {
+      params: safe(req.params),
+      body: safe(req.body),
+      method: req.method,
+      url: req.url,
+    };
+  }
+}
