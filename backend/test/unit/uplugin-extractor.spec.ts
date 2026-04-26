@@ -55,3 +55,11 @@ describe('Unreal extractors', () => {
     );
     const meta = await extractUProject(path);
     expect(meta).toMatchObject({ engineVersion: '5.4', plugins: [{ name: 'X', enabled: true }] });
+  });
+
+  it('returns null on malformed JSON', async () => {
+    const path = join(dir, 'bad.uplugin');
+    await writeFile(path, 'not json at all');
+    expect(await extractUPlugin(path)).toBeNull();
+  });
+});
