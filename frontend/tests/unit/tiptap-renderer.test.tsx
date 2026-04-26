@@ -45,3 +45,50 @@ describe('TipTapRenderer', () => {
         {
           type: 'heading',
           attrs: { level: 2 },
+          content: [{ type: 'text', text: 'Section' }],
+        },
+        {
+          type: 'bulletList',
+          content: [
+            { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }] },
+            { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'b' }] }] },
+          ],
+        },
+        {
+          type: 'codeBlock',
+          content: [{ type: 'text', text: 'console.log(42)' }],
+        },
+      ],
+    };
+    const { container } = render(<TipTapRenderer doc={doc} />);
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Section');
+    expect(container.querySelectorAll('li')).toHaveLength(2);
+    expect(container.querySelector('pre')).toHaveTextContent('console.log(42)');
+  });
+
+  it('refuses to render javascript: links', () => {
+    const doc: TipTapDoc = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: 'click',
+              marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }],
+            },
+          ],
+        },
+      ],
+    };
+    render(<TipTapRenderer doc={doc} />);
+    const link = screen.getByText('click') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('#');
+  });
+
+  it('shows a friendly empty state when doc is null', () => {
+    render(<TipTapRenderer doc={null} />);
+    expect(screen.getByText('No content provided.')).toBeInTheDocument();
+  });
+});
