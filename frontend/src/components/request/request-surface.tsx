@@ -137,3 +137,74 @@ export function RequestSurface({ me, initial }: Props) {
               </div>
               <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">{selected.assetType}</h2>
               <a
+                href={selected.assetLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1 link-inline break-all"
+              >
+                {selected.assetLink}
+                <ExternalLink className="h-3 w-3" strokeWidth={2.25} />
+              </a>
+
+              <dl className="mt-6 grid sm:grid-cols-2 gap-4">
+                <Detail label={t('form.intendedUse')} value={selected.intendedUse} block />
+                {selected.price ? <Detail label={t('form.price')} value={`$${selected.price}`} /> : null}
+                {selected.notes ? <Detail label={t('form.notes')} value={selected.notes} block /> : null}
+              </dl>
+
+              <hr className="my-6 border-line" />
+              <div>
+                <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
+                  {t('adminComment')}
+                </p>
+                {selected.adminComment ? (
+                  <p className="text-body-sm text-ink-2 whitespace-pre-wrap">{selected.adminComment}</p>
+                ) : (
+                  <p className="text-body-sm text-ink-3 italic">{t('noAdminComment')}</p>
+                )}
+              </div>
+            </Card>
+          ) : (
+            <p className="text-body-sm text-ink-3">{t('noSelection')}</p>
+          )}
+        </section>
+      </div>
+
+      {open ? (
+        <RequestForm
+          me={me}
+          open={open}
+          onOpenChange={setOpen}
+          onCreated={() => {
+            void list.refetch();
+            setOpen(false);
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function Header({ onNew }: { onNew: () => void }) {
+  const t = useTranslations('request');
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h1 className="font-display text-display-lg text-ink tracking-[-0.02em]">{t('title')}</h1>
+        <p className="mt-1 text-body text-ink-2">{t('subtitle')}</p>
+      </div>
+      <Button onClick={onNew} leadingIcon={<Plus className="h-4 w-4" strokeWidth={2.25} />}>
+        {t('newRequest')}
+      </Button>
+    </div>
+  );
+}
+
+function Detail({ label, value, block }: { label: string; value: string; block?: boolean }) {
+  return (
+    <div className={cn(block ? 'sm:col-span-2' : '')}>
+      <dt className="text-caption text-ink-3 mb-0.5">{label}</dt>
+      <dd className="text-body-sm text-ink-2 whitespace-pre-wrap">{value}</dd>
+    </div>
+  );
+}
