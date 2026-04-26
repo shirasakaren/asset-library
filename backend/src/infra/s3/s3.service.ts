@@ -147,3 +147,90 @@ export class S3Service {
   async completeMultipart(
     role: S3BucketRole,
     key: string,
+    uploadId: string,
+    parts: Array<{ partNumber: number; etag: string }>,
+  ): Promise<void> {
+    const bucket = this.bucketFor(role);
+    await this.client.send(
+      new CompleteMultipartUploadCommand({
+        Bucket: bucket,
+        Key: key,
+        UploadId: uploadId,
+        MultipartUpload: {
+          Parts: parts
+            .sort((a, b) => a.partNumber - b.partNumber)
+            .map((p) => ({ PartNumber: p.partNumber, ETag: p.etag })),
+        },
+      }),
+    );
+  }
+
+  /**
+   * Lists the parts S3 actually received for an in-flight multipart upload,
+   * returning their authoritative ETags. We complete from these instead of
+   * client-reported ETags because the browser can only read the `ETag`
+   * response header when the bucket CORS exposes it — relying on that made
+   * CompleteMultipartUpload fail with "the specified entity tag may not match".
+   * Handles pagination (>1000 parts) via PartNumberMarker.
+   */
+  async listParts(
+    role: S3BucketRole,
+    key: string,
+    uploadId: string,
+  ): Promise<Array<{ partNumber: number; etag: string }>> {
+    const bucket = this.bucketFor(role);
+    const out: Array<{ partNumber: number; etag: string }> = [];
+    let marker: string | undefined;
+    do {
+      const res = await this.client.send(
+        new ListPartsCommand({
+          Bucket: bucket,
+          Key: key,
+          UploadId: uploadId,
+          PartNumberMarker: marker,
+        }),
+      );
+      for (const p of res.Parts ?? []) {
+        if (typeof p.PartNumber === 'number' && p.ETag) {
+          out.push({ partNumber: p.PartNumber, etag: p.ETag });
+        }
+      }
+      marker = res.IsTruncated ? res.NextPartNumberMarker : undefined;
+    } while (marker);
+    return out.sort((a, b) => a.partNumber - b.partNumber);
+  }
+
+  async abortMultipart(role: S3BucketRole, key: string, uploadId: string): Promise<void> {
+    const bucket = this.bucketFor(role);
+    await this.client
+      .send(new AbortMultipartUploadCommand({ Bucket: bucket, Key: key, UploadId: uploadId }))
+      .catch(() => undefined);
+  }
+
+  async presignLongLivedGet(
+    role: S3BucketRole,
+    key: string,
+    expiresInSec: number,
+  ): Promise<string> {
+    const bucket = this.bucketFor(role);
+    return getSignedUrl(this.client, new GetObjectCommand({ Bucket: bucket, Key: key }), {
+      expiresIn: expiresInSec,
+    });
+  }
+
+  /** Readiness probe — checks every configured bucket. */
+  async ping(): Promise<boolean> {
+    const buckets: S3BucketRole[] = ['assets', 'thumbs', 'editor'];
+    try {
+      await Promise.all(
+        buckets.map((role) =>
+          this.client.send(new HeadBucketCommand({ Bucket: this.bucketFor(role) })),
+        ),
+      );
+      return true;
+    } catch (err) {
+      this.logger.error('S3 ping failed', err as Error);
+      return false;
+    }
+  }
+}
