@@ -66,3 +66,67 @@ export function SearchResults() {
     }
   }, [isIntersecting, query]);
 
+  useEffect(() => {
+    logEvent('search.filter_change', filters);
+  }, [filters]);
+
+  const items = query.data?.pages.flatMap((p) => p.items) ?? [];
+  const total = query.data?.pages[0]?.items.length ?? 0;
+  const q = (filters.q as string) ?? '';
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-baseline gap-3 mb-5">
+        <h1 className="font-display text-h1 text-ink tracking-[-0.015em]">{t('title')}</h1>
+        {!query.isPending ? (
+          <p className="text-body-sm text-ink-3 geist-tnum">
+            {t('resultCount', { count: items.length })}
+            {q ? ` ${t('queryEcho', { query: q })}` : ''}
+          </p>
+        ) : null}
+        {total === 0 ? null : null}
+      </div>
+
+      {query.isPending ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <AssetCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          title={t('emptyTitle')}
+          description={t('emptyBody')}
+          seed="search-empty"
+          primaryAction={<Button onClick={reset}>Clear filters</Button>}
+        />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {items.map((asset, i) => (
+              <AssetCard
+                key={asset.id}
+                variant="grid"
+                asset={asset}
+                isSaved={savedIds.has(asset.id)}
+                priority={i < 4}
+              />
+            ))}
+          </div>
+          <div ref={sentinelRef} className="h-12 mt-6">
+            {query.isFetchingNextPage ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <AssetCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : !query.hasNextPage ? (
+              <p className="text-center text-caption text-ink-3">{t('endOfResults')}</p>
+            ) : null}
+          </div>
+        </>
+      )}
+      <p className="sr-only">{formatNumber(total, locale)} results</p>
+    </div>
+  );
+}
