@@ -58,3 +58,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     try {
       const pong = await this.client.ping();
       return pong === 'PONG';
+    } catch (err) {
+      this.logger.error('Redis ping failed', err as Error);
+      return false;
+    }
+  }
+}
