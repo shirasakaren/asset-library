@@ -171,3 +171,71 @@ export function CommentThread(props: CommentThreadProps) {
                     >
                       <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                       {t('delete')}
+                    </DropdownMenuItem>
+                  ) : null}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </footer>
+          ) : null}
+
+          {replying ? (
+            <div className="mt-3 pl-4 border-l-2 border-line">
+              <CommentComposer
+                me={me}
+                defaultKind="COMMENT"
+                autoFocus
+                onSubmit={async ({ body }) => {
+                  await props.onReply(node.id, body);
+                  setReplying(false);
+                }}
+              />
+            </div>
+          ) : null}
+
+          {node.replies.length > 0 ? (
+            <ul className="mt-3 space-y-2 pl-4 sm:pl-8 border-l border-line/60">
+              {node.replies.map((child) => (
+                <li key={child.id}>
+                  {depth + 1 >= MAX_DEPTH ? (
+                    <p className="text-caption text-ink-3 italic px-2 py-1">{t('maxDepth')}</p>
+                  ) : (
+                    <CommentThread
+                      {...props}
+                      node={child}
+                      depth={depth + 1}
+                    />
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ChangeStatus({
+  current,
+  onChange,
+}: {
+  current: IssueStatus;
+  onChange: (s: IssueStatus) => void;
+}) {
+  const t = useTranslations('comments');
+  return (
+    <select
+      aria-label={t('changeStatus')}
+      value={current}
+      onChange={(e) => onChange(e.target.value as IssueStatus)}
+      className="h-7 rounded-[8px] border border-line bg-surface text-[12px] px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 cursor-pointer"
+    >
+      <option value="OPEN">{t('status.OPEN')}</option>
+      <option value="ACKNOWLEDGED">{t('status.ACKNOWLEDGED')}</option>
+      <option value="RESOLVED">{t('status.RESOLVED')}</option>
+    </select>
+  );
+}
+
+// Silence unused exports
+export { type CommentKind };
