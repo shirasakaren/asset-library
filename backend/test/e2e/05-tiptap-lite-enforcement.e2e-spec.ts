@@ -58,3 +58,11 @@ describe('E2E [15] TipTap lite enforcement on comments', () => {
       type: 'doc',
       content: [{ type: 'image', attrs: { src: 'https://x.test/y.png' } }],
     };
+    const res = await supertest(app.getHttpServer())
+      .post(`/assets/${assetId}/comments`)
+      .set('Authorization', `Bearer ${aliceToken}`)
+      .send({ kind: 'COMMENT', body: offendingBody })
+      .expect(400);
+    expect(res.body.code).toBe(ErrorCode.COMMENT_LITE_TIPTAP_VIOLATION);
+  });
+});
