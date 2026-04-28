@@ -43,3 +43,18 @@ export class PluginTokenGuard implements CanActivate {
     }
     const role = await this.roleResolver.resolve(verified.user);
     (req as FastifyRequest & { user?: AuthenticatedRequestUser }).user = {
+      user: verified.user,
+      role,
+      claims: { sub: verified.user.keycloakSub, email: verified.user.email },
+    } as AuthenticatedRequestUser;
+    return true;
+  }
+}
+
+export function extractPluginToken(req: FastifyRequest): string | null {
+  const raw = req.headers.authorization;
+  if (!raw) return null;
+  const [scheme, value] = raw.split(' ');
+  if (scheme !== PLUGIN_TOKEN_SCHEME || !value) return null;
+  return value.trim();
+}
