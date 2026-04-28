@@ -182,3 +182,67 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
         me={me}
         onSubmit={(input) => submitMutation.mutateAsync(input)}
       />
+
+      {pendingNew > 0 ? (
+        <button
+          type="button"
+          onClick={() => {
+            void query.refetch();
+            setPendingNew(0);
+          }}
+          className="mt-4 w-full inline-flex items-center justify-center h-9 rounded-[10px] bg-brand-blue-50 text-brand-blue font-medium text-[13.5px] hover:bg-brand-blue-50/80 transition-colors"
+        >
+          {t('newCommentsBanner', { count: pendingNew })}
+        </button>
+      ) : null}
+
+      <div className="mt-6">
+        {query.isPending ? (
+          <div className="py-8 text-center text-ink-3 inline-flex items-center justify-center w-full gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+            Loading…
+          </div>
+        ) : visibleItems.length === 0 ? (
+          <EmptyState
+            title={t('emptyTitle')}
+            description={t('emptyBody')}
+            seed="comments-empty"
+            pattern={false}
+          />
+        ) : (
+          <ul className="space-y-3">
+            {visibleItems.map((node) => (
+              <li key={node.id}>
+                <CommentThread
+                  node={node}
+                  me={me}
+                  isAssetOwner={isOwner}
+                  onReply={(parentId, body) =>
+                    submitMutation.mutateAsync({ kind: 'COMMENT', parentId, body })
+                  }
+                  onEdit={async (id, body) => {
+                    await editMutation.mutateAsync({ id, body });
+                  }}
+                  onDelete={async (id) => {
+                    await deleteMutation.mutateAsync(id);
+                  }}
+                  onStatus={async (id, status) => {
+                    await statusMutation.mutateAsync({ id, status });
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {query.hasNextPage ? (
+          <div className="mt-6 flex justify-center">
+            <Button variant="ghost" onClick={() => query.fetchNextPage()} loading={query.isFetchingNextPage}>
+              {t('loadOlder')}
+            </Button>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
