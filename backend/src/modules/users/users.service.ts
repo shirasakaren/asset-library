@@ -51,3 +51,33 @@ export class UsersService {
       where,
       take: Math.min(limit, 20),
       orderBy: [{ isAdmin: 'desc' }, { displayName: 'asc' }],
+      select: { id: true, email: true, displayName: true, isAdmin: true },
+    });
+    return rows;
+  }
+
+  /**
+   * Public profile shape. Email is exposed only when the requester is the
+   * user themselves or an admin.
+   */
+  async getPublicProfile(id: string, requester: User | null): Promise<UserPublicProfileDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { _count: { select: { assetsOwned: { where: { status: 'PUBLISHED' } } } } },
+    });
+    if (!user || user.deletedAt) {
+      throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${id} not found.`);
+    }
+    const dto: UserPublicProfileDto = {
+      id: user.id,
+      displayName: user.displayName,
+      avatar: resolveAvatar(user.id, user.displayName, user.email),
+      joinedAt: user.createdAt.toISOString(),
+      publishedAssetCount: user._count.assetsOwned,
+    };
+    if (requester && (requester.id === user.id || requester.isAdmin)) {
+      dto.email = user.email;
+    }
+    return dto;
+  }
+}
