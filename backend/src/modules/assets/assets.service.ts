@@ -233,3 +233,247 @@ export class AssetsService {
           await tx.assetTranslation.upsert({
             where: { assetId_locale: { assetId: id, locale: translation.locale } },
             create: {
+              assetId: id,
+              locale: translation.locale,
+              shortDescription: translation.shortDescription,
+              longDescription,
+            },
+            update: {
+              shortDescription: translation.shortDescription,
+              longDescription,
+            },
+          });
+        }
+      }
+      if (dto.tags) {
+        const tagRows = await this.tags.upsertMany(dto.tags, tx);
+        await tx.assetTag.deleteMany({ where: { assetId: id } });
+        await tx.assetTag.createMany({
+          data: tagRows.map((t) => ({ assetId: id, tagId: t.id })),
+        });
+      }
+      if (dto.semver) {
+        // The wizard sends semver alongside other asset fields, but it
+        // belongs to the latest AssetVersion row. Update there.
+        const latest = await tx.assetVersion.findFirst({
+          where: { assetId: id },
+          orderBy: [{ isLatest: 'desc' }, { createdAt: 'desc' }],
+        });
+        if (latest && latest.semver !== dto.semver) {
+          if (latest.publishedAt) {
+            throw new BadRequestDomainException(
+              ErrorCode.ASSET_PUBLISH_BLOCKED,
+              'Semver is locked once a version is published.',
+            );
+          }
+          if (!/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(dto.semver)) {
+            throw new BadRequestDomainException(
+              ErrorCode.ASSET_PUBLISH_BLOCKED,
+              `"${dto.semver}" is not a valid semver string.`,
+            );
+          }
+          const dupe = await tx.assetVersion.findUnique({
+            where: { assetId_semver: { assetId: id, semver: dto.semver } },
+          });
+          if (dupe && dupe.id !== latest.id) {
+            throw new ConflictDomainException(
+              ErrorCode.VERSION_DUPLICATE,
+              `Version ${dto.semver} already exists for this asset.`,
+            );
+          }
+          await tx.assetVersion.update({
+            where: { id: latest.id },
+            data: {
+              semver: dto.semver,
+              s3Prefix: `assets/${id}/v${dto.semver}/`,
+            },
+          });
+        }
+      }
+      if (Object.keys(data).length) {
+        await tx.asset.update({ where: { id }, data });
+      }
+    });
+
+    await this.categories.invalidateCache();
+    if (asset.status === 'PUBLISHED') {
+      await this.jobs.enqueueSearchIndex({ reason: 'asset.update', assetId: id });
+    }
+  }
+
+  // ─── Publish / Archive / Restore / Delete ─────────────────────────────────
+
+  async publish(
+    id: string,
+    requester: User,
+    _confirmInfectedWarning: boolean,
+  ): Promise<PublishViolation[]> {
+    const asset = await this.prisma.asset.findUnique({ where: { id } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${id} not found.`);
+    this.assertCanEdit(asset, requester);
+
+    const violations = await this.publishChecklist.evaluate(asset);
+    const hardErrors = violations.filter((v) => v.severity === 'error');
+
+    if (hardErrors.length > 0) {
+      throw new BadRequestDomainException(
+        ErrorCode.ASSET_PUBLISH_BLOCKED,
+        'Publish blocked by checklist failures.',
+        hardErrors.map((v) => ({ path: v.field, code: v.code, message: v.message })),
+      );
+    }
+
+    const latest = await this.prisma.assetVersion.findFirst({
+      where: { assetId: id },
+      orderBy: { createdAt: 'desc' },
+    });
+    await this.prisma.$transaction([
+      this.prisma.asset.update({
+        where: { id },
+        data: { status: 'PUBLISHED', publishedAt: new Date() },
+      }),
+      ...(latest && !latest.publishedAt
+        ? [
+            this.prisma.assetVersion.update({
+              where: { id: latest.id },
+              data: { publishedAt: new Date() },
+            }),
+          ]
+        : []),
+    ]);
+
+    await this.categories.invalidateCache();
+    await this.jobs.enqueueSearchIndex({ reason: 'asset.publish', assetId: id });
+    return [];
+  }
+
+  async archive(id: string, requester: User): Promise<void> {
+    await this.transitionStatus(id, requester, 'ARCHIVED', 'asset.archive');
+  }
+
+  async restore(id: string, requester: User): Promise<void> {
+    const asset = await this.prisma.asset.findUnique({ where: { id } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${id} not found.`);
+    this.assertCanEdit(asset, requester);
+    if (asset.status !== 'ARCHIVED' && asset.status !== 'DELETED') {
+      throw new BadRequestDomainException(
+        ErrorCode.ASSET_ARCHIVE_BLOCKED,
+        'Asset is not archived.',
+      );
+    }
+    await this.prisma.asset.update({
+      where: { id },
+      data: { status: 'PUBLISHED', archivedAt: null, publishedAt: asset.publishedAt ?? new Date() },
+    });
+    await this.categories.invalidateCache();
+    await this.jobs.enqueueSearchIndex({ reason: 'asset.restore', assetId: id });
+  }
+
+  async softDelete(id: string, requester: User): Promise<void> {
+    await this.transitionStatus(id, requester, 'DELETED', 'asset.delete');
+  }
+
+  private async transitionStatus(
+    id: string,
+    requester: User,
+    next: AssetStatus,
+    reason: 'asset.archive' | 'asset.delete',
+  ): Promise<void> {
+    const asset = await this.prisma.asset.findUnique({ where: { id } });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${id} not found.`);
+    this.assertCanEdit(asset, requester);
+    await this.prisma.asset.update({
+      where: { id },
+      data: { status: next, archivedAt: new Date() },
+    });
+    await this.categories.invalidateCache();
+    await this.jobs.enqueueSearchIndex({ reason, assetId: id });
+  }
+
+  // ─── List ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Builds the Prisma WHERE for the assets list given filter args. Used by
+   * both `/assets` and (with q stripped) the hydrate-after-Meilisearch path.
+   */
+  buildWhere(filters: {
+    engine?: AssetEngine;
+    categoryIds?: string[];
+    tagSlugs?: string[];
+    fileKinds?: string[];
+    licenseSlug?: string;
+    renderPipelines?: string[];
+    targets?: string[];
+    ownerId?: string;
+    statuses?: AssetStatus[];
+  }): Prisma.AssetWhereInput {
+    const where: Prisma.AssetWhereInput = {
+      status: { in: filters.statuses ?? ['PUBLISHED'] },
+    };
+    if (filters.engine) where.engine = filters.engine;
+    if (filters.categoryIds?.length) where.categoryId = { in: filters.categoryIds };
+    if (filters.ownerId) where.ownerId = filters.ownerId;
+    if (filters.licenseSlug) where.license = { slug: filters.licenseSlug };
+    if (filters.tagSlugs?.length) {
+      where.tags = { some: { tag: { slug: { in: filters.tagSlugs } } } };
+    }
+    if (filters.fileKinds?.length) {
+      where.versions = {
+        some: { files: { some: { kind: { in: filters.fileKinds as never[] } } } },
+      };
+    }
+    if (filters.renderPipelines?.length || filters.targets?.length) {
+      const compatWhere: Prisma.EngineCompatibilityWhereInput = {};
+      if (filters.renderPipelines?.length)
+        compatWhere.renderPipelines = { hasSome: filters.renderPipelines };
+      if (filters.targets?.length) compatWhere.targets = { hasSome: filters.targets };
+      where.versions = where.versions ?? {};
+      (where.versions as Prisma.AssetVersionListRelationFilter).some = {
+        ...((where.versions as Prisma.AssetVersionListRelationFilter).some ?? {}),
+        compatibility: { some: compatWhere },
+      };
+    }
+    return where;
+  }
+
+  // ─── Recommended ──────────────────────────────────────────────────────────
+
+  async recommended(assetId: string, locale: Locale) {
+    const asset = await this.prisma.asset.findUnique({
+      where: { id: assetId },
+      include: { tags: true },
+    });
+    if (!asset)
+      throw new NotFoundDomainException(ErrorCode.ASSET_NOT_FOUND, `Asset ${assetId} not found.`);
+
+    const tagIds = asset.tags.map((t) => t.tagId);
+    const candidates = await this.prisma.asset.findMany({
+      where: {
+        id: { not: assetId },
+        status: 'PUBLISHED',
+        engine: asset.engine,
+        OR: [
+          { categoryId: asset.categoryId },
+          ...(tagIds.length ? [{ tags: { some: { tagId: { in: tagIds } } } }] : []),
+        ],
+      },
+      include: { ...FULL_INCLUDE, versions: false },
+      orderBy: [{ downloads: { _count: 'desc' } }, { publishedAt: 'desc' }],
+      take: 6,
+    });
+    // toSummaryMany batches every candidate's thumbnail presign into a single
+    // round-trip; was N×presignGet via Promise.all(candidates.map(toSummary)).
+    return this.mapper.toSummaryMany(
+      candidates.map(
+        (c) =>
+          ({ ...c, versions: [] }) as unknown as Parameters<
+            AssetMapperService['toSummaryMany']
+          >[0][number],
+      ),
+      locale,
+    );
+  }
+}
