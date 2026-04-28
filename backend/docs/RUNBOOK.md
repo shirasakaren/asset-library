@@ -107,24 +107,3 @@ chmod 600 /srv/mgm-asset-library/.env
 
 Docker Compose v2 also supports the `secrets:` block — fine if your stack
 runs in Swarm or similar. Avoid plaintext env files in source control.
-
-## 4. Migrations
-
-The database schema ships as **one consolidated migration script** at
-`backend/prisma/migrations/0001_init/migration.sql`, managed through
-`backend/prisma/schema.prisma` as the single source of truth.
-
-The API image applies it automatically on boot (`prisma migrate deploy`
-is baked into the container CMD), so deploys are migration-safe by default:
-
-```bash
-# Manually, inside the freshly built image, before swapping traffic:
-docker run --rm --env-file backend/.env $IMAGE pnpm prisma migrate deploy
-```
-
-`prisma migrate deploy` is what the `production.yml` / `staging.yml`
-workflows' images run on start. Migrations are forward-only — see Rollback
-for emergency reversal.
-
-## 5. Rollback
-
