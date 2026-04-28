@@ -88,3 +88,56 @@ export function ReportModal({ open, onOpenChange, assetId, assetTitle }: ReportM
           <Alert variant="warning" className="mb-4">
             {t('rateLimited')}
           </Alert>
+        ) : null}
+
+        <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+          <Field
+            label={t('categoryLabel')}
+            error={form.formState.errors.category?.message as string | undefined}
+          >
+            <RadioGroup
+              value={form.watch('category')}
+              onValueChange={(v) => form.setValue('category', v as FormValues['category'])}
+              className="grid sm:grid-cols-2 gap-2"
+            >
+              {(
+                [
+                  { value: 'MALICIOUS_FILE', label: t('categoryMalicious') },
+                  { value: 'BROKEN_ASSET', label: t('categoryBroken') },
+                ] as const
+              ).map((opt) => (
+                <label
+                  key={opt.value}
+                  className="flex items-center gap-2.5 p-3 rounded-[12px] border border-line cursor-pointer hover:border-ink/40 transition-colors duration-120 has-[:checked]:border-ink has-[:checked]:bg-surface-muted/60"
+                >
+                  <Radio value={opt.value} />
+                  <span className="text-[14px] font-medium text-ink">{opt.label}</span>
+                </label>
+              ))}
+            </RadioGroup>
+          </Field>
+          <Field
+            label={t('notesLabel')}
+            error={form.formState.errors.notes?.message as string | undefined}
+          >
+            <Textarea
+              rows={5}
+              placeholder={t('notesPlaceholder')}
+              invalid={!!form.formState.errors.notes}
+              {...form.register('notes')}
+            />
+          </Field>
+
+          <ModalFooter>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+              {tCommon('cancel')}
+            </Button>
+            <Button type="submit" loading={form.formState.isSubmitting}>
+              {t('submit')}
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
+  );
+}
