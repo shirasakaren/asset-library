@@ -40,3 +40,29 @@ const EXT_TO_KIND: Record<string, AssetFileKind> = {
   shader: AssetFileKind.SHADER,
   shadergraph: AssetFileKind.SHADER,
   usf: AssetFileKind.SHADER,
+  hlsl: AssetFileKind.SHADER,
+  glsl: AssetFileKind.SHADER,
+  cs: AssetFileKind.SCRIPT_CS,
+  cpp: AssetFileKind.SCRIPT_CPP,
+  cc: AssetFileKind.SCRIPT_CPP,
+  h: AssetFileKind.SCRIPT_CPP,
+  hpp: AssetFileKind.SCRIPT_CPP,
+  py: AssetFileKind.SCRIPT_PY,
+  txt: AssetFileKind.DOCUMENT,
+  md: AssetFileKind.DOCUMENT,
+  pdf: AssetFileKind.DOCUMENT,
+  rtf: AssetFileKind.DOCUMENT,
+  zip: AssetFileKind.ARCHIVE,
+  '7z': AssetFileKind.ARCHIVE,
+  rar: AssetFileKind.ARCHIVE,
+  tar: AssetFileKind.ARCHIVE,
+  gz: AssetFileKind.ARCHIVE,
+  tgz: AssetFileKind.ARCHIVE,
+};
+
+export function detectKindByExtension(relativePath: string): AssetFileKind {
+  const dot = relativePath.lastIndexOf('.');
+  if (dot < 0) return AssetFileKind.OTHER;
+  const ext = relativePath.slice(dot + 1).toLowerCase();
+  return EXT_TO_KIND[ext] ?? AssetFileKind.OTHER;
+}
