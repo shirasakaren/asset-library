@@ -427,3 +427,117 @@ function PreviewMediaCard({
           onClick={onSettings}
           className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-[6px] text-ink-2 hover:text-ink shadow-1"
         >
+          <Settings2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+        </button>
+        <button
+          type="button"
+          aria-label="Remove"
+          onClick={onRemove}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-[6px] text-ink-2 hover:text-brand-red shadow-1"
+        >
+          <X className="h-3.5 w-3.5" strokeWidth={2.25} />
+        </button>
+      </div>
+      <span className="absolute bottom-1.5 left-1.5 z-20 text-[10px] uppercase tracking-[0.1em] text-white bg-ink/65 px-1.5 py-0.5 rounded-[4px]">
+        {item.kind}
+      </span>
+    </li>
+  );
+}
+
+function MediaSettingsModal({
+  item,
+  onClose,
+  onSave,
+}: {
+  item: PreviewMediaItem;
+  onClose: () => void;
+  onSave: (patch: Partial<PreviewMediaItem>) => void;
+}) {
+  const [visibility, setVisibility] = useState<PreviewMediaVisibility>(item.visibility ?? 'visible');
+  const [warning, setWarning] = useState(item.warning ?? '');
+
+  const options: { value: PreviewMediaVisibility; label: string; desc: string; icon: typeof Eye }[] = [
+    { value: 'visible', label: 'Visible', desc: 'Shown normally to everyone.', icon: Eye },
+    { value: 'blur', label: 'Blur + warning', desc: 'Blurred with a label; viewers click to reveal.', icon: EyeOff },
+    { value: 'hidden', label: 'Hidden', desc: 'Not shown in the gallery at all.', icon: EyeOff },
+  ];
+
+  return (
+    <Modal open onOpenChange={(o) => !o && onClose()}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>Media display settings</ModalTitle>
+          <ModalDescription>Control how this item appears on the asset page.</ModalDescription>
+        </ModalHeader>
+        <div className="space-y-2">
+          {options.map((opt) => {
+            const Icon = opt.icon;
+            const active = visibility === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setVisibility(opt.value)}
+                className={cn(
+                  'w-full flex items-start gap-3 p-3 rounded-[12px] border text-left transition-colors',
+                  active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40',
+                )}
+              >
+                <Icon className="h-4 w-4 mt-0.5 text-ink-2 shrink-0" strokeWidth={2.25} />
+                <span className="min-w-0">
+                  <span className="block text-[14px] font-medium text-ink">{opt.label}</span>
+                  <span className="block text-caption text-ink-3">{opt.desc}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {visibility === 'blur' ? (
+          <div className="mt-3">
+            <label className="block text-caption font-medium text-ink-2 mb-1">Warning label</label>
+            <Input
+              value={warning}
+              onChange={(e) => setWarning(e.target.value)}
+              maxLength={120}
+              placeholder="e.g. NSFW — contains nudity"
+            />
+          </div>
+        ) : null}
+        <ModalFooter>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() =>
+              onSave({ visibility, warning: visibility === 'blur' ? warning.trim() || undefined : undefined })
+            }
+          >
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+function AddButton({
+  icon: Icon,
+  onClick,
+  label,
+}: {
+  icon: typeof ImagePlus;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <Button variant="secondary" size="sm" onClick={onClick} leadingIcon={<Icon className="h-4 w-4" strokeWidth={2.25} />}>
+      {label}
+    </Button>
+  );
+}
+
+function cryptoRandomId() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return Math.random().toString(36).slice(2);
+}
