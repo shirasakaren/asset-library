@@ -58,3 +58,12 @@ describe('AssetCard (feature)', () => {
     expect(screen.getByText('Demo asset')).toBeInTheDocument();
     expect(screen.getByText('Tools')).toBeInTheDocument();
   });
+});
+
+describe('AssetCard (row)', () => {
+  it('renders title and short description', () => {
+    render(<AssetCard variant="row" asset={asset} />);
+    expect(screen.getByText('Demo asset')).toBeInTheDocument();
+    expect(screen.getByText(/A short description/)).toBeInTheDocument();
+  });
+});
