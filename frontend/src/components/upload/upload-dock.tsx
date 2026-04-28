@@ -147,3 +147,70 @@ export function UploadDock() {
                       aria-label="Dismiss"
                     >
                       <X className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    </button>
+                  </div>
+                ) : ACTIVE.has(t.status) ? (
+                  <div className="mt-1.5 pl-9">
+                    <button
+                      type="button"
+                      onClick={() => cancel(t.id)}
+                      className="text-caption text-ink-3 hover:text-brand-red"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function CircularProgress({ pct, active }: { pct: number; active: boolean }) {
+  const r = 12;
+  const c = 2 * Math.PI * r;
+  const off = c - (pct / 100) * c;
+  return (
+    <span className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center">
+      <svg className="h-9 w-9 -rotate-90" viewBox="0 0 32 32">
+        <circle
+          cx="16"
+          cy="16"
+          r={r}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          className="text-line"
+        />
+        <circle
+          cx="16"
+          cy="16"
+          r={r}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeDasharray={c}
+          strokeDashoffset={off}
+          strokeLinecap="round"
+          className={
+            active
+              ? 'text-brand-blue transition-[stroke-dashoffset] duration-200'
+              : 'text-brand-green'
+          }
+        />
+      </svg>
+      <span className="geist-tnum absolute text-[9px] font-semibold text-ink">{pct}</span>
+    </span>
+  );
+}
+
+function StatusGlyph({ status }: { status: UploadTask['status'] }) {
+  if (status === 'uploading' || status === 'queued')
+    return <Loader2 className="h-4 w-4 shrink-0 animate-spin text-brand-blue" strokeWidth={2.25} />;
+  if (status === 'failed')
+    return <AlertCircle className="h-4 w-4 shrink-0 text-brand-red" strokeWidth={2.25} />;
+  return <Check className="h-4 w-4 shrink-0 text-brand-green" strokeWidth={2.5} />;
+}
