@@ -84,3 +84,57 @@ export class GifsService {
             preview: preview.url,
             width: full.dims?.[0] ?? 0,
             height: full.dims?.[1] ?? 0,
+            title: r.content_description ?? '',
+          },
+        ];
+      });
+    } catch (err) {
+      this.logger.warn(`Tenor search failed: ${(err as Error).message}`);
+      return [];
+    }
+  }
+
+  private async searchGiphy(query: string, limit: number): Promise<GifResult[]> {
+    const key = this.config.get('GIPHY_API_KEY');
+    const base = query
+      ? 'https://api.giphy.com/v1/gifs/search'
+      : 'https://api.giphy.com/v1/gifs/trending';
+    const url = new URL(base);
+    url.searchParams.set('api_key', key);
+    if (query) url.searchParams.set('q', query);
+    url.searchParams.set('limit', String(limit));
+    url.searchParams.set('rating', 'pg-13');
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error(`Giphy ${res.status}`);
+      const json = (await res.json()) as {
+        data?: Array<{
+          id: string;
+          title?: string;
+          images?: {
+            original?: { url: string; width: string; height: string };
+            fixed_width?: { url: string; width: string; height: string };
+          };
+        }>;
+      };
+      return (json.data ?? []).flatMap((g) => {
+        const full = g.images?.original;
+        const preview = g.images?.fixed_width ?? full;
+        if (!full || !preview) return [];
+        return [
+          {
+            id: g.id,
+            url: full.url,
+            preview: preview.url,
+            width: Number(full.width) || 0,
+            height: Number(full.height) || 0,
+            title: g.title ?? '',
+          },
+        ];
+      });
+    } catch (err) {
+      this.logger.warn(`Giphy search failed: ${(err as Error).message}`);
+      return [];
+    }
+  }
+}
