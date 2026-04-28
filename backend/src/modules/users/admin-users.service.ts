@@ -78,3 +78,57 @@ export class AdminUsersService {
     if (!target)
       throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${id} not found.`);
     if (target.isAdmin) return;
+    await this.prisma.user.update({ where: { id }, data: { isAdmin: true } });
+    await this.invalidatePrincipal(target.keycloakSub);
+    await this.producer.enqueueNotify({
+      recipientUserId: id,
+      type: NotificationType.ADMIN_PROMOTED,
+      payload: { promotedBy: { id: admin.id, displayName: admin.displayName, email: admin.email } },
+      actor: { id: admin.id, displayName: admin.displayName, email: admin.email },
+    });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'user.promote',
+      subjectType: 'User',
+      subjectId: id,
+      metadata: { email: target.email },
+    });
+  }
+
+  async demote(id: string, admin: User): Promise<void> {
+    const target = await this.prisma.user.findUnique({ where: { id } });
+    if (!target)
+      throw new NotFoundDomainException(ErrorCode.USER_NOT_FOUND, `User ${id} not found.`);
+    if (!target.isAdmin) return;
+    if (target.email.toLowerCase() === this.config.get('ADMIN_BOOTSTRAP_EMAIL').toLowerCase()) {
+      throw new ConflictDomainException(
+        ErrorCode.ADMIN_CANNOT_DEMOTE_BOOTSTRAP,
+        'Cannot demote the bootstrap admin.',
+      );
+    }
+    const remainingAdmins = await this.prisma.user.count({
+      where: { isAdmin: true, deletedAt: null, NOT: { id } },
+    });
+    if (remainingAdmins === 0) {
+      throw new ConflictDomainException(
+        ErrorCode.ADMIN_CANNOT_REMOVE_LAST_ADMIN,
+        'Refusing to demote — this would leave the system with zero admins.',
+      );
+    }
+    await this.prisma.user.update({ where: { id }, data: { isAdmin: false } });
+    await this.invalidatePrincipal(target.keycloakSub);
+    await this.producer.enqueueNotify({
+      recipientUserId: id,
+      type: NotificationType.ADMIN_DEMOTED,
+      payload: { demotedBy: { id: admin.id, displayName: admin.displayName, email: admin.email } },
+      actor: { id: admin.id, displayName: admin.displayName, email: admin.email },
+    });
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'user.demote',
+      subjectType: 'User',
+      subjectId: id,
+      metadata: { email: target.email },
+    });
+  }
+}
