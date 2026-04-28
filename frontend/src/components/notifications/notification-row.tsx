@@ -43,3 +43,39 @@ export function NotificationRow({ item, onActivate, dense }: Props) {
         <span aria-label="Unread" className="mt-2 inline-block h-2 w-2 rounded-full bg-brand-blue shrink-0" />
       ) : null}
     </NextLink>
+  );
+}
+
+function renderMessage(
+  type: string,
+  payload: Record<string, unknown>,
+  t: (key: string, vars?: Record<string, unknown>) => string,
+): React.ReactNode {
+  const known: NotificationType[] = [
+    'COMMENT_CREATED',
+    'COMMENT_REPLY',
+    'ISSUE_CREATED',
+    'ISSUE_STATUS_CHANGED',
+    'REQUEST_STATUS_CHANGED',
+    'REQUEST_CREATED',
+    'REPORT_RECEIVED_FOR_YOUR_ASSET',
+    'REPORT_CREATED',
+    'FEATURED_FEATURED',
+    'VERSION_PUBLISHED',
+    'ANALYZER_FAILED',
+    'ADMIN_PROMOTED',
+    'ADMIN_DEMOTED',
+  ];
+  if (!known.includes(type as NotificationType)) return type;
+  return t(type, {
+    author: String(payload.authorDisplayName ?? ''),
+    asset: String(payload.assetTitle ?? ''),
+    requester: String(payload.requesterName ?? ''),
+    status: String(payload.status ?? ''),
+    category: String(payload.category ?? ''),
+    semver: String(payload.semver ?? ''),
+    version: String(payload.versionLabel ?? payload.semver ?? ''),
+    owner: String(payload.ownerName ?? ''),
+    by: String(payload.byAdminName ?? ''),
+  });
+}
