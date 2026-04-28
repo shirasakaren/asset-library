@@ -227,3 +227,69 @@ export function SearchBar({ className }: SearchBarProps) {
                 })}
 
                 {(assetsQ.data?.hits?.length ?? 0) > 0 ? (
+                  <div className="px-3 pt-2.5 pb-1 border-t border-line">
+                    <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">
+                      {tNav('assets')}
+                    </p>
+                  </div>
+                ) : null}
+                {assetsQ.data?.hits?.map((hit, i) => {
+                  const rowIndex = (tagsQ.data?.length ?? 0) + i;
+                  const active = rows[activeIndex]?.id === `asset-${hit.id}`;
+                  return (
+                    <NextLink
+                      key={hit.id}
+                      href={`/assets/${hit.slug}`}
+                      id={`asset-${hit.id}`}
+                      role="option"
+                      aria-selected={active}
+                      onMouseEnter={() => setActiveIndex(rowIndex)}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        'flex items-center gap-3 px-3 py-2 hover:bg-surface-muted/60 transition-colors duration-120',
+                        active && 'bg-surface-muted/60',
+                      )}
+                    >
+                      <div className="relative h-10 w-[60px] shrink-0 rounded-[8px] overflow-hidden bg-surface-muted border border-line">
+                        {hit.thumbnailUrl ? (
+                          <Image
+                            src={hit.thumbnailUrl}
+                            alt=""
+                            fill
+                            sizes="60px"
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : null}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[13.5px] font-medium text-ink truncate">{hit.title}</p>
+                        <p className="text-caption text-ink-3 truncate">{hit.categoryName}</p>
+                      </div>
+                    </NextLink>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  id="see-all"
+                  role="option"
+                  aria-selected={rows[activeIndex]?.id === 'see-all'}
+                  onMouseEnter={() => setActiveIndex(rows.length - 1)}
+                  onClick={() => submitRaw(debouncedQuery)}
+                  className={cn(
+                    'flex items-center justify-between gap-2 w-full px-3 h-10 text-[13px] font-medium text-brand-blue hover:bg-brand-blue-50/60 border-t border-line text-left transition-colors duration-120',
+                    rows[activeIndex]?.id === 'see-all' && 'bg-brand-blue-50/60',
+                  )}
+                >
+                  <span>{tNav('seeAllFor', { query: debouncedQuery })}</span>
+                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.25} />
+                </button>
+              </>
+            )}
+          </div>
+        ) : null}
+      </form>
+    </div>
+  );
+}
