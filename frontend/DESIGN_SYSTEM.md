@@ -112,3 +112,47 @@ A modular, slightly compressed scale. All values use `rem` (1rem = 16px).
 | `display-2xl` | 4.5rem (72px)     | 1.02        | -0.03em  | 600     | Marketing hero                    |
 | `display-xl`  | 3.5rem (56px)     | 1.05        | -0.025em | 600     | Sub-hero, section opener          |
 | `display-lg`  | 2.5rem (40px)     | 1.1         | -0.02em  | 600     | Page H1 in product                |
+| `h1`          | 2rem (32px)       | 1.15        | -0.015em | 600     | Section heading                   |
+| `h2`          | 1.5rem (24px)     | 1.25        | -0.01em  | 600     | Subsection                        |
+| `h3`          | 1.25rem (20px)    | 1.3         | -0.005em | 600     | Card titles, modal titles         |
+| `h4`          | 1.0625rem (17px)  | 1.4         | 0        | 600     | Inline headings                   |
+| `body-lg`     | 1.125rem (18px)   | 1.6         | 0        | 400     | Marketing body, intros            |
+| `body`        | 1rem (16px)       | 1.6         | 0        | 400     | Default product body              |
+| `body-sm`     | 0.9375rem (15px)  | 1.55        | 0        | 400     | Dense UI                          |
+| `caption`     | 0.8125rem (13px)  | 1.5         | 0.005em  | 500     | Labels, helper text, table heads  |
+| `mono`        | 0.875rem (14px)   | 1.5         | 0        | 400     | Code, IDs, technical numerals     |
+| `eyebrow`     | 0.75rem (12px)    | 1.4         | 0.12em   | 600 UC  | Section eyebrows, all-caps tags   |
+
+`UC` = uppercase. Use eyebrows sparingly — at most one per section.
+
+### 3.3 Hierarchy rules
+
+* **One display per page.** Only the hero (or top of the route) uses `display-xl` or `display-2xl`. Inner sections start at `h1` or smaller.
+* **Never two headings adjacent without a body line, eyebrow, or rule between them.**
+* **Headings use `--ink`. Body uses `--ink` or `--ink-2`. Helper uses `--ink-3`. That's it.**
+* **Color in headings is a deliberate one-word highlight**, not a whole sentence. Example: *"Build the ~~quiet~~ **<span style="color:#f94141">loud</span>** internet."* — and only on hero or major moments.
+* **Long-form paragraphs cap at 68 characters per line** (~`max-w-prose` / `max-w-[640px]`).
+* **Numbers in dashboards** use `font-feature-settings: "tnum"` so columns align.
+
+### 3.4 Responsive type
+
+Headlines step down on small screens. Use `clamp()` to avoid awkward intermediate sizes:
+
+```css
+.display-2xl { font-size: clamp(2.5rem, 6vw + 1rem, 4.5rem); }
+.display-xl  { font-size: clamp(2rem,   4.5vw + 1rem, 3.5rem); }
+.display-lg  { font-size: clamp(1.75rem, 3vw + 1rem, 2.5rem); }
+```
+
+---
+
+## 4. Iconography
+
+* **Library:** Lucide (`lucide-react` for React, `lucide` static SVG for HTML). One library, no mixing.
+* **Size:** 16 / 20 / 24 px. Default 20 px in product UI, 24 px in marketing.
+* **Stroke:** **2.25 px**, `linecap="round"`, `linejoin="round"` — slightly heavier than Lucide's default 2 px so icons sit confidently next to our type.
+* **Color:** `currentColor`, inheriting from the surrounding text. Brand-colored icons appear only inside accent moments (a hero feature card's icon badge).
+* **No mixing** of stroke and filled icons. We are stroke-only, with the single exception of the geometric pattern shapes (which are filled by definition).
+* **No emoji.** No flags. No 3D icons.
+
+---
