@@ -96,3 +96,41 @@ export function ThumbnailImage({
             priority={priority}
             sizes={fill ? sizes : undefined}
             className={cn(
+              'object-cover transition-opacity duration-200',
+              loaded ? 'opacity-100' : 'opacity-0',
+            )}
+            onLoad={() => setLoaded(true)}
+            onError={() => setErrored(true)}
+          />
+        )
+      ) : null}
+      {errored || !url ? <ThumbnailPlaceholder alt={alt} /> : null}
+    </div>
+  );
+}
+
+function ThumbnailPlaceholder({ alt }: { alt: string }) {
+  // Hash-based brand tint so duplicate empty thumbnails don't all look the same.
+  const palette = ['#ecf1fa', '#fef6e0', '#fee5e5', '#e2f1ea'];
+  let h = 0;
+  for (let i = 0; i < alt.length; i++) h = (h * 31 + alt.charCodeAt(i)) | 0;
+  const bg = palette[Math.abs(h) % palette.length]!;
+  const initials =
+    alt
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase())
+      .join('') || '?';
+  return (
+    <div
+      aria-hidden
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ background: bg }}
+    >
+      <span className="font-display text-h1 text-ink/30 tracking-[-0.02em] uppercase">
+        {initials}
+      </span>
+    </div>
+  );
+}
