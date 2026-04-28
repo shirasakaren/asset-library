@@ -60,3 +60,52 @@ export function CategoryEditModal({ category, onOpenChange, onDone }: Props) {
       setBusy(false);
     }
   };
+
+  return (
+    <Modal open onOpenChange={onOpenChange}>
+      <ModalContent size="md">
+        <ModalHeader>
+          <ModalTitle>{editing ? 'Edit category' : 'New category'}</ModalTitle>
+        </ModalHeader>
+        <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field id="cat-name-en" label="Name (EN)" required>
+              <Input
+                id="cat-name-en"
+                value={nameEn}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setNameEn(v);
+                  if (!editing) setSlug(slugify(v));
+                }}
+              />
+            </Field>
+            <Field id="cat-name-id" label="Name (ID)">
+              <Input id="cat-name-id" value={nameId} onChange={(e) => setNameId(e.target.value)} />
+            </Field>
+          </div>
+          <Field id="cat-slug" label="Slug" required>
+            <Input id="cat-slug" value={slug} onChange={(e) => setSlug(slugify(e.target.value))} />
+          </Field>
+          <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              className="h-4 w-4 accent-ink"
+            />
+            Active
+          </label>
+        </div>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button loading={busy} onClick={submit}>
+            {editing ? 'Save' : 'Create'}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
