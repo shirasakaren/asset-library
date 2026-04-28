@@ -136,3 +136,26 @@ export function AdminTransferModal({ asset, onOpenChange, onDone }: Props) {
               Change
             </Button>
           </div>
+        ) : null}
+
+        <Field id="t-confirm" label="Type the asset title to confirm" className="mt-4">
+          <Input
+            id="t-confirm"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder={asset.title}
+          />
+        </Field>
+
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button disabled={!ready} loading={busy} onClick={submit}>
+            Transfer
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
