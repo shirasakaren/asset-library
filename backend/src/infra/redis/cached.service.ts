@@ -49,3 +49,13 @@ export class CachedService {
     return value;
   }
 
+  /** Drop one or more cache keys; failures are logged but never thrown. */
+  async invalidate(...keys: string[]): Promise<void> {
+    if (keys.length === 0) return;
+    try {
+      await this.redis.client.del(...keys);
+    } catch (err) {
+      this.logger.warn(`Cache DEL failed for ${keys.join(',')}: ${(err as Error).message}`);
+    }
+  }
+}
