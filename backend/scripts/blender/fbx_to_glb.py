@@ -48,3 +48,23 @@ def export_glb(out_path: str) -> None:
         export_skins=True,
         export_morph=True,
         export_lights=False,
+    )
+
+
+def main() -> int:
+    args = _argv_after_dash()
+    if len(args) != 2:
+        print("fbx_to_glb: expected <input> <output.glb>", file=sys.stderr)
+        return 2
+    src, dst = args
+    try:
+        import_source(src)
+        export_glb(dst)
+    except Exception as err:  # noqa: BLE001
+        print(f"fbx_to_glb failed: {err}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
