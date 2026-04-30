@@ -118,3 +118,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Catalog endpoints for categories, tags, and licenses.
 - NestJS foundation: config validation, logging, health endpoints, and the
   Prisma schema.
+
+## [0.0.1] - 2025-10-01
+
+### Added
+
+- Initial monorepo bootstrap: pnpm workspace, CI skeleton, and repository
+  scaffolding.
