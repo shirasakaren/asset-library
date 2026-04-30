@@ -88,3 +88,26 @@ def setup_eevee(out_path: str) -> None:
 
 def main() -> int:
     args = _argv_after_dash()
+    if len(args) < 2:
+        print("render_glb_preview: expected <input.glb> <output.png> [hdri]", file=sys.stderr)
+        return 2
+    glb_path, out_path = args[0], args[1]
+    hdri_path = args[2] if len(args) >= 3 else None
+
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=glb_path)
+    if hdri_path and os.path.exists(hdri_path):
+        setup_hdri(hdri_path)
+    min_v, max_v = _scene_bbox()
+    setup_camera(min_v, max_v)
+    setup_eevee(out_path)
+    try:
+        bpy.ops.render.render(write_still=True)
+    except Exception as err:  # noqa: BLE001
+        print(f"render failed: {err}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
