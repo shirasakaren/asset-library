@@ -47,3 +47,39 @@ export class ProblemDto {
 /**
  * Thrown anywhere in services; caught by AllExceptionsFilter and rendered as
  * problem+json. Carrying the stable `code` separately from the HTTP status
+ * lets us evolve messages without breaking clients.
+ */
+export class DomainException extends HttpException {
+  constructor(
+    status: HttpStatus,
+    public readonly code: ErrorCodeValue,
+    detail: string,
+    public readonly fields?: ProblemFieldDto[],
+  ) {
+    super({ statusCode: status, code, message: detail, fields }, status);
+  }
+}
+
+export class NotFoundDomainException extends DomainException {
+  constructor(code: ErrorCodeValue, detail: string) {
+    super(HttpStatus.NOT_FOUND, code, detail);
+  }
+}
+
+export class ConflictDomainException extends DomainException {
+  constructor(code: ErrorCodeValue, detail: string, fields?: ProblemFieldDto[]) {
+    super(HttpStatus.CONFLICT, code, detail, fields);
+  }
+}
+
+export class ForbiddenDomainException extends DomainException {
+  constructor(code: ErrorCodeValue, detail: string) {
+    super(HttpStatus.FORBIDDEN, code, detail);
+  }
+}
+
+export class BadRequestDomainException extends DomainException {
+  constructor(code: ErrorCodeValue, detail: string, fields?: ProblemFieldDto[]) {
+    super(HttpStatus.BAD_REQUEST, code, detail, fields);
+  }
+}
