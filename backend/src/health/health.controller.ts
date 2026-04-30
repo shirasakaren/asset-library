@@ -41,3 +41,20 @@ export class HealthController {
    */
   @Public()
   @Get('readyz')
+  async readiness(): Promise<ReadinessReport> {
+    const [postgres, redis, mongo, meilisearch, s3] = await Promise.all([
+      this.prisma.ping(),
+      this.redis.ping(),
+      this.mongo.ping(),
+      this.meili.ping(),
+      this.s3.ping(),
+    ]);
+    const checks = { postgres, redis, mongo, meilisearch, s3 };
+    const allGreen = Object.values(checks).every(Boolean);
+    return {
+      status: allGreen ? 'ok' : 'degraded',
+      checks,
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
