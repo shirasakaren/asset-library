@@ -92,3 +92,37 @@ import { WsModule } from './modules/ws/ws.module';
 
     // ── Stubbed feature modules (Parts 2/3/4) ───────────────────────────────
     AssetsModule,
+    VersionsModule,
+    FilesModule,
+    GifsModule,
+    DownloadsModule,
+    CategoriesModule,
+    TagsModule,
+    LicensesModule,
+    LibraryModule,
+    CommentsModule,
+    IssuesModule,
+    ReportsModule,
+    RequestsModule,
+    FeaturedModule,
+    NotificationsModule,
+    AnalyticsModule,
+    AdminModule,
+    AuditModule,
+    SearchModule,
+    JobsModule,
+    MetricsModule,
+    MeModule,
+    WsModule,
+  ],
+  providers: [
+    { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },
+  ],
+})
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}
