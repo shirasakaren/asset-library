@@ -58,3 +58,9 @@ export function useSaveToggle() {
     },
     onSuccess: ({ nextSaved }) => {
       toast.success(nextSaved ? t('savedToast') : t('unsavedToast'));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.libraryAll });
+    },
+  });
+}
