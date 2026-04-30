@@ -4648,3 +4648,520 @@ export interface components {
         };
         UpdateVersion: {
             releaseNotes?: Record<string, never>;
+        };
+        CompatibilityRow: {
+            engineVersion: string;
+            /** @description Unity only: URP|HDRP|SRP|BUILT_IN */
+            renderPipelines?: string[];
+            /** @description WINDOWS|MAC|LINUX|IOS|ANDROID|CONSOLE|WEB|VR */
+            targets: string[];
+        };
+        SetCompatibility: {
+            rows?: components["schemas"]["CompatibilityRow"][];
+        };
+        InitiateUpload: {
+            assetId: string;
+            versionId: string;
+            relativePath: string;
+            contentType: string;
+            bytes: number;
+        };
+        InitiateUploadResponse: {
+            uploadId?: string;
+            putUrl?: string;
+            key?: string;
+            fileId?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+        };
+        CompleteUpload: {
+            uploadId: string;
+            etag?: string;
+        };
+        InitiateMultipart: components["schemas"]["InitiateUpload"] & {
+            partCount: number;
+        };
+        InitiateMultipartResponse: {
+            uploadId?: string;
+            key?: string;
+            fileId?: string;
+            partUrls?: {
+                partNumber?: number;
+                url?: string;
+            }[];
+            /** Format: date-time */
+            expiresAt?: string;
+        };
+        SignMultipartParts: {
+            uploadId: string;
+            partNumbers: number[];
+        };
+        CompleteMultipart: {
+            uploadId: string;
+            parts: {
+                partNumber?: number;
+                etag?: string;
+            }[];
+        };
+        AbortMultipart: {
+            uploadId: string;
+        };
+        InitiateThumbnail: {
+            assetId: string;
+            contentType: string;
+            bytes: number;
+        };
+        InitiateThumbnailResponse: {
+            putUrl?: string;
+            key?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+        };
+        CompleteThumbnail: {
+            assetId: string;
+            key: string;
+        };
+        InitiateEditorMedia: {
+            contentType: string;
+            bytes: number;
+        };
+        InitiateEditorMediaResponse: {
+            putUrl?: string;
+            key?: string;
+            /** @description 90-day signed GET URL. */
+            viewUrl?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+        };
+        AddLibraryItem: {
+            assetId: string;
+        };
+        UpdateLibraryItem: {
+            hidden: boolean;
+        };
+        LibraryItem: {
+            /** Format: date-time */
+            addedAt?: string;
+            hidden?: boolean;
+            asset?: components["schemas"]["AssetSummary"];
+        };
+        LibraryPage: {
+            items?: components["schemas"]["LibraryItem"][];
+            pageInfo?: components["schemas"]["PageInfo"];
+        };
+        InitiateDownload: {
+            assetId: string;
+            versionId: string;
+            fileId?: string | null;
+            /** @enum {string} */
+            source: "WEB" | "UNITY" | "UNREAL";
+        };
+        DownloadResponse: {
+            asset?: {
+                id?: string;
+                title?: string;
+            };
+            version?: {
+                id?: string;
+                semver?: string;
+                releaseNotes?: Record<string, never> | null;
+            };
+            files?: {
+                id?: string;
+                relativePath?: string;
+                kind?: string;
+                bytes?: string;
+                getUrl?: string | null;
+                /** Format: date-time */
+                expiresAt?: string | null;
+            }[];
+            olderVersions?: {
+                id?: string;
+                semver?: string;
+                /** Format: date-time */
+                publishedAt?: string | null;
+            }[];
+        };
+        SearchAssetsResponse: {
+            hits?: {
+                id?: string;
+                slug?: string;
+                title?: string;
+                shortDescription?: string;
+                thumbnailUrl?: string | null;
+                engine?: string;
+                categoryName?: string;
+                ownerName?: string;
+                totalDownloads?: number;
+            }[];
+            processingTimeMs?: number;
+            estimatedTotalHits?: number;
+        };
+        CommentAuthor: {
+            id?: string;
+            displayName?: string;
+            avatar?: components["schemas"]["Avatar"];
+        };
+        CommentNode: {
+            id?: string;
+            /** @enum {string} */
+            kind?: "COMMENT" | "ISSUE";
+            parentId?: string | null;
+            depth?: number;
+            body?: components["schemas"]["TipTapDoc"];
+            /** @enum {string|null} */
+            status?: "OPEN" | "ACKNOWLEDGED" | "RESOLVED" | null;
+            /** Format: date-time */
+            editedAt?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            author?: components["schemas"]["CommentAuthor"];
+            replies?: components["schemas"]["CommentNode"][];
+        };
+        CommentListResponse: {
+            items?: components["schemas"]["CommentNode"][];
+            pageInfo?: components["schemas"]["PageInfo"];
+        };
+        CreateComment: {
+            /** @enum {string} */
+            kind: "COMMENT" | "ISSUE";
+            parentId?: string | null;
+            body: components["schemas"]["TipTapDoc"];
+        };
+        UpdateComment: {
+            body: components["schemas"]["TipTapDoc"];
+        };
+        UpdateIssueStatus: {
+            /** @enum {string} */
+            status: "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
+        };
+        CreateReport: {
+            assetId: string;
+            /** @enum {string} */
+            category: "MALICIOUS_FILE" | "BROKEN_ASSET";
+            notes: string;
+        };
+        ActionReport: {
+            adminNotes: string;
+            /** @enum {string} */
+            action: "NOTHING" | "ARCHIVE_ASSET" | "DELETE_ASSET" | "FORCE_DELETE_ASSET";
+            /** @description "I understand" — required for FORCE_DELETE_ASSET. */
+            confirm?: string;
+            /** Format: date-time */
+            confirmedAt?: string;
+        };
+        DismissReport: {
+            adminNotes: string;
+        };
+        Report: {
+            id?: string;
+            /** @enum {string} */
+            category?: "MALICIOUS_FILE" | "BROKEN_ASSET";
+            notes?: string;
+            /** @enum {string} */
+            status?: "OPEN" | "REVIEWING" | "ACTIONED" | "DISMISSED";
+            assetId?: string;
+            assetTitle?: string;
+            assetSlug?: string;
+            reporter?: {
+                id?: string;
+                displayName?: string;
+                email?: string | null;
+            };
+            adminNotes?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            resolvedAt?: string | null;
+        };
+        CreateAssetRequest: {
+            /** Format: uri */
+            assetLink: string;
+            assetType: string;
+            intendedUse: string;
+            price?: number;
+            notes?: string;
+        };
+        AdminUpdateAssetRequest: {
+            /** @enum {string} */
+            status: "IN_REVIEW" | "PENDING" | "APPROVED" | "REJECTED";
+            adminComment?: string;
+        };
+        AssetRequest: {
+            id?: string;
+            assetLink?: string;
+            assetType?: string;
+            intendedUse?: string;
+            price?: number | null;
+            notes?: string | null;
+            /** @enum {string} */
+            status?: "SENT" | "IN_REVIEW" | "PENDING" | "APPROVED" | "REJECTED";
+            adminComment?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            requester?: {
+                id?: string;
+                displayName?: string;
+            };
+        };
+        AdminFeaturedSlot: {
+            id?: string;
+            assetId?: string;
+            assetTitle?: string;
+            assetSlug?: string;
+            customBannerKey?: string | null;
+            customBannerUrl?: string | null;
+            customTitle?: string | null;
+            customShortDescription?: Record<string, never> | null;
+            sortOrder?: number;
+            isActive?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        CreateFeaturedSlot: {
+            assetId: string;
+            customBannerKey?: string;
+            customTitle?: string;
+            /** @description { en?, id? } overrides. */
+            customShortDescription?: Record<string, never>;
+            /** @default true */
+            isActive: boolean;
+        };
+        UpdateFeaturedSlot: {
+            customBannerKey?: string;
+            customTitle?: string;
+            customShortDescription?: Record<string, never>;
+            isActive?: boolean;
+            sortOrder?: number;
+        };
+        ReorderIds: {
+            orderedIds: string[];
+        };
+        BannerInitiate: {
+            contentType: string;
+            bytes: number;
+        };
+        BannerInitiateResponse: {
+            putUrl?: string;
+            key?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+        };
+        AdminCategory: {
+            id?: string;
+            slug?: string;
+            /** @description { en?, id? } */
+            name?: Record<string, never>;
+            iconKey?: string | null;
+            iconUrl?: string | null;
+            sortOrder?: number;
+            isActive?: boolean;
+            assetCount?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        CreateCategory: {
+            slug: string;
+            /** @description { en, id } */
+            name: Record<string, never>;
+            iconKey?: string;
+            sortOrder?: number;
+            isActive?: boolean;
+        };
+        UpdateCategory: {
+            slug?: string;
+            name?: Record<string, never>;
+            iconKey?: string;
+            sortOrder?: number;
+            isActive?: boolean;
+        };
+        MergeTags: {
+            fromTagIds: string[];
+            intoTagId: string;
+        };
+        UpdateTag: {
+            slug?: string;
+            displayName?: string;
+        };
+        AdminLicense: {
+            id?: string;
+            slug?: string;
+            name?: string;
+            /** @description { en?, id? } */
+            description?: Record<string, never>;
+            /** @description { en?, id? } */
+            fullText?: Record<string, never>;
+            sortOrder?: number;
+            isActive?: boolean;
+            assetCount?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        CreateLicense: {
+            slug: string;
+            name: string;
+            description: Record<string, never>;
+            fullText: Record<string, never>;
+            sortOrder?: number;
+            isActive?: boolean;
+        };
+        UpdateLicense: {
+            name?: string;
+            description?: Record<string, never>;
+            fullText?: Record<string, never>;
+            sortOrder?: number;
+            isActive?: boolean;
+        };
+        AdminUser: {
+            id?: string;
+            email?: string;
+            displayName?: string;
+            isAdmin?: boolean;
+            locale?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            publishedAssetCount?: number;
+        };
+        ConfirmAction: {
+            /** @example I understand */
+            confirm: string;
+            /** Format: date-time */
+            confirmedAt: string;
+        };
+        AdminAssetAction: {
+            reason: string;
+        };
+        AdminAssetForceDelete: components["schemas"]["AdminAssetAction"] & components["schemas"]["ConfirmAction"];
+        AdminAssetTransfer: {
+            newOwnerId: string;
+        };
+        Notification: {
+            id?: string;
+            /** @description See NotificationType enum (COMMENT_CREATED, AV_INFECTED_WARNING, ADMIN_PROMOTED, etc.) */
+            type?: string;
+            payload?: Record<string, never>;
+            /** Format: date-time */
+            readAt?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        NotificationPage: {
+            items?: components["schemas"]["Notification"][];
+            pageInfo?: components["schemas"]["PageInfo"];
+        };
+        AuditEntry: {
+            id?: string;
+            action?: string;
+            subjectType?: string;
+            subjectId?: string;
+            actorId?: string | null;
+            actorDisplayName?: string | null;
+            actorEmail?: string | null;
+            metadata?: Record<string, never> | null;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        Discover: {
+            featured?: {
+                id?: string;
+                assetId?: string;
+                assetSlug?: string;
+                title?: string;
+                shortDescription?: string;
+                bannerUrl?: string | null;
+                sortOrder?: number;
+            }[];
+            rows?: {
+                categoryId?: string;
+                categorySlug?: string;
+                name?: string;
+                assets?: components["schemas"]["AssetSummary"][];
+            }[];
+        };
+        DashboardResponse: {
+            counts?: Record<string, never>;
+            storage?: Record<string, never>;
+            charts?: Record<string, never>;
+            topAssets7d?: Record<string, never>[];
+            recentAudit?: components["schemas"]["AuditEntry"][];
+        };
+    };
+    responses: {
+        /** @description Validation / domain error. */
+        Problem400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description Unauthenticated. */
+        Problem401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description Forbidden. */
+        Problem403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description Not found. */
+        Problem404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description Conflict (e.g. featured cap, idempotency reuse). */
+        Problem409: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description Rate-limited; includes Retry-After header. */
+        Problem429: {
+            headers: {
+                "Retry-After"?: number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+    };
+    parameters: {
+        /** @description Opaque base64url cursor from a previous page. */
+        Cursor: string;
+        Limit: number;
+        Locale: "en" | "id";
+        /** @description Client-supplied retry key; the first response is cached for 24 h and replayed on retry. */
+        IdempotencyKey: string;
+    };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
+}
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;
