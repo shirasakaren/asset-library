@@ -89,3 +89,31 @@ export class AllExceptionsFilter implements ExceptionFilter {
         instance,
         code,
         fields,
+      };
+    }
+
+    return {
+      type: `${this.baseUrl}/errors/http.500`,
+      title: 'InternalServerError',
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      detail: exception instanceof Error ? exception.message : 'Unknown error',
+      instance,
+      code: 'http.500',
+    };
+  }
+
+  private normalizeHttp(response: string | object): {
+    detail?: string;
+    fields?: ProblemFieldDto[];
+  } {
+    if (typeof response === 'string') return { detail: response };
+    const { message, fields } = response as {
+      message?: string | string[];
+      fields?: ProblemFieldDto[];
+    };
+    return {
+      detail: Array.isArray(message) ? message.join('; ') : message,
+      fields,
+    };
+  }
+}
