@@ -47,3 +47,18 @@ import { MetricsModule } from './modules/metrics/metrics.module';
     MongoModule,
     RedisModule,
     S3Module,
+    MeilisearchModule,
+    MailerModule,
+    N8nModule,
+    KeycloakModule,
+    AuditCoreModule,
+    IdempotencyModule,
+    JobsModule,
+    NotificationsModule,
+    ProcessorsModule,
+    MetricsModule,
+    WorkerHealthModule,
+  ],
+  providers: [{ provide: APP_FILTER, useClass: AllExceptionsFilter }],
+})
+export class WorkerModule {}
