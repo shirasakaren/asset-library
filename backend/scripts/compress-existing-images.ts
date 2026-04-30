@@ -123,3 +123,95 @@ async function processThumbnail(key: string): Promise<void> {
     thumbsSkipped++;
     return;
   }
+  console.log(`  thumb ${key}: ${obj.body.length} -> ${out.length} bytes${DRY ? ' (dry)' : ''}`);
+  if (!DRY) {
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: THUMBS_BUCKET,
+        Key: key,
+        Body: out,
+        ContentType: 'image/webp',
+      }),
+    );
+  }
+  thumbsDone++;
+}
+
+async function main(): Promise<void> {
+  if (!THUMBS_BUCKET || !EDITOR_BUCKET) {
+    throw new Error('Missing S3 bucket env (S3_BUCKET_THUMBS / S3_BUCKET_EDITOR_MEDIA).');
+  }
+  console.log(`compress-existing-images${DRY ? ' (DRY RUN)' : ''}`);
+
+  const assets = await prisma.asset.findMany({
+    select: { id: true, slug: true, thumbnailKey: true, previewMedia: true },
+  });
+  console.log(`scanning ${assets.length} assets…`);
+
+  for (const asset of assets) {
+    // 1) Thumbnail — compress in place.
+    if (asset.thumbnailKey) {
+      try {
+        await processThumbnail(asset.thumbnailKey);
+      } catch (err) {
+        console.warn(`  thumb error ${asset.thumbnailKey}: ${(err as Error).message}`);
+      }
+    }
+
+    // 2) Preview-media images — add a compressed display variant.
+    const pm = Array.isArray(asset.previewMedia) ? (asset.previewMedia as unknown[]) : [];
+    if (pm.length === 0) continue;
+    let changed = false;
+    const next = [...pm];
+    for (let i = 0; i < next.length; i++) {
+      const m = next[i];
+      if (!isImageItem(m)) continue;
+      if (m.displayKey) {
+        previewsSkipped++;
+        continue;
+      }
+      const obj = await getObject(EDITOR_BUCKET, m.key);
+      if (!obj) {
+        console.warn(`  preview missing in S3: ${m.key}`);
+        continue;
+      }
+      const out = await compress(obj.body, MAX_DIM);
+      const displayKey = `${m.key}.display.webp`;
+      console.log(
+        `  preview ${m.key}: ${obj.body.length} -> ${out.length} bytes -> ${displayKey}${DRY ? ' (dry)' : ''}`,
+      );
+      if (!DRY) {
+        await s3.send(
+          new PutObjectCommand({
+            Bucket: EDITOR_BUCKET,
+            Key: displayKey,
+            Body: out,
+            ContentType: 'image/webp',
+          }),
+        );
+      }
+      next[i] = { ...m, displayKey, visibility: m.visibility ?? 'visible' };
+      changed = true;
+      previewsDone++;
+    }
+    if (changed && !DRY) {
+      await prisma.asset.update({
+        where: { id: asset.id },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { previewMedia: next as any },
+      });
+    }
+  }
+
+  console.log(
+    `done. thumbnails: ${thumbsDone} compressed, ${thumbsSkipped} skipped. ` +
+      `previews: ${previewsDone} compressed, ${previewsSkipped} skipped.`,
+  );
+}
+
+main()
+  .catch((err) => {
+    console.error('compress-existing-images failed:', err);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
