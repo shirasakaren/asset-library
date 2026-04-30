@@ -593,3 +593,208 @@ model Notification {
   type      NotificationType
   /// Context-specific payload (assetId, commentId, requestId, …).
   payload   Json
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, readAt])
+  // notifications.service.ts#list with `unreadOnly: true` filters by
+  // (userId, readAt IS NULL) AND orders by createdAt DESC. Neither
+  // existing composite is leading-prefix-compatible with that combined
+  // predicate + sort; this 3-column index lets the planner serve the
+  // whole query (including the cursor pagination) from one walk.
+  @@index([userId, readAt, createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+// -----------------------------------------------------------------------------
+// PluginDeviceToken
+// -----------------------------------------------------------------------------
+
+/// Long-lived bearer token issued by our backend (not Keycloak) to a Unity or
+/// Unreal editor plugin. Stored hashed (HMAC-SHA256 with PLUGIN_TOKEN_PEPPER).
+model PluginDeviceToken {
+  id          String    @id @default(cuid())
+  userId      String
+  deviceLabel String
+  tokenHash   String    @unique
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([revokedAt])
+  @@index([expiresAt])
+  @@map("plugin_device_tokens")
+}
+
+// -----------------------------------------------------------------------------
+// AuditLog
+// -----------------------------------------------------------------------------
+
+/// Mutating admin actions. Retention: 30 days (purged by cron in Part 3).
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorId     String?
+  action      String // e.g. "asset.delete", "featured.reorder"
+  subjectType String
+  subjectId   String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([action])
+  @@index([subjectType, subjectId])
+  @@index([createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
+
+// -----------------------------------------------------------------------------
+// Setting (admin-tunable runtime config)
+// -----------------------------------------------------------------------------
+
+model Setting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+
+  updatedBy User? @relation("SettingUpdater", fields: [updatedById], references: [id])
+
+  @@map("settings")
+}
+
+// -----------------------------------------------------------------------------
+// Part 3 additions: rollups, GC bookkeeping, tag usage cache
+// -----------------------------------------------------------------------------
+
+/// Bookkeeping for editor-media (TipTap inline) uploads. The
+/// `editor-media-gc` cron compares this table against the set of keys
+/// referenced by any AssetTranslation.longDescription and prunes orphans
+/// older than 7 days.
+model EditorMediaUpload {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  uploaderId String
+  mimeType   String?
+  bytes      BigInt   @default(0)
+  /// Flipped to `true` by the GC after we've confirmed it's referenced; the
+  /// worker only deletes keys that are STILL unreferenced AND older than 7d.
+  referenced Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  uploader User @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([uploaderId])
+  @@index([referenced, createdAt])
+  @@map("editor_media_uploads")
+}
+
+/// Per-asset rollup of download/save metrics. Single row per asset, upserted
+/// every 24h by the analytics-rollup cron. AssetDetail reads `stats.{*}` from
+/// here, never from `Download` directly.
+model AssetStats {
+  assetId          String   @id
+  totalDownloads   Int      @default(0)
+  totalSaves       Int      @default(0)
+  last7dDownloads  Int      @default(0)
+  last30dDownloads Int      @default(0)
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@map("asset_stats")
+}
+
+/// Daily per-asset aggregate. Backs the admin analytics page (Part 4) and is
+/// retained forever; raw `Download` rows are purged after
+/// DOWNLOAD_RAW_RETENTION_DAYS.
+model DownloadDaily {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  assetId     String
+  count       Int      @default(0)
+  uniqueUsers Int      @default(0)
+  /// `{ "US": 12, "ID": 4, … }`
+  byCountry   Json     @default("{}")
+  /// `{ "WEB": 12, "UNITY": 4, "UNREAL": 0 }`
+  bySource    Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, date])
+  @@index([date])
+  @@map("download_daily")
+}
+
+/// Live denormalized usage count for tag autocomplete. Recomputed
+/// incrementally by the search-index batch worker.
+model TagUsage {
+  tagId      String   @id
+  usageCount Int      @default(0)
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@index([usageCount(sort: Desc)])
+  @@map("tag_usage")
+}
+
+// -----------------------------------------------------------------------------
+// Part 4 additions: storage accounting
+// -----------------------------------------------------------------------------
+
+/// Per-bucket+prefix daily snapshot (e.g. `assets/__derived__/`). Powers the
+/// admin dashboard's storage block. Populated by the `storage-rollup` cron.
+model StorageDaily {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  bucket      String
+  prefix      String
+  bytes       BigInt   @default(0)
+  objectCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@unique([date, bucket, prefix])
+  @@index([date])
+  @@map("storage_daily")
+}
+
+/// Per-user daily byte usage (sum of bytes for assets the user owns).
+model StorageUserDaily {
+  id         String   @id @default(cuid())
+  date       DateTime @db.Date
+  userId     String
+  bytes      BigInt   @default(0)
+  /// Number of assets contributing to the total.
+  assetCount Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@unique([date, userId])
+  @@index([date])
+  @@index([userId])
+  @@map("storage_user_daily")
+}
+
+/// Per-asset daily byte usage. Tracks how much each asset costs on storage.
+model StorageAssetDaily {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  assetId   String
+  bytes     BigInt   @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([date, assetId])
+  @@index([date])
+  @@index([assetId])
+  @@map("storage_asset_daily")
+}
