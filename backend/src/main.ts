@@ -106,3 +106,53 @@ async function bootstrapApi(env: ReturnType<typeof validateEnv>): Promise<void> 
     }),
   );
   app.enableShutdownHooks();
+
+  const swaggerEnabled = env.NODE_ENV !== 'production' || env.FEATURE_SWAGGER_PUBLIC;
+  if (swaggerEnabled) {
+    const doc = new DocumentBuilder()
+      .setTitle('MGM Asset Library API')
+      .setDescription('REST API for the MGM Asset Library.')
+      .setVersion('0.3.0')
+      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'keycloak')
+      .build();
+    const document = SwaggerModule.createDocument(app, doc);
+    SwaggerModule.setup('docs', app, document, {
+      swaggerOptions: { persistAuthorization: true },
+    });
+  }
+
+  await app.listen({ port: env.PORT, host: '0.0.0.0' });
+  new Logger('Bootstrap').log(
+    `MGM Asset Library API listening on ${env.PUBLIC_BASE_URL} (port ${env.PORT}, env=${env.NODE_ENV}, role=api).`,
+  );
+}
+
+/**
+ * Worker mode boots the same Nest container with a different module that:
+ *   - Registers all BullMQ processors.
+ *   - Skips the public controllers, swagger, CORS, etc.
+ *   - Exposes a minimal HTTP surface for /healthz and /metrics.
+ */
+async function bootstrapWorker(env: ReturnType<typeof validateEnv>): Promise<void> {
+  const adapter = new FastifyAdapter({ trustProxy: env.TRUST_PROXY });
+  const app = await NestFactory.create<NestFastifyApplication>(WorkerModule, adapter, {
+    bufferLogs: true,
+  });
+  app.useLogger(app.get(PinoLogger));
+  app.enableShutdownHooks();
+  await app.listen({ port: env.PORT, host: '0.0.0.0' });
+  new Logger('Bootstrap').log(
+    `MGM Asset Library worker online (port ${env.PORT}, env=${env.NODE_ENV}, role=worker).`,
+  );
+}
+
+bootstrap().catch((err) => {
+  // fs.writeSync(2, ...) is a synchronous write to stderr (fd 2) — unlike
+  // process.stderr.write() it cannot be interrupted by process.exit().
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('fs').writeSync(
+    2,
+    `Fatal bootstrap error: ${err instanceof Error ? err.stack : String(err)}\n`,
+  );
+  process.exit(1);
+});
