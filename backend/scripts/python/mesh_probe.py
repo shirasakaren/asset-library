@@ -68,3 +68,54 @@ def probe(path: str) -> Dict[str, Any]:
                 ticks_per_sec = anim.ticks_per_second if anim.ticks_per_second and anim.ticks_per_second > 0 else 30
                 length_sec = float(anim.duration) / float(ticks_per_sec)
             except Exception:
+                length_sec = 0.0
+            has_root_motion = False
+            try:
+                if anim.channels:
+                    first = anim.channels[0]
+                    if first.position_keys and len(first.position_keys) > 1:
+                        first_p = first.position_keys[0].value
+                        last_p = first.position_keys[-1].value
+                        if any(abs(a - b) > 1e-3 for a, b in zip(first_p, last_p)):
+                            has_root_motion = True
+            except Exception:
+                pass
+            animations.append(
+                {
+                    "name": str(anim.name) if anim.name else "",
+                    "lengthSec": round(length_sec, 4),
+                    "hasRootMotion": has_root_motion,
+                }
+            )
+        for mesh in scene.meshes:
+            if getattr(mesh, "bones", None):
+                has_skeleton = True
+                break
+
+        return {
+            "triangles": triangles,
+            "quads": quads,
+            "vertices": vertices_total,
+            "materials": len(scene.materials),
+            "hasSkeleton": has_skeleton,
+            "animations": animations,
+            "boundingBox": _bbox_from_vertices(all_vertices),
+            "textureRefs": list(dict.fromkeys(texture_refs)),
+        }
+
+
+def main(argv: List[str]) -> int:
+    if len(argv) != 2:
+        print("usage: mesh_probe.py <path>", file=sys.stderr)
+        return 2
+    try:
+        result = probe(argv[1])
+    except Exception as err:  # noqa: BLE001 — surface every failure as stderr
+        print(f"mesh_probe failed: {err}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, separators=(",", ":")))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
