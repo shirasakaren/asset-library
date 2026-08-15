@@ -90,3 +90,29 @@ export class WebhookDeliveriesController {
         nextCursor: hasMore && last ? encodeCursor(last.createdAt.toISOString()) : null,
       },
     };
+  }
+
+  private toDto(r: LeanDelivery): AdminWebhookDeliveryDto {
+    const envelope = r.requestEnvelope ?? {};
+    const targetUrl =
+      typeof envelope['url'] === 'string'
+        ? (envelope['url'] as string)
+        : typeof envelope['target'] === 'string'
+          ? (envelope['target'] as string)
+          : '';
+    return {
+      id: `${r.deliveryId}#${r.attempt}`,
+      type: r.event,
+      status: r.status === 'queued' ? 'pending' : r.status,
+      recipient: targetUrl,
+      attempt: r.attempt,
+      durationMs: r.durationMs ?? null,
+      requestBody: envelope,
+      responseStatus: r.httpStatus ?? null,
+      responseHeaders: null,
+      responseBodyExcerpt: r.responseBody ?? r.error ?? null,
+      createdAt: r.createdAt.toISOString(),
+    };
+  }
+}
+

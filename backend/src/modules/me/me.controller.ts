@@ -52,3 +52,13 @@ export class MeController {
 
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: "Logout side-effect: audit row + WS broadcast to the user's open tabs.",
+  })
+  async logout(@AuthUser() principal: AuthenticatedRequestUser): Promise<void> {
+    await this.audit.record({
+      actorId: principal.user.id,
+      action: 'me.logout',
+      subjectType: 'User',
+      subjectId: principal.user.id,
+    });
