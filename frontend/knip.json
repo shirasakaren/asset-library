@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/app/**/{page,layout,template,error,not-found,global-error,route}.{ts,tsx}",
+    "src/middleware.ts",
+    "scripts/openapi-gen.mjs",
+    "tests/**/*.{test,spec}.{ts,tsx}",
+    "tests/e2e/**/*.{ts,tsx}",
+    "playwright.config.ts",
+    "vitest.config.ts",
+    "next.config.mjs",
+    "tailwind.config.ts",
+    "postcss.config.mjs"
+  ],
+  "project": ["src/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
+  "ignore": [
+    "src/lib/api/schema.ts",
+    "src/lib/auth/types.d.ts",
+    "src/app/dev/**"
+  ],
+  "ignoreDependencies": [
+    "@axe-core/playwright",
+    "@next/bundle-analyzer",
+    "@playwright/test",
+    "knip"
+  ]
+}

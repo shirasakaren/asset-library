@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  workflow_call: 
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+          NEXT_PUBLIC_APP_URL: https://app-url.placeholder.invalid
+          NEXT_PUBLIC_API_URL: https://app-url.placeholder.invalid
+          NEXT_PUBLIC_WS_URL: ws://ws-url.placeholder.invalid
+          NEXT_PUBLIC_COMMUNITY_DOCS_URL: https://docs-url.placeholder.invalid
+          NEXT_PUBLIC_COMMUNITY_LEARNING_URL: https://learn-url.placeholder.invalid
+          NEXT_PUBLIC_COMMUNITY_HELP_URL: https://help-url.placeholder.invalid
+          NEXTAUTH_URL: https://nextauth.placeholder.invalid
+          NEXTAUTH_SECRET: placeholder-secret-placeholder-secret
+          KEYCLOAK_CLIENT_ID: placeholder-client-id
+          KEYCLOAK_CLIENT_SECRET: placeholder-client-secret
+          KEYCLOAK_ISSUER: https://keycloak.placeholder.invalid/realms/placeholder
+          KEYCLOAK_LOGOUT_REDIRECT: https://nextauth.placeholder.invalid
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        
+      - name: Lint
+        run: pnpm lint
+        
+      - name: Typecheck
+        run: pnpm typecheck
+        
+      - name: OpenAPI schema is current
+        run: |
+          if [ -f ../openapi.json ] || [ -n "$OPENAPI_SOURCE_URL" ]; then
+            pnpm openapi:gen
+            git diff --exit-code src/lib/api/schema.ts || (echo "Run 'pnpm openapi:gen' and commit." && exit 1)
+          else
+            echo "Skipping openapi sync — no source available in CI"
+          fi
+        
+      - name: Unit tests
+        run: pnpm test
+        
+      - name: Build
+        run: pnpm build
+        
