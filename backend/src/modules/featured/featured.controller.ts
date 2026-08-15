@@ -73,3 +73,27 @@ export class AdminFeaturedController {
   ): Promise<AdminFeaturedSlotDto> {
     return this.featured.update(id, principal.user, dto);
   }
+
+  @Delete(':id')
+  @AuditAction({ action: 'featured.delete_request', subjectType: 'FeaturedSlot' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Hard delete the slot. Asset is not affected.' })
+  remove(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
+    return this.featured.remove(id, principal.user);
+  }
+
+  @Post('reorder')
+  @AuditAction({
+    action: 'featured.reorder_request',
+    subjectType: 'FeaturedSlot',
+    subjectParam: 'body.orderedIds.0',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Replace the sortOrder sequence in one shot.' })
+  reorder(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: ReorderFeaturedSlotsDto,
+  ): Promise<void> {
+    return this.featured.reorder(dto.orderedIds, principal.user);
+  }
+
