@@ -246,3 +246,43 @@ export interface ConfirmActionPayload {
 }
 
 export interface CreateFeaturedSlotInput {
+  assetId: string;
+  customBannerKey?: string;
+  customTitle?: string;
+  customShortDescription?: Partial<Record<LocaleCode, string>>;
+  isActive?: boolean;
+}
+
+export interface UpdateFeaturedSlotInput {
+  customBannerKey?: string | null;
+  customTitle?: string | null;
+  customShortDescription?: Partial<Record<LocaleCode, string>> | null;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface CreateCategoryInput {
+  slug: string;
+  name: Record<LocaleCode, string>;
+  iconKey?: string;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateCategoryInput {
+  slug?: string;
+  name?: Partial<Record<LocaleCode, string>>;
+  iconKey?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface CreateLicenseInput {
+  slug: string;
+  name: string;
+  description: Record<LocaleCode, string>;
+  fullText: Record<LocaleCode, string>;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+

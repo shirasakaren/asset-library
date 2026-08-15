@@ -47,3 +47,25 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
               <div className="mt-7 flex flex-wrap items-center gap-2">
                 <Button variant="primary" size="lg" asChild>
                   <a href="/auth/signin">{t('signInAgain')}</a>
+                </Button>
+                <Button variant="ghost" size="lg" asChild>
+                  <a href="/about">{t('goToAbout')}</a>
+                </Button>
+              </div>
+              <Alert variant="warning" className="mt-7" title={t('codeLabel')}>
+                <code className="font-mono text-[12.5px] text-ink-2">{key}</code>
+                {' · '}
+                <UILink href="/about" variant="inline">
+                  {t('learnMore')}
+                </UILink>
+              </Alert>
+            </div>
+            <div className="hidden md:block">
+              <GeometricPattern variant="corner" size={64} seed={`auth-${key}`} />
+            </div>
+          </div>
+        </Container>
+      </main>
+    </div>
+  );
+}

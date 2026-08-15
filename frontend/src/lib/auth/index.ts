@@ -121,3 +121,18 @@ export const authConfig: NextAuthConfig = {
           ? (message.token.idToken as string | undefined)
           : undefined) ?? undefined;
       if (!idToken) return;
+      const url = new URL(`${serverEnv.KEYCLOAK_ISSUER}/protocol/openid-connect/logout`);
+      url.searchParams.set('id_token_hint', idToken);
+      url.searchParams.set('post_logout_redirect_uri', serverEnv.KEYCLOAK_LOGOUT_REDIRECT);
+      try {
+        await fetch(url.toString(), { method: 'GET', cache: 'no-store' });
+      } catch {
+        /* ignore — best-effort */
+      }
+    },
+  },
+};
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+
+export const isMockAuth = MOCK_MODE;

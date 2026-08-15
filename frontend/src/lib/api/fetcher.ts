@@ -116,3 +116,36 @@ export async function apiFetch<T = unknown>(path: string, init: ApiFetchInit = {
   if (response.status === 401 && tokenRefresher) {
     const refreshed = await tokenRefresher().catch(() => undefined);
     if (refreshed && refreshed !== accessToken) {
+      response = await doRequest(refreshed);
+    }
+  }
+
+  const requestId = (response as Response & { __requestId?: string }).__requestId ?? newRequestId();
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  const text = await response.text();
+  const parsed = text ? safeJsonParse(text) : null;
+
+  if (!response.ok) {
+    const problem: ProblemDetail =
+      parsed && isProblem(parsed)
+        ? parsed
+        : {
+            type: 'about:blank',
+            title: response.statusText || 'Error',
+            status: response.status,
+            code: response.status === 401 ? 'auth.unauthenticated' : 'http.error',
+            detail:
+              typeof parsed === 'object' && parsed && 'message' in parsed
+                ? String((parsed as { message: unknown }).message)
+                : undefined,
+          };
+    throw new ApiError(problem, requestId);
+  }
+
+  return parsed as T;
+}
+

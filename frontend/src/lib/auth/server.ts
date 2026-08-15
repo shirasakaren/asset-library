@@ -49,3 +49,30 @@ export async function requireSession(callbackUrl?: string): Promise<ResolvedSess
     redirect(`/auth/signin${target}`);
   }
   return session;
+}
+
+// Cached per request, keyed by access token. Layout + page can both call
+// fetchMe without producing a duplicate /auth/me round-trip.
+export const fetchMe = cache(async (session: ResolvedSession): Promise<MeResponse> => {
+  if (session.mock) return MOCK_USER;
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value as 'en' | 'id' | undefined;
+  try {
+    return await apiFetch<MeResponse>('/auth/me', {
+      accessToken: session.accessToken,
+      locale,
+      cache: 'no-store',
+    });
+  } catch (err) {
+    logger.warn('fetchMe failed', { err: err instanceof Error ? err.message : String(err) });
+    throw err;
+  }
+});
+
+export async function requireAdmin(): Promise<MeResponse> {
+  const session = await requireSession();
+  const me = await fetchMe(session);
+  if (!me.isAdmin) {
+    redirect('/403');
+  }
+  return me;
+}

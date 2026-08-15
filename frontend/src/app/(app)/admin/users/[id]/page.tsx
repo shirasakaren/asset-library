@@ -59,3 +59,43 @@ export default async function AdminUserPage({ params }: PageProps) {
           <NextLink href="/admin/users" className="inline-flex items-center gap-1 text-caption text-brand-blue hover:underline">
             <ArrowLeft className="h-3 w-3" strokeWidth={2.25} />
             Back to users
+          </NextLink>
+        }
+      />
+      <div className="grid lg:grid-cols-[1fr_2fr] gap-6">
+        <Card padding="lg" className="flex items-center gap-4">
+          <Avatar data={avatar} size={64} />
+          <div>
+            <p className="font-display text-h2 text-ink tracking-[-0.01em]">{user.displayName}</p>
+            <p className="text-caption text-ink-3 mt-1 geist-tnum">
+              Joined {formatDate(user.joinedAt, locale, { dateStyle: 'long' })}
+            </p>
+            <p className="text-caption text-ink-3 mt-1 geist-tnum">
+              {formatNumber(user.publishedAssetCount, locale)} published assets
+            </p>
+          </div>
+        </Card>
+        <Card padding="lg">
+          <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">Quick links</p>
+          <ul className="space-y-2 text-[13.5px]">
+            <li>
+              <NextLink className="link-inline" href={`/admin/assets?ownerId=${user.id}`}>
+                Assets owned by this user
+              </NextLink>
+            </li>
+            <li>
+              <NextLink className="link-inline" href={`/admin/audit?actorId=${user.id}`}>
+                Audit log entries by this user (as actor)
+              </NextLink>
+            </li>
+            <li>
+              <NextLink className="link-inline" href={`/admin/audit?subjectId=${user.id}`}>
+                Audit log entries about this user (as subject)
+              </NextLink>
+            </li>
+          </ul>
+        </Card>
+      </div>
+    </>
+  );
+}

@@ -42,3 +42,22 @@ export async function compressImage(file: File, opts: CompressOptions = {}): Pro
     }
     ctx.drawImage(bitmap, 0, 0, w, h);
     bitmap.close?.();
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob((b) => resolve(b), mime, quality),
+    );
+    // Some browsers can't encode webp from canvas — retry as jpeg.
+    const finalBlob =
+      blob ??
+      (await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob((b) => resolve(b), 'image/jpeg', quality),
+      ));
+    if (!finalBlob || finalBlob.size >= file.size) return file;
+
+    const ext = finalBlob.type === 'image/webp' ? 'webp' : 'jpg';
+    const base = file.name.replace(/\.[^.]+$/, '');
+    return new File([finalBlob], `${base}.display.${ext}`, { type: finalBlob.type });
+  } catch {
+    return file;
+  }
+}
