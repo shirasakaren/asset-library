@@ -1,5 +1,6 @@
 .next
 node_modules
 src/lib/api/schema.ts
+.openapi-cache
 public
 messages/*.json

@@ -4,5157 +4,5085 @@
  */
 
 export interface paths {
-  '/healthz': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['HealthController_liveness'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/readyz': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['HealthController_readiness'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/users/search': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Admin-only typeahead over users by email + displayName. */
-    get: operations['UsersController_search'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/users/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Public-facing user profile. */
-    get: operations['UsersController_profile'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/users': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Paginated user list with email/displayName search. */
-    get: operations['AdminUsersController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/users/{id}/promote': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Promote a user to admin. Requires confirmation phrase. */
-    post: operations['AdminUsersController_promote'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/users/{id}/demote': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Demote an admin. Refuses if it would leave zero admins or target is bootstrap. */
-    post: operations['AdminUsersController_demote'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/me': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Return the authenticated user, with derived role + avatar. */
-    get: operations['AuthController_me'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/me/locale': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Persist the user's preferred locale. */
-    patch: operations['AuthController_updateLocale'];
-    trace?: never;
-  };
-  '/auth/plugin/exchange': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Exchange a Keycloak access token for a long-lived plugin device token. */
-    post: operations['AuthController_exchangePlugin'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/plugin/refresh': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Slide the expiry of an existing plugin device token. */
-    post: operations['AuthController_refreshPlugin'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/plugin/revoke': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Revoke one of your own plugin devices. */
-    post: operations['AuthController_revokePlugin'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/plugin/devices': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List active plugin devices for the current user. */
-    get: operations['AuthController_listPluginDevices'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/plugin/devices/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Revoke a plugin device by id. */
-    delete: operations['AuthController_deletePluginDevice'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/discover': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Landing-page composite — featured slots + per-category rows. */
-    get: operations['AssetsController_discoverGet'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List published assets (or all when admin + ?includeUnpublished). */
-    get: operations['AssetsController_list'];
-    put?: never;
-    /** Create a draft asset (with its initial version row). */
-    post: operations['AssetsController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{idOrSlug}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Asset detail by id or slug. Guests see published assets only. */
-    get: operations['AssetsController_detail'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{id}/recommended': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Six related assets by category + tag overlap + same engine. */
-    get: operations['AssetsController_recommended'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Soft delete; physical purge happens after 30 days (Part 3). */
-    delete: operations['AssetsController_remove'];
-    options?: never;
-    head?: never;
-    /** Partial update; engine is immutable after publish. */
-    patch: operations['AssetsController_update'];
-    trace?: never;
-  };
-  '/assets/{id}/publish': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Flip DRAFT → PUBLISHED if every checklist item is green. */
-    post: operations['AssetsController_publish'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{id}/archive': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Archive — hides from Discover/Search. */
-    post: operations['AssetsController_archive'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{id}/restore': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Restore an archived asset within the 30-day window. */
-    post: operations['AssetsController_restore'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/categories': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Active categories, sorted, with asset counts. */
-    get: operations['CategoriesController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/categories': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List every category, active and inactive, with asset counts. */
-    get: operations['AdminCategoriesController_list'];
-    put?: never;
-    /** Create a new category. */
-    post: operations['AdminCategoriesController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/categories/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete a category. Rejected if any asset references it. */
-    delete: operations['AdminCategoriesController_remove'];
-    options?: never;
-    head?: never;
-    /** Partial update; reindexes affected assets. */
-    patch: operations['AdminCategoriesController_update'];
-    trace?: never;
-  };
-  '/admin/categories/reorder': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Replace the sortOrder sequence. */
-    post: operations['AdminCategoriesController_reorder'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/categories/icon-uploads/initiate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Presigned PUT URL for a small category icon (≤256 KB). */
-    post: operations['AdminCategoriesController_initiateIcon'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/licenses': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Active license templates (summary). */
-    get: operations['LicensesController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/licenses/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** License detail incl. full localized text. */
-    get: operations['LicensesController_detail'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/licenses': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List every license template (active + inactive). */
-    get: operations['AdminLicensesController_list'];
-    put?: never;
-    post: operations['AdminLicensesController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/licenses/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete: operations['AdminLicensesController_remove'];
-    options?: never;
-    head?: never;
-    patch: operations['AdminLicensesController_update'];
-    trace?: never;
-  };
-  '/tags': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Tag autocomplete by slug/display-name prefix. */
-    get: operations['TagsController_autocomplete'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/tags/popular': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Most-used tags overall, ranked by denormalised usage count.
-     * @description Cached server-side for ~10 minutes; usage counts are batched by the search-index worker.
-     */
-    get: operations['TagsController_popular'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/tags': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Search tags with usage counts. */
-    get: operations['AdminTagsController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/tags/merge': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Merge several source tags into one target tag. */
-    post: operations['AdminTagsController_merge'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/tags/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an unused tag (usageCount must be 0). */
-    delete: operations['AdminTagsController_remove'];
-    options?: never;
-    head?: never;
-    /** Rename a tag (slug + display name). */
-    patch: operations['AdminTagsController_update'];
-    trace?: never;
-  };
-  '/assets/{assetId}/versions': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List versions; non-owners see only published/clean rows. */
-    get: operations['VersionsController_list'];
-    put?: never;
-    /** Create a new version row (semver-unique per asset). */
-    post: operations['VersionsController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{assetId}/versions/{vid}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Update release notes; semver is immutable post-publish. */
-    patch: operations['VersionsController_update'];
-    trace?: never;
-  };
-  '/assets/{assetId}/versions/{vid}/publish': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Publish a version; transactionally flips isLatest. */
-    post: operations['VersionsController_publish'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{assetId}/versions/{vid}/reanalyze': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Re-run analyzer + AV scan for every file in this version. */
-    post: operations['VersionsController_reanalyze'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/assets/{assetId}/versions/{vid}/compatibility': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Replace the engine/version/pipeline/target matrix. */
-    post: operations['VersionsController_setCompatibility'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/uploads/initiate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Get a single-shot PUT URL for a file ≤ 100 MB. */
-    post: operations['FilesController_initiate'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/uploads/complete': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Mark a single-shot upload complete, fire analyzer + AV jobs. */
-    post: operations['FilesController_complete'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/uploads/multipart/initiate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Begin a multipart upload; returns presigned URLs for every part. */
-    post: operations['FilesController_initiateMultipart'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/uploads/multipart/sign': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Re-sign additional parts on an existing multipart upload. */
-    post: operations['FilesController_signParts'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/uploads/multipart/complete': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Finalize a multipart upload (calls CompleteMultipartUpload on S3). */
-    post: operations['FilesController_completeMultipart'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/uploads/multipart/abort': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Abort an in-flight multipart upload. */
-    post: operations['FilesController_abortMultipart'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/thumbnails/initiate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Get a presigned PUT URL for an asset thumbnail. */
-    post: operations['FilesController_initiateThumb'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/thumbnails/complete': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Wire a freshly uploaded thumbnail key to the asset, queue resize variants. */
-    post: operations['FilesController_completeThumb'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/editor-media/initiate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Get a presigned PUT URL for a TipTap embed; also returns a ~6-day GET URL. */
-    post: operations['FilesController_initiateEditorMedia'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/editor-media/refresh': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Re-sign an existing editor-media key, returning a fresh ~6-day GET URL. */
-    post: operations['FilesController_refreshEditorMedia'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/versions/{versionId}/reorder': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Persist a new display order for a version's package files. */
-    post: operations['FilesController_reorderFiles'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/files/{fileId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete a single uploaded package file (owner/admin). */
-    delete: operations['FilesController_deleteFile'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/gifs/search': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Proxy GIF search (Tenor/Giphy) for the comment composer. */
-    get: operations['GifsController_search'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/downloads/options': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List downloadable files for the popup, no URLs, no Download rows. */
-    get: operations['DownloadsController_options'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/downloads': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Issue signed URLs, record Download rows, auto-save to library. */
-    post: operations['DownloadsController_initiate'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/library': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List the current user's library. */
-    get: operations['LibraryController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/library/items': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Add an asset to the current user's library (idempotent). */
-    post: operations['LibraryController_add'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/library/items/{assetId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Remove an asset from the current user's library. */
-    delete: operations['LibraryController_remove'];
-    options?: never;
-    head?: never;
-    /** Toggle the `hidden` flag on a library entry. */
-    patch: operations['LibraryController_setHidden'];
-    trace?: never;
-  };
-  '/assets/{assetId}/comments': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List threaded comments / issues under an asset. */
-    get: operations['CommentsController_list'];
-    put?: never;
-    /** Create a top-level comment/issue or a reply (max depth 5). */
-    post: operations['CommentsController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/comments/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Admin-only soft delete. */
-    delete: operations['CommentsController_remove'];
-    options?: never;
-    head?: never;
-    /** Author edit; sets editedAt. */
-    patch: operations['CommentsController_edit'];
-    trace?: never;
-  };
-  '/comments/{id}/status': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Asset owner or admin transitions an issue status. */
-    patch: operations['CommentsController_setStatus'];
-    trace?: never;
-  };
-  '/reports': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Submit a report on an asset (5 per user per day). */
-    post: operations['ReportsController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/reports': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Paginated moderation queue. */
-    get: operations['ReportsController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/reports/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Report detail with linked asset snapshot. */
-    get: operations['ReportsController_detail'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/reports/{id}/start-review': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Flip OPEN → REVIEWING. */
-    post: operations['ReportsController_startReview'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/reports/{id}/action': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Action a report — archive / delete / force-delete the asset (atomically). */
-    post: operations['ReportsController_action'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/reports/{id}/dismiss': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Dismiss with admin notes. */
-    post: operations['ReportsController_dismiss'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/dashboard': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Composite admin home payload: counts, storage, charts, top assets, recent audit. */
-    get: operations['AdminDashboardController_get'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/storage/users': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Per-user storage usage (latest snapshot, sorted by bytes desc). */
-    get: operations['AdminStorageController_users'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/storage/assets': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Per-asset storage usage, sorted by bytes desc. */
-    get: operations['AdminStorageController_assets'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/assets': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Filterable cross-status asset list with X-Total-* status headers. */
-    get: operations['AdminAssetsController_listAll'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/assets/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Admin detail view (sees DRAFT/ARCHIVED/DELETED too). */
-    get: operations['AdminAssetsController_detail'];
-    put?: never;
-    post?: never;
-    /** Soft delete with mandatory reason; physical purge after 30 days. */
-    delete: operations['AdminAssetsController_softDelete'];
-    options?: never;
-    head?: never;
-    /** Admin edit on behalf of contributor (bypasses owner check). */
-    patch: operations['AdminAssetsController_edit'];
-    trace?: never;
-  };
-  '/admin/assets/{id}/archive': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Admin-forced archive with mandatory reason. */
-    post: operations['AdminAssetsController_archive'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/assets/{id}/restore': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Restore an archived or soft-deleted asset. */
-    post: operations['AdminAssetsController_restore'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/assets/{id}/force-delete': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Immediate hard delete including S3. Requires confirmation phrase. */
-    post: operations['AdminAssetsController_forceDelete'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/assets/{id}/transfer': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Reassign ownership to another user. */
-    post: operations['AdminAssetsController_transfer'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/webhook-deliveries': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Recent n8n webhook delivery attempts (admin only). */
-    get: operations['WebhookDeliveriesController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/asset-requests': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List requests — admins see all; others see only their own. */
-    get: operations['RequestsController_list'];
-    put?: never;
-    /** Submit a new asset-sourcing request. */
-    post: operations['RequestsController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/asset-requests/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Single request — owner or admin only. */
-    get: operations['RequestsController_get'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/asset-requests': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List requests across every requester. */
-    get: operations['AdminRequestsController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/asset-requests/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Fetch a single asset request by id (admin view). */
-    get: operations['AdminRequestsController_getOne'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Admin transition: IN_REVIEW | PENDING | APPROVED | REJECTED. */
-    patch: operations['AdminRequestsController_update'];
-    trace?: never;
-  };
-  '/admin/featured': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List every featured slot, active and inactive. */
-    get: operations['AdminFeaturedController_list'];
-    put?: never;
-    /** Create a featured slot. Caps active at 5. */
-    post: operations['AdminFeaturedController_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/featured/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Hard delete the slot. Asset is not affected. */
-    delete: operations['AdminFeaturedController_remove'];
-    options?: never;
-    head?: never;
-    /** Partial update — active flag, sort order, overrides. */
-    patch: operations['AdminFeaturedController_update'];
-    trace?: never;
-  };
-  '/admin/featured/reorder': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Replace the sortOrder sequence in one shot. */
-    post: operations['AdminFeaturedController_reorder'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/featured/banner-uploads/initiate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Presigned PUT URL for a custom banner. */
-    post: operations['AdminFeaturedController_initiateBanner'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/notifications': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Paginated notification inbox for the current user. */
-    get: operations['NotificationsController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/notifications/unread-count': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Cheap unread counter for the bell badge. */
-    get: operations['NotificationsController_unreadCount'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/notifications/{id}/read': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Mark a single notification as read. */
-    post: operations['NotificationsController_markRead'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/notifications/read-all': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Bulk-mark every unread notification as read. */
-    post: operations['NotificationsController_markAllRead'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/me/analytics/summary': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** My analytics: totals + top 5 + 90 days of daily downloads. */
-    get: operations['AnalyticsController_mySummary'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/me/analytics/assets/{assetId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Per-asset breakdown (owner / admin only). */
-    get: operations['AnalyticsController_assetDetail'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/analytics/platform': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Platform-wide downloads/publishes/new-users series for a date range. */
-    get: operations['AnalyticsController_platform'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/analytics/assets': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Leaderboard of assets by downloads/saves. */
-    get: operations['AnalyticsController_assetLeaderboard'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/analytics/users': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Leaderboard of contributors by uploaded count + downloads. */
-    get: operations['AnalyticsController_userLeaderboard'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/audit': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Filterable audit log read view. */
-    get: operations['AdminAuditController_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/audit/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Full audit entry detail incl. metadata payload. */
-    get: operations['AdminAuditController_detail'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/search/assets': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Full-text search over assets via Meilisearch. */
-    get: operations['SearchController_searchAssets'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/search/tags': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Fuzzy / partial-match tag autocomplete via Meilisearch. */
-    get: operations['SearchController_searchTags'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/queues': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Operational dashboard for BullMQ queues (admin only). */
-    get: operations['QueueDashboardController_dashboard'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/metrics': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Prometheus text-format scrape endpoint. */
-    get: operations['MetricsController_metricsEndpoint'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/me': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Same payload as /auth/me, plus the user's active plugin devices. */
-    get: operations['MeController_me'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/me/devices/{id}/revoke': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Revoke one of the user's plugin devices. */
-    post: operations['MeController_revokeDevice'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/me/logout': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Logout side-effect: audit row + WS broadcast to the user's open tabs. */
-    post: operations['MeController_logout'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/healthz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthController_liveness"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/readyz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthController_readiness"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Admin-only typeahead over users by email + displayName. */
+        get: operations["UsersController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public-facing user profile. */
+        get: operations["UsersController_profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Paginated user list with email/displayName search. */
+        get: operations["AdminUsersController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}/promote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Promote a user to admin. Requires confirmation phrase. */
+        post: operations["AdminUsersController_promote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}/demote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Demote an admin. Refuses if it would leave zero admins or target is bootstrap. */
+        post: operations["AdminUsersController_demote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the authenticated user, with derived role + avatar. */
+        get: operations["AuthController_me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me/locale": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Persist the user's preferred locale. */
+        patch: operations["AuthController_updateLocale"];
+        trace?: never;
+    };
+    "/auth/plugin/exchange": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exchange a Keycloak access token for a long-lived plugin device token. */
+        post: operations["AuthController_exchangePlugin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/plugin/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Slide the expiry of an existing plugin device token. */
+        post: operations["AuthController_refreshPlugin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/plugin/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke one of your own plugin devices. */
+        post: operations["AuthController_revokePlugin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/plugin/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active plugin devices for the current user. */
+        get: operations["AuthController_listPluginDevices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/plugin/devices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke a plugin device by id. */
+        delete: operations["AuthController_deletePluginDevice"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/discover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Landing-page composite — featured slots + per-category rows. */
+        get: operations["AssetsController_discoverGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List published assets (or all when admin + ?includeUnpublished). */
+        get: operations["AssetsController_list"];
+        put?: never;
+        /** Create a draft asset (with its initial version row). */
+        post: operations["AssetsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{idOrSlug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Asset detail by id or slug. Guests see published assets only. */
+        get: operations["AssetsController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{id}/recommended": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Six related assets by category + tag overlap + same engine. */
+        get: operations["AssetsController_recommended"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Soft delete; physical purge happens after 30 days (Part 3). */
+        delete: operations["AssetsController_remove"];
+        options?: never;
+        head?: never;
+        /** Partial update; engine is immutable after publish. */
+        patch: operations["AssetsController_update"];
+        trace?: never;
+    };
+    "/assets/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Flip DRAFT → PUBLISHED if every checklist item is green. */
+        post: operations["AssetsController_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive — hides from Discover/Search. */
+        post: operations["AssetsController_archive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore an archived asset within the 30-day window. */
+        post: operations["AssetsController_restore"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Active categories, sorted, with asset counts. */
+        get: operations["CategoriesController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List every category, active and inactive, with asset counts. */
+        get: operations["AdminCategoriesController_list"];
+        put?: never;
+        /** Create a new category. */
+        post: operations["AdminCategoriesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a category. Rejected if any asset references it. */
+        delete: operations["AdminCategoriesController_remove"];
+        options?: never;
+        head?: never;
+        /** Partial update; reindexes affected assets. */
+        patch: operations["AdminCategoriesController_update"];
+        trace?: never;
+    };
+    "/admin/categories/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Replace the sortOrder sequence. */
+        post: operations["AdminCategoriesController_reorder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/categories/icon-uploads/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Presigned PUT URL for a small category icon (≤256 KB). */
+        post: operations["AdminCategoriesController_initiateIcon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/licenses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Active license templates (summary). */
+        get: operations["LicensesController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/licenses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** License detail incl. full localized text. */
+        get: operations["LicensesController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/licenses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List every license template (active + inactive). */
+        get: operations["AdminLicensesController_list"];
+        put?: never;
+        post: operations["AdminLicensesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/licenses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["AdminLicensesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["AdminLicensesController_update"];
+        trace?: never;
+    };
+    "/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tag autocomplete by slug/display-name prefix. */
+        get: operations["TagsController_autocomplete"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tags/popular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Most-used tags overall, ranked by denormalised usage count.
+         * @description Cached server-side for ~10 minutes; usage counts are batched by the search-index worker.
+         */
+        get: operations["TagsController_popular"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search tags with usage counts. */
+        get: operations["AdminTagsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/tags/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Merge several source tags into one target tag. */
+        post: operations["AdminTagsController_merge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/tags/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an unused tag (usageCount must be 0). */
+        delete: operations["AdminTagsController_remove"];
+        options?: never;
+        head?: never;
+        /** Rename a tag (slug + display name). */
+        patch: operations["AdminTagsController_update"];
+        trace?: never;
+    };
+    "/assets/{assetId}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List versions; non-owners see only published/clean rows. */
+        get: operations["VersionsController_list"];
+        put?: never;
+        /** Create a new version row (semver-unique per asset). */
+        post: operations["VersionsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{assetId}/versions/{vid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update release notes; semver is immutable post-publish. */
+        patch: operations["VersionsController_update"];
+        trace?: never;
+    };
+    "/assets/{assetId}/versions/{vid}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish a version; transactionally flips isLatest. */
+        post: operations["VersionsController_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{assetId}/versions/{vid}/reanalyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Re-run analyzer + AV scan for every file in this version. */
+        post: operations["VersionsController_reanalyze"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assets/{assetId}/versions/{vid}/compatibility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Replace the engine/version/pipeline/target matrix. */
+        post: operations["VersionsController_setCompatibility"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/uploads/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get a single-shot PUT URL for a file ≤ 100 MB. */
+        post: operations["FilesController_initiate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/uploads/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark a single-shot upload complete, fire analyzer + AV jobs. */
+        post: operations["FilesController_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/uploads/multipart/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Begin a multipart upload; returns presigned URLs for every part. */
+        post: operations["FilesController_initiateMultipart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/uploads/multipart/sign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Re-sign additional parts on an existing multipart upload. */
+        post: operations["FilesController_signParts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/uploads/multipart/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finalize a multipart upload (calls CompleteMultipartUpload on S3). */
+        post: operations["FilesController_completeMultipart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/uploads/multipart/abort": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Abort an in-flight multipart upload. */
+        post: operations["FilesController_abortMultipart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/thumbnails/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get a presigned PUT URL for an asset thumbnail. */
+        post: operations["FilesController_initiateThumb"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/thumbnails/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Wire a freshly uploaded thumbnail key to the asset, queue resize variants. */
+        post: operations["FilesController_completeThumb"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/editor-media/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get a presigned PUT URL for a TipTap embed; also returns a ~6-day GET URL. */
+        post: operations["FilesController_initiateEditorMedia"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/editor-media/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Re-sign an existing editor-media key, returning a fresh ~6-day GET URL. */
+        post: operations["FilesController_refreshEditorMedia"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/versions/{versionId}/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Persist a new display order for a version's package files. */
+        post: operations["FilesController_reorderFiles"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a single uploaded package file (owner/admin). */
+        delete: operations["FilesController_deleteFile"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gifs/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Proxy GIF search (Tenor/Giphy) for the comment composer. */
+        get: operations["GifsController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/downloads/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List downloadable files for the popup, no URLs, no Download rows. */
+        get: operations["DownloadsController_options"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/downloads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Issue signed URLs, record Download rows, auto-save to library. */
+        post: operations["DownloadsController_initiate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/library": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the current user's library. */
+        get: operations["LibraryController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/library/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add an asset to the current user's library (idempotent). */
+        post: operations["LibraryController_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/library/items/{assetId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an asset from the current user's library. */
+        delete: operations["LibraryController_remove"];
+        options?: never;
+        head?: never;
+        /** Toggle the `hidden` flag on a library entry. */
+        patch: operations["LibraryController_setHidden"];
+        trace?: never;
+    };
+    "/assets/{assetId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List threaded comments / issues under an asset. */
+        get: operations["CommentsController_list"];
+        put?: never;
+        /** Create a top-level comment/issue or a reply (max depth 5). */
+        post: operations["CommentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Admin-only soft delete. */
+        delete: operations["CommentsController_remove"];
+        options?: never;
+        head?: never;
+        /** Author edit; sets editedAt. */
+        patch: operations["CommentsController_edit"];
+        trace?: never;
+    };
+    "/comments/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Asset owner or admin transitions an issue status. */
+        patch: operations["CommentsController_setStatus"];
+        trace?: never;
+    };
+    "/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit a report on an asset (5 per user per day). */
+        post: operations["ReportsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Paginated moderation queue. */
+        get: operations["ReportsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/reports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report detail with linked asset snapshot. */
+        get: operations["ReportsController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/reports/{id}/start-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Flip OPEN → REVIEWING. */
+        post: operations["ReportsController_startReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/reports/{id}/action": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Action a report — archive / delete / force-delete the asset (atomically). */
+        post: operations["ReportsController_action"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/reports/{id}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dismiss with admin notes. */
+        post: operations["ReportsController_dismiss"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Composite admin home payload: counts, storage, charts, top assets, recent audit. */
+        get: operations["AdminDashboardController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/storage/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Per-user storage usage (latest snapshot, sorted by bytes desc). */
+        get: operations["AdminStorageController_users"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/storage/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Per-asset storage usage, sorted by bytes desc. */
+        get: operations["AdminStorageController_assets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Filterable cross-status asset list with X-Total-* status headers. */
+        get: operations["AdminAssetsController_listAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/assets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Admin detail view (sees DRAFT/ARCHIVED/DELETED too). */
+        get: operations["AdminAssetsController_detail"];
+        put?: never;
+        post?: never;
+        /** Soft delete with mandatory reason; physical purge after 30 days. */
+        delete: operations["AdminAssetsController_softDelete"];
+        options?: never;
+        head?: never;
+        /** Admin edit on behalf of contributor (bypasses owner check). */
+        patch: operations["AdminAssetsController_edit"];
+        trace?: never;
+    };
+    "/admin/assets/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Admin-forced archive with mandatory reason. */
+        post: operations["AdminAssetsController_archive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/assets/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore an archived or soft-deleted asset. */
+        post: operations["AdminAssetsController_restore"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/assets/{id}/force-delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Immediate hard delete including S3. Requires confirmation phrase. */
+        post: operations["AdminAssetsController_forceDelete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/assets/{id}/transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reassign ownership to another user. */
+        post: operations["AdminAssetsController_transfer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/webhook-deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recent n8n webhook delivery attempts (admin only). */
+        get: operations["WebhookDeliveriesController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/asset-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List requests — admins see all; others see only their own. */
+        get: operations["RequestsController_list"];
+        put?: never;
+        /** Submit a new asset-sourcing request. */
+        post: operations["RequestsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/asset-requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Single request — owner or admin only. */
+        get: operations["RequestsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/asset-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List requests across every requester. */
+        get: operations["AdminRequestsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/asset-requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Fetch a single asset request by id (admin view). */
+        get: operations["AdminRequestsController_getOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Admin transition: IN_REVIEW | PENDING | APPROVED | REJECTED. */
+        patch: operations["AdminRequestsController_update"];
+        trace?: never;
+    };
+    "/admin/featured": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List every featured slot, active and inactive. */
+        get: operations["AdminFeaturedController_list"];
+        put?: never;
+        /** Create a featured slot. Caps active at 5. */
+        post: operations["AdminFeaturedController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/featured/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Hard delete the slot. Asset is not affected. */
+        delete: operations["AdminFeaturedController_remove"];
+        options?: never;
+        head?: never;
+        /** Partial update — active flag, sort order, overrides. */
+        patch: operations["AdminFeaturedController_update"];
+        trace?: never;
+    };
+    "/admin/featured/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Replace the sortOrder sequence in one shot. */
+        post: operations["AdminFeaturedController_reorder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/featured/banner-uploads/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Presigned PUT URL for a custom banner. */
+        post: operations["AdminFeaturedController_initiateBanner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Paginated notification inbox for the current user. */
+        get: operations["NotificationsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cheap unread counter for the bell badge. */
+        get: operations["NotificationsController_unreadCount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark a single notification as read. */
+        post: operations["NotificationsController_markRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bulk-mark every unread notification as read. */
+        post: operations["NotificationsController_markAllRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/analytics/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My analytics: totals + top 5 + 90 days of daily downloads. */
+        get: operations["AnalyticsController_mySummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/analytics/assets/{assetId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Per-asset breakdown (owner / admin only). */
+        get: operations["AnalyticsController_assetDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics/platform": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Platform-wide downloads/publishes/new-users series for a date range. */
+        get: operations["AnalyticsController_platform"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Leaderboard of assets by downloads/saves. */
+        get: operations["AnalyticsController_assetLeaderboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Leaderboard of contributors by uploaded count + downloads. */
+        get: operations["AnalyticsController_userLeaderboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Filterable audit log read view. */
+        get: operations["AdminAuditController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/audit/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Full audit entry detail incl. metadata payload. */
+        get: operations["AdminAuditController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/search/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Full-text search over assets via Meilisearch. */
+        get: operations["SearchController_searchAssets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/search/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Fuzzy / partial-match tag autocomplete via Meilisearch. */
+        get: operations["SearchController_searchTags"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/queues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Operational dashboard for BullMQ queues (admin only). */
+        get: operations["QueueDashboardController_dashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Prometheus text-format scrape endpoint. */
+        get: operations["MetricsController_metricsEndpoint"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Same payload as /auth/me, plus the user's active plugin devices. */
+        get: operations["MeController_me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/devices/{id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke one of the user's plugin devices. */
+        post: operations["MeController_revokeDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout side-effect: audit row + WS broadcast to the user's open tabs. */
+        post: operations["MeController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    UserSearchResultDto: {
-      id: string;
-      email: string;
-      displayName: string;
-      isAdmin: boolean;
-    };
-    AvatarDto: {
-      /** @example ID */
-      initials: string;
-      /** @example brand-blue */
-      bgColor: string;
-      /** @example ink-white */
-      fgColor: string;
-    };
-    UserPublicProfileDto: {
-      id: string;
-      displayName: string;
-      avatar: components['schemas']['AvatarDto'];
-      joinedAt: string;
-      publishedAssetCount: number;
-      /** @description Only present when the requester is the user themselves or an admin. */
-      email?: string;
-    };
-    ConfirmActionDto: {
-      /** @example I understand */
-      confirm: string;
-      confirmedAt: string;
-    };
-    MeResponseDto: {
-      /** @example cln1abcde */
-      id: string;
-      /** @example admin@labmgm.org */
-      email: string;
-      /** @example Idham */
-      displayName: string;
-      /**
-       * @example en
-       * @enum {string}
-       */
-      locale: 'en' | 'id';
-      isAdmin: boolean;
-      /** @enum {string} */
-      role: 'admin' | 'contributor' | 'user';
-      avatar: components['schemas']['AvatarDto'];
-      hasPublishedAssets: boolean;
-      /**
-       * @description Stub returns 0 until Part 3 notification fan-out lands.
-       * @example 0
-       */
-      unreadNotifications: number;
-      /** @description ISO 8601 UTC. */
-      createdAt: string;
-    };
-    UpdateLocaleDto: {
-      /** @enum {string} */
-      locale: 'en' | 'id';
-    };
-    PluginExchangeDto: {
-      /** @description Bearer token obtained from Keycloak in the plugin loopback flow. */
-      keycloakAccessToken: string;
-      /** @example Unity 2022.3 — DESKTOP-ABCD */
-      deviceLabel: string;
-    };
-    PluginExchangeResponseDto: {
-      deviceToken: string;
-      deviceId: string;
-      expiresAt: string;
-    };
-    PluginRefreshDto: {
-      deviceToken: string;
-    };
-    PluginRefreshResponseDto: {
-      expiresAt: string;
-    };
-    PluginRevokeDto: {
-      deviceId: string;
-    };
-    PluginDeviceDto: {
-      id: string;
-      deviceLabel: string;
-      createdAt: string;
-      lastUsedAt?: string;
-      expiresAt: string;
-    };
-    AssetCategoryRefDto: {
-      id: string;
-      slug: string;
-      name: string;
-    };
-    AssetLicenseRefDto: {
-      id: string;
-      slug: string;
-      name: string;
-    };
-    AssetTagDto: {
-      id: string;
-      slug: string;
-      displayName: string;
-    };
-    AssetThumbnailDto: {
-      key?: string;
-      url?: string;
-    };
-    AssetOwnerDto: {
-      id: string;
-      displayName: string;
-      avatar: components['schemas']['AvatarDto'];
-    };
-    AssetVersionFileTreeNodeDto: {
-      id: string;
-      relativePath: string;
-      kind: string;
-      bytes: string;
-      meta?: Record<string, never>;
-    };
-    AssetVersionCompatibilityDto: {
-      engineVersion: string;
-      renderPipelines: string[];
-      targets: string[];
-    };
-    AssetVersionDependencyDto: {
-      name: string;
-      version?: string;
-      source: string;
-    };
-    AssetVersionPayloadDto: {
-      id: string;
-      semver: string;
-      /** @description TipTap JSON keyed by locale. */
-      releaseNotes: Record<string, never>;
-      publishedAt?: string;
-      isLatest: boolean;
-      analysisStatus: string;
-      bytesTotal: string;
-      fileCount: number;
-      files: components['schemas']['AssetVersionFileTreeNodeDto'][];
-      compatibility: components['schemas']['AssetVersionCompatibilityDto'][];
-      dependencies: components['schemas']['AssetVersionDependencyDto'][];
-      requiresEmptyProject: boolean;
-    };
-    AssetDetailDto: {
-      id: string;
-      slug: string;
-      title: string;
-      shortDescription: string;
-      /** @description TipTap JSON. */
-      longDescription: Record<string, never>;
-      availableLocales: string[];
-      /** @enum {string} */
-      engine:
-        | 'UNITY'
-        | 'UNREAL'
-        | 'BLENDER'
-        | 'STANDALONE_3D'
-        | 'AUDIO'
-        | 'IMAGE'
-        | 'VIDEO'
-        | 'OTHER'
-        | 'ENGINE_AGNOSTIC';
-      category: components['schemas']['AssetCategoryRefDto'];
-      license: components['schemas']['AssetLicenseRefDto'];
-      tags: components['schemas']['AssetTagDto'][];
-      thumbnail: components['schemas']['AssetThumbnailDto'];
-      thumbnailAutoGenerated?: components['schemas']['AssetThumbnailDto'];
-      previewMedia: Record<string, never>[];
-      owner: components['schemas']['AssetOwnerDto'];
-      versions: components['schemas']['AssetVersionPayloadDto'][];
-      totalDownloads: number;
-      totalSaves: number;
-      /** @enum {string} */
-      status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED';
-      publishedAt?: string;
-      updatedAt: string;
-      createdAt: string;
-      isSaved: boolean;
-      canEdit: boolean;
-      canDelete: boolean;
-      canArchive: boolean;
-    };
-    AssetSummaryDto: {
-      id: string;
-      slug: string;
-      title: string;
-      shortDescription: string;
-      /** @enum {string} */
-      engine:
-        | 'UNITY'
-        | 'UNREAL'
-        | 'BLENDER'
-        | 'STANDALONE_3D'
-        | 'AUDIO'
-        | 'IMAGE'
-        | 'VIDEO'
-        | 'OTHER'
-        | 'ENGINE_AGNOSTIC';
-      /** @enum {string} */
-      status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED';
-      thumbnailUrl?: string;
-      ownerDisplayName: string;
-      categoryName: string;
-      totalDownloads: number;
-      totalSaves: number;
-      updatedAt: string;
-      publishedAt?: string;
-    };
-    AssetTranslationInputDto: {
-      /** @enum {string} */
-      locale: 'en' | 'id';
-      shortDescription: string;
-      /** @description TipTap JSON document (full schema). */
-      longDescription: Record<string, never>;
-    };
-    CreateAssetDto: {
-      title: string;
-      /** @enum {string} */
-      engine:
-        | 'UNITY'
-        | 'UNREAL'
-        | 'BLENDER'
-        | 'STANDALONE_3D'
-        | 'AUDIO'
-        | 'IMAGE'
-        | 'VIDEO'
-        | 'OTHER'
-        | 'ENGINE_AGNOSTIC';
-      categoryId: string;
-      licenseId: string;
-      /** @example 1.0.0 */
-      semver: string;
-      translations: components['schemas']['AssetTranslationInputDto'][];
-      /** @description Free-form tag display names. */
-      tags?: string[];
-      requiresEmptyProject?: boolean;
-    };
-    UpdateAssetDto: {
-      title?: string;
-      /** @description Slug. Server enforces uniqueness; rejected after publish. */
-      slug?: string;
-      /**
-       * @description Locked after publish (server rejects with 400).
-       * @enum {string}
-       */
-      engine?:
-        | 'UNITY'
-        | 'UNREAL'
-        | 'BLENDER'
-        | 'STANDALONE_3D'
-        | 'AUDIO'
-        | 'IMAGE'
-        | 'VIDEO'
-        | 'OTHER'
-        | 'ENGINE_AGNOSTIC';
-      /** @description Semver of the latest version. Routed to the latest AssetVersion row, not the Asset itself. Locked after publish. */
-      semver?: string;
-      categoryId?: string;
-      licenseId?: string;
-      translations?: components['schemas']['AssetTranslationInputDto'][];
-      tags?: string[];
-      requiresEmptyProject?: boolean;
-      /** @description Owner-curated preview gallery. Array of `{ id, kind, key, label, mime, viewUrl? }`. `viewUrl` is ignored on write — the backend always re-signs from `key`. */
-      previewMedia?: Record<string, never>[];
-    };
-    CategoryDto: {
-      id: string;
-      slug: string;
-      /** @example 3D Models */
-      name: string;
-      iconKey?: string;
-      sortOrder: number;
-      /** @description Count of published assets in this category. */
-      assetCount: number;
-    };
-    AdminCategoryDto: {
-      id: string;
-      slug: string;
-      name: Record<string, never>;
-      iconKey?: string;
-      iconUrl?: string;
-      sortOrder: number;
-      isActive: boolean;
-      assetCount: number;
-      createdAt: string;
-      updatedAt: string;
-    };
-    CreateCategoryDto: {
-      /** @example 3d-models */
-      slug: string;
-      /** @description Multilingual label: { en, id }. */
-      name: Record<string, never>;
-      /** @description S3 key for an SVG / small PNG icon. */
-      iconKey?: string;
-      /** @default 999 */
-      sortOrder: number;
-      /** @default true */
-      isActive: boolean;
-    };
-    UpdateCategoryDto: {
-      slug?: string;
-      name?: Record<string, never>;
-      iconKey?: string;
-      sortOrder?: number;
-      isActive?: boolean;
-    };
-    ReorderCategoriesDto: {
-      orderedIds: string[];
-    };
-    CategoryIconInitiateDto: {
-      contentType: string;
-      bytes: number;
-    };
-    LicenseSummaryDto: {
-      id: string;
-      slug: string;
-      name: string;
-      description: string;
-      sortOrder: number;
-    };
-    LicenseDetailDto: {
-      id: string;
-      slug: string;
-      name: string;
-      description: string;
-      sortOrder: number;
-      fullText: string;
-    };
-    AdminLicenseDto: {
-      id: string;
-      slug: string;
-      name: string;
-      description: Record<string, never>;
-      fullText: Record<string, never>;
-      sortOrder: number;
-      isActive: boolean;
-      assetCount: number;
-      createdAt: string;
-      updatedAt: string;
-    };
-    CreateLicenseDto: {
-      slug: string;
-      name: string;
-      /** @description { en, id } short description. */
-      description: Record<string, never>;
-      /** @description { en, id } full legal text. */
-      fullText: Record<string, never>;
-      /** @default 999 */
-      sortOrder: number;
-      /** @default true */
-      isActive: boolean;
-    };
-    UpdateLicenseDto: {
-      name?: string;
-      description?: Record<string, never>;
-      fullText?: Record<string, never>;
-      sortOrder?: number;
-      isActive?: boolean;
-    };
-    TagDto: {
-      id: string;
-      slug: string;
-      displayName: string;
-      /** @description Number of assets currently using this tag. */
-      usageCount: number;
-    };
-    MergeTagsDto: {
-      fromTagIds: string[];
-      intoTagId: string;
-    };
-    UpdateTagDto: {
-      slug?: string;
-      displayName?: string;
-    };
-    AdminTagDto: {
-      id: string;
-      slug: string;
-      displayName: string;
-      usageCount: number;
-      createdAt: string;
-    };
-    VersionSummaryDto: {
-      id: string;
-      semver: string;
-      isLatest: boolean;
-      analysisStatus: string;
-      publishedAt?: string;
-      bytesTotal: string;
-      fileCount: number;
-      createdAt: string;
-    };
-    CreateVersionDto: {
-      /** @example 1.2.0 */
-      semver: string;
-      /** @description TipTap JSON keyed by locale: { en?, id? }. */
-      releaseNotes?: Record<string, never>;
-    };
-    UpdateVersionDto: {
-      /** @description TipTap JSON keyed by locale. */
-      releaseNotes?: Record<string, never>;
-    };
-    CompatibilityRowDto: {
-      /** @example 6000.1.14f1 */
-      engineVersion: string;
-      /** @description Unity render pipelines: URP|HDRP|SRP|BUILT_IN */
-      renderPipelines?: string[];
-      /** @description Platform targets (WINDOWS|MAC|...). */
-      targets: string[];
-    };
-    SetCompatibilityDto: {
-      rows: components['schemas']['CompatibilityRowDto'][];
-    };
-    InitiateUploadDto: {
-      assetId: string;
-      versionId: string;
-      relativePath: string;
-      contentType: string;
-      bytes: number;
-    };
-    InitiateUploadResponseDto: {
-      uploadId: string;
-      putUrl: string;
-      key: string;
-      fileId: string;
-      expiresAt: string;
-    };
-    CompleteUploadDto: {
-      uploadId: string;
-      etag?: string;
-    };
-    InitiateMultipartDto: {
-      assetId: string;
-      versionId: string;
-      relativePath: string;
-      contentType: string;
-      bytes: number;
-      partCount: number;
-    };
-    InitiateMultipartResponseDto: {
-      uploadId: string;
-      key: string;
-      fileId: string;
-      partUrls: string[];
-      expiresAt: string;
-    };
-    SignMultipartPartsDto: {
-      uploadId: string;
-      partNumbers: number[];
-    };
-    CompletedPartDto: {
-      partNumber: number;
-      etag?: string;
-    };
-    CompleteMultipartDto: {
-      uploadId: string;
-      parts?: components['schemas']['CompletedPartDto'][];
-    };
-    AbortMultipartDto: {
-      uploadId: string;
-    };
-    InitiateThumbnailDto: {
-      assetId: string;
-      contentType: string;
-      bytes: number;
-    };
-    InitiateThumbnailResponseDto: {
-      putUrl: string;
-      key: string;
-      expiresAt: string;
-    };
-    CompleteThumbnailDto: {
-      assetId: string;
-      key: string;
-    };
-    InitiateEditorMediaDto: {
-      contentType: string;
-      bytes: number;
-    };
-    InitiateEditorMediaResponseDto: {
-      putUrl: string;
-      key: string;
-      viewUrl: string;
-      expiresAt: string;
-    };
-    RefreshEditorMediaDto: {
-      key: string;
-    };
-    RefreshEditorMediaResponseDto: {
-      viewUrl: string;
-      expiresAt: string;
-    };
-    ReorderFilesDto: {
-      /** @description File ids in the desired display order. */
-      orderedFileIds: string[];
-    };
-    DownloadFileItemDto: {
-      id: string;
-      relativePath: string;
-      kind: string;
-      bytes: string;
-      getUrl?: string;
-      expiresAt?: string;
-    };
-    OlderVersionRefDto: {
-      id: string;
-      semver: string;
-      publishedAt?: string;
-    };
-    DownloadResponseDto: {
-      asset: Record<string, never>;
-      version: Record<string, never>;
-      files: components['schemas']['DownloadFileItemDto'][];
-      olderVersions: components['schemas']['OlderVersionRefDto'][];
-    };
-    InitiateDownloadDto: {
-      assetId: string;
-      versionId: string;
-      fileId?: string;
-      /** @enum {string} */
-      source: 'WEB' | 'UNITY' | 'UNREAL';
-    };
-    AddLibraryItemDto: {
-      assetId: string;
-    };
-    UpdateLibraryItemDto: {
-      hidden: boolean;
-    };
-    CommentAuthorDto: {
-      id: string;
-      displayName: string;
-      avatar: Record<string, never>;
-    };
-    CommentNodeDto: {
-      id: string;
-      /** @enum {string} */
-      kind: 'COMMENT' | 'ISSUE';
-      parentId?: Record<string, never>;
-      depth: number;
-      body: Record<string, never>;
-      /** @enum {string} */
-      status?: 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED';
-      editedAt?: string;
-      createdAt: string;
-      author: components['schemas']['CommentAuthorDto'];
-      replies: components['schemas']['CommentNodeDto'][];
-    };
-    CommentListResponseDto: {
-      items: components['schemas']['CommentNodeDto'][];
-      pageInfo: Record<string, never>;
-    };
-    CreateCommentDto: {
-      /** @enum {string} */
-      kind: 'COMMENT' | 'ISSUE';
-      parentId?: string;
-      /** @description Lite TipTap JSON document. */
-      body: Record<string, never>;
-    };
-    UpdateCommentDto: {
-      /** @description Lite TipTap JSON document. */
-      body: Record<string, never>;
-    };
-    UpdateIssueStatusDto: {
-      /** @enum {string} */
-      status: 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED';
-    };
-    CreateReportDto: {
-      assetId: string;
-      /** @enum {string} */
-      category: 'MALICIOUS_FILE' | 'BROKEN_ASSET';
-      notes: string;
-    };
-    ReportDto: {
-      id: string;
-      /** @enum {string} */
-      category: 'MALICIOUS_FILE' | 'BROKEN_ASSET';
-      notes: string;
-      /** @enum {string} */
-      status: 'OPEN' | 'REVIEWING' | 'ACTIONED' | 'DISMISSED';
-      assetId: string;
-      assetTitle: string;
-      assetSlug: string;
-      reporter: Record<string, never>;
-      adminNotes?: Record<string, never>;
-      createdAt: string;
-      resolvedAt?: string;
-    };
-    ActionReportDto: {
-      adminNotes: string;
-      /** @enum {string} */
-      action: 'NOTHING' | 'ARCHIVE_ASSET' | 'DELETE_ASSET' | 'FORCE_DELETE_ASSET';
-      /** @description Required when action=FORCE_DELETE_ASSET — value: "I understand". */
-      confirm?: string;
-      confirmedAt?: string;
-    };
-    DismissReportDto: {
-      adminNotes: string;
-    };
-    AdminAssetActionDto: {
-      /** @description Required moderator reason recorded in the audit log. */
-      reason: string;
-    };
-    AdminAssetForceDeleteDto: {
-      /** @description Required moderator reason recorded in the audit log. */
-      reason: string;
-      /** @example I understand */
-      confirm: string;
-      /** @example 2026-05-20T03:00:00.000Z */
-      confirmedAt: string;
-    };
-    AdminAssetTransferDto: {
-      newOwnerId: string;
-    };
-    CreateAssetRequestDto: {
-      assetLink: string;
-      /** @example Unity 3D model */
-      assetType: string;
-      /** @description How will this asset be used internally? */
-      intendedUse: string;
-      /** @description Indicative price the requester saw. */
-      price?: number;
-      notes?: string;
-    };
-    AssetRequestDto: {
-      id: string;
-      assetLink: string;
-      assetType: string;
-      intendedUse: string;
-      price?: Record<string, never>;
-      notes?: Record<string, never>;
-      /** @enum {string} */
-      status: 'SENT' | 'IN_REVIEW' | 'PENDING' | 'APPROVED' | 'REJECTED';
-      adminComment?: Record<string, never>;
-      createdAt: string;
-      updatedAt: string;
-      requester: Record<string, never>;
-    };
-    AdminUpdateAssetRequestDto: {
-      /** @enum {string} */
-      status: 'IN_REVIEW' | 'PENDING' | 'APPROVED' | 'REJECTED';
-      /** @description Required when transitioning to REJECTED. */
-      adminComment?: string;
-    };
-    AdminFeaturedSlotDto: {
-      id: string;
-      assetId: string;
-      assetTitle: string;
-      assetSlug: string;
-      customBannerKey?: string;
-      customBannerUrl?: string;
-      customTitle?: string;
-      customShortDescription?: Record<string, never>;
-      sortOrder: number;
-      isActive: boolean;
-      createdAt: string;
-      updatedAt: string;
-    };
-    CreateFeaturedSlotDto: {
-      assetId: string;
-      /** @description S3 key for a custom banner (use the initiate upload endpoint). */
-      customBannerKey?: string;
-      /** @description Overrides Asset.title in the carousel. */
-      customTitle?: string;
-      /** @description { en?, id? } overrides for the short description. */
-      customShortDescription?: Record<string, never>;
-      /** @default true */
-      isActive: boolean;
-    };
-    UpdateFeaturedSlotDto: {
-      customBannerKey?: string;
-      customTitle?: string;
-      customShortDescription?: Record<string, never>;
-      isActive?: boolean;
-      sortOrder?: number;
-    };
-    ReorderFeaturedSlotsDto: {
-      orderedIds: string[];
-    };
-    FeaturedBannerInitiateDto: {
-      contentType: string;
-      bytes: number;
-    };
-    FeaturedBannerInitiateResponseDto: {
-      putUrl: string;
-      key: string;
-      expiresAt: string;
-    };
-    AuditEntryDto: {
-      id: string;
-      action: string;
-      subjectType: string;
-      subjectId: string;
-      actorId?: string;
-      actorDisplayName?: string;
-      actorEmail?: string;
-      metadata?: Record<string, never>;
-      createdAt: string;
-    };
-    SearchAssetHitDto: {
-      id: string;
-      slug: string;
-      title: string;
-      shortDescription: string;
-      thumbnailUrl?: string;
-      engine: string;
-      categoryName: string;
-      ownerName: string;
-      totalDownloads: number;
-    };
-    SearchAssetsResponseDto: {
-      hits: components['schemas']['SearchAssetHitDto'][];
-      processingTimeMs: number;
-      estimatedTotalHits?: number;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    schemas: {
+        UserSearchResultDto: {
+            id: string;
+            email: string;
+            displayName: string;
+            isAdmin: boolean;
+        };
+        AvatarDto: {
+            /** @example ID */
+            initials: string;
+            /** @example brand-blue */
+            bgColor: string;
+            /** @example ink-white */
+            fgColor: string;
+        };
+        UserPublicProfileDto: {
+            id: string;
+            displayName: string;
+            avatar: components["schemas"]["AvatarDto"];
+            joinedAt: string;
+            publishedAssetCount: number;
+            /** @description Only present when the requester is the user themselves or an admin. */
+            email?: string;
+        };
+        ConfirmActionDto: {
+            /** @example I understand */
+            confirm: string;
+            confirmedAt: string;
+        };
+        MeResponseDto: {
+            /** @example cln1abcde */
+            id: string;
+            /** @example admin@labmgm.org */
+            email: string;
+            /** @example Idham */
+            displayName: string;
+            /**
+             * @example en
+             * @enum {string}
+             */
+            locale: "en" | "id";
+            isAdmin: boolean;
+            /** @enum {string} */
+            role: "admin" | "contributor" | "user";
+            avatar: components["schemas"]["AvatarDto"];
+            hasPublishedAssets: boolean;
+            /**
+             * @description Stub returns 0 until Part 3 notification fan-out lands.
+             * @example 0
+             */
+            unreadNotifications: number;
+            /** @description ISO 8601 UTC. */
+            createdAt: string;
+        };
+        UpdateLocaleDto: {
+            /** @enum {string} */
+            locale: "en" | "id";
+        };
+        PluginExchangeDto: {
+            /** @description Bearer token obtained from Keycloak in the plugin loopback flow. */
+            keycloakAccessToken: string;
+            /** @example Unity 2022.3 — DESKTOP-ABCD */
+            deviceLabel: string;
+        };
+        PluginExchangeResponseDto: {
+            deviceToken: string;
+            deviceId: string;
+            expiresAt: string;
+        };
+        PluginRefreshDto: {
+            deviceToken: string;
+        };
+        PluginRefreshResponseDto: {
+            expiresAt: string;
+        };
+        PluginRevokeDto: {
+            deviceId: string;
+        };
+        PluginDeviceDto: {
+            id: string;
+            deviceLabel: string;
+            createdAt: string;
+            lastUsedAt?: string;
+            expiresAt: string;
+        };
+        AssetCategoryRefDto: {
+            id: string;
+            slug: string;
+            name: string;
+        };
+        AssetLicenseRefDto: {
+            id: string;
+            slug: string;
+            name: string;
+        };
+        AssetTagDto: {
+            id: string;
+            slug: string;
+            displayName: string;
+        };
+        AssetThumbnailDto: {
+            key?: string;
+            url?: string;
+        };
+        AssetOwnerDto: {
+            id: string;
+            displayName: string;
+            avatar: components["schemas"]["AvatarDto"];
+        };
+        AssetVersionFileTreeNodeDto: {
+            id: string;
+            relativePath: string;
+            kind: string;
+            bytes: string;
+            meta?: Record<string, never>;
+        };
+        AssetVersionCompatibilityDto: {
+            engineVersion: string;
+            renderPipelines: string[];
+            targets: string[];
+        };
+        AssetVersionDependencyDto: {
+            name: string;
+            version?: string;
+            source: string;
+        };
+        AssetVersionPayloadDto: {
+            id: string;
+            semver: string;
+            /** @description TipTap JSON keyed by locale. */
+            releaseNotes: Record<string, never>;
+            publishedAt?: string;
+            isLatest: boolean;
+            analysisStatus: string;
+            bytesTotal: string;
+            fileCount: number;
+            files: components["schemas"]["AssetVersionFileTreeNodeDto"][];
+            compatibility: components["schemas"]["AssetVersionCompatibilityDto"][];
+            dependencies: components["schemas"]["AssetVersionDependencyDto"][];
+            requiresEmptyProject: boolean;
+        };
+        AssetDetailDto: {
+            id: string;
+            slug: string;
+            title: string;
+            shortDescription: string;
+            /** @description TipTap JSON. */
+            longDescription: Record<string, never>;
+            availableLocales: string[];
+            /** @enum {string} */
+            engine: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+            category: components["schemas"]["AssetCategoryRefDto"];
+            license: components["schemas"]["AssetLicenseRefDto"];
+            tags: components["schemas"]["AssetTagDto"][];
+            thumbnail: components["schemas"]["AssetThumbnailDto"];
+            thumbnailAutoGenerated?: components["schemas"]["AssetThumbnailDto"];
+            previewMedia: Record<string, never>[];
+            owner: components["schemas"]["AssetOwnerDto"];
+            versions: components["schemas"]["AssetVersionPayloadDto"][];
+            totalDownloads: number;
+            totalSaves: number;
+            /** @enum {string} */
+            status: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "DELETED";
+            publishedAt?: string;
+            updatedAt: string;
+            createdAt: string;
+            isSaved: boolean;
+            canEdit: boolean;
+            canDelete: boolean;
+            canArchive: boolean;
+        };
+        AssetSummaryDto: {
+            id: string;
+            slug: string;
+            title: string;
+            shortDescription: string;
+            /** @enum {string} */
+            engine: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+            /** @enum {string} */
+            status: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "DELETED";
+            thumbnailUrl?: string;
+            ownerDisplayName: string;
+            categoryName: string;
+            totalDownloads: number;
+            totalSaves: number;
+            updatedAt: string;
+            publishedAt?: string;
+        };
+        AssetTranslationInputDto: {
+            /** @enum {string} */
+            locale: "en" | "id";
+            shortDescription: string;
+            /** @description TipTap JSON document (full schema). */
+            longDescription: Record<string, never>;
+        };
+        CreateAssetDto: {
+            title: string;
+            /** @enum {string} */
+            engine: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+            categoryId: string;
+            licenseId: string;
+            /** @example 1.0.0 */
+            semver: string;
+            translations: components["schemas"]["AssetTranslationInputDto"][];
+            /** @description Free-form tag display names. */
+            tags?: string[];
+            requiresEmptyProject?: boolean;
+        };
+        UpdateAssetDto: {
+            title?: string;
+            /** @description Slug. Server enforces uniqueness; rejected after publish. */
+            slug?: string;
+            /**
+             * @description Locked after publish (server rejects with 400).
+             * @enum {string}
+             */
+            engine?: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+            /** @description Semver of the latest version. Routed to the latest AssetVersion row, not the Asset itself. Locked after publish. */
+            semver?: string;
+            categoryId?: string;
+            licenseId?: string;
+            translations?: components["schemas"]["AssetTranslationInputDto"][];
+            tags?: string[];
+            requiresEmptyProject?: boolean;
+            /** @description Owner-curated preview gallery. Array of `{ id, kind, key, label, mime, viewUrl? }`. `viewUrl` is ignored on write — the backend always re-signs from `key`. */
+            previewMedia?: Record<string, never>[];
+        };
+        CategoryDto: {
+            id: string;
+            slug: string;
+            /** @example 3D Models */
+            name: string;
+            iconKey?: string;
+            sortOrder: number;
+            /** @description Count of published assets in this category. */
+            assetCount: number;
+        };
+        AdminCategoryDto: {
+            id: string;
+            slug: string;
+            name: Record<string, never>;
+            iconKey?: string;
+            iconUrl?: string;
+            sortOrder: number;
+            isActive: boolean;
+            assetCount: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        CreateCategoryDto: {
+            /** @example 3d-models */
+            slug: string;
+            /** @description Multilingual label: { en, id }. */
+            name: Record<string, never>;
+            /** @description S3 key for an SVG / small PNG icon. */
+            iconKey?: string;
+            /** @default 999 */
+            sortOrder: number;
+            /** @default true */
+            isActive: boolean;
+        };
+        UpdateCategoryDto: {
+            slug?: string;
+            name?: Record<string, never>;
+            iconKey?: string;
+            sortOrder?: number;
+            isActive?: boolean;
+        };
+        ReorderCategoriesDto: {
+            orderedIds: string[];
+        };
+        CategoryIconInitiateDto: {
+            contentType: string;
+            bytes: number;
+        };
+        LicenseSummaryDto: {
+            id: string;
+            slug: string;
+            name: string;
+            description: string;
+            sortOrder: number;
+        };
+        LicenseDetailDto: {
+            id: string;
+            slug: string;
+            name: string;
+            description: string;
+            sortOrder: number;
+            fullText: string;
+        };
+        AdminLicenseDto: {
+            id: string;
+            slug: string;
+            name: string;
+            description: Record<string, never>;
+            fullText: Record<string, never>;
+            sortOrder: number;
+            isActive: boolean;
+            assetCount: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        CreateLicenseDto: {
+            slug: string;
+            name: string;
+            /** @description { en, id } short description. */
+            description: Record<string, never>;
+            /** @description { en, id } full legal text. */
+            fullText: Record<string, never>;
+            /** @default 999 */
+            sortOrder: number;
+            /** @default true */
+            isActive: boolean;
+        };
+        UpdateLicenseDto: {
+            name?: string;
+            description?: Record<string, never>;
+            fullText?: Record<string, never>;
+            sortOrder?: number;
+            isActive?: boolean;
+        };
+        TagDto: {
+            id: string;
+            slug: string;
+            displayName: string;
+            /** @description Number of assets currently using this tag. */
+            usageCount: number;
+        };
+        MergeTagsDto: {
+            fromTagIds: string[];
+            intoTagId: string;
+        };
+        UpdateTagDto: {
+            slug?: string;
+            displayName?: string;
+        };
+        AdminTagDto: {
+            id: string;
+            slug: string;
+            displayName: string;
+            usageCount: number;
+            createdAt: string;
+        };
+        VersionSummaryDto: {
+            id: string;
+            semver: string;
+            isLatest: boolean;
+            analysisStatus: string;
+            publishedAt?: string;
+            bytesTotal: string;
+            fileCount: number;
+            createdAt: string;
+        };
+        CreateVersionDto: {
+            /** @example 1.2.0 */
+            semver: string;
+            /** @description TipTap JSON keyed by locale: { en?, id? }. */
+            releaseNotes?: Record<string, never>;
+        };
+        UpdateVersionDto: {
+            /** @description TipTap JSON keyed by locale. */
+            releaseNotes?: Record<string, never>;
+        };
+        CompatibilityRowDto: {
+            /** @example 6000.1.14f1 */
+            engineVersion: string;
+            /** @description Unity render pipelines: URP|HDRP|SRP|BUILT_IN */
+            renderPipelines?: string[];
+            /** @description Platform targets (WINDOWS|MAC|...). */
+            targets: string[];
+        };
+        SetCompatibilityDto: {
+            rows: components["schemas"]["CompatibilityRowDto"][];
+        };
+        InitiateUploadDto: {
+            assetId: string;
+            versionId: string;
+            relativePath: string;
+            contentType: string;
+            bytes: number;
+        };
+        InitiateUploadResponseDto: {
+            uploadId: string;
+            putUrl: string;
+            key: string;
+            fileId: string;
+            expiresAt: string;
+        };
+        CompleteUploadDto: {
+            uploadId: string;
+            etag?: string;
+        };
+        InitiateMultipartDto: {
+            assetId: string;
+            versionId: string;
+            relativePath: string;
+            contentType: string;
+            bytes: number;
+            partCount: number;
+        };
+        InitiateMultipartResponseDto: {
+            uploadId: string;
+            key: string;
+            fileId: string;
+            partUrls: string[];
+            expiresAt: string;
+        };
+        SignMultipartPartsDto: {
+            uploadId: string;
+            partNumbers: number[];
+        };
+        CompletedPartDto: {
+            partNumber: number;
+            etag?: string;
+        };
+        CompleteMultipartDto: {
+            uploadId: string;
+            parts?: components["schemas"]["CompletedPartDto"][];
+        };
+        AbortMultipartDto: {
+            uploadId: string;
+        };
+        InitiateThumbnailDto: {
+            assetId: string;
+            contentType: string;
+            bytes: number;
+        };
+        InitiateThumbnailResponseDto: {
+            putUrl: string;
+            key: string;
+            expiresAt: string;
+        };
+        CompleteThumbnailDto: {
+            assetId: string;
+            key: string;
+        };
+        InitiateEditorMediaDto: {
+            contentType: string;
+            bytes: number;
+        };
+        InitiateEditorMediaResponseDto: {
+            putUrl: string;
+            key: string;
+            viewUrl: string;
+            expiresAt: string;
+        };
+        RefreshEditorMediaDto: {
+            key: string;
+        };
+        RefreshEditorMediaResponseDto: {
+            viewUrl: string;
+            expiresAt: string;
+        };
+        ReorderFilesDto: {
+            /** @description File ids in the desired display order. */
+            orderedFileIds: string[];
+        };
+        DownloadFileItemDto: {
+            id: string;
+            relativePath: string;
+            kind: string;
+            bytes: string;
+            getUrl?: string;
+            expiresAt?: string;
+        };
+        OlderVersionRefDto: {
+            id: string;
+            semver: string;
+            publishedAt?: string;
+        };
+        DownloadResponseDto: {
+            asset: Record<string, never>;
+            version: Record<string, never>;
+            files: components["schemas"]["DownloadFileItemDto"][];
+            olderVersions: components["schemas"]["OlderVersionRefDto"][];
+        };
+        InitiateDownloadDto: {
+            assetId: string;
+            versionId: string;
+            fileId?: string;
+            /** @enum {string} */
+            source: "WEB" | "UNITY" | "UNREAL";
+        };
+        AddLibraryItemDto: {
+            assetId: string;
+        };
+        UpdateLibraryItemDto: {
+            hidden: boolean;
+        };
+        CommentAuthorDto: {
+            id: string;
+            displayName: string;
+            avatar: Record<string, never>;
+        };
+        CommentNodeDto: {
+            id: string;
+            /** @enum {string} */
+            kind: "COMMENT" | "ISSUE";
+            parentId?: Record<string, never>;
+            depth: number;
+            body: Record<string, never>;
+            /** @enum {string} */
+            status?: "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
+            editedAt?: string;
+            createdAt: string;
+            author: components["schemas"]["CommentAuthorDto"];
+            replies: components["schemas"]["CommentNodeDto"][];
+        };
+        CommentListResponseDto: {
+            items: components["schemas"]["CommentNodeDto"][];
+            pageInfo: Record<string, never>;
+        };
+        CreateCommentDto: {
+            /** @enum {string} */
+            kind: "COMMENT" | "ISSUE";
+            parentId?: string;
+            /** @description Lite TipTap JSON document. */
+            body: Record<string, never>;
+        };
+        UpdateCommentDto: {
+            /** @description Lite TipTap JSON document. */
+            body: Record<string, never>;
+        };
+        UpdateIssueStatusDto: {
+            /** @enum {string} */
+            status: "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
+        };
+        CreateReportDto: {
+            assetId: string;
+            /** @enum {string} */
+            category: "MALICIOUS_FILE" | "BROKEN_ASSET";
+            notes: string;
+        };
+        ReportDto: {
+            id: string;
+            /** @enum {string} */
+            category: "MALICIOUS_FILE" | "BROKEN_ASSET";
+            notes: string;
+            /** @enum {string} */
+            status: "OPEN" | "REVIEWING" | "ACTIONED" | "DISMISSED";
+            assetId: string;
+            assetTitle: string;
+            assetSlug: string;
+            reporter: Record<string, never>;
+            adminNotes?: Record<string, never>;
+            createdAt: string;
+            resolvedAt?: string;
+        };
+        ActionReportDto: {
+            adminNotes: string;
+            /** @enum {string} */
+            action: "NOTHING" | "ARCHIVE_ASSET" | "DELETE_ASSET" | "FORCE_DELETE_ASSET";
+            /** @description Required when action=FORCE_DELETE_ASSET — value: "I understand". */
+            confirm?: string;
+            confirmedAt?: string;
+        };
+        DismissReportDto: {
+            adminNotes: string;
+        };
+        AdminAssetActionDto: {
+            /** @description Required moderator reason recorded in the audit log. */
+            reason: string;
+        };
+        AdminAssetForceDeleteDto: {
+            /** @description Required moderator reason recorded in the audit log. */
+            reason: string;
+            /** @example I understand */
+            confirm: string;
+            /** @example 2026-05-20T03:00:00.000Z */
+            confirmedAt: string;
+        };
+        AdminAssetTransferDto: {
+            newOwnerId: string;
+        };
+        CreateAssetRequestDto: {
+            assetLink: string;
+            /** @example Unity 3D model */
+            assetType: string;
+            /** @description How will this asset be used internally? */
+            intendedUse: string;
+            /** @description Indicative price the requester saw. */
+            price?: number;
+            notes?: string;
+        };
+        AssetRequestDto: {
+            id: string;
+            assetLink: string;
+            assetType: string;
+            intendedUse: string;
+            price?: Record<string, never>;
+            notes?: Record<string, never>;
+            /** @enum {string} */
+            status: "SENT" | "IN_REVIEW" | "PENDING" | "APPROVED" | "REJECTED";
+            adminComment?: Record<string, never>;
+            createdAt: string;
+            updatedAt: string;
+            requester: Record<string, never>;
+        };
+        AdminUpdateAssetRequestDto: {
+            /** @enum {string} */
+            status: "IN_REVIEW" | "PENDING" | "APPROVED" | "REJECTED";
+            /** @description Required when transitioning to REJECTED. */
+            adminComment?: string;
+        };
+        AdminFeaturedSlotDto: {
+            id: string;
+            assetId: string;
+            assetTitle: string;
+            assetSlug: string;
+            customBannerKey?: string;
+            customBannerUrl?: string;
+            customTitle?: string;
+            customShortDescription?: Record<string, never>;
+            sortOrder: number;
+            isActive: boolean;
+            createdAt: string;
+            updatedAt: string;
+        };
+        CreateFeaturedSlotDto: {
+            assetId: string;
+            /** @description S3 key for a custom banner (use the initiate upload endpoint). */
+            customBannerKey?: string;
+            /** @description Overrides Asset.title in the carousel. */
+            customTitle?: string;
+            /** @description { en?, id? } overrides for the short description. */
+            customShortDescription?: Record<string, never>;
+            /** @default true */
+            isActive: boolean;
+        };
+        UpdateFeaturedSlotDto: {
+            customBannerKey?: string;
+            customTitle?: string;
+            customShortDescription?: Record<string, never>;
+            isActive?: boolean;
+            sortOrder?: number;
+        };
+        ReorderFeaturedSlotsDto: {
+            orderedIds: string[];
+        };
+        FeaturedBannerInitiateDto: {
+            contentType: string;
+            bytes: number;
+        };
+        FeaturedBannerInitiateResponseDto: {
+            putUrl: string;
+            key: string;
+            expiresAt: string;
+        };
+        AuditEntryDto: {
+            id: string;
+            action: string;
+            subjectType: string;
+            subjectId: string;
+            actorId?: string;
+            actorDisplayName?: string;
+            actorEmail?: string;
+            metadata?: Record<string, never>;
+            createdAt: string;
+        };
+        SearchAssetHitDto: {
+            id: string;
+            slug: string;
+            title: string;
+            shortDescription: string;
+            thumbnailUrl?: string;
+            engine: string;
+            categoryName: string;
+            ownerName: string;
+            totalDownloads: number;
+        };
+        SearchAssetsResponseDto: {
+            hits: components["schemas"]["SearchAssetHitDto"][];
+            processingTimeMs: number;
+            estimatedTotalHits?: number;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  HealthController_liveness: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Always 200 when the process is up. */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  HealthController_readiness: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  UsersController_search: {
-    parameters: {
-      query: {
-        q: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UserSearchResultDto'][];
-        };
-      };
-    };
-  };
-  UsersController_profile: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UserPublicProfileDto'];
-        };
-      };
-    };
-  };
-  AdminUsersController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        q?: string;
-        isAdmin?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminUsersController_promote: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ConfirmActionDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminUsersController_demote: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ConfirmActionDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AuthController_me: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['MeResponseDto'];
-        };
-      };
-    };
-  };
-  AuthController_updateLocale: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateLocaleDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['MeResponseDto'];
-        };
-      };
-    };
-  };
-  AuthController_exchangePlugin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PluginExchangeDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PluginExchangeResponseDto'];
-        };
-      };
-    };
-  };
-  AuthController_refreshPlugin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PluginRefreshDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PluginRefreshResponseDto'];
-        };
-      };
-    };
-  };
-  AuthController_revokePlugin: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PluginRevokeDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AuthController_listPluginDevices: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PluginDeviceDto'][];
-        };
-      };
-    };
-  };
-  AuthController_deletePluginDevice: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_discoverGet: {
-    parameters: {
-      query?: {
-        locale?: 'en' | 'id';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        q?: string;
-        engine?:
-          | 'UNITY'
-          | 'UNREAL'
-          | 'BLENDER'
-          | 'STANDALONE_3D'
-          | 'AUDIO'
-          | 'IMAGE'
-          | 'VIDEO'
-          | 'OTHER'
-          | 'ENGINE_AGNOSTIC';
-        categoryIds?: string[];
-        tags?: string[];
-        fileKinds?: string[];
-        licenseSlug?: string;
-        renderPipelines?: string[];
-        targets?: string[];
-        sort?: 'newest' | 'mostDownloaded' | 'recentlyUpdated' | 'alphabetical' | 'mostSaved';
-        ownerId?: string;
-        includeUnpublished?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateAssetDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_detail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        idOrSlug: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AssetDetailDto'];
-        };
-      };
-    };
-  };
-  AssetsController_recommended: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AssetSummaryDto'][];
-        };
-      };
-    };
-  };
-  AssetsController_remove: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateAssetDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_publish: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_archive: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AssetsController_restore: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  CategoriesController_list: {
-    parameters: {
-      query?: {
-        locale?: 'en' | 'id';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['CategoryDto'][];
-        };
-      };
-    };
-  };
-  AdminCategoriesController_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminCategoryDto'][];
-        };
-      };
-    };
-  };
-  AdminCategoriesController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateCategoryDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminCategoryDto'];
-        };
-      };
-    };
-  };
-  AdminCategoriesController_remove: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminCategoriesController_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateCategoryDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminCategoryDto'];
-        };
-      };
-    };
-  };
-  AdminCategoriesController_reorder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ReorderCategoriesDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminCategoriesController_initiateIcon: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CategoryIconInitiateDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  LicensesController_list: {
-    parameters: {
-      query?: {
-        locale?: 'en' | 'id';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['LicenseSummaryDto'][];
-        };
-      };
-    };
-  };
-  LicensesController_detail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['LicenseDetailDto'];
-        };
-      };
-    };
-  };
-  AdminLicensesController_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminLicenseDto'][];
-        };
-      };
-    };
-  };
-  AdminLicensesController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateLicenseDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminLicenseDto'];
-        };
-      };
-    };
-  };
-  AdminLicensesController_remove: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminLicensesController_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateLicenseDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminLicenseDto'];
-        };
-      };
-    };
-  };
-  TagsController_autocomplete: {
-    parameters: {
-      query: {
-        q: string;
-        limit?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TagDto'][];
-        };
-      };
-    };
-  };
-  TagsController_popular: {
-    parameters: {
-      query?: {
-        /** @description Max 50, default 24. */
-        limit?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TagDto'][];
-        };
-      };
-    };
-  };
-  AdminTagsController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        q?: string;
-        minUsage?: number;
-        maxUsage?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminTagsController_merge: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['MergeTagsDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminTagsController_remove: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminTagsController_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateTagDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminTagDto'];
-        };
-      };
-    };
-  };
-  VersionsController_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        assetId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['VersionSummaryDto'][];
-        };
-      };
-    };
-  };
-  VersionsController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        assetId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateVersionDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  VersionsController_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        vid: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateVersionDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  VersionsController_publish: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        vid: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  VersionsController_reanalyze: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        vid: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  VersionsController_setCompatibility: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        vid: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SetCompatibilityDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FilesController_initiate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['InitiateUploadDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InitiateUploadResponseDto'];
-        };
-      };
-    };
-  };
-  FilesController_complete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CompleteUploadDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FilesController_initiateMultipart: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['InitiateMultipartDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InitiateMultipartResponseDto'];
-        };
-      };
-    };
-  };
-  FilesController_signParts: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SignMultipartPartsDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FilesController_completeMultipart: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CompleteMultipartDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FilesController_abortMultipart: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AbortMultipartDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FilesController_initiateThumb: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['InitiateThumbnailDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InitiateThumbnailResponseDto'];
-        };
-      };
-    };
-  };
-  FilesController_completeThumb: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CompleteThumbnailDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FilesController_initiateEditorMedia: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['InitiateEditorMediaDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InitiateEditorMediaResponseDto'];
-        };
-      };
-    };
-  };
-  FilesController_refreshEditorMedia: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RefreshEditorMediaDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['RefreshEditorMediaResponseDto'];
-        };
-      };
-    };
-  };
-  FilesController_reorderFiles: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        versionId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ReorderFilesDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FilesController_deleteFile: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        fileId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  GifsController_search: {
-    parameters: {
-      query?: {
-        q?: string;
-        limit?: string;
-        provider?: 'tenor' | 'giphy';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  DownloadsController_options: {
-    parameters: {
-      query: {
-        assetId: string;
-        versionId: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['DownloadResponseDto'];
-        };
-      };
-    };
-  };
-  DownloadsController_initiate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['InitiateDownloadDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['DownloadResponseDto'];
-        };
-      };
-    };
-  };
-  LibraryController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        q?: string;
-        categoryIds?: string[];
-        tags?: string[];
-        engine?:
-          | 'UNITY'
-          | 'UNREAL'
-          | 'BLENDER'
-          | 'STANDALONE_3D'
-          | 'AUDIO'
-          | 'IMAGE'
-          | 'VIDEO'
-          | 'OTHER'
-          | 'ENGINE_AGNOSTIC';
-        hidden?: 'true' | 'false' | 'all';
-        sort?: 'savedAt' | 'alphabetical' | 'recentlyUpdated';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  LibraryController_add: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AddLibraryItemDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  LibraryController_remove: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        assetId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  LibraryController_setHidden: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        assetId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateLibraryItemDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  CommentsController_list: {
-    parameters: {
-      query?: {
-        cursor?: string;
-        kind?: 'ALL' | 'COMMENT' | 'ISSUE';
-        limit?: number;
-      };
-      header?: never;
-      path: {
-        assetId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['CommentListResponseDto'];
-        };
-      };
-    };
-  };
-  CommentsController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        assetId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateCommentDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  CommentsController_remove: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  CommentsController_edit: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateCommentDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  CommentsController_setStatus: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateIssueStatusDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  ReportsController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateReportDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  ReportsController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        status?: 'OPEN' | 'REVIEWING' | 'ACTIONED' | 'DISMISSED';
-        category?: 'MALICIOUS_FILE' | 'BROKEN_ASSET';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  ReportsController_detail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ReportDto'];
-        };
-      };
-    };
-  };
-  ReportsController_startReview: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  ReportsController_action: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ActionReportDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  ReportsController_dismiss: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['DismissReportDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminDashboardController_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminStorageController_users: {
-    parameters: {
-      query?: {
-        /** @description ISO date; defaults to the most recent snapshot. */
-        date?: string;
-        limit?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminStorageController_assets: {
-    parameters: {
-      query?: {
-        date?: string;
-        limit?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAssetsController_listAll: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        q?: string;
-        engine?:
-          | 'UNITY'
-          | 'UNREAL'
-          | 'BLENDER'
-          | 'STANDALONE_3D'
-          | 'AUDIO'
-          | 'IMAGE'
-          | 'VIDEO'
-          | 'OTHER'
-          | 'ENGINE_AGNOSTIC';
-        categoryIds?: string[];
-        tags?: string[];
-        fileKinds?: string[];
-        licenseSlug?: string;
-        renderPipelines?: string[];
-        targets?: string[];
-        sort?: 'newest' | 'mostDownloaded' | 'recentlyUpdated' | 'alphabetical' | 'mostSaved';
-        ownerId?: string;
-        includeUnpublished?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAssetsController_detail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AssetDetailDto'];
-        };
-      };
-    };
-  };
-  AdminAssetsController_softDelete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AdminAssetActionDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAssetsController_edit: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateAssetDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAssetsController_archive: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AdminAssetActionDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAssetsController_restore: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAssetsController_forceDelete: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AdminAssetForceDeleteDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAssetsController_transfer: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AdminAssetTransferDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  WebhookDeliveriesController_list: {
-    parameters: {
-      query?: {
-        status?: 'success' | 'failure' | 'pending';
-        type?: string;
-        cursor?: string;
-        limit?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  RequestsController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        status?: 'SENT' | 'IN_REVIEW' | 'PENDING' | 'APPROVED' | 'REJECTED';
-        requesterId?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  RequestsController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateAssetRequestDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  RequestsController_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AssetRequestDto'];
-        };
-      };
-    };
-  };
-  AdminRequestsController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        status?: 'SENT' | 'IN_REVIEW' | 'PENDING' | 'APPROVED' | 'REJECTED';
-        requesterId?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminRequestsController_getOne: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AssetRequestDto'];
-        };
-      };
-    };
-  };
-  AdminRequestsController_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AdminUpdateAssetRequestDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AssetRequestDto'];
-        };
-      };
-    };
-  };
-  AdminFeaturedController_list: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminFeaturedSlotDto'][];
-        };
-      };
-    };
-  };
-  AdminFeaturedController_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateFeaturedSlotDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminFeaturedSlotDto'];
-        };
-      };
-    };
-  };
-  AdminFeaturedController_remove: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminFeaturedController_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateFeaturedSlotDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminFeaturedSlotDto'];
-        };
-      };
-    };
-  };
-  AdminFeaturedController_reorder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ReorderFeaturedSlotsDto'];
-      };
-    };
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminFeaturedController_initiateBanner: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['FeaturedBannerInitiateDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FeaturedBannerInitiateResponseDto'];
-        };
-      };
-    };
-  };
-  NotificationsController_list: {
-    parameters: {
-      query?: {
-        cursor?: string;
-        limit?: string;
-        unreadOnly?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  NotificationsController_unreadCount: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  NotificationsController_markRead: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  NotificationsController_markAllRead: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AnalyticsController_mySummary: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AnalyticsController_assetDetail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        assetId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AnalyticsController_platform: {
-    parameters: {
-      query?: {
-        from?: string;
-        to?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AnalyticsController_assetLeaderboard: {
-    parameters: {
-      query?: {
-        sort?: 'downloads' | 'saves' | 'last7d' | 'last30d';
-        limit?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AnalyticsController_userLeaderboard: {
-    parameters: {
-      query: {
-        limit: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAuditController_list: {
-    parameters: {
-      query?: {
-        /** @description Opaque base64url cursor from a previous page. */
-        cursor?: string;
-        limit?: number;
-        /** @description Locale override for resolved fields. */
-        locale?: 'en' | 'id';
-        actorId?: string;
-        action?: string;
-        subjectType?: string;
-        subjectId?: string;
-        from?: string;
-        to?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AdminAuditController_detail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AuditEntryDto'];
-        };
-      };
-    };
-  };
-  SearchController_searchAssets: {
-    parameters: {
-      query: {
-        q: string;
-        engine?:
-          | 'UNITY'
-          | 'UNREAL'
-          | 'BLENDER'
-          | 'STANDALONE_3D'
-          | 'AUDIO'
-          | 'IMAGE'
-          | 'VIDEO'
-          | 'OTHER'
-          | 'ENGINE_AGNOSTIC';
-        categoryIds?: string[];
-        tags?: string[];
-        fileKinds?: string[];
-        renderPipelines?: string[];
-        targets?: string[];
-        licenseSlug?: string;
-        limit?: number;
-        offset?: number;
-        locale?: 'en' | 'id';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['SearchAssetsResponseDto'];
-        };
-      };
-    };
-  };
-  SearchController_searchTags: {
-    parameters: {
-      query: {
-        q: string;
-        limit?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TagDto'][];
-        };
-      };
-    };
-  };
-  QueueDashboardController_dashboard: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  MetricsController_metricsEndpoint: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  MeController_me: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  MeController_revokeDevice: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  MeController_logout: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
+    HealthController_liveness: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Always 200 when the process is up. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthController_readiness: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_search: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserSearchResultDto"][];
+                };
+            };
+        };
+    };
+    UsersController_profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserPublicProfileDto"];
+                };
+            };
+        };
+    };
+    AdminUsersController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                q?: string;
+                isAdmin?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminUsersController_promote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmActionDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminUsersController_demote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmActionDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_updateLocale: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateLocaleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_exchangePlugin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PluginExchangeDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PluginExchangeResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_refreshPlugin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PluginRefreshDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PluginRefreshResponseDto"];
+                };
+            };
+        };
+    };
+    AuthController_revokePlugin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PluginRevokeDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_listPluginDevices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PluginDeviceDto"][];
+                };
+            };
+        };
+    };
+    AuthController_deletePluginDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_discoverGet: {
+        parameters: {
+            query?: {
+                locale?: "en" | "id";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                q?: string;
+                engine?: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+                categoryIds?: string[];
+                tags?: string[];
+                fileKinds?: string[];
+                licenseSlug?: string;
+                renderPipelines?: string[];
+                targets?: string[];
+                sort?: "newest" | "mostDownloaded" | "recentlyUpdated" | "alphabetical" | "mostSaved";
+                ownerId?: string;
+                includeUnpublished?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAssetDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                idOrSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDetailDto"];
+                };
+            };
+        };
+    };
+    AssetsController_recommended: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetSummaryDto"][];
+                };
+            };
+        };
+    };
+    AssetsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAssetDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssetsController_restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CategoriesController_list: {
+        parameters: {
+            query?: {
+                locale?: "en" | "id";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"][];
+                };
+            };
+        };
+    };
+    AdminCategoriesController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategoryDto"][];
+                };
+            };
+        };
+    };
+    AdminCategoriesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCategoryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategoryDto"];
+                };
+            };
+        };
+    };
+    AdminCategoriesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCategoriesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCategoryDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategoryDto"];
+                };
+            };
+        };
+    };
+    AdminCategoriesController_reorder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderCategoriesDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminCategoriesController_initiateIcon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoryIconInitiateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LicensesController_list: {
+        parameters: {
+            query?: {
+                locale?: "en" | "id";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LicenseSummaryDto"][];
+                };
+            };
+        };
+    };
+    LicensesController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LicenseDetailDto"];
+                };
+            };
+        };
+    };
+    AdminLicensesController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLicenseDto"][];
+                };
+            };
+        };
+    };
+    AdminLicensesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateLicenseDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLicenseDto"];
+                };
+            };
+        };
+    };
+    AdminLicensesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminLicensesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateLicenseDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLicenseDto"];
+                };
+            };
+        };
+    };
+    TagsController_autocomplete: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TagDto"][];
+                };
+            };
+        };
+    };
+    TagsController_popular: {
+        parameters: {
+            query?: {
+                /** @description Max 50, default 24. */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TagDto"][];
+                };
+            };
+        };
+    };
+    AdminTagsController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                q?: string;
+                minUsage?: number;
+                maxUsage?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminTagsController_merge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergeTagsDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminTagsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminTagsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTagDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTagDto"];
+                };
+            };
+        };
+    };
+    VersionsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assetId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VersionSummaryDto"][];
+                };
+            };
+        };
+    };
+    VersionsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assetId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateVersionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    VersionsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                vid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVersionDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    VersionsController_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                vid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    VersionsController_reanalyze: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                vid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    VersionsController_setCompatibility: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                vid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetCompatibilityDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_initiate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitiateUploadDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InitiateUploadResponseDto"];
+                };
+            };
+        };
+    };
+    FilesController_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteUploadDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_initiateMultipart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitiateMultipartDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InitiateMultipartResponseDto"];
+                };
+            };
+        };
+    };
+    FilesController_signParts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignMultipartPartsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_completeMultipart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteMultipartDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_abortMultipart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AbortMultipartDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_initiateThumb: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitiateThumbnailDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InitiateThumbnailResponseDto"];
+                };
+            };
+        };
+    };
+    FilesController_completeThumb: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteThumbnailDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_initiateEditorMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitiateEditorMediaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InitiateEditorMediaResponseDto"];
+                };
+            };
+        };
+    };
+    FilesController_refreshEditorMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshEditorMediaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefreshEditorMediaResponseDto"];
+                };
+            };
+        };
+    };
+    FilesController_reorderFiles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                versionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderFilesDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_deleteFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GifsController_search: {
+        parameters: {
+            query?: {
+                q?: string;
+                limit?: string;
+                provider?: "tenor" | "giphy";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DownloadsController_options: {
+        parameters: {
+            query: {
+                assetId: string;
+                versionId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DownloadResponseDto"];
+                };
+            };
+        };
+    };
+    DownloadsController_initiate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitiateDownloadDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DownloadResponseDto"];
+                };
+            };
+        };
+    };
+    LibraryController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                q?: string;
+                categoryIds?: string[];
+                tags?: string[];
+                engine?: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+                hidden?: "true" | "false" | "all";
+                sort?: "savedAt" | "alphabetical" | "recentlyUpdated";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LibraryController_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddLibraryItemDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LibraryController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assetId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LibraryController_setHidden: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assetId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateLibraryItemDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CommentsController_list: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                kind?: "ALL" | "COMMENT" | "ISSUE";
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                assetId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentListResponseDto"];
+                };
+            };
+        };
+    };
+    CommentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assetId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CommentsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CommentsController_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCommentDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CommentsController_setStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateIssueStatusDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateReportDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                status?: "OPEN" | "REVIEWING" | "ACTIONED" | "DISMISSED";
+                category?: "MALICIOUS_FILE" | "BROKEN_ASSET";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDto"];
+                };
+            };
+        };
+    };
+    ReportsController_startReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_action: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActionReportDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReportsController_dismiss: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DismissReportDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminDashboardController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminStorageController_users: {
+        parameters: {
+            query?: {
+                /** @description ISO date; defaults to the most recent snapshot. */
+                date?: string;
+                limit?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminStorageController_assets: {
+        parameters: {
+            query?: {
+                date?: string;
+                limit?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAssetsController_listAll: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                q?: string;
+                engine?: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+                categoryIds?: string[];
+                tags?: string[];
+                fileKinds?: string[];
+                licenseSlug?: string;
+                renderPipelines?: string[];
+                targets?: string[];
+                sort?: "newest" | "mostDownloaded" | "recentlyUpdated" | "alphabetical" | "mostSaved";
+                ownerId?: string;
+                includeUnpublished?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAssetsController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDetailDto"];
+                };
+            };
+        };
+    };
+    AdminAssetsController_softDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminAssetActionDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAssetsController_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAssetDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAssetsController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminAssetActionDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAssetsController_restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAssetsController_forceDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminAssetForceDeleteDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAssetsController_transfer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminAssetTransferDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    WebhookDeliveriesController_list: {
+        parameters: {
+            query?: {
+                status?: "success" | "failure" | "pending";
+                type?: string;
+                cursor?: string;
+                limit?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RequestsController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                status?: "SENT" | "IN_REVIEW" | "PENDING" | "APPROVED" | "REJECTED";
+                requesterId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RequestsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAssetRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RequestsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetRequestDto"];
+                };
+            };
+        };
+    };
+    AdminRequestsController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                status?: "SENT" | "IN_REVIEW" | "PENDING" | "APPROVED" | "REJECTED";
+                requesterId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminRequestsController_getOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetRequestDto"];
+                };
+            };
+        };
+    };
+    AdminRequestsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUpdateAssetRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetRequestDto"];
+                };
+            };
+        };
+    };
+    AdminFeaturedController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFeaturedSlotDto"][];
+                };
+            };
+        };
+    };
+    AdminFeaturedController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFeaturedSlotDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFeaturedSlotDto"];
+                };
+            };
+        };
+    };
+    AdminFeaturedController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminFeaturedController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFeaturedSlotDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFeaturedSlotDto"];
+                };
+            };
+        };
+    };
+    AdminFeaturedController_reorder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderFeaturedSlotsDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminFeaturedController_initiateBanner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FeaturedBannerInitiateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeaturedBannerInitiateResponseDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_list: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: string;
+                unreadOnly?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_unreadCount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_markRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_markAllRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AnalyticsController_mySummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AnalyticsController_assetDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assetId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AnalyticsController_platform: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AnalyticsController_assetLeaderboard: {
+        parameters: {
+            query?: {
+                sort?: "downloads" | "saves" | "last7d" | "last30d";
+                limit?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AnalyticsController_userLeaderboard: {
+        parameters: {
+            query: {
+                limit: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuditController_list: {
+        parameters: {
+            query?: {
+                /** @description Opaque base64url cursor from a previous page. */
+                cursor?: string;
+                limit?: number;
+                /** @description Locale override for resolved fields. */
+                locale?: "en" | "id";
+                actorId?: string;
+                action?: string;
+                subjectType?: string;
+                subjectId?: string;
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminAuditController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntryDto"];
+                };
+            };
+        };
+    };
+    SearchController_searchAssets: {
+        parameters: {
+            query: {
+                q: string;
+                engine?: "UNITY" | "UNREAL" | "BLENDER" | "STANDALONE_3D" | "AUDIO" | "IMAGE" | "VIDEO" | "OTHER" | "ENGINE_AGNOSTIC";
+                categoryIds?: string[];
+                tags?: string[];
+                fileKinds?: string[];
+                renderPipelines?: string[];
+                targets?: string[];
+                licenseSlug?: string;
+                limit?: number;
+                offset?: number;
+                locale?: "en" | "id";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchAssetsResponseDto"];
+                };
+            };
+        };
+    };
+    SearchController_searchTags: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TagDto"][];
+                };
+            };
+        };
+    };
+    QueueDashboardController_dashboard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MetricsController_metricsEndpoint: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_revokeDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }

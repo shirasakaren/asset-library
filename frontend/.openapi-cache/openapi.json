@@ -10,7 +10,9 @@
             "description": "Always 200 when the process is up."
           }
         },
-        "tags": ["health"]
+        "tags": [
+          "health"
+        ]
       }
     },
     "/readyz": {
@@ -22,7 +24,9 @@
             "description": ""
           }
         },
-        "tags": ["health"]
+        "tags": [
+          "health"
+        ]
       }
     },
     "/users/search": {
@@ -54,7 +58,9 @@
             }
           }
         },
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "security": [
           {
             "keycloak": []
@@ -88,7 +94,9 @@
             }
           }
         },
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "security": [
           {
             "keycloak": []
@@ -127,7 +135,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -153,7 +164,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -190,7 +203,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -227,7 +242,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -252,7 +269,9 @@
             }
           }
         },
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "security": [
           {
             "keycloak": []
@@ -287,7 +306,9 @@
             }
           }
         },
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "security": [
           {
             "keycloak": []
@@ -322,7 +343,9 @@
             }
           }
         },
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/auth/plugin/refresh": {
@@ -352,7 +375,9 @@
             }
           }
         },
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/auth/plugin/revoke": {
@@ -375,7 +400,9 @@
             "description": ""
           }
         },
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "security": [
           {
             "keycloak": []
@@ -403,7 +430,9 @@
             }
           }
         },
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "security": [
           {
             "keycloak": []
@@ -430,7 +459,9 @@
             "description": ""
           }
         },
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "security": [
           {
             "keycloak": []
@@ -448,7 +479,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           }
@@ -458,7 +492,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"]
+        "tags": [
+          "Assets"
+        ]
       }
     },
     "/assets": {
@@ -492,7 +528,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -591,7 +630,13 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["newest", "mostDownloaded", "recentlyUpdated", "alphabetical", "mostSaved"],
+              "enum": [
+                "newest",
+                "mostDownloaded",
+                "recentlyUpdated",
+                "alphabetical",
+                "mostSaved"
+              ],
               "type": "string"
             }
           },
@@ -617,7 +662,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"]
+        "tags": [
+          "Assets"
+        ]
       },
       "post": {
         "operationId": "AssetsController_create",
@@ -638,7 +685,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"],
+        "tags": [
+          "Assets"
+        ],
         "security": [
           {
             "keycloak": []
@@ -672,7 +721,9 @@
             }
           }
         },
-        "tags": ["Assets"]
+        "tags": [
+          "Assets"
+        ]
       }
     },
     "/assets/{id}/recommended": {
@@ -704,7 +755,9 @@
             }
           }
         },
-        "tags": ["Assets"]
+        "tags": [
+          "Assets"
+        ]
       }
     },
     "/assets/{id}": {
@@ -736,7 +789,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"],
+        "tags": [
+          "Assets"
+        ],
         "security": [
           {
             "keycloak": []
@@ -761,7 +816,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"],
+        "tags": [
+          "Assets"
+        ],
         "security": [
           {
             "keycloak": []
@@ -788,7 +845,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"],
+        "tags": [
+          "Assets"
+        ],
         "security": [
           {
             "keycloak": []
@@ -815,7 +874,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"],
+        "tags": [
+          "Assets"
+        ],
         "security": [
           {
             "keycloak": []
@@ -842,7 +903,9 @@
             "description": ""
           }
         },
-        "tags": ["Assets"],
+        "tags": [
+          "Assets"
+        ],
         "security": [
           {
             "keycloak": []
@@ -860,7 +923,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           }
@@ -880,7 +946,9 @@
             }
           }
         },
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "security": [
           {
             "keycloak": []
@@ -908,7 +976,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -941,7 +1011,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -985,7 +1057,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1010,7 +1084,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1038,7 +1114,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1066,7 +1144,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1084,7 +1164,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           }
@@ -1104,7 +1187,9 @@
             }
           }
         },
-        "tags": ["Licenses"],
+        "tags": [
+          "Licenses"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1138,7 +1223,9 @@
             }
           }
         },
-        "tags": ["Licenses"],
+        "tags": [
+          "Licenses"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1166,7 +1253,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1198,7 +1287,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1241,7 +1332,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1265,7 +1358,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1310,7 +1405,9 @@
             }
           }
         },
-        "tags": ["Tags"],
+        "tags": [
+          "Tags"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1349,7 +1446,9 @@
             }
           }
         },
-        "tags": ["Tags"],
+        "tags": [
+          "Tags"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1388,7 +1487,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -1422,7 +1524,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1450,7 +1554,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1494,7 +1600,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1519,7 +1627,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1556,7 +1666,9 @@
             }
           }
         },
-        "tags": ["Versions"]
+        "tags": [
+          "Versions"
+        ]
       },
       "post": {
         "operationId": "VersionsController_create",
@@ -1586,7 +1698,9 @@
             "description": ""
           }
         },
-        "tags": ["Versions"],
+        "tags": [
+          "Versions"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1623,7 +1737,9 @@
             "description": ""
           }
         },
-        "tags": ["Versions"],
+        "tags": [
+          "Versions"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1650,7 +1766,9 @@
             "description": ""
           }
         },
-        "tags": ["Versions"],
+        "tags": [
+          "Versions"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1677,7 +1795,9 @@
             "description": ""
           }
         },
-        "tags": ["Versions"],
+        "tags": [
+          "Versions"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1714,7 +1834,9 @@
             "description": ""
           }
         },
-        "tags": ["Versions"],
+        "tags": [
+          "Versions"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1749,7 +1871,9 @@
             }
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1777,7 +1901,9 @@
             "description": ""
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1812,7 +1938,9 @@
             }
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1840,7 +1968,9 @@
             "description": ""
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1868,7 +1998,9 @@
             "description": ""
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1896,7 +2028,9 @@
             "description": ""
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1931,7 +2065,9 @@
             }
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1959,7 +2095,9 @@
             "description": ""
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -1994,7 +2132,9 @@
             }
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2029,7 +2169,9 @@
             }
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2066,7 +2208,9 @@
             "description": ""
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2093,7 +2237,9 @@
             "description": ""
           }
         },
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2127,7 +2273,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["tenor", "giphy"],
+              "enum": [
+                "tenor",
+                "giphy"
+              ],
               "type": "string"
             }
           }
@@ -2137,7 +2286,9 @@
             "description": ""
           }
         },
-        "tags": ["Gifs"],
+        "tags": [
+          "Gifs"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2179,7 +2330,9 @@
             }
           }
         },
-        "tags": ["Downloads"],
+        "tags": [
+          "Downloads"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2214,7 +2367,9 @@
             }
           }
         },
-        "tags": ["Downloads"],
+        "tags": [
+          "Downloads"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2253,7 +2408,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -2311,7 +2469,11 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["true", "false", "all"],
+              "enum": [
+                "true",
+                "false",
+                "all"
+              ],
               "type": "string"
             }
           },
@@ -2320,7 +2482,11 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["savedAt", "alphabetical", "recentlyUpdated"],
+              "enum": [
+                "savedAt",
+                "alphabetical",
+                "recentlyUpdated"
+              ],
               "type": "string"
             }
           }
@@ -2330,7 +2496,9 @@
             "description": ""
           }
         },
-        "tags": ["Library"],
+        "tags": [
+          "Library"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2358,7 +2526,9 @@
             "description": ""
           }
         },
-        "tags": ["Library"],
+        "tags": [
+          "Library"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2385,7 +2555,9 @@
             "description": ""
           }
         },
-        "tags": ["Library"],
+        "tags": [
+          "Library"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2420,7 +2592,9 @@
             "description": ""
           }
         },
-        "tags": ["Library"],
+        "tags": [
+          "Library"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2455,7 +2629,11 @@
             "in": "query",
             "schema": {
               "default": "ALL",
-              "enum": ["ALL", "COMMENT", "ISSUE"],
+              "enum": [
+                "ALL",
+                "COMMENT",
+                "ISSUE"
+              ],
               "type": "string"
             }
           },
@@ -2483,7 +2661,9 @@
             }
           }
         },
-        "tags": ["Comments"]
+        "tags": [
+          "Comments"
+        ]
       },
       "post": {
         "operationId": "CommentsController_create",
@@ -2513,7 +2693,9 @@
             "description": ""
           }
         },
-        "tags": ["Comments"],
+        "tags": [
+          "Comments"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2550,7 +2732,9 @@
             "description": ""
           }
         },
-        "tags": ["Comments"],
+        "tags": [
+          "Comments"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2575,7 +2759,9 @@
             "description": ""
           }
         },
-        "tags": ["Comments"],
+        "tags": [
+          "Comments"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2612,7 +2798,9 @@
             "description": ""
           }
         },
-        "tags": ["Comments"],
+        "tags": [
+          "Comments"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2640,7 +2828,9 @@
             "description": ""
           }
         },
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2679,7 +2869,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -2688,7 +2881,12 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["OPEN", "REVIEWING", "ACTIONED", "DISMISSED"],
+              "enum": [
+                "OPEN",
+                "REVIEWING",
+                "ACTIONED",
+                "DISMISSED"
+              ],
               "type": "string"
             }
           },
@@ -2697,7 +2895,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["MALICIOUS_FILE", "BROKEN_ASSET"],
+              "enum": [
+                "MALICIOUS_FILE",
+                "BROKEN_ASSET"
+              ],
               "type": "string"
             }
           }
@@ -2707,7 +2908,9 @@
             "description": ""
           }
         },
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2741,7 +2944,9 @@
             }
           }
         },
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2768,7 +2973,9 @@
             "description": ""
           }
         },
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2805,7 +3012,9 @@
             "description": ""
           }
         },
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2842,7 +3051,9 @@
             "description": ""
           }
         },
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2860,7 +3071,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2896,7 +3109,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2931,7 +3146,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -2970,7 +3187,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -3069,7 +3289,13 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["newest", "mostDownloaded", "recentlyUpdated", "alphabetical", "mostSaved"],
+              "enum": [
+                "newest",
+                "mostDownloaded",
+                "recentlyUpdated",
+                "alphabetical",
+                "mostSaved"
+              ],
               "type": "string"
             }
           },
@@ -3095,7 +3321,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3129,7 +3357,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3164,7 +3394,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3199,7 +3431,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3236,7 +3470,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3263,7 +3499,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3300,7 +3538,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3337,7 +3577,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3355,7 +3597,11 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["success", "failure", "pending"],
+              "enum": [
+                "success",
+                "failure",
+                "pending"
+              ],
               "type": "string"
             }
           },
@@ -3389,7 +3635,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3417,7 +3665,9 @@
             "description": ""
           }
         },
-        "tags": ["AssetRequests"],
+        "tags": [
+          "AssetRequests"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3454,7 +3704,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -3463,7 +3716,13 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["SENT", "IN_REVIEW", "PENDING", "APPROVED", "REJECTED"],
+              "enum": [
+                "SENT",
+                "IN_REVIEW",
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ],
               "type": "string"
             }
           },
@@ -3481,7 +3740,9 @@
             "description": ""
           }
         },
-        "tags": ["AssetRequests"],
+        "tags": [
+          "AssetRequests"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3515,7 +3776,9 @@
             }
           }
         },
-        "tags": ["AssetRequests"],
+        "tags": [
+          "AssetRequests"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3554,7 +3817,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -3563,7 +3829,13 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["SENT", "IN_REVIEW", "PENDING", "APPROVED", "REJECTED"],
+              "enum": [
+                "SENT",
+                "IN_REVIEW",
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ],
               "type": "string"
             }
           },
@@ -3581,7 +3853,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3615,7 +3889,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3657,7 +3933,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3685,7 +3963,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3718,7 +3998,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3762,7 +4044,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3787,7 +4071,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3815,7 +4101,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3850,7 +4138,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3893,7 +4183,9 @@
             "description": ""
           }
         },
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3911,7 +4203,9 @@
             "description": ""
           }
         },
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3938,7 +4232,9 @@
             "description": ""
           }
         },
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3956,7 +4252,9 @@
             "description": ""
           }
         },
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "security": [
           {
             "keycloak": []
@@ -3974,7 +4272,9 @@
             "description": ""
           }
         },
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4001,7 +4301,9 @@
             "description": ""
           }
         },
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4038,7 +4340,9 @@
             "description": ""
           }
         },
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4056,7 +4360,12 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["downloads", "saves", "last7d", "last30d"],
+              "enum": [
+                "downloads",
+                "saves",
+                "last7d",
+                "last30d"
+              ],
               "type": "string"
             }
           },
@@ -4074,7 +4383,9 @@
             "description": ""
           }
         },
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4101,7 +4412,9 @@
             "description": ""
           }
         },
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4140,7 +4453,10 @@
             "in": "query",
             "description": "Locale override for resolved fields.",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           },
@@ -4198,7 +4514,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4232,7 +4550,9 @@
             }
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4358,7 +4678,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["en", "id"],
+              "enum": [
+                "en",
+                "id"
+              ],
               "type": "string"
             }
           }
@@ -4375,7 +4698,9 @@
             }
           }
         },
-        "tags": ["Search"],
+        "tags": [
+          "Search"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4420,7 +4745,9 @@
             }
           }
         },
-        "tags": ["Search"],
+        "tags": [
+          "Search"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4438,7 +4765,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4456,7 +4785,9 @@
             "description": ""
           }
         },
-        "tags": ["Admin"]
+        "tags": [
+          "Admin"
+        ]
       }
     },
     "/me": {
@@ -4469,7 +4800,9 @@
             "description": ""
           }
         },
-        "tags": ["Me"],
+        "tags": [
+          "Me"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4496,7 +4829,9 @@
             "description": ""
           }
         },
-        "tags": ["Me"],
+        "tags": [
+          "Me"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4514,7 +4849,9 @@
             "description": ""
           }
         },
-        "tags": ["Me"],
+        "tags": [
+          "Me"
+        ],
         "security": [
           {
             "keycloak": []
@@ -4556,7 +4893,12 @@
             "type": "boolean"
           }
         },
-        "required": ["id", "email", "displayName", "isAdmin"]
+        "required": [
+          "id",
+          "email",
+          "displayName",
+          "isAdmin"
+        ]
       },
       "AvatarDto": {
         "type": "object",
@@ -4574,7 +4916,11 @@
             "example": "ink-white"
           }
         },
-        "required": ["initials", "bgColor", "fgColor"]
+        "required": [
+          "initials",
+          "bgColor",
+          "fgColor"
+        ]
       },
       "UserPublicProfileDto": {
         "type": "object",
@@ -4599,7 +4945,13 @@
             "description": "Only present when the requester is the user themselves or an admin."
           }
         },
-        "required": ["id", "displayName", "avatar", "joinedAt", "publishedAssetCount"]
+        "required": [
+          "id",
+          "displayName",
+          "avatar",
+          "joinedAt",
+          "publishedAssetCount"
+        ]
       },
       "ConfirmActionDto": {
         "type": "object",
@@ -4612,7 +4964,10 @@
             "type": "string"
           }
         },
-        "required": ["confirm", "confirmedAt"]
+        "required": [
+          "confirm",
+          "confirmedAt"
+        ]
       },
       "MeResponseDto": {
         "type": "object",
@@ -4631,7 +4986,10 @@
           },
           "locale": {
             "type": "string",
-            "enum": ["en", "id"],
+            "enum": [
+              "en",
+              "id"
+            ],
             "example": "en"
           },
           "isAdmin": {
@@ -4639,7 +4997,11 @@
           },
           "role": {
             "type": "string",
-            "enum": ["admin", "contributor", "user"]
+            "enum": [
+              "admin",
+              "contributor",
+              "user"
+            ]
           },
           "avatar": {
             "$ref": "#/components/schemas/AvatarDto"
@@ -4675,10 +5037,15 @@
         "properties": {
           "locale": {
             "type": "string",
-            "enum": ["en", "id"]
+            "enum": [
+              "en",
+              "id"
+            ]
           }
         },
-        "required": ["locale"]
+        "required": [
+          "locale"
+        ]
       },
       "PluginExchangeDto": {
         "type": "object",
@@ -4693,7 +5060,10 @@
             "maxLength": 120
           }
         },
-        "required": ["keycloakAccessToken", "deviceLabel"]
+        "required": [
+          "keycloakAccessToken",
+          "deviceLabel"
+        ]
       },
       "PluginExchangeResponseDto": {
         "type": "object",
@@ -4708,7 +5078,11 @@
             "type": "string"
           }
         },
-        "required": ["deviceToken", "deviceId", "expiresAt"]
+        "required": [
+          "deviceToken",
+          "deviceId",
+          "expiresAt"
+        ]
       },
       "PluginRefreshDto": {
         "type": "object",
@@ -4717,7 +5091,9 @@
             "type": "string"
           }
         },
-        "required": ["deviceToken"]
+        "required": [
+          "deviceToken"
+        ]
       },
       "PluginRefreshResponseDto": {
         "type": "object",
@@ -4726,7 +5102,9 @@
             "type": "string"
           }
         },
-        "required": ["expiresAt"]
+        "required": [
+          "expiresAt"
+        ]
       },
       "PluginRevokeDto": {
         "type": "object",
@@ -4735,7 +5113,9 @@
             "type": "string"
           }
         },
-        "required": ["deviceId"]
+        "required": [
+          "deviceId"
+        ]
       },
       "PluginDeviceDto": {
         "type": "object",
@@ -4756,7 +5136,12 @@
             "type": "string"
           }
         },
-        "required": ["id", "deviceLabel", "createdAt", "expiresAt"]
+        "required": [
+          "id",
+          "deviceLabel",
+          "createdAt",
+          "expiresAt"
+        ]
       },
       "AssetCategoryRefDto": {
         "type": "object",
@@ -4771,7 +5156,11 @@
             "type": "string"
           }
         },
-        "required": ["id", "slug", "name"]
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ]
       },
       "AssetLicenseRefDto": {
         "type": "object",
@@ -4786,7 +5175,11 @@
             "type": "string"
           }
         },
-        "required": ["id", "slug", "name"]
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ]
       },
       "AssetTagDto": {
         "type": "object",
@@ -4801,7 +5194,11 @@
             "type": "string"
           }
         },
-        "required": ["id", "slug", "displayName"]
+        "required": [
+          "id",
+          "slug",
+          "displayName"
+        ]
       },
       "AssetThumbnailDto": {
         "type": "object",
@@ -4827,7 +5224,11 @@
             "$ref": "#/components/schemas/AvatarDto"
           }
         },
-        "required": ["id", "displayName", "avatar"]
+        "required": [
+          "id",
+          "displayName",
+          "avatar"
+        ]
       },
       "AssetVersionFileTreeNodeDto": {
         "type": "object",
@@ -4848,7 +5249,12 @@
             "type": "object"
           }
         },
-        "required": ["id", "relativePath", "kind", "bytes"]
+        "required": [
+          "id",
+          "relativePath",
+          "kind",
+          "bytes"
+        ]
       },
       "AssetVersionCompatibilityDto": {
         "type": "object",
@@ -4869,7 +5275,11 @@
             }
           }
         },
-        "required": ["engineVersion", "renderPipelines", "targets"]
+        "required": [
+          "engineVersion",
+          "renderPipelines",
+          "targets"
+        ]
       },
       "AssetVersionDependencyDto": {
         "type": "object",
@@ -4884,7 +5294,10 @@
             "type": "string"
           }
         },
-        "required": ["name", "source"]
+        "required": [
+          "name",
+          "source"
+        ]
       },
       "AssetVersionPayloadDto": {
         "type": "object",
@@ -5030,7 +5443,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["DRAFT", "PUBLISHED", "ARCHIVED", "DELETED"]
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED",
+              "DELETED"
+            ]
           },
           "publishedAt": {
             "type": "string"
@@ -5111,7 +5529,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["DRAFT", "PUBLISHED", "ARCHIVED", "DELETED"]
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED",
+              "DELETED"
+            ]
           },
           "thumbnailUrl": {
             "type": "string"
@@ -5154,7 +5577,10 @@
         "properties": {
           "locale": {
             "type": "string",
-            "enum": ["en", "id"]
+            "enum": [
+              "en",
+              "id"
+            ]
           },
           "shortDescription": {
             "type": "string",
@@ -5165,7 +5591,11 @@
             "description": "TipTap JSON document (full schema)."
           }
         },
-        "required": ["locale", "shortDescription", "longDescription"]
+        "required": [
+          "locale",
+          "shortDescription",
+          "longDescription"
+        ]
       },
       "CreateAssetDto": {
         "type": "object",
@@ -5216,7 +5646,14 @@
             "type": "boolean"
           }
         },
-        "required": ["title", "engine", "categoryId", "licenseId", "semver", "translations"]
+        "required": [
+          "title",
+          "engine",
+          "categoryId",
+          "licenseId",
+          "semver",
+          "translations"
+        ]
       },
       "UpdateAssetDto": {
         "type": "object",
@@ -5303,7 +5740,13 @@
             "description": "Count of published assets in this category."
           }
         },
-        "required": ["id", "slug", "name", "sortOrder", "assetCount"]
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "sortOrder",
+          "assetCount"
+        ]
       },
       "AdminCategoryDto": {
         "type": "object",
@@ -5374,7 +5817,10 @@
             "default": true
           }
         },
-        "required": ["slug", "name"]
+        "required": [
+          "slug",
+          "name"
+        ]
       },
       "UpdateCategoryDto": {
         "type": "object",
@@ -5406,7 +5852,9 @@
             }
           }
         },
-        "required": ["orderedIds"]
+        "required": [
+          "orderedIds"
+        ]
       },
       "CategoryIconInitiateDto": {
         "type": "object",
@@ -5419,7 +5867,10 @@
             "type": "number"
           }
         },
-        "required": ["contentType", "bytes"]
+        "required": [
+          "contentType",
+          "bytes"
+        ]
       },
       "LicenseSummaryDto": {
         "type": "object",
@@ -5440,7 +5891,13 @@
             "type": "number"
           }
         },
-        "required": ["id", "slug", "name", "description", "sortOrder"]
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "description",
+          "sortOrder"
+        ]
       },
       "LicenseDetailDto": {
         "type": "object",
@@ -5464,7 +5921,14 @@
             "type": "string"
           }
         },
-        "required": ["id", "slug", "name", "description", "sortOrder", "fullText"]
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "description",
+          "sortOrder",
+          "fullText"
+        ]
       },
       "AdminLicenseDto": {
         "type": "object",
@@ -5539,7 +6003,12 @@
             "default": true
           }
         },
-        "required": ["slug", "name", "description", "fullText"]
+        "required": [
+          "slug",
+          "name",
+          "description",
+          "fullText"
+        ]
       },
       "UpdateLicenseDto": {
         "type": "object",
@@ -5578,7 +6047,12 @@
             "description": "Number of assets currently using this tag."
           }
         },
-        "required": ["id", "slug", "displayName", "usageCount"]
+        "required": [
+          "id",
+          "slug",
+          "displayName",
+          "usageCount"
+        ]
       },
       "MergeTagsDto": {
         "type": "object",
@@ -5593,7 +6067,10 @@
             "type": "string"
           }
         },
-        "required": ["fromTagIds", "intoTagId"]
+        "required": [
+          "fromTagIds",
+          "intoTagId"
+        ]
       },
       "UpdateTagDto": {
         "type": "object",
@@ -5625,7 +6102,13 @@
             "type": "string"
           }
         },
-        "required": ["id", "slug", "displayName", "usageCount", "createdAt"]
+        "required": [
+          "id",
+          "slug",
+          "displayName",
+          "usageCount",
+          "createdAt"
+        ]
       },
       "VersionSummaryDto": {
         "type": "object",
@@ -5677,7 +6160,9 @@
             "description": "TipTap JSON keyed by locale: { en?, id? }."
           }
         },
-        "required": ["semver"]
+        "required": [
+          "semver"
+        ]
       },
       "UpdateVersionDto": {
         "type": "object",
@@ -5710,7 +6195,10 @@
             }
           }
         },
-        "required": ["engineVersion", "targets"]
+        "required": [
+          "engineVersion",
+          "targets"
+        ]
       },
       "SetCompatibilityDto": {
         "type": "object",
@@ -5722,7 +6210,9 @@
             }
           }
         },
-        "required": ["rows"]
+        "required": [
+          "rows"
+        ]
       },
       "InitiateUploadDto": {
         "type": "object",
@@ -5745,7 +6235,13 @@
             "type": "number"
           }
         },
-        "required": ["assetId", "versionId", "relativePath", "contentType", "bytes"]
+        "required": [
+          "assetId",
+          "versionId",
+          "relativePath",
+          "contentType",
+          "bytes"
+        ]
       },
       "InitiateUploadResponseDto": {
         "type": "object",
@@ -5766,7 +6262,13 @@
             "type": "string"
           }
         },
-        "required": ["uploadId", "putUrl", "key", "fileId", "expiresAt"]
+        "required": [
+          "uploadId",
+          "putUrl",
+          "key",
+          "fileId",
+          "expiresAt"
+        ]
       },
       "CompleteUploadDto": {
         "type": "object",
@@ -5778,7 +6280,9 @@
             "type": "string"
           }
         },
-        "required": ["uploadId"]
+        "required": [
+          "uploadId"
+        ]
       },
       "InitiateMultipartDto": {
         "type": "object",
@@ -5806,7 +6310,14 @@
             "maximum": 10000
           }
         },
-        "required": ["assetId", "versionId", "relativePath", "contentType", "bytes", "partCount"]
+        "required": [
+          "assetId",
+          "versionId",
+          "relativePath",
+          "contentType",
+          "bytes",
+          "partCount"
+        ]
       },
       "InitiateMultipartResponseDto": {
         "type": "object",
@@ -5830,7 +6341,13 @@
             "type": "string"
           }
         },
-        "required": ["uploadId", "key", "fileId", "partUrls", "expiresAt"]
+        "required": [
+          "uploadId",
+          "key",
+          "fileId",
+          "partUrls",
+          "expiresAt"
+        ]
       },
       "SignMultipartPartsDto": {
         "type": "object",
@@ -5845,7 +6362,10 @@
             }
           }
         },
-        "required": ["uploadId", "partNumbers"]
+        "required": [
+          "uploadId",
+          "partNumbers"
+        ]
       },
       "CompletedPartDto": {
         "type": "object",
@@ -5857,7 +6377,9 @@
             "type": "string"
           }
         },
-        "required": ["partNumber"]
+        "required": [
+          "partNumber"
+        ]
       },
       "CompleteMultipartDto": {
         "type": "object",
@@ -5872,7 +6394,9 @@
             }
           }
         },
-        "required": ["uploadId"]
+        "required": [
+          "uploadId"
+        ]
       },
       "AbortMultipartDto": {
         "type": "object",
@@ -5881,7 +6405,9 @@
             "type": "string"
           }
         },
-        "required": ["uploadId"]
+        "required": [
+          "uploadId"
+        ]
       },
       "InitiateThumbnailDto": {
         "type": "object",
@@ -5897,7 +6423,11 @@
             "type": "number"
           }
         },
-        "required": ["assetId", "contentType", "bytes"]
+        "required": [
+          "assetId",
+          "contentType",
+          "bytes"
+        ]
       },
       "InitiateThumbnailResponseDto": {
         "type": "object",
@@ -5912,7 +6442,11 @@
             "type": "string"
           }
         },
-        "required": ["putUrl", "key", "expiresAt"]
+        "required": [
+          "putUrl",
+          "key",
+          "expiresAt"
+        ]
       },
       "CompleteThumbnailDto": {
         "type": "object",
@@ -5924,7 +6458,10 @@
             "type": "string"
           }
         },
-        "required": ["assetId", "key"]
+        "required": [
+          "assetId",
+          "key"
+        ]
       },
       "InitiateEditorMediaDto": {
         "type": "object",
@@ -5937,7 +6474,10 @@
             "type": "number"
           }
         },
-        "required": ["contentType", "bytes"]
+        "required": [
+          "contentType",
+          "bytes"
+        ]
       },
       "InitiateEditorMediaResponseDto": {
         "type": "object",
@@ -5955,7 +6495,12 @@
             "type": "string"
           }
         },
-        "required": ["putUrl", "key", "viewUrl", "expiresAt"]
+        "required": [
+          "putUrl",
+          "key",
+          "viewUrl",
+          "expiresAt"
+        ]
       },
       "RefreshEditorMediaDto": {
         "type": "object",
@@ -5965,7 +6510,9 @@
             "maxLength": 512
           }
         },
-        "required": ["key"]
+        "required": [
+          "key"
+        ]
       },
       "RefreshEditorMediaResponseDto": {
         "type": "object",
@@ -5977,7 +6524,10 @@
             "type": "string"
           }
         },
-        "required": ["viewUrl", "expiresAt"]
+        "required": [
+          "viewUrl",
+          "expiresAt"
+        ]
       },
       "ReorderFilesDto": {
         "type": "object",
@@ -5990,7 +6540,9 @@
             }
           }
         },
-        "required": ["orderedFileIds"]
+        "required": [
+          "orderedFileIds"
+        ]
       },
       "DownloadFileItemDto": {
         "type": "object",
@@ -6014,7 +6566,12 @@
             "type": "string"
           }
         },
-        "required": ["id", "relativePath", "kind", "bytes"]
+        "required": [
+          "id",
+          "relativePath",
+          "kind",
+          "bytes"
+        ]
       },
       "OlderVersionRefDto": {
         "type": "object",
@@ -6029,7 +6586,10 @@
             "type": "string"
           }
         },
-        "required": ["id", "semver"]
+        "required": [
+          "id",
+          "semver"
+        ]
       },
       "DownloadResponseDto": {
         "type": "object",
@@ -6053,7 +6613,12 @@
             }
           }
         },
-        "required": ["asset", "version", "files", "olderVersions"]
+        "required": [
+          "asset",
+          "version",
+          "files",
+          "olderVersions"
+        ]
       },
       "InitiateDownloadDto": {
         "type": "object",
@@ -6069,10 +6634,18 @@
           },
           "source": {
             "type": "string",
-            "enum": ["WEB", "UNITY", "UNREAL"]
+            "enum": [
+              "WEB",
+              "UNITY",
+              "UNREAL"
+            ]
           }
         },
-        "required": ["assetId", "versionId", "source"]
+        "required": [
+          "assetId",
+          "versionId",
+          "source"
+        ]
       },
       "AddLibraryItemDto": {
         "type": "object",
@@ -6081,7 +6654,9 @@
             "type": "string"
           }
         },
-        "required": ["assetId"]
+        "required": [
+          "assetId"
+        ]
       },
       "UpdateLibraryItemDto": {
         "type": "object",
@@ -6090,7 +6665,9 @@
             "type": "boolean"
           }
         },
-        "required": ["hidden"]
+        "required": [
+          "hidden"
+        ]
       },
       "CommentAuthorDto": {
         "type": "object",
@@ -6105,7 +6682,11 @@
             "type": "object"
           }
         },
-        "required": ["id", "displayName", "avatar"]
+        "required": [
+          "id",
+          "displayName",
+          "avatar"
+        ]
       },
       "CommentNodeDto": {
         "type": "object",
@@ -6115,7 +6696,10 @@
           },
           "kind": {
             "type": "string",
-            "enum": ["COMMENT", "ISSUE"]
+            "enum": [
+              "COMMENT",
+              "ISSUE"
+            ]
           },
           "parentId": {
             "type": "object"
@@ -6128,7 +6712,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["OPEN", "ACKNOWLEDGED", "RESOLVED"]
+            "enum": [
+              "OPEN",
+              "ACKNOWLEDGED",
+              "RESOLVED"
+            ]
           },
           "editedAt": {
             "type": "string"
@@ -6146,7 +6734,15 @@
             }
           }
         },
-        "required": ["id", "kind", "depth", "body", "createdAt", "author", "replies"]
+        "required": [
+          "id",
+          "kind",
+          "depth",
+          "body",
+          "createdAt",
+          "author",
+          "replies"
+        ]
       },
       "CommentListResponseDto": {
         "type": "object",
@@ -6161,14 +6757,20 @@
             "type": "object"
           }
         },
-        "required": ["items", "pageInfo"]
+        "required": [
+          "items",
+          "pageInfo"
+        ]
       },
       "CreateCommentDto": {
         "type": "object",
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["COMMENT", "ISSUE"]
+            "enum": [
+              "COMMENT",
+              "ISSUE"
+            ]
           },
           "parentId": {
             "type": "string"
@@ -6178,7 +6780,10 @@
             "description": "Lite TipTap JSON document."
           }
         },
-        "required": ["kind", "body"]
+        "required": [
+          "kind",
+          "body"
+        ]
       },
       "UpdateCommentDto": {
         "type": "object",
@@ -6188,17 +6793,25 @@
             "description": "Lite TipTap JSON document."
           }
         },
-        "required": ["body"]
+        "required": [
+          "body"
+        ]
       },
       "UpdateIssueStatusDto": {
         "type": "object",
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["OPEN", "ACKNOWLEDGED", "RESOLVED"]
+            "enum": [
+              "OPEN",
+              "ACKNOWLEDGED",
+              "RESOLVED"
+            ]
           }
         },
-        "required": ["status"]
+        "required": [
+          "status"
+        ]
       },
       "CreateReportDto": {
         "type": "object",
@@ -6208,7 +6821,10 @@
           },
           "category": {
             "type": "string",
-            "enum": ["MALICIOUS_FILE", "BROKEN_ASSET"]
+            "enum": [
+              "MALICIOUS_FILE",
+              "BROKEN_ASSET"
+            ]
           },
           "notes": {
             "type": "string",
@@ -6216,7 +6832,11 @@
             "maxLength": 1000
           }
         },
-        "required": ["assetId", "category", "notes"]
+        "required": [
+          "assetId",
+          "category",
+          "notes"
+        ]
       },
       "ReportDto": {
         "type": "object",
@@ -6226,14 +6846,22 @@
           },
           "category": {
             "type": "string",
-            "enum": ["MALICIOUS_FILE", "BROKEN_ASSET"]
+            "enum": [
+              "MALICIOUS_FILE",
+              "BROKEN_ASSET"
+            ]
           },
           "notes": {
             "type": "string"
           },
           "status": {
             "type": "string",
-            "enum": ["OPEN", "REVIEWING", "ACTIONED", "DISMISSED"]
+            "enum": [
+              "OPEN",
+              "REVIEWING",
+              "ACTIONED",
+              "DISMISSED"
+            ]
           },
           "assetId": {
             "type": "string"
@@ -6277,7 +6905,12 @@
           },
           "action": {
             "type": "string",
-            "enum": ["NOTHING", "ARCHIVE_ASSET", "DELETE_ASSET", "FORCE_DELETE_ASSET"]
+            "enum": [
+              "NOTHING",
+              "ARCHIVE_ASSET",
+              "DELETE_ASSET",
+              "FORCE_DELETE_ASSET"
+            ]
           },
           "confirm": {
             "type": "string",
@@ -6287,7 +6920,10 @@
             "type": "string"
           }
         },
-        "required": ["adminNotes", "action"]
+        "required": [
+          "adminNotes",
+          "action"
+        ]
       },
       "DismissReportDto": {
         "type": "object",
@@ -6296,7 +6932,9 @@
             "type": "string"
           }
         },
-        "required": ["adminNotes"]
+        "required": [
+          "adminNotes"
+        ]
       },
       "AdminAssetActionDto": {
         "type": "object",
@@ -6306,7 +6944,9 @@
             "description": "Required moderator reason recorded in the audit log."
           }
         },
-        "required": ["reason"]
+        "required": [
+          "reason"
+        ]
       },
       "AdminAssetForceDeleteDto": {
         "type": "object",
@@ -6324,7 +6964,11 @@
             "example": "2026-05-20T03:00:00.000Z"
           }
         },
-        "required": ["reason", "confirm", "confirmedAt"]
+        "required": [
+          "reason",
+          "confirm",
+          "confirmedAt"
+        ]
       },
       "AdminAssetTransferDto": {
         "type": "object",
@@ -6333,7 +6977,9 @@
             "type": "string"
           }
         },
-        "required": ["newOwnerId"]
+        "required": [
+          "newOwnerId"
+        ]
       },
       "CreateAssetRequestDto": {
         "type": "object",
@@ -6357,7 +7003,11 @@
             "type": "string"
           }
         },
-        "required": ["assetLink", "assetType", "intendedUse"]
+        "required": [
+          "assetLink",
+          "assetType",
+          "intendedUse"
+        ]
       },
       "AssetRequestDto": {
         "type": "object",
@@ -6382,7 +7032,13 @@
           },
           "status": {
             "type": "string",
-            "enum": ["SENT", "IN_REVIEW", "PENDING", "APPROVED", "REJECTED"]
+            "enum": [
+              "SENT",
+              "IN_REVIEW",
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
           },
           "adminComment": {
             "type": "object"
@@ -6413,14 +7069,21 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["IN_REVIEW", "PENDING", "APPROVED", "REJECTED"]
+            "enum": [
+              "IN_REVIEW",
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
           },
           "adminComment": {
             "type": "string",
             "description": "Required when transitioning to REJECTED."
           }
         },
-        "required": ["status"]
+        "required": [
+          "status"
+        ]
       },
       "AdminFeaturedSlotDto": {
         "type": "object",
@@ -6496,7 +7159,9 @@
             "default": true
           }
         },
-        "required": ["assetId"]
+        "required": [
+          "assetId"
+        ]
       },
       "UpdateFeaturedSlotDto": {
         "type": "object",
@@ -6528,7 +7193,9 @@
             }
           }
         },
-        "required": ["orderedIds"]
+        "required": [
+          "orderedIds"
+        ]
       },
       "FeaturedBannerInitiateDto": {
         "type": "object",
@@ -6541,7 +7208,10 @@
             "type": "number"
           }
         },
-        "required": ["contentType", "bytes"]
+        "required": [
+          "contentType",
+          "bytes"
+        ]
       },
       "FeaturedBannerInitiateResponseDto": {
         "type": "object",
@@ -6556,7 +7226,11 @@
             "type": "string"
           }
         },
-        "required": ["putUrl", "key", "expiresAt"]
+        "required": [
+          "putUrl",
+          "key",
+          "expiresAt"
+        ]
       },
       "AuditEntryDto": {
         "type": "object",
@@ -6589,7 +7263,13 @@
             "type": "string"
           }
         },
-        "required": ["id", "action", "subjectType", "subjectId", "createdAt"]
+        "required": [
+          "id",
+          "action",
+          "subjectType",
+          "subjectId",
+          "createdAt"
+        ]
       },
       "SearchAssetHitDto": {
         "type": "object",
@@ -6649,7 +7329,10 @@
             "type": "number"
           }
         },
-        "required": ["hits", "processingTimeMs"]
+        "required": [
+          "hits",
+          "processingTimeMs"
+        ]
       }
     }
   }
