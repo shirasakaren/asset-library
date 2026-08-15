@@ -36,3 +36,8 @@ import { MetricsModule } from './modules/metrics/metrics.module';
         pinoHttp: {
           level: config.get('LOG_LEVEL'),
           transport: config.isDevelopment
+            ? { target: 'pino-pretty', options: { singleLine: true } }
+            : undefined,
+          base: { role: 'worker' },
+        },
+      }),

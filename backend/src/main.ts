@@ -119,3 +119,21 @@ async function bootstrapApi(env: ReturnType<typeof validateEnv>): Promise<void> 
     SwaggerModule.setup('docs', app, document, {
       swaggerOptions: { persistAuthorization: true },
     });
+  }
+
+  await app.listen({ port: env.PORT, host: '0.0.0.0' });
+  new Logger('Bootstrap').log(
+    `MGM Asset Library API listening on ${env.PUBLIC_BASE_URL} (port ${env.PORT}, env=${env.NODE_ENV}, role=api).`,
+  );
+}
+
+/**
+ * Worker mode boots the same Nest container with a different module that:
+ *   - Registers all BullMQ processors.
+ *   - Skips the public controllers, swagger, CORS, etc.
+ *   - Exposes a minimal HTTP surface for /healthz and /metrics.
+ */
+async function bootstrapWorker(env: ReturnType<typeof validateEnv>): Promise<void> {
+  const adapter = new FastifyAdapter({ trustProxy: env.TRUST_PROXY });
+  const app = await NestFactory.create<NestFastifyApplication>(WorkerModule, adapter, {
+    bufferLogs: true,
