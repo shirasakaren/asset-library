@@ -48,3 +48,20 @@ export class IdempotencyService {
       throw new ConflictDomainException(
         ErrorCode.IDEMPOTENCY_KEY_REUSED,
         'Idempotency-Key has been used with a different request body.',
+      );
+    }
+    return record;
+  }
+
+  async store(
+    userId: string,
+    route: string,
+    key: string,
+    body: unknown,
+    status: number,
+    response: unknown,
+  ): Promise<void> {
+    const record: IdempotencyRecord = {
+      bodyHash: this.hashBody(body),
+      status,
+      response,
