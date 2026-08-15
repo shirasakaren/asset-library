@@ -1,0 +1,34 @@
+# Dependencies / builds — never ship these into the build context.
+**/node_modules
+**/.next
+**/dist
+**/coverage
+**/build
+
+# Git, CI, editor
+.git
+.github
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Environment & secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Tests / docs / misc not needed at image build time
+**/test
+**/tests
+**/docs
+**/*.log
+**/README.md
+**/docker-compose*.yml
+**/Dockerfile*
+**/openapi.json
+**/.openapi-cache
+**/playwright-report
+**/test-results
+**/.sentryclirc
