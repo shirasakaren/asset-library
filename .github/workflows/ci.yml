@@ -1,0 +1,200 @@
+# =============================================================================
+# CI — monorepo. One pnpm workspace, two applications.
+#
+#   * backend  — NestJS API + workers (lint, typecheck, unit tests, build,
+#                OpenAPI export check)
+#   * frontend — Next.js web client (lint, typecheck, OpenAPI sync check,
+#                unit tests, production build)
+#
+# Jobs are path-filtered so a frontend-only PR does not rebuild the API and
+# vice versa. Root-level changes (workspace files, workflows, compose) run both.
+# =============================================================================
+
+name: CI
+
+on:
+  workflow_call:
+  push:
+    branches: [main, staging, production]
+  pull_request:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ROOT_PATHS: |
+    package.json
+    pnpm-lock.yaml
+    pnpm-workspace.yaml
+    docker-compose.yml
+    docker-compose.prod.yml
+    .github/workflows/**
+
+jobs:
+  changes-backend:
+    name: Detect backend changes
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            changed:
+              - 'backend/**'
+              - ${{ env.ROOT_PATHS }}
+
+  changes-frontend:
+    name: Detect frontend changes
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            changed:
+              - 'frontend/**'
+              - ${{ env.ROOT_PATHS }}
+
+  backend:
+    name: Backend — lint, typecheck, test, build
+    needs: changes-backend
+    if: needs.changes-backend.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://mgm:mgm@localhost:5432/mgm_asset_library_test?schema=public
+      MONGO_URL: mongodb://localhost:27017/mgm_asset_library_test
+      REDIS_URL: redis://localhost:6379
+      KEYCLOAK_ISSUER_URL: http://localhost/realms/mgm
+      KEYCLOAK_AUDIENCE: mgm-asset-library
+      KEYCLOAK_JWKS_URI: http://localhost/realms/mgm/protocol/openid-connect/certs
+      PUBLIC_BASE_URL: http://localhost:4000
+      S3_ACCESS_KEY_ID: dummy
+      S3_SECRET_ACCESS_KEY: dummy
+      S3_BUCKET_ASSETS: assets
+      S3_BUCKET_THUMBS: thumbs
+      S3_BUCKET_EDITOR_MEDIA: editor
+      MEILI_URL: http://localhost:7700
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        working-directory: backend
+        run: pnpm prisma generate
+
+      - name: Lint
+        working-directory: backend
+        run: pnpm lint
+
+      - name: Typecheck
+        working-directory: backend
+        run: pnpm typecheck
+
+      - name: Unit tests
+        working-directory: backend
+        run: pnpm test -- --coverage --coverageReporters=json-summary --coverageReporters=text
+
+      - name: Build
+        working-directory: backend
+        run: pnpm build
+
+      - name: Verify openapi.json is up to date
+        working-directory: backend
+        run: |
+          pnpm openapi:export
+          if ! git diff --quiet openapi.json; then
+            echo "::error::openapi.json is out of date. Run \`pnpm openapi:export\` and commit."
+            git --no-pager diff openapi.json | head -200
+            exit 1
+          fi
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage/
+
+  frontend:
+    name: Frontend — lint, typecheck, test, build
+    needs: changes-frontend
+    if: needs.changes-frontend.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_APP_URL: https://app-url.placeholder.invalid
+      NEXT_PUBLIC_API_URL: https://app-url.placeholder.invalid
+      NEXT_PUBLIC_WS_URL: ws://ws-url.placeholder.invalid
+      NEXT_PUBLIC_COMMUNITY_DOCS_URL: https://docs-url.placeholder.invalid
+      NEXT_PUBLIC_COMMUNITY_LEARNING_URL: https://learn-url.placeholder.invalid
+      NEXT_PUBLIC_COMMUNITY_HELP_URL: https://help-url.placeholder.invalid
+      NEXTAUTH_URL: https://nextauth.placeholder.invalid
+      NEXTAUTH_SECRET: placeholder-secret-placeholder-secret
+      KEYCLOAK_CLIENT_ID: placeholder-client-id
+      KEYCLOAK_CLIENT_SECRET: placeholder-client-secret
+      KEYCLOAK_ISSUER: https://keycloak.placeholder.invalid/realms/placeholder
+      KEYCLOAK_LOGOUT_REDIRECT: https://nextauth.placeholder.invalid
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        working-directory: frontend
+        run: pnpm lint
+
+      - name: Typecheck
+        working-directory: frontend
+        run: pnpm typecheck
+
+      - name: OpenAPI schema is current
+        working-directory: frontend
+        run: |
+          if [ -f ../backend/openapi.json ] || [ -n "$OPENAPI_SOURCE_URL" ]; then
+            pnpm openapi:gen
+            git diff --exit-code src/lib/api/schema.ts || (echo "Run 'pnpm openapi:gen' and commit." && exit 1)
+          else
+            echo "Skipping openapi sync — no source available in CI"
+          fi
+
+      - name: Unit tests
+        working-directory: frontend
+        run: pnpm test
+
+      - name: Build
+        working-directory: frontend
+        run: pnpm build
