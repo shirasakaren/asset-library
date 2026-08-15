@@ -38,3 +38,23 @@ export class FakeKeycloak {
 
   /** Override that returns the decoded claims for any token we just minted. */
   asProvider(): KeycloakJwksProvider {
+    const verify = async (token: string): Promise<JWTPayload> => {
+      const { jwtVerify } = await import('jose');
+      const key = await this.ensureKey();
+      const publicJwk = await exportJWK(key);
+      const { payload } = await jwtVerify(token, publicJwk, {
+        audience: this.audience,
+        issuer: this.issuer,
+      });
+      return payload;
+    };
+    return { verify } as unknown as KeycloakJwksProvider;
+  }
+}
+
+/**
+ * Build a Nest testing module that swaps the real KeycloakJwksProvider with
+ * the fake. Call from any scenario that needs to mint tokens.
+ */
+export async function buildTestModuleWithFakeKeycloak() {
+  const fake = new FakeKeycloak();

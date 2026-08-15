@@ -51,3 +51,19 @@ describe('E2E [08] featured slot active cap', () => {
           engine: 'UNITY',
           status: 'PUBLISHED',
           publishedAt: new Date(),
+        },
+      });
+      assetIds.push(a.id);
+    }
+    // Need to make this admin actually admin in DB (bootstrap on first /auth/me).
+    await supertest(app.getHttpServer())
+      .get('/auth/me')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    for (let i = 0; i < 5; i++) {
+      await supertest(app.getHttpServer())
+        .post('/admin/featured')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ assetId: assetIds[i], isActive: true })
+        .expect(201);
+    }

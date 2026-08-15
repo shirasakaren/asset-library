@@ -42,3 +42,11 @@ function inCidr(ip: string, cidr: ParsedCidr): boolean {
 describe('metrics CIDR matcher', () => {
   it('matches a /24', () => {
     const cidr = parseCidr('10.0.0.0/24')!;
+    expect(inCidr('10.0.0.42', cidr)).toBe(true);
+    expect(inCidr('10.0.1.42', cidr)).toBe(false);
+  });
+
+  it('matches a /32 (single host)', () => {
+    const cidr = parseCidr('10.0.0.1/32')!;
+    expect(inCidr('10.0.0.1', cidr)).toBe(true);
+    expect(inCidr('10.0.0.2', cidr)).toBe(false);
