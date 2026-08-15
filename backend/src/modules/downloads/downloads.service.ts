@@ -122,3 +122,55 @@ export class DownloadsService {
           userAgent: truncatedUa,
           source,
         })),
+      }),
+      this.prisma.libraryItem.upsert({
+        where: { userId_assetId: { userId: requester.id, assetId } },
+        create: { userId: requester.id, assetId },
+        // Don't touch hidden — the user may have intentionally hidden it.
+        update: {},
+      }),
+    ]);
+
+    // Debounced stats reindex (Part 3 worker batches these).
+    await this.jobs.enqueueSearchIndex({ reason: 'asset.stats', assetId });
+
+    const olderVersions = await this.prisma.assetVersion.findMany({
+      where: { assetId, id: { not: versionId }, publishedAt: { not: null } },
+      orderBy: { publishedAt: 'desc' },
+      select: { id: true, semver: true, publishedAt: true },
+      take: 10,
+    });
+
+    return {
+      asset: { id: version.asset.id, title: version.asset.title },
+      version: {
+        id: version.id,
+        semver: version.semver,
+        releaseNotes: version.releaseNotes as object | null,
+      },
+      files: signedFiles,
+      olderVersions: olderVersions.map((v) => this.toOlderRef(v)),
+    };
+  }
+
+  private async assertDownloadAllowed(
+    asset: { ownerId: string; status: string },
+    requester: User,
+  ): Promise<void> {
+    if (asset.status === 'PUBLISHED') return;
+    if (requester.isAdmin) return;
+    if (asset.ownerId === requester.id) return;
+    throw new ForbiddenDomainException(
+      ErrorCode.AUTH_FORBIDDEN,
+      'Asset is not available for download.',
+    );
+  }
+
+  private toOlderRef(v: {
+    id: string;
+    semver: string;
+    publishedAt: Date | null;
+  }): OlderVersionRefDto {
+    return { id: v.id, semver: v.semver, publishedAt: v.publishedAt?.toISOString() };
+  }
+}

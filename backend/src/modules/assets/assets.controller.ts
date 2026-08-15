@@ -139,3 +139,42 @@ export class AssetsController {
       );
     }
     return created;
+  }
+
+  @Patch('assets/:id')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Partial update; engine is immutable after publish.' })
+  @ApiNoContentResponse()
+  async update(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateAssetDto,
+  ): Promise<void> {
+    await this.assets.update(id, dto, principal.user);
+  }
+
+  @Post('assets/:id/publish')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Flip DRAFT → PUBLISHED if every checklist item is green.' })
+  @ApiOkResponse()
+  async publish(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+  ): Promise<{ warnings: Array<{ field: string; code: string; message: string }> }> {
+    const warnings = await this.assets.publish(id, principal.user, false);
+    return {
+      warnings: warnings.map((w) => ({ field: w.field, code: w.code, message: w.message })),
+    };
+  }
+
+  @Post('assets/:id/archive')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Archive — hides from Discover/Search.' })
+  archive(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
+    return this.assets.archive(id, principal.user);

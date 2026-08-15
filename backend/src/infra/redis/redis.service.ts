@@ -35,3 +35,26 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
           cleanup();
           resolve();
         };
+        const onError = (err: Error): void => {
+          cleanup();
+          reject(err);
+        };
+        const cleanup = (): void => {
+          this.client.off('ready', onReady);
+          this.client.off('error', onError);
+        };
+        this.client.once('ready', onReady);
+        this.client.once('error', onError);
+      });
+    }
+    this.logger.log('Connected to Redis.');
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    await this.client.quit();
+  }
+
+  async ping(): Promise<boolean> {
+    try {
+      const pong = await this.client.ping();
+      return pong === 'PONG';

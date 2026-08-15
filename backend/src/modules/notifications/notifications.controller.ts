@@ -44,3 +44,34 @@ export class NotificationsController {
     });
   }
 
+  @Get('unread-count')
+  @ApiOperation({ summary: 'Cheap unread counter for the bell badge.' })
+  async unreadCount(@AuthUser() principal: AuthenticatedRequestUser): Promise<{ count: number }> {
+    return { count: await this.notifications.unreadCount(principal.user) };
+  }
+
+  @Post(':id/read')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Mark a single notification as read.' })
+  async markRead(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string) {
+    const row = await this.notifications.markRead(principal.user, id);
+    // Fan out to other tabs/devices so they also dim the badge.
+    await this.wsFanout.publish({
+      userId: principal.user.id,
+      ...this.notifications.newWsEnvelope('notification:read', { id }),
+    });
+    return row;
+  }
+
+  @Post('read-all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Bulk-mark every unread notification as read.' })
+  async markAllRead(@AuthUser() principal: AuthenticatedRequestUser): Promise<{ updated: number }> {
+    const updated = await this.notifications.markAllRead(principal.user);
+    await this.wsFanout.publish({
+      userId: principal.user.id,
+      ...this.notifications.newWsEnvelope('notification:read-all', { updated }),
+    });
+    return { updated };
+  }
+}

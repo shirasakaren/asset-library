@@ -34,3 +34,28 @@ export class ListAssetsQueryDto extends ListQueryDto {
   @IsArray()
   categoryIds?: string[];
   @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
+  @IsArray()
+  tags?: string[];
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
+  @IsArray()
+  fileKinds?: string[];
+  @ApiPropertyOptional() @IsOptional() @IsString() licenseSlug?: string;
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
+  @IsArray()
+  renderPipelines?: string[];
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @Transform(asArray)
+  @IsArray()
+  targets?: string[];
+  @ApiPropertyOptional({ enum: ASSET_SORTS })
+  @IsOptional()
+  @IsIn(ASSET_SORTS as unknown as string[])
+  sort?: AssetSort;
+  @ApiPropertyOptional() @IsOptional() @IsString() ownerId?: string;

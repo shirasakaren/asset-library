@@ -59,3 +59,44 @@ export class CommentsController {
   @ApiCreatedResponse()
   create(
     @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('assetId') assetId: string,
+    @Body() dto: CreateCommentDto,
+  ): Promise<{ id: string }> {
+    return this.comments.create(assetId, dto, principal.user);
+  }
+
+  @Patch('comments/:id')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Author edit; sets editedAt.' })
+  edit(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateCommentDto,
+  ): Promise<void> {
+    return this.comments.edit(id, dto.body, principal.user);
+  }
+
+  @Delete('comments/:id')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Admin-only soft delete.' })
+  remove(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string): Promise<void> {
+    return this.comments.adminDelete(id, principal.user);
+  }
+
+  @Patch('comments/:id/status')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Asset owner or admin transitions an issue status.' })
+  setStatus(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateIssueStatusDto,
+  ): Promise<void> {
+    return this.comments.setIssueStatus(id, dto.status, principal.user);
+  }
+}
