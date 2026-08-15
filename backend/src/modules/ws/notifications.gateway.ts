@@ -119,3 +119,31 @@ export class NotificationsGateway
   }
 
   handleDisconnect(socket: AuthedSocket): void {
+    if (socket.userId) this.registry.remove(socket.userId, socket);
+  }
+
+  private async authenticate(request: IncomingMessage): Promise<string | null> {
+    const fullUrl = new URL(request.url ?? '/', `http://${request.headers.host ?? 'localhost'}`);
+    const bearer = fullUrl.searchParams.get('token');
+    const pluginToken = fullUrl.searchParams.get('pluginToken');
+    if (bearer) {
+      const claims = await this.jwks.verify(bearer);
+      // Reuse the HTTP guard's Redis-cached principal resolution (same
+      // `authz:principal:<sub>` key) so reconnects within the cache window skip
+      // the Postgres lookup and admin promote/demote invalidation covers WS too.
+      const { user } = await this.principals.resolvePrincipal(claims);
+      return user.id;
+    }
+    if (pluginToken) {
+      const verified = await this.pluginTokens.verifyAndTouch(pluginToken);
+      return verified?.user.id ?? null;
+    }
+    return null;
+  }
+
+  private tick(): void {
+    const now = Date.now();
+    for (const [userId, set] of (
+      this.registry as unknown as {
+        sockets: Map<string, Set<AuthedSocket>>;
+      }
