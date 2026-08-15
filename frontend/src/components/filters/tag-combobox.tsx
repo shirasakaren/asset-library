@@ -70,3 +70,23 @@ export function TagCombobox({ values, onChange, placeholder }: TagComboboxProps)
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={onKey}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setTimeout(() => setFocused(false), 150)}
+          placeholder={placeholder}
+          className="flex-1 min-w-[120px] bg-transparent outline-none text-[13.5px] placeholder:text-ink-4"
+        />
+      </div>
+      {focused && debouncedQuery && (suggestions.data?.length ?? 0) > 0 ? (
+        <ul
+          role="listbox"
+          className={cn(
+            'absolute z-10 left-0 right-0 mt-1.5 max-h-[240px] overflow-y-auto rounded-[12px] border border-line bg-surface shadow-2 p-1.5',
+          )}
+        >
+          {suggestions.data?.slice(0, 8).map((tag) => (
+            <li key={tag.slug}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  add(tag.slug);

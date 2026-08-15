@@ -75,3 +75,42 @@ export default function AdminAuditPage() {
       <ul className="rounded-[14px] border border-line bg-surface overflow-hidden divide-y divide-line">
         {rows.length === 0 ? (
           <li className="p-6 text-center text-body-sm text-ink-3">No audit entries.</li>
+        ) : (
+          rows.map((entry) => <AuditRow key={entry.id} entry={entry} locale={locale} />)
+        )}
+      </ul>
+      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
+        {list.isFetchingNextPage ? 'Loading…' : null}
+      </div>
+    </>
+  );
+}
+
+function AuditRow({ entry, locale }: { entry: AuditEntry; locale: LocaleCode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full grid grid-cols-[160px_180px_1fr_auto_24px] gap-3 items-center px-4 py-2.5 text-left text-[13px] hover:bg-surface-muted/50 transition-colors"
+        aria-expanded={open}
+      >
+        <span className="text-caption text-ink-3 geist-tnum">{formatRelative(entry.createdAt, locale)}</span>
+        <span className="text-ink-2 truncate">{entry.actorDisplayName ?? entry.actorEmail ?? 'system'}</span>
+        <span className="font-mono text-[12.5px] text-ink truncate">{entry.action}</span>
+        <span className="text-ink-3 text-caption truncate">
+          {entry.subjectType}/{entry.subjectId}
+        </span>
+        <ChevronDown className={cn('h-3.5 w-3.5 text-ink-3 transition-transform', open && 'rotate-180')} strokeWidth={2.25} />
+      </button>
+      {open ? (
+        <div className="bg-surface-muted/40 border-t border-line px-4 py-3">
+          <pre className="text-[12px] leading-[1.55] font-mono whitespace-pre-wrap text-ink-2 max-h-[260px] overflow-auto">
+            {JSON.stringify(entry.metadata ?? {}, null, 2)}
+          </pre>
+        </div>
+      ) : null}
+    </li>
+  );
+}

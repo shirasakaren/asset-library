@@ -50,3 +50,12 @@ export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingEle
     />
   );
 }
+
+export function CardDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={cn('text-body-sm text-ink-3 mt-1', className)} {...props} />;
+}
+
+export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('text-body-sm text-ink-2', className)} {...props} />;
+}
+

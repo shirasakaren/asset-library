@@ -59,3 +59,29 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 fontSize: 12,
                 color: '#3b4150',
               }}
+            >
+              {error.digest}
+            </p>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => reset()}
+            style={{
+              marginTop: 24,
+              height: 44,
+              padding: '0 20px',
+              borderRadius: 12,
+              background: '#0e1116',
+              color: '#ffffff',
+              border: 'none',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            Reload
+          </button>
+        </div>
+      </body>
+    </html>
+  );
+}
