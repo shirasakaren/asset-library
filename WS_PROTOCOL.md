@@ -31,25 +31,3 @@ After a successful handshake the server immediately sends:
 Server → client only. Clients **never** push application messages. Inbound
 frames are ignored on the application layer (we still update the liveness
 timer when we see one).
-
-## Envelope
-
-Every server-emitted application message uses the same envelope:
-
-```json
-{
-  "type": "notification:new",
-  "id": "<uuid>",
-  "ts": 1716192000000,
-  "payload": { ... }
-}
-```
-
-`type` values currently in use:
-
-| `type`                  | When                                                                  |
-| ----------------------- | --------------------------------------------------------------------- |
-| `hello`                 | Sent once after successful handshake.                                 |
-| `notification:new`      | A new in-app notification was created for this user.                  |
-| `notification:read`     | An open tab marked one notification as read (multi-device sync).      |
-| `notification:read-all` | An open tab marked all notifications as read.                         |
