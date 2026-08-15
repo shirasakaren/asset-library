@@ -56,3 +56,29 @@ export async function extractVideo(
     height: Number(video.height ?? 0),
     codec: String(video.codec_name ?? 'unknown'),
     bitrateKbps: probe.format.bit_rate
+      ? Math.round(Number(probe.format.bit_rate) / 1000)
+      : undefined,
+    hasAudio: !!audio,
+  };
+}
+
+interface FfprobeOutput {
+  streams: Array<
+    Record<string, unknown> & {
+      codec_type?: string;
+      duration?: string;
+      codec_name?: string;
+      width?: number;
+      height?: number;
+      sample_rate?: string;
+      channels?: number;
+    }
+  >;
+  format: { duration?: string; bit_rate?: string };
+}
+
+async function runFfprobe(
+  filePath: string,
+  ffprobeBin: string,
+  timeoutMs: number,
+): Promise<FfprobeOutput | null> {

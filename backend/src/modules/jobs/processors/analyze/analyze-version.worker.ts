@@ -120,3 +120,17 @@ export class AnalyzeVersionWorker extends JobWorkerBase<AnalyzeVersionJob> {
     assetId: string,
     assetSlug: string,
     err: Error,
+  ): Promise<void> {
+    await this.prisma.assetVersion
+      .update({
+        where: { id: versionId },
+        data: { analysisStatus: AnalysisStatus.FAILED },
+      })
+      .catch(() => undefined);
+    await this.producer.enqueueNotify({
+      recipientUserId: ownerId,
+      type: NotificationType.ANALYZER_FAILED,
+      payload: { assetId, assetSlug, assetTitle, versionId, reason: err.message },
+    });
+  }
+}

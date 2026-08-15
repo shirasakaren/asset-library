@@ -61,3 +61,10 @@ export abstract class JobWorkerBase<TPayload> implements OnModuleInit, OnModuleD
         // Final failure — already captured in the catch above; log clearly.
         this.logger.warn(`job=${job.id} exhausted retries (${job.attemptsMade}): ${err.message}`);
       }
+    });
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    await this.worker?.close();
+  }
+}
