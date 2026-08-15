@@ -113,3 +113,23 @@ export function DiscoverAllGrid({ ownAssetIds }: DiscoverAllGridProps) {
         </label>
       </div>
 
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <AssetCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState title={t('emptyTitle')} description={t('emptyBody')} seed="discover-empty" />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {items.map((asset, i) => (
+              <AssetCard
+                key={asset.id}
+                variant="grid"
+                asset={asset}
+                isSaved={savedIds.has(asset.id)}
+                isOwner={ownAssetIds.has(asset.id)}
+                priority={i < 4}
+              />
