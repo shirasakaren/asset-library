@@ -111,3 +111,26 @@ export default function AdminWebhooksPage() {
               <ModalTitle>
                 {active.type}
                 <Badge variant={STATUS_TONE[active.status]} className="ml-3">
+                  {active.status}
+                </Badge>
+              </ModalTitle>
+            </ModalHeader>
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+              <section>
+                <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-1">Request body</p>
+                <CodeBlock
+                  language="json"
+                  code={JSON.stringify(active.requestBody, null, 2)}
+                />
+              </section>
+              <section>
+                <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-1">Response</p>
+                <p className="text-caption text-ink-3">
+                  Status: {active.responseStatus ?? '—'} · Duration: {active.durationMs ?? '—'} ms · Attempt #
+                  {active.attempt}
+                </p>
+                {active.responseHeaders ? (
+                  <CodeBlock
+                    language="json"
+                    code={JSON.stringify(active.responseHeaders, null, 2)}
+                  />

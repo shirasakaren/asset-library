@@ -109,3 +109,66 @@ export default function AdminUsersPage() {
             );
           })}
         </div>
+      </div>
+
+      <DataTable
+        rows={rows}
+        empty="No users."
+        columns={[
+          {
+            key: 'avatar',
+            header: '',
+            className: 'w-[44px]',
+            cell: (r) => (
+              <Avatar
+                data={
+                  r.avatar
+                    ? avatarFromServer(r.avatar)
+                    : getAvatarTokens({ id: r.id, displayName: r.displayName, email: r.email })
+                }
+                size={32}
+              />
+            ),
+          },
+          {
+            key: 'name',
+            header: 'Name',
+            cell: (r) => (
+              <NextLink href={`/admin/users/${r.id}`} className="font-medium text-ink hover:underline">
+                {r.displayName}
+              </NextLink>
+            ),
+          },
+          {
+            key: 'email',
+            header: 'Email',
+            cell: (r) => <code className="font-mono text-[12.5px] text-ink-2">{r.email}</code>,
+          },
+          {
+            key: 'role',
+            header: 'Role',
+            cell: (r) =>
+              r.isAdmin ? <Badge variant="info">Admin</Badge> : <Badge variant="neutral">User</Badge>,
+          },
+          {
+            key: 'published',
+            header: 'Published',
+            align: 'right',
+            cell: (r) => <span className="geist-tnum">{formatNumber(r.publishedAssetCount, locale)}</span>,
+          },
+          {
+            key: 'joined',
+            header: 'Joined',
+            cell: (r) => <span className="text-caption text-ink-3 geist-tnum">{formatDate(r.createdAt, locale)}</span>,
+          },
+          {
+            key: 'actions',
+            header: '',
+            align: 'right',
+            cell: (r) =>
+              r.isAdmin ? (
+                <Button size="sm" variant="ghost" onClick={() => setDemoteFor(r)}>
+                  Demote
+                </Button>
+              ) : null,
+          },
