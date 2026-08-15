@@ -61,3 +61,40 @@ export function StepLicense() {
         <Field id="license-pick" label={t('change')}>
           <select
             id="license-pick"
+            value={wiz.asset.license?.id ?? ''}
+            onChange={(e) => wiz.patch({ licenseId: e.target.value })}
+            className="h-11 w-full rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            <option value="">—</option>
+            {licenses.data?.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
+
+      {open && license ? (
+        <LicenseFullText licenseId={license.id} onOpenChange={setOpen} />
+      ) : null}
+    </div>
+  );
+}
+
+function LicenseFullText({
+  licenseId,
+  onOpenChange,
+}: {
+  licenseId: string;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const locale = useLocale() as LocaleCode;
+  const detail = useQuery({
+    queryKey: ['license', licenseId, locale],
+    queryFn: () =>
+      fetcher<{ id: string; name: string; fullText: string }>(`/licenses/${licenseId}`, {
+        query: { locale },
+      }),
+    staleTime: 60_000,

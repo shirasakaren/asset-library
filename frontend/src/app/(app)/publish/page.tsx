@@ -108,3 +108,20 @@ export default async function PublishLandingPage() {
               ))}
             </div>
           </section>
+        ) : null}
+      </div>
+    </Container>
+  );
+}
+
+function DraftCard({ asset }: { asset: AssetListPage['items'][number] }) {
+  return (
+    <Card variant="outlined" padding="md" className="flex flex-col">
+      <div className="aspect-[16/9] rounded-[14px] overflow-hidden bg-surface-muted relative border border-line">
+        {asset.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={asset.thumbnailUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-ink-3 text-caption uppercase tracking-[0.12em]">
+            No thumbnail
+          </div>

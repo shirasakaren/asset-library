@@ -106,3 +106,4 @@ export function StepDescription() {
       </div>
 
       {isFallback ? (
+        <Alert variant="info">{t('fallbackNote')}</Alert>

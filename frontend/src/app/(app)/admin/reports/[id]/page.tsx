@@ -53,3 +53,43 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
             <ArrowLeft className="h-3 w-3" strokeWidth={2.25} />
             Back to reports
           </NextLink>
+        }
+      />
+
+      <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
+        <div className="space-y-4">
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-1">Asset</p>
+            <NextLink
+              href={`/assets/${report.assetSlug || report.assetId}`}
+              className="font-display text-h2 text-ink tracking-[-0.01em] hover:underline"
+            >
+              {report.assetTitle}
+            </NextLink>
+            <p className="text-caption text-ink-3 font-mono">{report.assetSlug}</p>
+          </Card>
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
+              Category: {report.category === 'MALICIOUS_FILE' ? 'Malicious file / security' : 'Broken / non-functional'}
+            </p>
+            <p className="text-body text-ink-2 whitespace-pre-wrap">{report.notes}</p>
+          </Card>
+        </div>
+        <div>
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">Admin actions</p>
+            <ReportDecisionForm report={report} />
+            <p className="mt-4 text-caption text-ink-3">
+              Submitted {formatDate(report.createdAt, locale, { dateStyle: 'long', timeStyle: 'short' })}
+            </p>
+            {report.resolvedAt ? (
+              <p className="text-caption text-ink-3">
+                Resolved {formatDate(report.resolvedAt, locale, { dateStyle: 'long', timeStyle: 'short' })}
+              </p>
+            ) : null}
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+}

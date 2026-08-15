@@ -60,3 +60,36 @@ export const ModalContent = forwardRef<
       )}
       {...props}
     >
+      {children}
+      {!hideClose ? (
+        <DialogPrimitive.Close
+          aria-label="Close"
+          className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-ink-3 hover:bg-surface-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        >
+          <X className="h-4 w-4" strokeWidth={2.25} />
+        </DialogPrimitive.Close>
+      ) : null}
+    </DialogPrimitive.Content>
+  </ModalPortal>
+));
+ModalContent.displayName = 'ModalContent';
+
+export function ModalHeader({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn('mb-4 pr-9', className)}>{children}</div>;
+}
+
+export const ModalTitle = forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      'font-display text-h2 font-semibold text-ink tracking-[-0.01em] leading-tight',
+      className,
+    )}
+    {...props}
+  />
+));
+ModalTitle.displayName = 'ModalTitle';
+

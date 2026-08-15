@@ -72,3 +72,22 @@ export function StepRail() {
         <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
           {tChecklist('title')}
         </p>
+        <ul className="space-y-2">
+          {Object.entries(wiz.checklist)
+            .filter(([k]) => k !== 'compatibility' || wiz.asset.engine !== 'ENGINE_AGNOSTIC')
+            .map(([k, item]) => (
+              <ChecklistRow key={k} item={item} />
+            ))}
+        </ul>
+      </div>
+    </nav>
+  );
+}
+
+function ChecklistRow({ item }: { item: ChecklistItem }) {
+  return (
+    <li className="flex items-center gap-2 text-[13px]">
+      {item.status === 'done' ? (
+        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-brand-green text-white shrink-0">
+          <Check className="h-3 w-3" strokeWidth={3} />
+        </span>

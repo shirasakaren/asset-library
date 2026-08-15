@@ -121,3 +121,25 @@ export function AnalyticsCharts({ data }: Props) {
                 ))}
               </Bar>
             </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      <Card padding="lg">
+        <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">{t('byVersion')}</p>
+        <h2 className="font-display text-h3 text-ink tracking-[-0.005em] mt-1 mb-4">
+          {t('byVersion')}
+        </h2>
+        <table className="w-full text-[13.5px]">
+          <thead>
+            <tr className="text-left text-eyebrow uppercase tracking-[0.12em] text-ink-3">
+              <th className="py-1.5">{t('version')}</th>
+              <th className="py-1.5 text-right">{t('downloads')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.byVersion.map((v) => (
+              <tr key={v.versionId} className="border-t border-line">
+                <td className="py-1.5 font-mono">{v.semver}</td>
+                <td className="py-1.5 text-right geist-tnum">{v.downloads.toLocaleString()}</td>
+              </tr>
