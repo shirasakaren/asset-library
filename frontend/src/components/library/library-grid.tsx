@@ -131,3 +131,9 @@ export function LibraryGrid() {
     },
   });
 
+  const [downloadFor, setDownloadFor] = useState<{ id: string; title: string; versionId: string } | null>(
+    null,
+  );
+
+  const items = query.data?.pages.flatMap((p) => p.items) ?? [];
+  const allFilters = Object.keys(filters).filter((k) => filters[k] && (Array.isArray(filters[k]) ? (filters[k] as unknown[]).length : true));
