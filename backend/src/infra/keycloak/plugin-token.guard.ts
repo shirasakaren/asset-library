@@ -37,3 +37,18 @@ export class PluginTokenGuard implements CanActivate {
     if (!verified) {
       throw new DomainException(
         HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_PLUGIN_TOKEN_INVALID,
+        'Plugin token is invalid, expired, or revoked.',
+      );
+    }
+    const role = await this.roleResolver.resolve(verified.user);
+    (req as FastifyRequest & { user?: AuthenticatedRequestUser }).user = {
+      user: verified.user,
+      role,
+      claims: { sub: verified.user.keycloakSub, email: verified.user.email },
+    } as AuthenticatedRequestUser;
+    return true;
+  }
+}
+
+export function extractPluginToken(req: FastifyRequest): string | null {

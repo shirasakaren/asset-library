@@ -51,3 +51,20 @@ export class KeycloakAuthGuard implements CanActivate {
 
     let claims: KeycloakClaims;
     try {
+      claims = await this.jwks.verify(token);
+    } catch (err) {
+      this.logger.debug(`Token verification failed: ${(err as Error).message}`);
+      throw new UnauthorizedException('Invalid or expired token.');
+    }
+
+    const resolved = await this.principals.resolvePrincipal(claims);
+
+    (req as FastifyRequest & { user?: AuthenticatedRequestUser }).user = {
+      user: resolved.user,
+      role: resolved.role,
+      claims,
+    };
+    return true;
+  }
+
+  private extractBearer(req: FastifyRequest): string | null {

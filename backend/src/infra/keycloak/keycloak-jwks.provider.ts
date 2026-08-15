@@ -39,3 +39,24 @@ export class KeycloakJwksProvider {
   }
 
   /**
+   * Verifies a Keycloak-issued bearer token end-to-end (signature, issuer,
+   * audience, expiry with configurable skew). Throws on any failure so the
+   * guard can map it to a 401.
+   */
+  async verify(token: string): Promise<KeycloakClaims> {
+    // Signature, issuer, algorithm and expiry are still enforced by jose. We do
+    // NOT pass `audience` here because Keycloak access tokens default to
+    // aud:"account" unless a dedicated "Audience" protocol mapper is added to
+    // the client. Instead we accept the token when it is demonstrably intended
+    // for this resource server: either its `aud` contains our audience, or its
+    // authorized party (`azp`) is our client. This keeps verification strict
+    // without requiring extra Keycloak configuration.
+    const { payload } = await jwtVerify(token, this.jwks, {
+      issuer: this.issuer,
+      algorithms: this.algorithms,
+      clockTolerance: this.clockToleranceSec,
+    });
+    if (!payload.sub) {
+      throw new Error('Keycloak token is missing the `sub` claim.');
+    }
+    const audiences = Array.isArray(payload.aud) ? payload.aud : payload.aud ? [payload.aud] : [];
