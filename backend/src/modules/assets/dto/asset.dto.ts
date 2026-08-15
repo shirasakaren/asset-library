@@ -228,3 +228,45 @@ export class AssetLicenseRefDto {
   @ApiProperty() slug!: string;
   @ApiProperty() name!: string;
 }
+
+export class AssetTagDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() slug!: string;
+  @ApiProperty() displayName!: string;
+}
+
+export class AssetVersionFileTreeNodeDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() relativePath!: string;
+  @ApiProperty() kind!: string;
+  @ApiProperty() bytes!: string; // bigint stringified
+  @ApiPropertyOptional() meta?: object;
+}
+
+export class AssetVersionCompatibilityDto {
+  @ApiProperty() engineVersion!: string;
+  @ApiProperty({ type: [String] }) renderPipelines!: string[];
+  @ApiProperty({ type: [String] }) targets!: string[];
+}
+
+export class AssetVersionDependencyDto {
+  @ApiProperty() name!: string;
+  @ApiPropertyOptional() version?: string;
+  @ApiProperty() source!: string;
+}
+
+export class AssetVersionPayloadDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() semver!: string;
+  @ApiProperty({ description: 'TipTap JSON keyed by locale.' }) releaseNotes!: object;
+  @ApiPropertyOptional() publishedAt?: string;
+  @ApiProperty() isLatest!: boolean;
+  @ApiProperty() analysisStatus!: string;
+  @ApiProperty() bytesTotal!: string;
+  @ApiProperty() fileCount!: number;
+  @ApiProperty({ type: AssetVersionFileTreeNodeDto, isArray: true })
+  files!: AssetVersionFileTreeNodeDto[];
+  @ApiProperty({ type: AssetVersionCompatibilityDto, isArray: true })
+  compatibility!: AssetVersionCompatibilityDto[];
+  @ApiProperty({ type: AssetVersionDependencyDto, isArray: true })
+  dependencies!: AssetVersionDependencyDto[];

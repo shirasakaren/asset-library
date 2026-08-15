@@ -167,3 +167,29 @@ export class DiscoverService {
         const ap = aa.publishedAt?.getTime() ?? 0;
         const bp = bb.publishedAt?.getTime() ?? 0;
         if (ap !== bp) return bp - ap;
+        return a < b ? 1 : a > b ? -1 : 0;
+      });
+    }
+
+    // Single batched presign + DTO mapping across every row's assets, so we
+    // don't pay the per-category `toSummaryMany` cost (one S3 round-trip per
+    // call). Flatten → map once → split back into the per-category buckets.
+    const orderedFlat: Array<{ catId: string; assetId: string }> = [];
+    for (const cat of categories) {
+      const ids = idsByCategory.get(cat.id);
+      if (!ids || ids.length === 0) continue;
+      for (const id of ids) orderedFlat.push({ catId: cat.id, assetId: id });
+    }
+    const flatAssets = orderedFlat
+      .map((p) => assetById.get(p.assetId))
+      .filter((a): a is NonNullable<typeof a> => Boolean(a));
+    const summaries = await this.mapper.toSummaryMany(flatAssets, locale);
+    const summariesByCategory = new Map<string, AssetSummaryDto[]>();
+    orderedFlat.forEach((p, i) => {
+      const bucket = summariesByCategory.get(p.catId);
+      const s = summaries[i];
+      if (!s) return;
+      if (bucket) bucket.push(s);
+      else summariesByCategory.set(p.catId, [s]);
+    });
+

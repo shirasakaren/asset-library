@@ -186,3 +186,30 @@ function walk(node: TipTapNode | TipTapDoc, path: string, state: WalkState): Tip
       });
     }
     if (safeMarks.length) out.marks = safeMarks;
+  }
+  if (typeof typedNode.text === 'string') out.text = typedNode.text;
+  if (Array.isArray(node.content) && node.content.length) {
+    out.content = node.content.map((child, idx) => walk(child, `${path}.content[${idx}]`, state));
+  }
+  return out;
+}
+
+/**
+ * Validates + sanitizes a TipTap JSON document. Unknown attributes are
+ * silently stripped; disallowed nodes or marks raise a structured 400.
+ *
+ * Returns the sanitized document (safe to persist).
+ */
+export function validateTipTap(
+  doc: unknown,
+  allowlist: TipTapAllowlist,
+  errorCode: ErrorCodeValue,
+): TipTapNode {
+  if (!doc || typeof doc !== 'object') {
+    throw new BadRequestDomainException(errorCode, 'TipTap document must be an object.');
+  }
+  const serialized = JSON.stringify(doc);
+  if (Buffer.byteLength(serialized, 'utf8') > allowlist.maxBytes) {
+    throw new BadRequestDomainException(
+      errorCode,
+      `TipTap document exceeds ${allowlist.maxBytes} bytes.`,

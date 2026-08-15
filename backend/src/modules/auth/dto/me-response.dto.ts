@@ -63,3 +63,32 @@ export class PluginExchangeDto {
 
   @ApiProperty({ example: 'Unity 2022.3 — DESKTOP-ABCD', maxLength: 120 })
   @IsString()
+  @MaxLength(120)
+  deviceLabel!: string;
+}
+
+export class PluginExchangeResponseDto {
+  @ApiProperty()
+  deviceToken!: string;
+
+  @ApiProperty()
+  deviceId!: string;
+
+  @ApiProperty()
+  expiresAt!: string;
+}
+
+export class PluginRefreshDto {
+  @ApiProperty()
+  @IsString()
+  @Length(20, 512)
+  deviceToken!: string;
+}
+
+export class PluginRefreshResponseDto {
+  @ApiProperty()
+  expiresAt!: string;
+}
+
+export class PluginRevokeDto {
+  @ApiProperty()
