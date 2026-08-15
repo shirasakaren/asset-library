@@ -52,3 +52,12 @@ export abstract class JobWorkerBase<TPayload> implements OnModuleInit, OnModuleD
       },
       {
         connection: { url: this.config.get('REDIS_URL') } as never,
+        concurrency: QUEUE_CONCURRENCY[this.queueName],
+        ...this.options,
+      },
+    );
+    this.worker.on('failed', (job, err) => {
+      if (job && job.attemptsMade >= (job.opts.attempts ?? 1)) {
+        // Final failure — already captured in the catch above; log clearly.
+        this.logger.warn(`job=${job.id} exhausted retries (${job.attemptsMade}): ${err.message}`);
+      }

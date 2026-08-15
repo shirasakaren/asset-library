@@ -133,3 +133,28 @@ export class JobsProducer implements OnModuleInit, OnModuleDestroy {
     await queue.add(
       'batch',
       { triggeredAt: new Date().toISOString() } satisfies SearchIndexBatchJob,
+      {
+        repeat: { every: 5000 },
+        jobId: 'search-index-batch',
+        removeOnComplete: { age: 60 },
+        removeOnFail: { age: 60 * 60 },
+      },
+    );
+  }
+
+  // ─── Notify ─────────────────────────────────────────────────────────────
+
+  enqueueNotify(job: NotifyJob): Promise<unknown> {
+    return this.queue(QUEUE.NOTIFY).add('deliver', job);
+  }
+
+  // ─── Webhook ────────────────────────────────────────────────────────────
+
+  enqueueWebhook(job: WebhookDeliveryJob): Promise<unknown> {
+    return this.queue(QUEUE.WEBHOOK).add('deliver', job);
+  }
+
+  // ─── Crons ──────────────────────────────────────────────────────────────
+
+  enqueueArchivePurge(job: ArchivePurgeJob): Promise<unknown> {
+    return this.queue(QUEUE.ARCHIVE_PURGE).add('purge', job);
