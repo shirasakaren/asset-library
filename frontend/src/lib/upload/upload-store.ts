@@ -202,3 +202,159 @@ export const useUploadStore = create<UploadStoreState>((set, get) => {
         const part = partsToDo.shift();
         if (!part) return;
         const start = (part.partNumber - 1) * partSize;
+        const blob = file.slice(start, Math.min(file.size, start + partSize));
+        await putWithProgress(task.id, part.url, blob, file.type, ctrl, (loaded) => {
+          bytesPerPart.set(part.partNumber, loaded);
+          bump();
+        });
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(MAX_PARALLEL_PARTS, partCount) }, worker));
+    if (ctrl.signal.aborted) return;
+    // ETags are sourced server-side via ListParts — no need to send them.
+    await authedFetch('/files/uploads/multipart/complete', {
+      method: 'POST',
+      body: { uploadId: initiate.uploadId },
+      signal: ctrl.signal,
+    });
+  }
+
+  function putWithProgress(
+    taskId: string,
+    url: string,
+    blob: Blob,
+    contentType: string,
+    ctrl: AbortController,
+    onProgress: (loaded: number) => void,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      controllers.get(taskId)?.xhrs.add(xhr);
+      xhr.open('PUT', url);
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onProgress(e.loaded);
+      };
+      xhr.onload = () => {
+        controllers.get(taskId)?.xhrs.delete(xhr);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          onProgress(blob.size);
+          resolve();
+        } else reject(new Error(`PUT failed: ${xhr.status}`));
+      };
+      xhr.onerror = () => reject(new Error('PUT network error'));
+      xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'));
+      ctrl.signal.addEventListener('abort', () => xhr.abort(), { once: true });
+      xhr.setRequestHeader('Content-Type', contentType || 'application/octet-stream');
+      xhr.send(blob);
+    });
+  }
+
+  return {
+    tasks: {},
+    order: [],
+    locale: 'en',
+    setAuthProvider: (provider, locale) => set({ tokenProvider: provider, locale }),
+    __resolveAccessToken: () => resolveAccessToken(),
+
+    addFiles: (assetId, versionId, items) => {
+      const created: UploadTask[] = items.map((it) => {
+        const id = cryptoRandomId();
+        fileRegistry.set(id, it.file);
+        return {
+          id,
+          input: { assetId, versionId, file: it.file, relativePath: it.relativePath },
+          status: 'queued' as UploadStatus,
+          bytesUploaded: 0,
+          totalBytes: it.file.size,
+        };
+      });
+      set((s) => ({
+        tasks: { ...s.tasks, ...Object.fromEntries(created.map((t) => [t.id, t])) },
+        order: [...s.order, ...created.map((t) => t.id)],
+      }));
+      for (const t of created) void runTask(t);
+    },
+
+    cancel: (taskId) => {
+      const c = controllers.get(taskId);
+      if (c) {
+        c.ctrl.abort();
+        c.xhrs.forEach((x) => x.abort());
+      }
+      patch(taskId, { status: 'cancelled' });
+    },
+
+    retry: (taskId) => {
+      const task = get().tasks[taskId];
+      if (!task) return;
+      patch(taskId, { status: 'queued', bytesUploaded: 0, error: undefined });
+      void runTask({ ...task, status: 'queued', bytesUploaded: 0, error: undefined });
+    },
+
+    dismiss: (taskId) => {
+      fileRegistry.delete(taskId);
+      controllers.delete(taskId);
+      set((s) => {
+        const next = { ...s.tasks };
+        delete next[taskId];
+        return { tasks: next, order: s.order.filter((id) => id !== taskId) };
+      });
+    },
+
+    dismissByFileId: (fileId) => {
+      const ids = get().order.filter((id) => get().tasks[id]?.fileId === fileId);
+      for (const id of ids) get().dismiss(id);
+    },
+
+    clearFinished: () =>
+      set((s) => {
+        const terminal = new Set(['ready', 'cancelled', 'failed', 'analyzing']);
+        const keep = s.order.filter((id) => !terminal.has(s.tasks[id]?.status ?? ''));
+        const tasks: Record<string, UploadTask> = {};
+        for (const id of keep) tasks[id] = s.tasks[id]!;
+        s.order.forEach((id) => {
+          if (!keep.includes(id)) {
+            fileRegistry.delete(id);
+            controllers.delete(id);
+          }
+        });
+        return { tasks, order: keep };
+      }),
+  };
+});
+
+/** The store slice the pure selectors below read. */
+type TaskSlice = Pick<UploadStoreState, 'tasks' | 'order'>;
+
+/** Convenience selector: tasks for a specific asset+version, in order. */
+export function selectTasksFor(state: TaskSlice, assetId: string, versionId: string): UploadTask[] {
+  return state.order
+    .map((id) => state.tasks[id])
+    .filter(
+      (t): t is UploadTask => !!t && t.input.assetId === assetId && t.input.versionId === versionId,
+    );
+}
+
+// A task whose bytes are fully uploaded and whose AssetFile row is finalized
+// server-side. The post-upload analyzer/AV stages don't change fileCount, so
+// they all count as "done" for the purpose of the publish checklist.
+const UPLOAD_DONE_STATUSES: ReadonlySet<UploadStatus> = new Set<UploadStatus>([
+  'analyzing',
+  'av-scanning',
+  'ready',
+]);
+
+/**
+ * Backend file ids of finished uploads for an asset+version. The wizard watches
+ * this so the "at least 1 file uploaded" checklist item ticks the moment an
+ * upload completes, without a manual reload.
+ */
+export function selectCompletedFileIdsFor(
+  state: TaskSlice,
+  assetId: string,
+  versionId: string,
+): string[] {
+  return selectTasksFor(state, assetId, versionId)
+    .filter((t) => !!t.fileId && UPLOAD_DONE_STATUSES.has(t.status))
+    .map((t) => t.fileId as string);
+}

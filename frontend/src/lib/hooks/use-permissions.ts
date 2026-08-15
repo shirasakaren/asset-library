@@ -58,3 +58,26 @@ export function usePermissions(ctx: PermissionContext): Permissions {
     const asset = ctx.asset;
     const isOwner = Boolean(asset && me.id === asset.owner.id);
     const isAdmin = me.isAdmin;
+
+    const status: AssetStatus | undefined = asset?.status;
+
+    const ownerOrAdmin = isOwner || isAdmin;
+
+    return {
+      canSave: !isOwner,
+      canReport: Boolean(asset) && !isOwner && !isAdmin,
+      canEditAsset: ownerOrAdmin && status !== 'DELETED',
+      canNewVersion: ownerOrAdmin && (status === 'PUBLISHED' || status === 'DRAFT'),
+      canArchiveAsset: ownerOrAdmin && status === 'PUBLISHED',
+      canRestoreAsset: ownerOrAdmin && status === 'ARCHIVED',
+      canDeleteAsset: ownerOrAdmin && status !== 'DELETED',
+      canComment: true,
+      canReply: true,
+      canEditOwnComment: Boolean(ctx.comment && ctx.comment.author.id === me.id),
+      canDeleteAnyComment: isAdmin,
+      canChangeIssueStatus: ownerOrAdmin && ctx.comment?.kind === 'ISSUE',
+      canViewAnalytics: ownerOrAdmin,
+      canAccessAdmin: isAdmin,
+    };
+  }, [ctx.me, ctx.asset, ctx.comment]);
+}

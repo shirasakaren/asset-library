@@ -288,3 +288,113 @@ export interface DownloadOptions {
   asset: { id: string; title: string };
   version: { id: string; semver: string; releaseNotes: TipTapDoc | null };
   files: DownloadOptionsFile[];
+  olderVersions: { id: string; semver: string; publishedAt: string | null }[];
+}
+
+export interface SearchAssetHit {
+  id: string;
+  slug: string;
+  title: string;
+  shortDescription: string;
+  thumbnailUrl: string | null;
+  engine: Engine;
+  categoryName: string;
+  ownerName: string;
+  totalDownloads: number;
+}
+
+export interface SearchAssetsResponse {
+  hits: SearchAssetHit[];
+  processingTimeMs: number;
+  estimatedTotalHits: number;
+}
+
+export type NotificationType =
+  | 'COMMENT_CREATED'
+  | 'COMMENT_REPLY'
+  | 'ISSUE_CREATED'
+  | 'ISSUE_STATUS_CHANGED'
+  | 'REQUEST_CREATED'
+  | 'REQUEST_STATUS_CHANGED'
+  | 'REPORT_CREATED'
+  | 'REPORT_RECEIVED_FOR_YOUR_ASSET'
+  | 'FEATURED_FEATURED'
+  | 'VERSION_PUBLISHED'
+  | 'ANALYZER_FAILED'
+  | 'ADMIN_PROMOTED'
+  | 'ADMIN_DEMOTED';
+
+export interface NotificationItem {
+  id: string;
+  type: NotificationType | string;
+  payload: Record<string, unknown>;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface NotificationPage {
+  items: NotificationItem[];
+  pageInfo: PageInfo;
+}
+
+export type AssetRequestStatus =
+  | 'SENT'
+  | 'IN_REVIEW'
+  | 'PENDING'
+  | 'APPROVED'
+  | 'REJECTED';
+
+export interface AssetRequest {
+  id: string;
+  assetLink: string;
+  assetType: string;
+  intendedUse: string;
+  price: number | null;
+  notes: string | null;
+  status: AssetRequestStatus;
+  adminComment: string | null;
+  createdAt: string;
+  updatedAt: string;
+  requester: { id: string; displayName: string };
+}
+
+export interface AssetRequestListPage {
+  items: AssetRequest[];
+  pageInfo: PageInfo;
+}
+
+export interface CreateAssetRequestInput {
+  assetLink: string;
+  assetType: string;
+  intendedUse: string;
+  price?: number;
+  notes?: string;
+}
+
+export type CommentKind = 'COMMENT' | 'ISSUE';
+export type IssueStatus = 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED';
+
+export interface CommentAuthor {
+  id: string;
+  displayName: string;
+  avatar: ServerAvatar;
+}
+
+export interface CommentNode {
+  id: string;
+  kind: CommentKind;
+  parentId: string | null;
+  depth: number;
+  body: TipTapDoc;
+  status: IssueStatus | null;
+  editedAt: string | null;
+  createdAt: string;
+  author: CommentAuthor;
+  replies: CommentNode[];
+}
+
+export interface CommentListResponse {
+  items: CommentNode[];
+  pageInfo: PageInfo;
+}
+
