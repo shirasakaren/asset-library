@@ -85,3 +85,15 @@ export default async function AdminRequestDetailPage({ params }: PageProps) {
               <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">Notes</p>
               <p className="text-body text-ink-2 whitespace-pre-wrap">{req.notes}</p>
             </Card>
+          ) : null}
+        </div>
+        <div>
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">Decision</p>
+            <RequestDecisionForm request={req} />
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+}

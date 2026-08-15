@@ -58,3 +58,66 @@ export default function AdminReportsPage() {
   return (
     <>
       <AdminPageHeader title="Reports" description="Triage user reports about assets." />
+      <div className="flex items-center gap-1 mb-4">
+        {STATUSES.map((s) => {
+          const active = status === s.value;
+          return (
+            <button
+              key={s.value}
+              type="button"
+              onClick={() => setParams({ status: s.value === 'ALL' ? null : s.value, cursor: null })}
+              className={cn(
+                'inline-flex items-center h-8 px-3 rounded-full text-[12.5px] font-medium border transition-colors',
+                active
+                  ? 'bg-ink text-white border-ink'
+                  : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink',
+              )}
+            >
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <DataTable
+        rows={rows as (AdminReport & { id: string })[]}
+        empty="No reports."
+        onRowClick={(r) => {
+          window.location.href = `/admin/reports/${r.id}`;
+        }}
+        columns={[
+          { key: 'reporter', header: 'Reporter', cell: (r) => r.reporter.displayName },
+          {
+            key: 'asset',
+            header: 'Asset',
+            cell: (r) => (
+              <NextLink href={`/assets/${r.assetSlug || r.assetId}`} className="font-medium text-ink hover:underline">
+                {r.assetTitle}
+              </NextLink>
+            ),
+          },
+          {
+            key: 'category',
+            header: 'Category',
+            cell: (r) => (r.category === 'MALICIOUS_FILE' ? 'Malicious' : 'Broken'),
+          },
+          {
+            key: 'submitted',
+            header: 'Submitted',
+            cell: (r) => (
+              <span className="text-caption text-ink-3 geist-tnum">{formatRelative(r.createdAt, locale)}</span>
+            ),
+          },
+          {
+            key: 'status',
+            header: 'Status',
+            cell: (r) => <Badge variant={TONE[r.status]}>{r.status}</Badge>,
+          },
+        ]}
+      />
+      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
+        {list.isFetchingNextPage ? 'Loading…' : null}
+      </div>
+    </>
+  );
+}

@@ -91,3 +91,32 @@ function ManageRow({
   locale: LocaleCode;
   isAdmin: boolean;
 }) {
+  const variant: 'success' | 'warning' | 'neutral' | 'danger' =
+    asset.status === 'PUBLISHED'
+      ? 'success'
+      : asset.status === 'DRAFT'
+        ? 'warning'
+        : asset.status === 'ARCHIVED'
+          ? 'neutral'
+          : 'danger';
+  return (
+    <article className="grid grid-cols-[140px_1fr_auto] gap-5 items-center p-3 rounded-[16px] border border-line bg-surface">
+      <div className="aspect-[16/9] w-[140px] rounded-[10px] overflow-hidden border border-line bg-surface-muted">
+        <ThumbnailImage src={asset.thumbnailUrl} alt={asset.title} className="!rounded-[10px]" unoptimized />
+      </div>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <Badge variant={variant}>{asset.status.charAt(0) + asset.status.slice(1).toLowerCase()}</Badge>
+          <span className="text-caption text-ink-3 geist-tnum">
+            Updated {formatDate(asset.updatedAt, locale)}
+          </span>
+        </div>
+        <h2 className="font-display text-h3 text-ink tracking-[-0.005em] line-clamp-1">{asset.title}</h2>
+        <p className="text-caption text-ink-3 mt-1 geist-tnum">
+          {formatNumber(asset.totalDownloads, locale)} downloads · {formatNumber(asset.totalSaves, locale)} saves
+        </p>
+      </div>
+      <ManageActions asset={asset} isAdmin={isAdmin} />
+    </article>
+  );
+}
