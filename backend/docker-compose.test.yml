@@ -1,0 +1,39 @@
+# =============================================================================
+# Dependency stack for `pnpm test:e2e`. Mirrors docker-compose.yml without the
+# api/worker services — Jest boots the Nest app in-process for speed.
+# =============================================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: mgm
+      POSTGRES_PASSWORD: mgm
+      POSTGRES_DB: mgm_asset_library_e2e
+    ports: ['5432:5432']
+    tmpfs: ['/var/lib/postgresql/data']
+
+  mongo:
+    image: mongo:7
+    ports: ['27017:27017']
+    tmpfs: ['/data/db']
+
+  redis:
+    image: redis:7-alpine
+    ports: ['6379:6379']
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    environment:
+      MEILI_NO_ANALYTICS: 'true'
+    ports: ['7700:7700']
+    tmpfs: ['/meili_data']
+
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: mgm
+      MINIO_ROOT_PASSWORD: mgm-secret
+    ports: ['9000:9000', '9001:9001']
+    tmpfs: ['/data']
