@@ -202,3 +202,90 @@ export function AdminAssetsTable() {
               <NextLink href={`/assets/${r.slug || r.id}`} className="font-medium text-ink hover:underline">
                 {r.title}
               </NextLink>
+            ),
+          },
+          {
+            key: 'owner',
+            header: 'Owner',
+            cell: (r) => (
+              <span className="text-ink-2">
+                {r.ownerDisplayName}
+                {r.ownerEmail ? (
+                  <span className="text-ink-3 text-caption ml-1 font-mono">{r.ownerEmail}</span>
+                ) : null}
+              </span>
+            ),
+          },
+          { key: 'engine', header: 'Engine', cell: (r) => r.engine.replace('_', ' ') },
+          { key: 'category', header: 'Category', cell: (r) => r.categoryName },
+          {
+            key: 'status',
+            header: 'Status',
+            cell: (r) => <Badge variant={STATUS_VARIANT[r.status]}>{r.status}</Badge>,
+          },
+          {
+            key: 'downloads',
+            header: 'DLs',
+            align: 'right',
+            cell: (r) => <span className="geist-tnum">{formatNumber(r.totalDownloads, locale)}</span>,
+          },
+          {
+            key: 'updated',
+            header: 'Updated',
+            cell: (r) => <span className="geist-tnum text-ink-3">{formatDate(r.updatedAt, locale)}</span>,
+          },
+          {
+            key: 'actions',
+            header: '',
+            align: 'right',
+            cell: (r) => (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Row actions"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreHorizontal className="h-4 w-4" strokeWidth={2.25} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <NextLink href={`/assets/${r.slug || r.id}`}>
+                      <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      View public page
+                    </NextLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <NextLink href={`/admin/assets/${r.id}/edit`}>
+                      <Edit className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      Edit on behalf
+                    </NextLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setTransferFor(r)}>
+                    <UserCog className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    Transfer ownership
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {r.status === 'ARCHIVED' ? (
+                    <DropdownMenuItem onSelect={() => doRestore(r)}>
+                      <RefreshCcw className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      Restore
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onSelect={() => doArchive(r)}>
+                      <Archive className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      Archive
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onSelect={() => doSoftDelete(r)}>
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    Delete (soft, 30d)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem danger onSelect={() => setForceDeleteFor(r)}>
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    Force delete (immediate)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>

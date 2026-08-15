@@ -101,3 +101,68 @@ export async function apiFetch<T = unknown>(path: string, init: ApiFetchInit = {
       status: response.status,
       elapsedMs: Date.now() - startedAt,
       requestId,
+    });
+    (response as Response & { __requestId?: string }).__requestId = requestId;
+    return response;
+  };
+
+  let response = await doRequest(accessToken);
+
+  // 401 retry-once: a long-running flow (e.g. a 300 MB upload) can outlive the
+  // Keycloak access-token TTL even with periodic session polling, because the
+  // upload's `complete` call can land microseconds after expiry. When the
+  // caller supplied a refresher, force a session refetch and try once more.
+  // Capped at one retry so a bad refresh token can't infinite-loop.
+  if (response.status === 401 && tokenRefresher) {
+    const refreshed = await tokenRefresher().catch(() => undefined);
+    if (refreshed && refreshed !== accessToken) {
+      response = await doRequest(refreshed);
+    }
+  }
+
+  const requestId = (response as Response & { __requestId?: string }).__requestId ?? newRequestId();
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  const text = await response.text();
+  const parsed = text ? safeJsonParse(text) : null;
+
+  if (!response.ok) {
+    const problem: ProblemDetail =
+      parsed && isProblem(parsed)
+        ? parsed
+        : {
+            type: 'about:blank',
+            title: response.statusText || 'Error',
+            status: response.status,
+            code: response.status === 401 ? 'auth.unauthenticated' : 'http.error',
+            detail:
+              typeof parsed === 'object' && parsed && 'message' in parsed
+                ? String((parsed as { message: unknown }).message)
+                : undefined,
+          };
+    throw new ApiError(problem, requestId);
+  }
+
+  return parsed as T;
+}
+
+function safeJsonParse(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+function isProblem(value: unknown): value is ProblemDetail {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'status' in value &&
+    'code' in value &&
+    'title' in value
+  );
+}

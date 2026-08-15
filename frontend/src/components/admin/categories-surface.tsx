@@ -150,3 +150,46 @@ export function AdminCategoriesSurface() {
             void list.refetch();
           }}
         />
+      ) : null}
+    </>
+  );
+}
+
+function SortableRow({
+  cat,
+  onEdit,
+  onToggle,
+  onDelete,
+}: {
+  cat: AdminCategory;
+  onEdit: () => void;
+  onToggle: (next: boolean) => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: cat.id,
+  });
+  const canDelete = cat.assetCount === 0;
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        'flex items-center gap-3 px-4 py-3',
+        isDragging && 'bg-surface-muted/50',
+      )}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        aria-label="Drag"
+        className="cursor-grab active:cursor-grabbing text-ink-3 hover:text-ink"
+      >
+        <GripVertical className="h-4 w-4" strokeWidth={2.25} />
+      </button>
+      {cat.iconUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={cat.iconUrl} alt="" className="h-7 w-7 rounded-[6px]" />
+      ) : (
+        <span className="h-7 w-7 rounded-[6px] bg-surface-muted border border-line" />

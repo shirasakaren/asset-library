@@ -46,3 +46,4 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
           {trend.suffix ?? '%'}
         </p>
       ) : null}
+    </div>

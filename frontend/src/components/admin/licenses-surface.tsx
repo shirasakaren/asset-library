@@ -159,3 +159,12 @@ function LicenseEditModal({
       if (editing && license) {
         await fetcher(`/admin/licenses/${license.id}`, { method: 'PATCH', body: payload });
       } else {
+        await fetcher('/admin/licenses', { method: 'POST', body: payload });
+      }
+      toast.success(editing ? 'Saved' : 'Created');
+      onDone();
+    } catch (err) {
+      toast.error('Could not save', { description: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }

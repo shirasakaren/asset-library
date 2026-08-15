@@ -108,3 +108,31 @@ export function AdminTransferModal({ asset, onOpenChange, onDone }: Props) {
                     <span className="text-[14px] font-medium text-ink">{u.displayName}</span>
                     <span className="text-caption text-ink-3 font-mono ml-auto">{u.email}</span>
                   </button>
+                </li>
+              ))}
+          </ul>
+        ) : null}
+
+        {picked ? (
+          <div className="mt-3 flex items-center justify-between p-3 rounded-[12px] bg-surface-muted/50 border border-line">
+            <span className="inline-flex items-center gap-2">
+              <Avatar
+                data={
+                  picked.avatar
+                    ? avatarFromServer(picked.avatar)
+                    : { initials: picked.displayName.slice(0, 2).toUpperCase(), bgColor: '#3a6dc5', fgColor: '#fff' }
+                }
+                size={32}
+              />
+              <span className="text-[14px] font-semibold text-ink">{picked.displayName}</span>
+              <span className="text-caption text-ink-3 font-mono">{picked.email}</span>
+              {picked.isAdmin ? (
+                <span className="text-[10px] font-semibold text-brand-blue bg-brand-blue-50 px-1.5 rounded-full">
+                  ADMIN
+                </span>
+              ) : null}
+            </span>
+            <Button variant="ghost" size="sm" onClick={() => setPicked(null)}>
+              Change
+            </Button>
+          </div>

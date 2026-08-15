@@ -219,3 +219,105 @@ export const useUploadStore = create<UploadStoreState>((set, get) => {
     });
   }
 
+  function putWithProgress(
+    taskId: string,
+    url: string,
+    blob: Blob,
+    contentType: string,
+    ctrl: AbortController,
+    onProgress: (loaded: number) => void,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      controllers.get(taskId)?.xhrs.add(xhr);
+      xhr.open('PUT', url);
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onProgress(e.loaded);
+      };
+      xhr.onload = () => {
+        controllers.get(taskId)?.xhrs.delete(xhr);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          onProgress(blob.size);
+          resolve();
+        } else reject(new Error(`PUT failed: ${xhr.status}`));
+      };
+      xhr.onerror = () => reject(new Error('PUT network error'));
+      xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'));
+      ctrl.signal.addEventListener('abort', () => xhr.abort(), { once: true });
+      xhr.setRequestHeader('Content-Type', contentType || 'application/octet-stream');
+      xhr.send(blob);
+    });
+  }
+
+  return {
+    tasks: {},
+    order: [],
+    locale: 'en',
+    setAuthProvider: (provider, locale) => set({ tokenProvider: provider, locale }),
+    __resolveAccessToken: () => resolveAccessToken(),
+
+    addFiles: (assetId, versionId, items) => {
+      const created: UploadTask[] = items.map((it) => {
+        const id = cryptoRandomId();
+        fileRegistry.set(id, it.file);
+        return {
+          id,
+          input: { assetId, versionId, file: it.file, relativePath: it.relativePath },
+          status: 'queued' as UploadStatus,
+          bytesUploaded: 0,
+          totalBytes: it.file.size,
+        };
+      });
+      set((s) => ({
+        tasks: { ...s.tasks, ...Object.fromEntries(created.map((t) => [t.id, t])) },
+        order: [...s.order, ...created.map((t) => t.id)],
+      }));
+      for (const t of created) void runTask(t);
+    },
+
+    cancel: (taskId) => {
+      const c = controllers.get(taskId);
+      if (c) {
+        c.ctrl.abort();
+        c.xhrs.forEach((x) => x.abort());
+      }
+      patch(taskId, { status: 'cancelled' });
+    },
+
+    retry: (taskId) => {
+      const task = get().tasks[taskId];
+      if (!task) return;
+      patch(taskId, { status: 'queued', bytesUploaded: 0, error: undefined });
+      void runTask({ ...task, status: 'queued', bytesUploaded: 0, error: undefined });
+    },
+
+    dismiss: (taskId) => {
+      fileRegistry.delete(taskId);
+      controllers.delete(taskId);
+      set((s) => {
+        const next = { ...s.tasks };
+        delete next[taskId];
+        return { tasks: next, order: s.order.filter((id) => id !== taskId) };
+      });
+    },
+
+    dismissByFileId: (fileId) => {
+      const ids = get().order.filter((id) => get().tasks[id]?.fileId === fileId);
+      for (const id of ids) get().dismiss(id);
+    },
+
+    clearFinished: () =>
+      set((s) => {
+        const terminal = new Set(['ready', 'cancelled', 'failed', 'analyzing']);
+        const keep = s.order.filter((id) => !terminal.has(s.tasks[id]?.status ?? ''));
+        const tasks: Record<string, UploadTask> = {};
+        for (const id of keep) tasks[id] = s.tasks[id]!;
+        s.order.forEach((id) => {
+          if (!keep.includes(id)) {
+            fileRegistry.delete(id);
+            controllers.delete(id);
+          }
+        });
+        return { tasks, order: keep };
+      }),
+  };

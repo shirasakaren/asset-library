@@ -108,3 +108,27 @@ export function ReportDecisionForm({ report }: Props) {
                   type="radio"
                   name="report-action"
                   checked={active}
+                  onChange={() => setAction(opt.value)}
+                  className="h-4 w-4 accent-ink"
+                />
+                <span className="text-[14px] text-ink">{opt.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      </Field>
+
+      <Field id="report-notes" label="Admin notes" required={requireNotes}>
+        <Textarea
+          id="report-notes"
+          rows={4}
+          value={adminNotes}
+          onChange={(e) => setAdminNotes(e.target.value)}
+          placeholder="What did you decide and why?"
+        />
+      </Field>
+
+      {requireConfirm ? (
+        <Field id="report-confirm" label='Type "I understand" to confirm' required>
+          <Input id="report-confirm" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="I understand" />
+        </Field>

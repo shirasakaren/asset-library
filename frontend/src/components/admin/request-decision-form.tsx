@@ -61,3 +61,6 @@ export function RequestDecisionForm({ request }: Props) {
                   onChange={() => setStatus(s)}
                   className="h-4 w-4 accent-ink"
                 />
+                <span className="text-[14px] text-ink">{s.replace('_', ' ')}</span>
+              </label>
+            );

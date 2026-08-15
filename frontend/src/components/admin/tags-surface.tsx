@@ -220,3 +220,91 @@ function RenameTagModal({
           <Field id="t-name" label="Display name" required>
             <Input id="t-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
           </Field>
+        </div>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button loading={busy} onClick={submit}>
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+function MergeTagsModal({
+  onOpenChange,
+  onDone,
+}: {
+  onOpenChange: (o: boolean) => void;
+  onDone: () => void;
+}) {
+  const fetcher = useAuthedFetch();
+  const [query, setQuery] = useState('');
+  const debounced = useDebouncedValue(query, 200);
+  const [from, setFrom] = useState<Tag[]>([]);
+  const [into, setInto] = useState<Tag | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const suggestions = useQuery({
+    queryKey: ['admin', 'tag-suggest', debounced],
+    queryFn: () => fetcher<Tag[]>('/tags', { query: { q: debounced, limit: 12 } }),
+    enabled: debounced.length > 1,
+    staleTime: 30_000,
+  });
+
+  const totalUsage = from.reduce((acc, t) => acc + t.usageCount, 0) + (into?.usageCount ?? 0);
+
+  const submit = async () => {
+    if (from.length === 0 || !into) return;
+    setBusy(true);
+    try {
+      await fetcher('/admin/tags/merge', {
+        method: 'POST',
+        body: { fromTagIds: from.map((t) => t.id), intoTagId: into.id },
+      });
+      toast.success(`Merged ${from.length} tag(s) into ${into.displayName}`);
+      onDone();
+    } catch (err) {
+      toast.error('Merge failed', { description: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal open onOpenChange={onOpenChange}>
+      <ModalContent size="md">
+        <ModalHeader>
+          <ModalTitle>Merge tags</ModalTitle>
+          <ModalDescription>
+            Pick the tag(s) to merge from, then a single tag to merge into. Every asset using a source tag will be re-tagged.
+          </ModalDescription>
+        </ModalHeader>
+        <Field label="Search">
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Type a tag…" />
+        </Field>
+        {suggestions.data?.length ? (
+          <ul className="mt-2 max-h-[200px] overflow-y-auto rounded-[12px] border border-line bg-surface">
+            {suggestions.data.map((t) => {
+              const inFrom = from.some((f) => f.id === t.id);
+              const isInto = into?.id === t.id;
+              return (
+                <li key={t.id} className="flex items-center gap-2 px-3 py-1.5">
+                  <span className="font-medium text-[13.5px] text-ink">{t.displayName}</span>
+                  <code className="text-caption text-ink-3 font-mono">{t.slug}</code>
+                  <Badge variant="neutral" size="sm" className="ml-auto">
+                    {t.usageCount}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant={inFrom ? 'primary' : 'ghost'}
+                    onClick={() => {
+                      if (isInto) return;
+                      setFrom((cur) =>
+                        cur.some((c) => c.id === t.id)
+                          ? cur.filter((c) => c.id !== t.id)
+                          : [...cur, t],
+                      );

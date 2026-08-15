@@ -76,14 +76,3 @@ export const queryKeys = {
 
   notificationsInbox: (params: { unreadOnly?: boolean } = {}) =>
     ['notifications-inbox', params] as const,
-
-  assetRequests: (filters: Record<string, unknown> = {}) =>
-    ['asset-requests', filters] as const,
-
-  myAnalyticsSummary: ['analytics', 'me', 'summary'] as const,
-  myAnalyticsAsset: (assetId: string) => ['analytics', 'me', assetId] as const,
-
-  publishManageList: (filters: Record<string, unknown> = {}) =>
-    ['publish', 'manage', filters] as const,
-
-  /* ---------- admin ---------- */
