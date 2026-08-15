@@ -51,3 +51,16 @@ export class UpdateIssueStatusDto {
 export class CommentAuthorDto {
   @ApiProperty() id!: string;
   @ApiProperty() displayName!: string;
+  @ApiProperty() avatar!: { initials: string; bgColor: string; fgColor: string };
+}
+
+export class CommentNodeDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ enum: CommentKind }) kind!: CommentKind;
+  @ApiPropertyOptional() parentId?: string | null;
+  @ApiProperty() depth!: number;
+  @ApiProperty() body!: object;
+  @ApiPropertyOptional({ enum: IssueStatus }) status?: IssueStatus | null;
+  @ApiPropertyOptional() editedAt?: string;
+  @ApiProperty() createdAt!: string;
+  @ApiProperty() author!: CommentAuthorDto;
