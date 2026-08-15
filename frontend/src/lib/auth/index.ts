@@ -107,3 +107,17 @@ export const authConfig: NextAuthConfig = {
       return token;
     },
     async session({ session, token }) {
+      session.accessToken = token.accessToken as string | undefined;
+      session.error = token.error as string | undefined;
+      session.expiresAt = token.expiresAt as number | undefined;
+      return session;
+    },
+  },
+  events: {
+    async signOut(message) {
+      // Best-effort: call Keycloak end_session with the id_token hint.
+      const idToken =
+        ('token' in message && message.token && 'idToken' in message.token
+          ? (message.token.idToken as string | undefined)
+          : undefined) ?? undefined;
+      if (!idToken) return;
