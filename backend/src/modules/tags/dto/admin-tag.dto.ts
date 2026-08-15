@@ -50,3 +50,11 @@ export class UpdateTagDto {
   @MaxLength(80)
   slug?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  displayName?: string;
+}
+
+export class AdminTagDto {

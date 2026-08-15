@@ -77,3 +77,37 @@ export class AuthController {
       deviceToken: issued.token,
       deviceId: issued.deviceId,
       expiresAt: issued.expiresAt.toISOString(),
+    };
+  }
+
+  @Public()
+  @Post('plugin/refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Slide the expiry of an existing plugin device token.' })
+  @ApiOkResponse({ type: PluginRefreshResponseDto })
+  async refreshPlugin(@Body() body: PluginRefreshDto): Promise<PluginRefreshResponseDto> {
+    const next = await this.auth.refreshPluginToken(body.deviceToken);
+    return { expiresAt: next.toISOString() };
+  }
+
+  @Post('plugin/revoke')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @ApiOperation({ summary: 'Revoke one of your own plugin devices.' })
+  async revokePlugin(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() body: PluginRevokeDto,
+  ): Promise<void> {
+    await this.auth.revokePluginDevice(principal.user.id, body.deviceId);
+  }
+
+  @Get('plugin/devices')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @ApiOperation({ summary: 'List active plugin devices for the current user.' })
+  @ApiOkResponse({ type: PluginDeviceDto, isArray: true })
+  listPluginDevices(@AuthUser() principal: AuthenticatedRequestUser): Promise<PluginDeviceDto[]> {
+    return this.auth.listPluginDevices(principal.user.id);
+  }
+

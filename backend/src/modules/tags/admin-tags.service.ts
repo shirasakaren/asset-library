@@ -100,3 +100,76 @@ export class AdminTagsService {
       }
     });
     await Promise.all(
+      Array.from(touchedAssets).map((id) =>
+        this.producer.enqueueSearchIndex({ reason: 'asset.update', assetId: id }),
+      ),
+    );
+    await this.tags.invalidatePopularCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'tag.merge',
+      subjectType: 'Tag',
+      subjectId: target.id,
+      metadata: { fromTagIds: dto.fromTagIds, touched: touchedAssets.size },
+    });
+  }
+
+  async update(id: string, admin: User, dto: UpdateTagDto): Promise<AdminTagDto> {
+    const row = await this.prisma.tag.findUnique({ where: { id } });
+    if (!row) throw new NotFoundDomainException(ErrorCode.TAG_IN_USE, `Tag ${id} not found.`);
+    if (dto.slug && dto.slug !== row.slug) {
+      const collision = await this.prisma.tag.findUnique({ where: { slug: dto.slug } });
+      if (collision) {
+        throw new ConflictDomainException(
+          ErrorCode.TAG_IN_USE,
+          `Slug "${dto.slug}" is already in use.`,
+        );
+      }
+    }
+    const updated = await this.prisma.tag.update({
+      where: { id },
+      data: {
+        slug: dto.slug ?? row.slug,
+        displayName: dto.displayName ?? row.displayName,
+      },
+      include: { usage: true },
+    });
+    // Tag rename → ripple every asset using it through the search indexer.
+    const assets = await this.prisma.assetTag.findMany({
+      where: { tagId: id },
+      select: { assetId: true },
+    });
+    await Promise.all(
+      assets.map((a) =>
+        this.producer.enqueueSearchIndex({ reason: 'asset.update', assetId: a.assetId }),
+      ),
+    );
+    await this.tags.invalidatePopularCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'tag.update',
+      subjectType: 'Tag',
+      subjectId: id,
+      metadata: { changes: dto },
+    });
+    return this.toDto(updated);
+  }
+
+  async remove(id: string, admin: User): Promise<void> {
+    const usage = await this.prisma.assetTag.count({ where: { tagId: id } });
+    if (usage > 0) {
+      throw new ConflictDomainException(
+        ErrorCode.TAG_IN_USE,
+        `Tag is used by ${usage} asset(s) — merge or untag first.`,
+      );
+    }
+    const row = await this.prisma.tag.findUnique({ where: { id } });
+    if (!row) throw new NotFoundDomainException(ErrorCode.TAG_IN_USE, `Tag ${id} not found.`);
+    await this.prisma.tag.delete({ where: { id } });
+    await this.tags.invalidatePopularCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'tag.delete',
+      subjectType: 'Tag',
+      subjectId: id,
+      metadata: { slug: row.slug },

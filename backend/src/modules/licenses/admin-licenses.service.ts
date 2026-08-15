@@ -98,3 +98,18 @@ export class AdminLicensesService {
     if (usage > 0) {
       throw new ConflictDomainException(
         ErrorCode.LICENSE_IN_USE,
+        `License is referenced by ${usage} asset(s) — reassign first.`,
+      );
+    }
+    const row = await this.prisma.license.findUnique({ where: { id } });
+    if (!row)
+      throw new NotFoundDomainException(ErrorCode.LICENSE_NOT_FOUND, `License ${id} not found.`);
+    await this.prisma.license.delete({ where: { id } });
+    await this.licenses.invalidateCache();
+    await this.audit.record({
+      actorId: admin.id,
+      action: 'license.delete',
+      subjectType: 'License',
+      subjectId: id,
+      metadata: { slug: row.slug },
+    });
