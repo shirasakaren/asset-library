@@ -65,4 +65,3 @@ export async function Navbar({ user }: NavbarProps) {
 
 /** Stripped navbar used on the marketing /about route. */
 export async function MarketingNavbar() {
-  const tc = await getTranslations('common');

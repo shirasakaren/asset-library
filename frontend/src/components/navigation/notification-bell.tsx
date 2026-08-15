@@ -104,3 +104,15 @@ export function NotificationBell({ initialUnreadCount }: NotificationBellProps) 
               onClick={handleMarkAllClick}
               className="text-caption text-ink-3 hover:text-ink transition-colors"
             >
+              {t('markAllRead')}
+            </button>
+          ) : null}
+        </div>
+        {items.length === 0 ? (
+          <div className="p-6 text-center">
+            <div className="mx-auto h-14 w-14 rounded-full bg-brand-yellow-50 flex items-center justify-center mb-3">
+              <Bell className="h-5 w-5 text-[#a16800]" strokeWidth={2.25} />
+            </div>
+            <p className="text-[13.5px] font-semibold text-ink">{t('empty')}</p>
+            <p className="text-[12.5px] text-ink-3 mt-1">{t('emptyBody')}</p>
+          </div>

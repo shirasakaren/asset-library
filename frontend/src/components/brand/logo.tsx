@@ -41,3 +41,10 @@ export function Logo({
             'font-display font-semibold tracking-[-0.015em] text-ink',
             size === 'sm' && 'text-[15px]',
             size === 'md' && 'text-[17px]',
+            size === 'lg' && 'text-h2',
+          )}
+        >
+          Asset Library
+        </span>
+      ) : null}
+    </span>
