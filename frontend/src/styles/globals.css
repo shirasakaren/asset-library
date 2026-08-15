@@ -1,0 +1,240 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Modal/dialog entrance animation. Radix Dialog content is centered with
+   `-translate-x-1/2 -translate-y-1/2`; a plain scale animation overrides that
+   `transform` (and `forwards` retains it) which shifts the dialog off-center.
+   Keep the translate inside the keyframe so it stays centered while scaling.
+   Defined as raw CSS (not a Tailwind utility) so it is always in the bundle. */
+@keyframes mgm-modal-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.mgm-modal-content[data-state='open'] {
+  animation: mgm-modal-in 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* =========================================================================
+   Design tokens — DS §2.1 + §6.1
+   ========================================================================= */
+:root {
+  /* Surfaces */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-muted: #f7f7f5;
+  --surface-inverse: #0e1116;
+
+  /* Brand */
+  --brand-blue: #3a6dc5;
+  --brand-yellow: #f7bf33;
+  --brand-red: #f94141;
+  --brand-green: #0f8657;
+
+  /* Tints */
+  --brand-blue-50: #ecf1fa;
+  --brand-yellow-50: #fef6e0;
+  --brand-red-50: #fee5e5;
+  --brand-green-50: #e2f1ea;
+
+  /* Text */
+  --ink: #0e1116;
+  --ink-2: #3b4150;
+  --ink-3: #6b7280;
+  --ink-4: #9aa1ad;
+
+  /* Lines */
+  --line: #ececea;
+  --line-strong: #d8d8d2;
+
+  /* Focus */
+  --focus: #3a6dc5;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px rgba(14, 17, 22, 0.04), 0 1px 1px rgba(14, 17, 22, 0.03);
+  --shadow-2: 0 6px 24px -8px rgba(14, 17, 22, 0.1), 0 2px 6px -2px rgba(14, 17, 22, 0.05);
+  --shadow-3: 0 24px 60px -20px rgba(14, 17, 22, 0.18), 0 4px 12px -4px rgba(14, 17, 22, 0.06);
+
+  /* Motion (DS §6.1) */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 520ms;
+  --dur-5: 800ms;
+}
+
+/* =========================================================================
+   Base
+   ========================================================================= */
+* {
+  box-sizing: border-box;
+  border-color: var(--line);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  min-height: 100dvh;
+}
+
+::selection {
+  background: var(--brand-yellow);
+  color: var(--ink);
+}
+
+/* Focus ring — applied via focus-visible only */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* =========================================================================
+   Responsive type clamps — DS §3.4
+   ========================================================================= */
+.display-2xl {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw + 1rem, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+.display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw + 1rem, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+.display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw + 1rem, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+/* Display family applied via class */
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* =========================================================================
+   Utilities
+   ========================================================================= */
+
+/* Tabular numerals for dashboards */
+.geist-tnum {
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hairline divider (DS pattern) */
+.hairline {
+  background: var(--line);
+  height: 1px;
+  width: 100%;
+}
+
+/* Surface containers */
+.surface-muted {
+  background: var(--surface-muted);
+}
+
+.surface-inverse {
+  background: var(--surface-inverse);
+  color: #ffffff;
+}
+
+/* No-flash transition lockdown during initial paint */
+.no-transition * {
+  transition: none !important;
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-muted) 0%,
+    #efeeea 50%,
+    var(--surface-muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Inline link variant — DS §7.2 */
+.link-inline {
+  color: var(--brand-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-thickness var(--dur-2) var(--ease-out-soft);
+}
+.link-inline:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Scroll bar — sane, restrained */
+@media (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 999px;
+    border: 2px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-4);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print */
+@media print {
+  body {
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
