@@ -56,3 +56,21 @@ export default async function DiscoverPage() {
 
         {discover?.rows?.map((row) => (
           <CategoryRow
+            key={row.categoryId}
+            categoryId={row.categoryId}
+            categoryName={row.name}
+            assets={row.assets}
+            ownAssetIds={ownAssetIds}
+          />
+        ))}
+
+        <div className="pt-4">
+          <h2 className="font-display text-h1 text-ink tracking-[-0.015em] mb-5">
+            All assets
+          </h2>
+          <DiscoverAllGrid ownAssetIds={ownAssetIds} />
+        </div>
+      </div>
+    </Container>
+  );
+}

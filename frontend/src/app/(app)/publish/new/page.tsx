@@ -83,3 +83,58 @@ export default function NewDraftPage() {
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-5" noValidate>
             <Field id="nd-title" label="Title" required error={form.formState.errors.title?.message}>
+              <Input id="nd-title" {...form.register('title')} placeholder="Demo asset" />
+            </Field>
+
+            <Field label="Engine" required>
+              <div className="grid sm:grid-cols-3 gap-2">
+                {(
+                  [
+                    { value: 'UNITY', label: 'Unity' },
+                    { value: 'UNREAL', label: 'Unreal' },
+                    { value: 'ENGINE_AGNOSTIC', label: 'Engine-agnostic' },
+                  ] as const
+                ).map((opt) => {
+                  const active = form.watch('engine') === opt.value;
+                  return (
+                    <label
+                      key={opt.value}
+                      className={`flex items-center gap-2.5 p-3 rounded-[12px] border cursor-pointer transition-colors duration-120 ${
+                        active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40'
+                      }`}
+                    >
+                      <input type="radio" value={opt.value} {...form.register('engine')} className="h-4 w-4 accent-ink" />
+                      <span className="text-[14px] font-medium text-ink">{opt.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-caption text-ink-3">{t('newDraft.engineImmutable')}</p>
+            </Field>
+
+            <Field id="nd-cat" label="Category" required error={form.formState.errors.categoryId?.message}>
+              <select
+                id="nd-cat"
+                {...form.register('categoryId')}
+                className="h-11 w-full rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+              >
+                <option value="">—</option>
+                {categories.data?.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field id="nd-lic" label="License" required error={form.formState.errors.licenseId?.message}>
+              <select
+                id="nd-lic"
+                {...form.register('licenseId')}
+                className="h-11 w-full rounded-[12px] border border-line-strong bg-surface text-[15px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+              >
+                <option value="">—</option>
+                {licenses.data?.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>

@@ -65,3 +65,23 @@ export default async function AdminRequestDetailPage({ params }: PageProps) {
               {req.assetLink}
               <ExternalLink className="h-3 w-3" strokeWidth={2.25} />
             </a>
+          </Card>
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">Type</p>
+            <p className="text-body text-ink">{req.assetType}</p>
+          </Card>
+          <Card padding="lg">
+            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">Intended use</p>
+            <p className="text-body text-ink-2 whitespace-pre-wrap">{req.intendedUse}</p>
+          </Card>
+          {req.price !== null ? (
+            <Card padding="lg">
+              <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">Price</p>
+              <p className="text-body text-ink geist-tnum">${req.price}</p>
+            </Card>
+          ) : null}
+          {req.notes ? (
+            <Card padding="lg">
+              <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">Notes</p>
+              <p className="text-body text-ink-2 whitespace-pre-wrap">{req.notes}</p>
+            </Card>

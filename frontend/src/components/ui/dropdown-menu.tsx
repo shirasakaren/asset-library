@@ -43,3 +43,18 @@ export const DropdownMenuItem = forwardRef<
     )}
     {...props}
   />
+));
+DropdownMenuItem.displayName = 'DropdownMenuItem';
+
+export const DropdownMenuSeparator = forwardRef<
+  React.ElementRef<typeof DropdownPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof DropdownPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <DropdownPrimitive.Separator
+    ref={ref}
+    className={cn('my-1.5 h-px bg-line', className)}
+    {...props}
+  />
+));
+DropdownMenuSeparator.displayName = 'DropdownMenuSeparator';
+
