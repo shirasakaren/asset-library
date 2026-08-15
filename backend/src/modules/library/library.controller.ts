@@ -54,3 +54,16 @@ export class LibraryController {
   }
 
   @Delete('items/:assetId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: "Remove an asset from the current user's library." })
+  remove(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('assetId') assetId: string,
+  ): Promise<void> {
+    return this.library.remove(principal.user, assetId);
+  }
+
+  @Patch('items/:assetId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Toggle the `hidden` flag on a library entry.' })
+  setHidden(
