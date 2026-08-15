@@ -178,3 +178,59 @@ export function ModelViewerPanel({
         exposure="1.0"
         tone-mapping="aces"
         interaction-prompt="none"
+        animation-name={activeAnim}
+        onDoubleClick={() => {
+          const el = ref.current as unknown as { resetTurntableRotation?: () => void } | null;
+          el?.resetTurntableRotation?.();
+        }}
+        style={{ width: '100%', height: '100%', background: 'transparent' }}
+      />
+
+      {/* Blurred poster + progress bar until the GLB finishes downloading. */}
+      {!loaded ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden">
+          {poster ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={poster}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover scale-110 blur-xl opacity-60"
+            />
+          ) : null}
+          <div className="relative z-10 inline-flex items-center gap-2 text-[13px] font-medium text-ink">
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+            {ready ? `Loading 3D preview · ${loadingPct}%` : t('loading')}
+          </div>
+          <div className="relative z-10 w-[min(260px,70%)] h-1.5 rounded-full bg-ink/10 overflow-hidden">
+            <div
+              className="h-full bg-brand-blue transition-[width] duration-150"
+              style={{ width: `${ready ? loadingPct : 5}%` }}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      <div className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-[6px] border border-line px-2 py-1 text-[11px] text-ink-3">
+        <RotateCcw className="h-3 w-3" strokeWidth={2.25} />
+        {t('resetCamera')}
+      </div>
+
+      {animations.length > 0 ? (
+        <div className="absolute bottom-3 left-3 right-3 md:right-auto inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-[8px] border border-line p-1 pl-2 shadow-1 max-w-full overflow-hidden">
+          <button
+            type="button"
+            onClick={togglePlay}
+            aria-label={t('playPause')}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink text-white hover:bg-[#1a1f29] transition-colors duration-120"
+          >
+            {paused ? <Play className="h-3.5 w-3.5" strokeWidth={2.25} /> : <Pause className="h-3.5 w-3.5" strokeWidth={2.25} />}
+          </button>
+          <div className="flex items-center gap-1 overflow-x-auto max-w-[300px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {animations.map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => {
+                  setActiveAnim(name);
+                  setPaused(false);

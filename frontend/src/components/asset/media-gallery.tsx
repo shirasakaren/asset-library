@@ -174,3 +174,46 @@ export function MediaGallery({
         ) : (
           <EmptyState
             title={t('noPreview')}
+            pattern={false}
+            className="!py-0 absolute inset-0 !justify-center"
+          />
+        )}
+      </div>
+
+      {items.length > 1 ? (
+        <div
+          className={cn(
+            'mt-3 flex gap-2 overflow-x-auto pb-1',
+            '[-ms-overflow-style:none] [scrollbar-width:none]',
+            '[&::-webkit-scrollbar]:hidden',
+          )}
+          role="tablist"
+          aria-label="Media thumbnails"
+        >
+          {items.map((item) => {
+            const Icon = kindIcon[item.kind];
+            const selected = item.id === activeId;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                onClick={() => setActiveId(item.id)}
+                className={cn(
+                  'group relative shrink-0 h-[60px] w-[100px] overflow-hidden rounded-[10px] border bg-surface-muted',
+                  selected ? 'border-brand-blue ring-2 ring-brand-blue/40' : 'border-line hover:border-ink/30',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
+                )}
+              >
+                {item.kind === 'image' && item.url ? (
+                  <Image src={item.url} alt="" fill sizes="100px" className="object-cover" unoptimized />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-ink-2">
+                    <Icon className="h-4 w-4" strokeWidth={2.25} />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>

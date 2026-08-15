@@ -292,3 +292,7 @@ function RowCard({
     <article
       className={cn(
         'group relative grid grid-cols-[200px_1fr_auto] gap-5 items-center p-3 rounded-[16px] border border-line bg-surface',
+        'transition-colors duration-200 ease-out-soft hover:border-line-strong',
+        'focus-within:ring-2 focus-within:ring-focus focus-within:ring-offset-2',
+        hidden && 'opacity-60',
+        className,

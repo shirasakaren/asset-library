@@ -41,3 +41,18 @@ export function VersionsList({ versions, onDownload }: VersionsListProps) {
                   {v.publishedAt
                     ? t('publishedAt', { when: formatDate(v.publishedAt, locale, { dateStyle: 'medium' }) })
                     : null}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-caption text-ink-3 geist-tnum">
+                <span>{v.fileCount} files</span>
+                <span aria-hidden>·</span>
+                <span>{formatBytes(v.bytesTotal, locale)}</span>
+                <Button size="sm" variant="secondary" onClick={() => onDownload(v.id)}>
+                  {t('downloadThis')}
+                </Button>
+              </div>
+            </div>
+            {notes ? (
+              <div className="mt-4 pt-4 border-t border-line">
+                <TipTapRenderer doc={notes} variant="lite" />
+              </div>

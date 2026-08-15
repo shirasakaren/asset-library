@@ -102,3 +102,16 @@ export function ThumbnailImage({
             onLoad={() => setLoaded(true)}
             onError={() => setErrored(true)}
           />
+        )
+      ) : null}
+      {errored || !url ? <ThumbnailPlaceholder alt={alt} /> : null}
+    </div>
+  );
+}
+
+function ThumbnailPlaceholder({ alt }: { alt: string }) {
+  // Hash-based brand tint so duplicate empty thumbnails don't all look the same.
+  const palette = ['#ecf1fa', '#fef6e0', '#fee5e5', '#e2f1ea'];
+  let h = 0;
+  for (let i = 0; i < alt.length; i++) h = (h * 31 + alt.charCodeAt(i)) | 0;
+  const bg = palette[Math.abs(h) % palette.length]!;

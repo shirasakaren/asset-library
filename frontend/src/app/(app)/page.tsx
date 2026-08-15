@@ -46,3 +46,19 @@ export default async function DiscoverPage() {
   return (
     <Container size="2xl">
       <div className="pt-8 lg:pt-10 pb-20 space-y-12">
+        {discover?.featured && discover.featured.length > 0 ? (
+          <FeaturedCarousel slots={discover.featured} />
+        ) : null}
+
+        {categories && categories.length > 0 ? (
+          <QuickFilterPills categories={categories.slice(0, 12)} />
+        ) : null}
+
+        {discover?.rows?.map((row) => (
+          <CategoryRow
+            key={row.categoryId}
+            categoryId={row.categoryId}
+            categoryName={row.name}
+            assets={row.assets}
+            ownAssetIds={ownAssetIds}
+          />

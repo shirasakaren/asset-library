@@ -51,3 +51,17 @@ export function CompatibilityTable({ rows, requiresEmptyProject }: Compatibility
                         <Badge key={rp} variant="info" size="sm">
                           {tSearch(`renderPipeline.${rp as RenderPipeline}`)}
                         </Badge>
+                      ))
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-3 align-top">
+                  <div className="flex flex-wrap gap-1.5">
+                    {row.targets.map((tgt) => (
+                      <Badge key={tgt} variant="neutral" size="sm">
+                        {tSearch(`target.${tgt as TargetPlatform}`)}
+                      </Badge>
+                    ))}
+                  </div>
+                </td>
+              </tr>

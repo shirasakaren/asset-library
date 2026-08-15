@@ -177,3 +177,111 @@ export function AssetDetailShell({
                   ) : (
                     <Badge variant="warning">{t('youOwn')}</Badge>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => setShareOpen(true)}
+                    aria-label={t('share')}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                  >
+                    <Share2 className="h-4 w-4" strokeWidth={2.25} />
+                  </button>
+                  {showReport ? (
+                    <button
+                      type="button"
+                      onClick={() => setReportOpen(true)}
+                      aria-label={t('report')}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                    >
+                      <Flag className="h-4 w-4" strokeWidth={2.25} />
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="mt-5">
+                  <AssetMeta
+                    engine={asset.engine}
+                    categoryName={asset.category.name}
+                    licenseName={asset.license.name}
+                  />
+                </div>
+
+                {asset.tags.length > 0 ? (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {asset.tags.map((tag) => (
+                      <NextLink
+                        key={tag.id}
+                        href={`/search?tags=${tag.slug}`}
+                        className="inline-flex items-center h-6 px-2.5 rounded-full bg-surface-muted text-[12px] font-medium text-ink-2 border border-line hover:border-ink/30 hover:text-ink transition-colors duration-120"
+                      >
+                        {tag.displayName}
+                      </NextLink>
+                    ))}
+                  </div>
+                ) : null}
+
+                <dl className="mt-5 grid grid-cols-2 gap-3 text-caption">
+                  <div>
+                    <dt className="text-ink-3">{t('downloadsLifetime', { n: '' }).trim()}</dt>
+                    <dd className="text-ink font-semibold text-[20px] geist-tnum">
+                      {formatNumber(asset.totalDownloads, locale)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-ink-3">{t('saves', { n: '' }).trim()}</dt>
+                    <dd className="text-ink font-semibold text-[20px] geist-tnum">
+                      {formatNumber(asset.totalSaves, locale)}
+                    </dd>
+                  </div>
+                </dl>
+
+                {latestVersion ? (
+                  <>
+                    <div className="mt-6 pt-5 border-t border-line">
+                      <p className="text-caption text-ink-3 mb-2">{t('latestVersion')}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <VersionBadge semver={latestVersion.semver} isLatest size="md" />
+                        <span className="text-caption text-ink-3 geist-tnum">
+                          {latestVersion.publishedAt
+                            ? formatDate(latestVersion.publishedAt, locale, { dateStyle: 'medium' })
+                            : '—'}
+                        </span>
+                      </div>
+                      <Button
+                        size="lg"
+                        fullWidth
+                        className="mt-4"
+                        onClick={() => openDownload()}
+                        leadingIcon={<Download className="h-4 w-4" strokeWidth={2.25} />}
+                      >
+                        {t('download')}
+                      </Button>
+                      {asset.versions.length > 1 ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const tabs = document.getElementById('asset-tabs');
+                            if (tabs) tabs.scrollIntoView({ behavior: 'smooth' });
+                            window.location.hash = 'versions';
+                          }}
+                          className="mt-3 inline-flex items-center text-[13px] font-medium text-brand-blue hover:underline"
+                        >
+                          {t('viewOlderVersions')}
+                        </button>
+                      ) : null}
+                    </div>
+                  </>
+                ) : null}
+
+                <p className="mt-5 text-caption text-ink-3">
+                  {t('availableIn', {
+                    locales: asset.availableLocales
+                      .map((l) => t(`languageName.${l}` as 'languageName.en'))
+                      .join(', '),
+                  })}
+                </p>
+              </Card>
+
+              {/* Mobile-only sticky bottom CTA */}
+              <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-bg/95 backdrop-blur-[8px] border-t border-line p-3 flex items-center gap-2">
+                {!isOwner ? (
+                  <SaveButton assetId={asset.id} initialSaved={asset.isSaved} variant="ghost-pill" />

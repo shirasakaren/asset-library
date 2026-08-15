@@ -40,3 +40,26 @@ export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
   const response = NextResponse.next();
 
+  // Set the NEXT_LOCALE cookie if missing or drifted from negotiation.
+  const negotiated = negotiateLocale(req);
+  if (req.cookies.get('NEXT_LOCALE')?.value !== negotiated) {
+    response.cookies.set('NEXT_LOCALE', negotiated, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: 'lax',
+    });
+  }
+
+  if (isPublic(pathname) || MOCK) return response;
+
+  const session = await auth();
+  if (!session) {
+    const signInUrl = new URL('/auth/signin', req.url);
+    signInUrl.searchParams.set('callbackUrl', pathname + search);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  if (session.error === 'RefreshAccessTokenError') {
+    const errUrl = new URL('/auth/error', req.url);
+    errUrl.searchParams.set('reason', 'session-expired');
+    return NextResponse.redirect(errUrl);
