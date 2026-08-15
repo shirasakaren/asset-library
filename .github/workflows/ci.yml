@@ -23,15 +23,6 @@ on:
 permissions:
   contents: read
 
-env:
-  ROOT_PATHS: |
-    package.json
-    pnpm-lock.yaml
-    pnpm-workspace.yaml
-    docker-compose.yml
-    docker-compose.prod.yml
-    .github/workflows/**
-
 jobs:
   changes-backend:
     name: Detect backend changes
@@ -46,7 +37,12 @@ jobs:
           filters: |
             changed:
               - 'backend/**'
-              - ${{ env.ROOT_PATHS }}
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'docker-compose.yml'
+              - 'docker-compose.prod.yml'
+              - '.github/workflows/**'
 
   changes-frontend:
     name: Detect frontend changes
@@ -61,7 +57,12 @@ jobs:
           filters: |
             changed:
               - 'frontend/**'
-              - ${{ env.ROOT_PATHS }}
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'docker-compose.yml'
+              - 'docker-compose.prod.yml'
+              - '.github/workflows/**'
 
   backend:
     name: Backend — lint, typecheck, test, build
