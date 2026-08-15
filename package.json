@@ -52,6 +52,8 @@
     ],
     "*.{json,md,css,yml,yaml}": [
       "prettier --write"
-    ]
+    ],
+    "!frontend/src/lib/api/schema.ts": [],
+    "!frontend/.openapi-cache/**": []
   }
 }
