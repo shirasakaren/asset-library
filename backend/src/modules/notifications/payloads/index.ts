@@ -57,3 +57,26 @@ export interface RequestStatusChangedPayload {
 export interface ReportCreatedPayload extends AssetRef {
   reportId: string;
   category: 'MALICIOUS_FILE' | 'BROKEN_ASSET';
+  reporter: UserRef;
+}
+
+export interface ReportReceivedForYourAssetPayload extends AssetRef {
+  reportId: string;
+  category: 'MALICIOUS_FILE' | 'BROKEN_ASSET';
+}
+
+export interface FeaturedFeaturedPayload extends AssetRef {
+  featuredAt: string;
+}
+
+export interface VersionPublishedPayload extends AssetRef {
+  versionId: string;
+  semver: string;
+}
+
+export interface AnalyzerFailedPayload extends AssetRef {
+  versionId: string;
+  reason: string;
+}
+
+/** Discriminated union — events index by NotificationType. */

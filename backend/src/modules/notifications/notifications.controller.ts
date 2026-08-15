@@ -53,3 +53,17 @@ export class NotificationsController {
   @Post(':id/read')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Mark a single notification as read.' })
+  async markRead(@AuthUser() principal: AuthenticatedRequestUser, @Param('id') id: string) {
+    const row = await this.notifications.markRead(principal.user, id);
+    // Fan out to other tabs/devices so they also dim the badge.
+    await this.wsFanout.publish({
+      userId: principal.user.id,
+      ...this.notifications.newWsEnvelope('notification:read', { id }),
+    });
+    return row;
+  }
+
+  @Post('read-all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Bulk-mark every unread notification as read.' })
+  async markAllRead(@AuthUser() principal: AuthenticatedRequestUser): Promise<{ updated: number }> {
