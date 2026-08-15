@@ -64,3 +64,20 @@ export class AdminQueueAuthGuard implements CanActivate {
     const header = req.headers.authorization;
     if (header) {
       const [scheme, value] = header.split(' ');
+      if (scheme?.toLowerCase() === 'bearer' && value) return value.trim();
+    }
+    const q = req.query as Record<string, string | string[] | undefined> | undefined;
+    const fromQuery = q?.['access_token'];
+    if (typeof fromQuery === 'string' && fromQuery.length > 0) return fromQuery;
+    if (Array.isArray(fromQuery) && fromQuery.length > 0 && typeof fromQuery[0] === 'string') {
+      return fromQuery[0];
+    }
+    return null;
+  }
+
+  private async upsertUser(claims: KeycloakClaims): Promise<User> {
+    const email = (claims.email ?? '').toLowerCase();
+    if (!email) {
+      throw new UnauthorizedException('Keycloak token has no email claim.');
+    }
+    const displayName = claims.name ?? claims.preferred_username ?? email.split('@')[0];

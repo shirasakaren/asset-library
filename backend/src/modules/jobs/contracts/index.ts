@@ -70,3 +70,21 @@ export interface NotifyJob {
 }
 
 export interface WebhookDeliveryJob {
+  event: string;
+  recipient?: { id: string; email?: string };
+  actor?: { id: string; email?: string; displayName?: string };
+  payload: Record<string, unknown>;
+}
+
+export interface ArchivePurgeJob {
+  triggeredAt: string;
+}
+
+export interface AuditPurgeJob {
+  triggeredAt: string;
+}
+
+export interface EditorMediaGcJob {
+  triggeredAt: string;
+}
+
