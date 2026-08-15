@@ -44,3 +44,24 @@ export class CompatibilityRowDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  renderPipelines?: string[];
+
+  @ApiProperty({ type: [String], description: 'Platform targets (WINDOWS|MAC|...).' })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  targets!: string[];
+}
+
+export class SetCompatibilityDto {
+  @ApiProperty({ type: CompatibilityRowDto, isArray: true })
+  @IsArray()
+  @ArrayMaxSize(20)
+  @ValidateNested({ each: true })
+  @Type(() => CompatibilityRowDto)
+  rows!: CompatibilityRowDto[];
+}
+
+export class VersionSummaryDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() semver!: string;

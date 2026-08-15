@@ -161,3 +161,30 @@ export class VersionsService {
     // CLEAN / INFECTED / SKIPPED_SIZE) on the asset detail page. Files flagged
     // INFECTED are quarantined separately by the AV worker.
 
+    // Transactionally flip isLatest off on the previous winner, then on this row.
+    await this.prisma.$transaction([
+      this.prisma.assetVersion.updateMany({
+        where: { assetId: version.assetId, isLatest: true, id: { not: versionId } },
+        data: { isLatest: false },
+      }),
+      this.prisma.assetVersion.update({
+        where: { id: versionId },
+        data: { isLatest: true, publishedAt: new Date() },
+      }),
+    ]);
+    await this.jobs.enqueueSearchIndex({ reason: 'asset.update', assetId: version.assetId });
+  }
+
+  async setCompatibility(
+    versionId: string,
+    rows: CompatibilityRowDto[],
+    requester: User,
+  ): Promise<void> {
+    const version = await this.prisma.assetVersion.findUnique({
+      where: { id: versionId },
+      include: { asset: true },
+    });
+    if (!version)
+      throw new NotFoundDomainException(
+        ErrorCode.VERSION_NOT_FOUND,
+        `Version ${versionId} not found.`,

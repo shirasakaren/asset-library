@@ -57,3 +57,45 @@ export class VersionsController {
     @Param('assetId') assetId: string,
     @Body() dto: CreateVersionDto,
   ): Promise<{ id: string }> {
+    return this.versions.create(assetId, dto, principal.user);
+  }
+
+  @Patch(':vid')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Update release notes; semver is immutable post-publish.' })
+  update(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+    @Body() dto: UpdateVersionDto,
+  ): Promise<void> {
+    return this.versions.update(vid, dto, principal.user);
+  }
+
+  @Post(':vid/publish')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Publish a version; transactionally flips isLatest.' })
+  publish(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+  ): Promise<void> {
+    return this.versions.publish(vid, principal.user);
+  }
+
+  @Post(':vid/reanalyze')
+  @UseGuards(KeycloakAuthGuard)
+  @ApiBearerAuth('keycloak')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Re-run analyzer + AV scan for every file in this version.' })
+  reanalyze(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Param('vid') vid: string,
+  ): Promise<void> {
+    return this.versions.reanalyze(vid, principal.user);
+  }
+
+  @Post(':vid/compatibility')
+  @UseGuards(KeycloakAuthGuard)

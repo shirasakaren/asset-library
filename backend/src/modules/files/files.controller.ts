@@ -106,3 +106,51 @@ export class FilesController {
   @ApiOperation({ summary: 'Get a presigned PUT URL for an asset thumbnail.' })
   @ApiOkResponse({ type: InitiateThumbnailResponseDto })
   initiateThumb(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: InitiateThumbnailDto,
+  ): Promise<InitiateThumbnailResponseDto> {
+    return this.files.initiateThumbnail(dto, principal.user);
+  }
+
+  @Post('thumbnails/complete')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Wire a freshly uploaded thumbnail key to the asset, queue resize variants.',
+  })
+  completeThumb(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: CompleteThumbnailDto,
+  ): Promise<void> {
+    return this.files.completeThumbnail(dto.assetId, dto.key, principal.user);
+  }
+
+  @Post('editor-media/initiate')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a presigned PUT URL for a TipTap embed; also returns a ~6-day GET URL.',
+  })
+  @ApiOkResponse({ type: InitiateEditorMediaResponseDto })
+  initiateEditorMedia(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: InitiateEditorMediaDto,
+  ): Promise<InitiateEditorMediaResponseDto> {
+    return this.files.initiateEditorMedia(dto, principal.user);
+  }
+
+  @Post('editor-media/refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Re-sign an existing editor-media key, returning a fresh ~6-day GET URL.',
+  })
+  @ApiOkResponse({ type: RefreshEditorMediaResponseDto })
+  refreshEditorMedia(
+    @AuthUser() principal: AuthenticatedRequestUser,
+    @Body() dto: RefreshEditorMediaDto,
+  ): Promise<RefreshEditorMediaResponseDto> {
+    return this.files.refreshEditorMedia(dto.key, principal.user);
+  }
+
+  @Post('versions/:versionId/reorder')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: "Persist a new display order for a version's package files." })
+  reorderFiles(
