@@ -57,3 +57,29 @@ describe('TipTapRenderer', () => {
         {
           type: 'codeBlock',
           content: [{ type: 'text', text: 'console.log(42)' }],
+        },
+      ],
+    };
+    const { container } = render(<TipTapRenderer doc={doc} />);
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Section');
+    expect(container.querySelectorAll('li')).toHaveLength(2);
+    expect(container.querySelector('pre')).toHaveTextContent('console.log(42)');
+  });
+
+  it('refuses to render javascript: links', () => {
+    const doc: TipTapDoc = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: 'click',
+              marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }],
+            },
+          ],
+        },
+      ],
+    };
+    render(<TipTapRenderer doc={doc} />);

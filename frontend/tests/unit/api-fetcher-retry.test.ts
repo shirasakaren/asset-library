@@ -37,3 +37,26 @@ describe('apiFetch — 401 retry-once', () => {
     expect(res).toEqual({ id: 'u1' });
     expect(refresher).toHaveBeenCalledTimes(1);
     expect(fetchSpy).toHaveBeenCalledTimes(2);
+    const secondCall = fetchSpy.mock.calls[1];
+    const init = secondCall[1] as RequestInit;
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer fresh-token');
+  });
+
+  it('does not loop: a second 401 after the retry surfaces the error', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(jsonResponse(401, { code: 'auth.unauthenticated' }))
+      .mockResolvedValueOnce(jsonResponse(401, { code: 'auth.unauthenticated' }));
+    const refresher = vi.fn().mockResolvedValue('still-bad');
+
+    await expect(
+      apiFetch('/me', { accessToken: 'stale', tokenRefresher: refresher }),
+    ).rejects.toBeInstanceOf(ApiError);
+    expect(refresher).toHaveBeenCalledTimes(1);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('skips retry when the refresher returns no token', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(jsonResponse(401, { code: 'auth.unauthenticated' }));
