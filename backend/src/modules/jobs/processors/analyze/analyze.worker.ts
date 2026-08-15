@@ -108,3 +108,17 @@ export class AnalyzeWorker extends JobWorkerBase<AnalyzeFileJob> {
     await this.decrementAndMaybeRollup(versionId);
   }
 
+  /**
+   * The upload-complete handler primed the counter with the number of files
+   * to expect. Each successful (or failed) file analysis decrements it; when
+   * the counter hits zero the rollup worker runs.
+   */
+  private async decrementAndMaybeRollup(versionId: string): Promise<void> {
+    const key = FAN_IN_KEY(versionId);
+    const remaining = await this.redis.client.decr(key);
+    if (remaining <= 0) {
+      await this.redis.client.del(key);
+      await this.producer.enqueueAnalyzeVersion({ versionId, reason: 'fan-in' });
+    }
+  }
+}

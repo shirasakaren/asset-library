@@ -74,3 +74,16 @@ export async function extractUnityPackage(
         } else if (isManifest) {
           try {
             const parsed = JSON.parse(text) as { dependencies?: Record<string, string> };
+            if (parsed.dependencies) {
+              meta.dependencies = Object.entries(parsed.dependencies).map(([name, version]) => ({
+                name,
+                version,
+              }));
+            }
+          } catch {
+            // malformed manifest — ignore
+          }
+        }
+        next();
+      });
+      stream.on('error', next);

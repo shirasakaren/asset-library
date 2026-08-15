@@ -131,3 +131,19 @@ export class AnalyzeService {
         };
       }
       case AssetFileKind.UPROJECT: {
+        const proj = await extractUProject(filePath);
+        return {
+          ...base,
+          meta: (proj ?? {}) as Record<string, unknown>,
+          requiresEmptyProject: true,
+          dependencies:
+            proj?.plugins
+              .filter((p) => p.enabled)
+              .map((p) => ({ name: p.name, source: 'UnrealPlugin' })) ?? [],
+        };
+      }
+      default:
+        return base;
+    }
+  }
+}
