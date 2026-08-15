@@ -44,3 +44,7 @@ def export_glb(out_path: str) -> None:
         filepath=out_path,
         export_format="GLB",
         export_apply=True,
+        export_animations=True,
+        export_skins=True,
+        export_morph=True,
+        export_lights=False,
