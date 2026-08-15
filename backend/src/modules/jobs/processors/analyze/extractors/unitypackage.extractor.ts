@@ -87,3 +87,14 @@ export async function extractUnityPackage(
         next();
       });
       stream.on('error', next);
+    });
+
+    tarExtractor.on('finish', resolve);
+    tarExtractor.on('error', reject);
+
+    createReadStream(filePath).pipe(createGunzip()).pipe(tarExtractor);
+  });
+
+  meta.renderPipelineHints = Array.from(new Set(meta.renderPipelineHints));
+  return meta;
+}

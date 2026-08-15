@@ -138,3 +138,19 @@ export class StorageRollupWorker extends JobWorkerBase<StorageRollupJob> impleme
 
   private assetIdFromKey(key: string): string | null {
     // assets/{assetId}/v{semver}/...
+    const m = key.match(/^assets\/([^/]+)\//);
+    return m ? m[1] : null;
+  }
+
+  private async *walkBucket(role: 'assets' | 'thumbs' | 'editor'): AsyncGenerator<S3Object> {
+    const bucketName = this.s3.bucketFor(role);
+    let continuationToken: string | undefined;
+    do {
+      const list = await this.s3.client.send(
+        new ListObjectsV2Command({ Bucket: bucketName, ContinuationToken: continuationToken }),
+      );
+      for (const obj of list.Contents ?? []) yield obj;
+      continuationToken = list.IsTruncated ? list.NextContinuationToken : undefined;
+    } while (continuationToken);
+  }
+}

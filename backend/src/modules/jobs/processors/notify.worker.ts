@@ -114,3 +114,17 @@ export class NotifyWorker extends JobWorkerBase<NotifyJob> {
     const base = this.config.get('PUBLIC_BASE_URL').replace(/\/api$/, '');
     const p = data.payload as Record<string, unknown>;
     const assetSlug = (p.assetSlug as string) ?? '';
+    const assetId = (p.assetId as string) ?? '';
+    return {
+      assetUrl: `${base}/assets/${assetSlug || assetId}`,
+      commentUrl: `${base}/assets/${assetSlug || assetId}#comment-${p.commentId ?? ''}`,
+      issueUrl: `${base}/assets/${assetSlug || assetId}/issues/${p.commentId ?? ''}`,
+      versionUrl: `${base}/assets/${assetSlug || assetId}/versions/${p.versionId ?? ''}`,
+      discoverUrl: `${base}/discover`,
+      requestUrl: `${base}/profile/requests/${p.requestId ?? ''}`,
+      adminRequestUrl: `${base}/admin/requests/${p.requestId ?? ''}`,
+      adminReportUrl: `${base}/admin/reports/${p.reportId ?? ''}`,
+      adminAssetUrl: `${base}/admin/assets/${assetId}`,
+    };
+  }
+}

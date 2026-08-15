@@ -128,3 +128,59 @@ const LICENSES: LicenseSeed[] = [
       en: 'For internal use within MGM Laboratory and its partners only. Redistribution outside the organization is prohibited.',
       id: 'Hanya untuk penggunaan internal di MGM Laboratory dan mitranya. Distribusi ulang ke luar organisasi dilarang.',
     },
+    sortOrder: 70,
+  },
+];
+
+async function seedAdmin(): Promise<void> {
+  const email = (process.env.ADMIN_BOOTSTRAP_EMAIL ?? 'admin@labmgm.org').toLowerCase();
+  // We can't reach Keycloak from a seed script, so we mint a placeholder sub
+  // that the auth guard will overwrite on first real login.
+  const placeholderSub = `seed:${email}`;
+  const user = await prisma.user.upsert({
+    where: { email },
+    create: {
+      keycloakSub: placeholderSub,
+      email,
+      displayName: 'Bootstrap Admin',
+      locale: Locale.en,
+      isAdmin: true,
+    },
+    update: { isAdmin: true },
+  });
+  // eslint-disable-next-line no-console
+  console.log(`[seed] admin user: ${user.email} (isAdmin=${user.isAdmin})`);
+}
+
+async function seedCategories(): Promise<void> {
+  for (const c of CATEGORIES) {
+    await prisma.category.upsert({
+      where: { slug: c.slug },
+      create: { slug: c.slug, name: c.name, sortOrder: c.sortOrder, isActive: true },
+      update: { name: c.name, sortOrder: c.sortOrder, isActive: true },
+    });
+  }
+  // eslint-disable-next-line no-console
+  console.log(`[seed] categories: ${CATEGORIES.length} upserted`);
+}
+
+async function seedLicenses(): Promise<void> {
+  for (const l of LICENSES) {
+    await prisma.license.upsert({
+      where: { slug: l.slug },
+      create: {
+        slug: l.slug,
+        name: l.name,
+        description: l.description,
+        fullText: l.fullText,
+        sortOrder: l.sortOrder,
+        isActive: true,
+      },
+      update: {
+        name: l.name,
+        description: l.description,
+        fullText: l.fullText,
+        sortOrder: l.sortOrder,
+        isActive: true,
+      },
+    });

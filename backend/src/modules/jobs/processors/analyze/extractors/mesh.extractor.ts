@@ -58,3 +58,10 @@ export async function extractBlendViaBlender(
     });
     if (result.exitCode !== 0) return null;
     // Blender prints license headers and its own logs — find the JSON line.
+    const jsonLine = result.stdout.split('\n').find((line) => line.trim().startsWith('{'));
+    if (!jsonLine) return null;
+    return JSON.parse(jsonLine) as MeshMeta;
+  } catch {
+    return null;
+  }
+}
