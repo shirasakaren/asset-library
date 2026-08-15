@@ -486,3 +486,72 @@ function ToolButton({
 }
 
 function Divider() {
+  return <span aria-hidden className="mx-1 h-5 w-px bg-line" />;
+}
+
+function plainTextLength(editor: Editor): number {
+  return editor.getText().length;
+}
+
+/* =====================================================================
+ * Link + embed modals
+ * ===================================================================== */
+
+function LinkPromptModal({
+  open,
+  onOpenChange,
+  onSubmit,
+  initial,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (href: string) => void;
+  initial?: string;
+}) {
+  const [href, setHref] = useState(initial ?? '');
+  return (
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>Insert link</ModalTitle>
+        </ModalHeader>
+        <Field id="link-href" label="URL">
+          <Input
+            id="link-href"
+            type="url"
+            autoFocus
+            value={href}
+            onChange={(e) => setHref(e.target.value)}
+            placeholder="https://"
+          />
+        </Field>
+        <ModalFooter>
+          {initial ? (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                onSubmit('');
+                onOpenChange(false);
+              }}
+            >
+              Remove link
+            </Button>
+          ) : null}
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              onSubmit(href.trim());
+              onOpenChange(false);
+            }}
+            disabled={!isValidUrl(href)}
+          >
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
