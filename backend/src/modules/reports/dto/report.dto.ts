@@ -56,3 +56,17 @@ export class ActionReportDto {
   @IsString()
   confirmedAt?: string;
 }
+
+export class DismissReportDto {
+  @ApiProperty()
+  @IsString()
+  @MinLength(4)
+  @MaxLength(1000)
+  adminNotes!: string;
+}
+
+export class ReportDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ enum: ReportCategory }) category!: ReportCategory;
+  @ApiProperty() notes!: string;
+  @ApiProperty({ enum: ReportStatus }) status!: ReportStatus;
