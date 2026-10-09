@@ -869,7 +869,6 @@ describe('POST /assets/{id}/publish', () => {
     expect(err.fields.map((f: { code: string }) => f.code)).toEqual([
       'thumbnail.missing',
       'version.empty',
-      'analysis.incomplete',
       'compatibility.missing',
     ]);
     expect((await storedOrThrow(app, id)).status).toBe('DRAFT');

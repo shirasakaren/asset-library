@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useLocale } from 'next-intl';
 import { Container } from '@/components/layout/container';
 import { WizardProvider, useWizard, type WizardStep } from './wizard-context';
@@ -22,19 +23,22 @@ interface PublishWizardProps {
 
 export function PublishWizard({ initialAsset }: PublishWizardProps) {
   const locale = useLocale() as LocaleCode;
+  // `WizardProvider` reads `?version=` (`useSearchParams`), which static export wants under Suspense.
   return (
-    <WizardProvider initialAsset={initialAsset} locale={locale}>
-      <AnalyzerBridge />
-      <WizardHeader />
-      <Container size="2xl">
-        <div className="pt-8 pb-24 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10">
-          <StepRail />
-          <div>
-            <StepContent />
+    <Suspense fallback={<div className="min-h-[60dvh]" />}>
+      <WizardProvider initialAsset={initialAsset} locale={locale}>
+        <AnalyzerBridge />
+        <WizardHeader />
+        <Container size="2xl">
+          <div className="grid grid-cols-1 gap-10 pb-24 pt-8 lg:grid-cols-[260px_1fr]">
+            <StepRail />
+            <div>
+              <StepContent />
+            </div>
           </div>
-        </div>
-      </Container>
-    </WizardProvider>
+        </Container>
+      </WizardProvider>
+    </Suspense>
   );
 }
 

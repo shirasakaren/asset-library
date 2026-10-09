@@ -98,6 +98,33 @@ describe('validateFullTipTap', () => {
   });
 });
 
+describe('YouTube embeds from the editor', () => {
+  it('accepts the `youtube` node (the editor emits it) and keeps only its known attributes', () => {
+    const out = validateFullTipTap(
+      wrap({
+        type: 'youtube',
+        attrs: {
+          src: 'https://www.youtube.com/watch?v=abc',
+          start: 0,
+          width: 640,
+          height: 480,
+          evil: 1,
+        },
+      }),
+    ) as unknown as { content: { type: string; attrs: Record<string, unknown> }[] };
+    expect(out.content[0]).toEqual({
+      type: 'youtube',
+      attrs: { src: 'https://www.youtube.com/watch?v=abc', start: 0, width: 640, height: 480 },
+    });
+  });
+
+  it('is not allowed in lite documents (comments, release notes)', () => {
+    expect(
+      fail(() => validateLiteTipTap(wrap({ type: 'youtube', attrs: { src: 'x' } }))).code,
+    ).toBe('comment.lite_tiptap_violation');
+  });
+});
+
 describe('validateLiteTipTap', () => {
   it('accepts lite nodes and rejects headings', () => {
     expect(() =>

@@ -68,11 +68,27 @@ describe('evaluateChecklist', () => {
     expect(codes(a)).toEqual(['version.files:version.empty']);
   });
 
-  it('flags an analysis that is not READY', () => {
-    for (const s of ['PENDING', 'ANALYZING', 'FAILED'] as const) {
+  // Deviation from the backend (which blocks on any non-READY status): the wizard says the
+  // analyzer no longer gates Publish, and the 2 s simulated analysis would otherwise block a
+  // publish started right after an upload without any explanation. Only FAILED blocks.
+  it('an analysis that is still running is a warning, not a blocker', () => {
+    for (const s of ['PENDING', 'ANALYZING'] as const) {
       const a = draft({ versions: [version({ analysisStatus: s })] });
-      expect(codes(a)).toEqual(['version.analysis:analysis.incomplete']);
+      const r = evaluateChecklist(a);
+      expect(r.ok, s).toBe(true);
+      expect(r.errors, s).toEqual([]);
+      expect(
+        r.warnings.map((v) => `${v.field}:${v.code}:${v.severity}`),
+        s,
+      ).toEqual(['version.analysis:analysis.incomplete:warning']);
     }
+  });
+
+  it('a FAILED analysis blocks', () => {
+    const a = draft({ versions: [version({ analysisStatus: 'FAILED' })] });
+    const r = evaluateChecklist(a);
+    expect(r.ok).toBe(false);
+    expect(codes(a)).toEqual(['version.analysis:analysis.failed']);
   });
 
   it('requires compatibility unless the engine is ENGINE_AGNOSTIC', () => {
@@ -97,9 +113,9 @@ describe('evaluateChecklist', () => {
       'thumbnail:thumbnail.missing',
       'license:license.missing',
       'version.files:version.empty',
-      'version.analysis:analysis.incomplete',
       'version.compatibility:compatibility.missing',
     ]);
+    expect(evaluateChecklist(a).warnings.map((v) => v.code)).toEqual(['analysis.incomplete']);
   });
 
   it('evaluates the NEWEST created version, not the isLatest one', () => {

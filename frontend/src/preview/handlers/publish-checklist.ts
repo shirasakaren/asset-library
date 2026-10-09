@@ -45,6 +45,7 @@ const error = (field: string, code: string, message: string): Violation => ({
  *  - a blank title is also reported (the wizard cannot produce one);
  *  - an auto-generated thumbnail counts, like the wizard's own checklist (the backend only
  *    looks at `thumbnailKey`);
+ *  - a running analysis (PENDING / ANALYZING) is a warning, not an error (see below);
  *  - "has a translation" is `availableLocales.length > 0` (the stored equivalent).
  */
 export function evaluateChecklist(
@@ -91,14 +92,21 @@ export function evaluateChecklist(
         error('version.files', 'version.empty', 'Upload at least one file in the latest version.'),
       );
     }
-    if (latest.analysisStatus !== 'READY') {
+    // Deviation: the backend blocks on any status other than READY. The wizard states that the
+    // analyzer does not gate Publish, and the simulated analysis (2 s after an upload) would
+    // otherwise block a publish started right after uploading with no explanation. A running
+    // analysis is therefore a warning; only a FAILED one blocks.
+    if (latest.analysisStatus === 'FAILED') {
       violations.push(
-        error(
-          'version.analysis',
-          'analysis.incomplete',
-          'The analyzer has not finished processing the latest version.',
-        ),
+        error('version.analysis', 'analysis.failed', 'The analyzer failed on the latest version.'),
       );
+    } else if (latest.analysisStatus !== 'READY') {
+      violations.push({
+        field: 'version.analysis',
+        code: 'analysis.incomplete',
+        message: 'The analyzer has not finished processing the latest version.',
+        severity: 'warning',
+      });
     }
     if (asset.engine !== 'ENGINE_AGNOSTIC' && latest.compatibility.length === 0) {
       violations.push(
@@ -113,7 +121,7 @@ export function evaluateChecklist(
 
   const errors = violations.filter((v) => v.severity === 'error');
   return {
-    ok: violations.length === 0,
+    ok: errors.length === 0,
     violations,
     errors,
     warnings: violations.filter((v) => v.severity === 'warning'),

@@ -39,6 +39,8 @@ const FULL: Allowlist = {
     'image',
     'video',
     'embed',
+    // The editor's YouTube extension emits `youtube` (the real API would reject it).
+    'youtube',
     'horizontalRule',
     'hardBreak',
     'table',
@@ -64,6 +66,7 @@ const FULL: Allowlist = {
     image: new Set(['src', 'alt', 'title', 'width', 'height']),
     video: new Set(['src', 'poster', 'width', 'height']),
     embed: new Set(['src', 'provider']),
+    youtube: new Set(['src', 'start', 'width', 'height']),
     codeBlock: new Set(['language']),
     tableCell: new Set(['colspan', 'rowspan', 'colwidth']),
     tableHeader: new Set(['colspan', 'rowspan', 'colwidth']),

@@ -20,19 +20,11 @@ interface TipTapRendererProps {
 export function TipTapRenderer({ doc, variant = 'full', className }: TipTapRendererProps) {
   if (!doc || !doc.content) {
     return (
-      <div className={cn('text-body-sm text-ink-3 italic', className)}>
-        No content provided.
-      </div>
+      <div className={cn('text-body-sm italic text-ink-3', className)}>No content provided.</div>
     );
   }
   return (
-    <div
-      className={cn(
-        'tiptap-prose max-w-prose',
-        '[&>:first-child]:mt-0',
-        className,
-      )}
-    >
+    <div className={cn('tiptap-prose max-w-prose', '[&>:first-child]:mt-0', className)}>
       {doc.content.map((node, i) => (
         <NodeRenderer key={i} node={node} variant={variant} />
       ))}
@@ -48,11 +40,7 @@ function NodeRenderer({ node, variant }: { node: TipTapNode; variant: 'full' | '
 
   switch (node.type) {
     case 'paragraph':
-      return (
-        <p className="my-3 text-body text-ink-2 leading-[1.65]">
-          {childContent ?? <br />}
-        </p>
-      );
+      return <p className="my-3 text-body leading-[1.65] text-ink-2">{childContent ?? <br />}</p>;
     case 'heading': {
       const level = clampHeadingLevel(node.attrs?.level);
       const Tag = `h${level}` as 'h1' | 'h2' | 'h3';
@@ -64,12 +52,16 @@ function NodeRenderer({ node, variant }: { node: TipTapNode; variant: 'full' | '
       return <Tag className={cls}>{childContent}</Tag>;
     }
     case 'bulletList':
-      return <ul className="my-3 list-disc pl-6 marker:text-ink-3 space-y-1 text-body text-ink-2">{childContent}</ul>;
+      return (
+        <ul className="my-3 list-disc space-y-1 pl-6 text-body text-ink-2 marker:text-ink-3">
+          {childContent}
+        </ul>
+      );
     case 'orderedList':
       return (
         <ol
           start={typeof node.attrs?.start === 'number' ? (node.attrs.start as number) : undefined}
-          className="my-3 list-decimal pl-6 marker:text-ink-3 space-y-1 text-body text-ink-2"
+          className="my-3 list-decimal space-y-1 pl-6 text-body text-ink-2 marker:text-ink-3"
         >
           {childContent}
         </ol>
@@ -78,26 +70,26 @@ function NodeRenderer({ node, variant }: { node: TipTapNode; variant: 'full' | '
       return <li className="leading-[1.6]">{childContent}</li>;
     case 'blockquote':
       return (
-        <blockquote className="my-5 border-l-2 border-brand-blue/50 bg-brand-blue-50/40 pl-5 pr-4 py-3 rounded-r-[8px] text-ink-2 italic">
+        <blockquote className="my-5 rounded-r-[8px] border-l-2 border-brand-blue/50 bg-brand-blue-50/40 py-3 pl-5 pr-4 italic text-ink-2">
           {childContent}
         </blockquote>
       );
     case 'codeBlock':
       return (
-        <pre className="my-5 rounded-[14px] border border-line bg-surface-inverse text-white px-4 py-3.5 overflow-x-auto text-[13px] leading-[1.6] font-mono">
-          <code>
-            {flattenText(node)}
-          </code>
+        <pre className="my-5 overflow-x-auto rounded-[14px] border border-line bg-surface-inverse px-4 py-3.5 font-mono text-[13px] leading-[1.6] text-white">
+          <code>{flattenText(node)}</code>
         </pre>
       );
     case 'horizontalRule':
-      return <hr className="my-7 border-0 h-px bg-line" />;
+      return <hr className="my-7 h-px border-0 bg-line" />;
     case 'image':
       return <RenderedImage node={node} />;
     case 'video':
       return <RenderedVideo node={node} />;
     case 'iframe':
     case 'embed':
+    // The editor's YouTube extension saves its node under this name.
+    case 'youtube':
       return variant === 'full' ? <RenderedEmbed node={node} /> : null;
     case 'table':
       return (
@@ -111,12 +103,12 @@ function NodeRenderer({ node, variant }: { node: TipTapNode; variant: 'full' | '
       return <tr className="border-b border-line last:border-0">{childContent}</tr>;
     case 'tableHeader':
       return (
-        <th className="bg-surface-muted text-left text-eyebrow uppercase text-ink-3 px-3 py-2 align-top">
+        <th className="bg-surface-muted px-3 py-2 text-left align-top text-eyebrow uppercase text-ink-3">
           {childContent}
         </th>
       );
     case 'tableCell':
-      return <td className="px-3 py-2 text-ink-2 align-top">{childContent}</td>;
+      return <td className="px-3 py-2 align-top text-ink-2">{childContent}</td>;
     case 'text':
       return <TextNode node={node} />;
     case 'hardBreak':
@@ -139,16 +131,20 @@ function TextNode({ node }: { node: TipTapNode }) {
 }
 
 function markOrder(type: string): number {
-  return ({
-    code: 1,
-    underline: 2,
-    strike: 3,
-    italic: 4,
-    bold: 5,
-    highlight: 6,
-    textStyle: 7,
-    link: 8,
-  } as Record<string, number>)[type] ?? 99;
+  return (
+    (
+      {
+        code: 1,
+        underline: 2,
+        strike: 3,
+        italic: 4,
+        bold: 5,
+        highlight: 6,
+        textStyle: 7,
+        link: 8,
+      } as Record<string, number>
+    )[type] ?? 99
+  );
 }
 
 function applyMark(mark: TipTapMark, child: ReactNode): ReactNode {
@@ -163,7 +159,7 @@ function applyMark(mark: TipTapMark, child: ReactNode): ReactNode {
       return <s>{child}</s>;
     case 'code':
       return (
-        <code className="font-mono text-[0.92em] bg-surface-muted px-1.5 py-0.5 rounded-[6px] border border-line text-ink">
+        <code className="rounded-[6px] border border-line bg-surface-muted px-1.5 py-0.5 font-mono text-[0.92em] text-ink">
           {child}
         </code>
       );
@@ -222,18 +218,20 @@ function RenderedImage({ node }: { node: TipTapNode }) {
   if (!src) return null;
   return (
     <figure className="my-6">
-      <div className="rounded-[16px] overflow-hidden border border-line bg-surface-muted">
+      <div className="overflow-hidden rounded-[16px] border border-line bg-surface-muted">
         <Image
           src={src}
           alt={alt}
           width={width}
           height={height}
-          className="w-full h-auto block"
+          className="block h-auto w-full"
           sizes="(min-width: 1024px) 720px, 100vw"
           unoptimized
         />
       </div>
-      {alt ? <figcaption className="mt-2 text-caption text-ink-3 text-center">{alt}</figcaption> : null}
+      {alt ? (
+        <figcaption className="mt-2 text-center text-caption text-ink-3">{alt}</figcaption>
+      ) : null}
     </figure>
   );
 }

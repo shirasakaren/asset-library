@@ -50,8 +50,14 @@ describe('TipTapRenderer', () => {
         {
           type: 'bulletList',
           content: [
-            { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }] },
-            { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'b' }] }] },
+            {
+              type: 'listItem',
+              content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }],
+            },
+            {
+              type: 'listItem',
+              content: [{ type: 'paragraph', content: [{ type: 'text', text: 'b' }] }],
+            },
           ],
         },
         {
@@ -90,5 +96,16 @@ describe('TipTapRenderer', () => {
   it('shows a friendly empty state when doc is null', () => {
     render(<TipTapRenderer doc={null} />);
     expect(screen.getByText('No content provided.')).toBeInTheDocument();
+  });
+
+  it('renders the `youtube` node of the editor as a nocookie embed in the full variant', () => {
+    const doc: TipTapDoc = {
+      type: 'doc',
+      content: [{ type: 'youtube', attrs: { src: 'https://www.youtube.com/watch?v=abc123' } }],
+    };
+    const { container } = render(<TipTapRenderer doc={doc} variant="full" />);
+    expect(container.querySelector('iframe')?.getAttribute('src')).toBe(
+      'https://www.youtube-nocookie.com/embed/abc123',
+    );
   });
 });

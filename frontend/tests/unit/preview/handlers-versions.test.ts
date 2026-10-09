@@ -654,7 +654,7 @@ describe('analysis scheduling', () => {
     const blocked = (await app
       .call('POST', `/assets/${id}/publish`, { body: {} })
       .catch((e) => e)) as ApiError;
-    expect(blocked.fields?.map((f) => f.code)).toEqual(['version.empty', 'analysis.incomplete']);
+    expect(blocked.fields?.map((f) => f.code)).toEqual(['version.empty']);
 
     const file = await attachFileToVersion(app.ctx, {
       assetId: id,
@@ -672,14 +672,13 @@ describe('analysis scheduling', () => {
       kind: 'UNITYPACKAGE',
       bytes: '4096',
     });
-    // still analysing: the checklist says so
-    const early = (await app
-      .call('POST', `/assets/${id}/publish`, { body: {} })
-      .catch((e) => e)) as ApiError;
-    expect(early.fields?.map((f) => f.code)).toEqual(['analysis.incomplete']);
-
+    // still analysing: publishing is allowed and says so in `warnings` (preview deviation)
+    expect(await app.call('POST', `/assets/${id}/publish`, { body: {} })).toEqual({
+      warnings: [
+        { path: 'version.analysis', code: 'analysis.incomplete', message: expect.any(String) },
+      ],
+    });
     await tick(2000);
-    expect(await app.call('POST', `/assets/${id}/publish`, { body: {} })).toEqual({ warnings: [] });
     const d = await detail(app, id);
     expect(d).toMatchObject({ status: 'PUBLISHED', title: 'End To End', canArchive: true });
     expect(d.versions[0]).toMatchObject({
@@ -903,5 +902,65 @@ describe('empty release-note documents', () => {
     });
     const v = (await storedOrThrow(app, 'a-mine-pub')).versions.find((x) => x.id === id)!;
     expect(v.releaseNotes).toBeNull();
+  });
+});
+
+describe('publishing a new version of a published asset (the "New version" flow)', () => {
+  it('create -> attach -> compatibility -> publish version: one isLatest, the new one', async () => {
+    const app = await appForWrites({ timers: false });
+    const before = await storedOrThrow(app, 'a-mine-pub');
+    const oldLatest = before.versions.find((v) => v.isLatest)!;
+
+    const { id: vid } = await createVersion(app, 'a-mine-pub', {
+      semver: '1.1.0',
+      releaseNotes: { en: doc('New things') },
+    });
+    // creating it leaves the old latest in place and the draft unpublished
+    expect(await latestIds(app, 'a-mine-pub')).toEqual([oldLatest.id]);
+    const draft = (await detail(app, 'a-mine-pub')).versions.find((v) => v.id === vid)!;
+    expect(draft).toMatchObject({
+      semver: '1.1.0',
+      publishedAt: null,
+      isLatest: false,
+      fileCount: 0,
+    });
+
+    // with no file the version cannot be published
+    await expect(publishVersion(app, 'a-mine-pub', vid)).rejects.toSatisfy(
+      status(400, 'asset.publish_blocked'),
+    );
+
+    await attachFileToVersion(app.ctx, {
+      assetId: 'a-mine-pub',
+      versionId: vid,
+      file: { id: 'f-nv', relativePath: 'Pack-1.1.0.unitypackage', bytes: 2048 },
+    });
+    await setCompat(app, 'a-mine-pub', vid, [
+      { engineVersion: '2022.3', renderPipelines: ['URP'], targets: ['WINDOWS'] },
+    ]);
+    await publishVersion(app, 'a-mine-pub', vid);
+
+    const a = await storedOrThrow(app, 'a-mine-pub');
+    expect(a.versions.filter((v) => v.isLatest).map((v) => v.id)).toEqual([vid]);
+    expect(a.versions.find((v) => v.id === oldLatest.id)!.isLatest).toBe(false);
+    const nv = a.versions.find((v) => v.id === vid)!;
+    expect(nv).toMatchObject({ fileCount: 1, bytesTotal: '2048' });
+    expect(nv.publishedAt).not.toBeNull();
+    expect(a.status).toBe('PUBLISHED');
+    const d = await detail(app, 'a-mine-pub');
+    expect(d.versions.find((v) => v.isLatest)!.semver).toBe('1.1.0');
+  });
+
+  it('the asset-level Update also publishes the newest draft version and flips isLatest', async () => {
+    const app = await appForWrites({ timers: false });
+    const { id: vid } = await createVersion(app, 'a-mine-pub', { semver: '1.1.0' });
+    await attachFileToVersion(app.ctx, {
+      assetId: 'a-mine-pub',
+      versionId: vid,
+      file: { id: 'f-nv', relativePath: 'p.zip', bytes: 1 },
+    });
+    await setCompat(app, 'a-mine-pub', vid, [{ engineVersion: '1', targets: ['WEB'] }]);
+    await app.call('POST', '/assets/a-mine-pub/publish', { body: {} });
+    expect(await latestIds(app, 'a-mine-pub')).toEqual([vid]);
   });
 });
