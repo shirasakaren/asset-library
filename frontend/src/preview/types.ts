@@ -28,6 +28,8 @@ export interface SeedSource {
 export interface OverlayEntry {
   op: 'put' | 'del';
   doc?: Doc;
+  /** monotonic creation sequence; used to keep overlay-only docs in creation order */
+  seq?: number;
 }
 
 export interface OverlayStore {

@@ -3,6 +3,7 @@ import type { OverlayEntry, OverlayStore } from '../types';
 const DB_NAME = 'mgm-preview';
 const OVERLAY = 'overlay';
 const META = 'meta';
+const OPEN_TIMEOUT_MS = 4000;
 
 function wrap<T>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -34,11 +35,22 @@ export function createIdbOverlay(): OverlayStore {
           reject(new Error('indexedDB unavailable'));
           return;
         }
+        let settled = false;
+        const fail = (e: unknown) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          reject(e);
+        };
+        const timer = setTimeout(
+          () => fail(new Error('IndexedDB open timed out')),
+          OPEN_TIMEOUT_MS,
+        );
         let req: IDBOpenDBRequest;
         try {
           req = indexedDB.open(DB_NAME, 1);
         } catch (e) {
-          reject(e);
+          fail(e);
           return;
         }
         req.onupgradeneeded = () => {
@@ -47,11 +59,18 @@ export function createIdbOverlay(): OverlayStore {
           d.createObjectStore(META, { keyPath: 'k' });
         };
         req.onsuccess = () => {
+          if (settled) {
+            // The open already failed (blocked / timed out); don't leak the connection.
+            req.result.close();
+            return;
+          }
+          settled = true;
+          clearTimeout(timer);
           db = req.result;
           resolve();
         };
-        req.onerror = () => reject(req.error ?? new Error('IndexedDB open failed'));
-        req.onblocked = () => reject(new Error('IndexedDB open blocked'));
+        req.onerror = () => fail(req.error ?? new Error('IndexedDB open failed'));
+        req.onblocked = () => fail(new Error('IndexedDB open blocked'));
       });
     },
 
@@ -62,7 +81,7 @@ export function createIdbOverlay(): OverlayStore {
         >,
       );
       const out = new Map<string, OverlayEntry>();
-      for (const row of rows) out.set(row.key, { op: row.op, doc: row.doc });
+      for (const row of rows) out.set(row.key, { op: row.op, doc: row.doc, seq: row.seq });
       return out;
     },
 

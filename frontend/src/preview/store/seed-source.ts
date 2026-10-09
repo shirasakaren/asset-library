@@ -10,14 +10,25 @@ async function importSeed(name: CollectionName): Promise<unknown> {
   return mod.default ?? mod;
 }
 
+// Only a plain "module not found" resolves to []; any other failure is
+// rethrown so the Db can warn and retry instead of caching an empty seed.
+function isModuleNotFound(e: unknown): boolean {
+  if ((e as { code?: string } | null)?.code === 'MODULE_NOT_FOUND') return true;
+  const msg = e instanceof Error ? e.message : String(e);
+  return /cannot find module|unknown variable dynamic import|failed to resolve import|does not exist/i.test(
+    msg,
+  );
+}
+
 export function createSeedSource(): SeedSource {
   return {
     async load(coll: CollectionName): Promise<Doc[]> {
       try {
         const data = await importSeed(coll);
         return Array.isArray(data) ? (data as Doc[]) : [];
-      } catch {
-        return [];
+      } catch (e) {
+        if (isModuleNotFound(e)) return [];
+        throw e;
       }
     },
   };

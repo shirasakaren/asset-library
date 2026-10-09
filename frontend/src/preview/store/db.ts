@@ -1,10 +1,14 @@
 import type { CollectionName, Db, Doc, OverlayEntry, OverlayStore, SeedSource } from '../types';
 
-const isEntry = (e: unknown): e is OverlayEntry => {
+const clone = <T>(v: T): T => structuredClone(v);
+
+const isEntry = (k: string, e: unknown): e is OverlayEntry => {
   if (!e || typeof e !== 'object') return false;
   const { op, doc } = e as OverlayEntry;
   if (op === 'del') return true;
-  return op === 'put' && !!doc && typeof doc.id === 'string';
+  if (op !== 'put' || !doc || typeof doc.id !== 'string') return false;
+  // key is `${coll}/${id}`; the stored doc must agree with it.
+  return k.slice(k.indexOf('/') + 1) === doc.id;
 };
 
 export async function createDb(opts: {
@@ -15,6 +19,7 @@ export async function createDb(opts: {
   const { seed, seedVersion } = opts;
   let overlay = opts.overlay;
   let entries = new Map<string, OverlayEntry>();
+  let nextSeq = 1;
 
   if (overlay) {
     try {
@@ -24,7 +29,12 @@ export async function createDb(opts: {
         await overlay.clear();
         await overlay.setMeta('seedVersion', seedVersion);
       } else {
-        for (const [k, entry] of raw) if (isEntry(entry)) entries.set(k, entry);
+        const valid = [...raw].filter(([k, e]) => isEntry(k, e));
+        valid.sort(([, a], [, b]) => (a.seq ?? 0) - (b.seq ?? 0));
+        for (const [k, e] of valid) {
+          entries.set(k, e);
+          if (typeof e.seq === 'number' && e.seq >= nextSeq) nextSeq = e.seq + 1;
+        }
       }
     } catch {
       overlay = null;
@@ -35,15 +45,21 @@ export async function createDb(opts: {
   let persistent = overlay !== null;
   const seedCache = new Map<CollectionName, Doc[]>();
 
+  // A failed seed load is not cached, so the next call retries.
   const loadSeed = async (coll: CollectionName): Promise<Doc[]> => {
-    let docs = seedCache.get(coll);
-    if (!docs) {
-      docs = await seed.load(coll);
+    const cached = seedCache.get(coll);
+    if (cached) return cached;
+    try {
+      const docs = (await seed.load(coll)).map(clone);
       seedCache.set(coll, docs);
+      return docs;
+    } catch (e) {
+      console.warn(`[preview] failed to load seed "${coll}"`, e);
+      return [];
     }
-    return docs;
   };
 
+  /** Synchronously updates memory, then writes through to the overlay (never throws). */
   const persist = async (k: string, entry: OverlayEntry): Promise<void> => {
     entries.set(k, entry);
     if (!overlay) return;
@@ -57,49 +73,72 @@ export async function createDb(opts: {
 
   const key = (coll: CollectionName, id: string) => `${coll}/${id}`;
 
-  async function list<T extends Doc>(coll: CollectionName): Promise<T[]> {
-    const base = await loadSeed(coll);
-    const prefix = `${coll}/`;
-    const seen = new Set<string>();
-    const out: Doc[] = [];
-    for (const doc of base) {
-      seen.add(doc.id);
-      const e = entries.get(prefix + doc.id);
-      if (!e) out.push(doc);
-      else if (e.op === 'put' && e.doc) out.push(e.doc);
-    }
-    for (const [k, e] of entries) {
-      if (!k.startsWith(prefix) || e.op !== 'put' || !e.doc || seen.has(e.doc.id)) continue;
-      out.push(e.doc);
-    }
-    return out as T[];
-  }
-
-  async function get<T extends Doc>(coll: CollectionName, id: string): Promise<T | undefined> {
+  /** Synchronous lookup; the seed collection must already be loaded. */
+  const lookup = (coll: CollectionName, id: string, base: Doc[]): Doc | undefined => {
     const e = entries.get(key(coll, id));
-    if (e) return e.op === 'put' ? (e.doc as T | undefined) : undefined;
-    return (await loadSeed(coll)).find((d) => d.id === id) as T | undefined;
-  }
+    if (e) return e.op === 'put' ? e.doc : undefined;
+    return base.find((d) => d.id === id);
+  };
+
+  const putEntry = (coll: CollectionName, doc: Doc): Promise<void> => {
+    const k = key(coll, doc.id);
+    const prev = entries.get(k);
+    const seq = prev?.op === 'put' && prev.seq !== undefined ? prev.seq : nextSeq++;
+    return persist(k, { op: 'put', doc, seq });
+  };
 
   return {
-    list,
-    get,
+    async list<T extends Doc>(coll: CollectionName): Promise<T[]> {
+      const base = await loadSeed(coll);
+      const prefix = `${coll}/`;
+      const seen = new Set<string>();
+      const out: Doc[] = [];
+      for (const doc of base) {
+        seen.add(doc.id);
+        const e = entries.get(prefix + doc.id);
+        if (!e) out.push(doc);
+        else if (e.op === 'put' && e.doc) out.push(e.doc);
+      }
+      const extra: OverlayEntry[] = [];
+      for (const [k, e] of entries) {
+        if (!k.startsWith(prefix) || e.op !== 'put' || !e.doc || seen.has(e.doc.id)) continue;
+        extra.push(e);
+      }
+      extra.sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
+      for (const e of extra) out.push(e.doc as Doc);
+      return clone(out) as T[];
+    },
+
+    async get<T extends Doc>(coll: CollectionName, id: string): Promise<T | undefined> {
+      const base = await loadSeed(coll);
+      const found = lookup(coll, id, base);
+      return found ? (clone(found) as T) : undefined;
+    },
+
     async put<T extends Doc>(coll: CollectionName, doc: T): Promise<T> {
-      await persist(key(coll, doc.id), { op: 'put', doc });
-      return doc;
+      await putEntry(coll, clone(doc));
+      return clone(doc);
     },
+
     async patch<T extends Doc>(coll: CollectionName, id: string, partial: Partial<T>): Promise<T> {
-      const current = await get<T>(coll, id);
+      const base = await loadSeed(coll);
+      // Everything from here to putEntry() is synchronous, so concurrent patches
+      // each merge against the latest in-memory state.
+      const current = lookup(coll, id, base);
       if (!current) throw new Error('not found');
-      const next = { ...current, ...partial, id } as T;
-      await persist(key(coll, id), { op: 'put', doc: next });
-      return next;
+      const next = { ...clone(current), ...clone(partial), id } as T;
+      const written = putEntry(coll, next);
+      await written;
+      return clone(next);
     },
+
     async remove(coll, id) {
-      await persist(key(coll, id), { op: 'del' });
+      await persist(key(coll, id), { op: 'del', seq: nextSeq++ });
     },
+
     async reset() {
       entries = new Map();
+      nextSeq = 1;
       if (!overlay) return;
       try {
         await overlay.clear();
@@ -109,6 +148,7 @@ export async function createDb(opts: {
         overlay = null;
       }
     },
+
     get persistent() {
       return persistent;
     },
