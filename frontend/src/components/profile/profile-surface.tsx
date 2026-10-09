@@ -14,13 +14,15 @@ import {
   ModalDescription,
   ModalFooter,
 } from '@/components/ui/modal';
+import { useTranslations } from 'next-intl';
 import { useAuthedFetch } from '@/lib/api/client';
+import { queryKeys } from '@/lib/api/queries';
 import { toast } from '@/components/ui/toaster';
 import { formatDate, formatRelative } from '@/lib/format';
 import { signOut } from '@/preview/session/me-provider';
 import type { LocaleCode } from '@/lib/api/types';
 
-interface PluginDevice {
+export interface PluginDevice {
   id: string;
   deviceLabel: string;
   createdAt: string;
@@ -34,12 +36,13 @@ interface Props {
 }
 
 export function ProfileSurface({ devices: initial, locale }: Props) {
+  const t = useTranslations('profile');
   const fetcher = useAuthedFetch();
   const queryClient = useQueryClient();
   const [confirmRevoke, setConfirmRevoke] = useState<PluginDevice | null>(null);
 
   const list = useQuery({
-    queryKey: ['me', 'devices'],
+    queryKey: queryKeys.myDevices,
     queryFn: () => fetcher<PluginDevice[]>('/auth/plugin/devices'),
     initialData: initial,
     staleTime: 30_000,
@@ -52,7 +55,7 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
       toast.error('Revoke failed', {
         description: err instanceof Error ? err.message : String(err),
       }),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['me', 'devices'] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.myDevices }),
   });
 
   const handleSignOut = async () => {
@@ -103,9 +106,7 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
 
       <Card padding="lg" className="mt-6">
         <h2 className="font-display text-h2 tracking-[-0.01em] text-ink">Account</h2>
-        <p className="mt-1 text-body-sm text-ink-3">
-          Signing out also revokes the active Keycloak session.
-        </p>
+        <p className="mt-1 text-body-sm text-ink-3">{t('accountBody')}</p>
         <Button
           variant="ghost"
           className="mt-4 !text-brand-red hover:!bg-brand-red-50"

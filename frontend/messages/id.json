@@ -385,7 +385,7 @@
     "revokeConfirmBody": "Plugin akan langsung keluar. Kamu bisa autentikasi ulang dari Unity atau Unreal nanti.",
     "revoked": "Perangkat dicabut",
     "accountTitle": "Akun",
-    "accountBody": "Keluar juga mencabut sesi Keycloak yang sedang aktif.",
+    "accountBody": "Ini adalah pratinjau, jadi fitur keluar dinonaktifkan.",
     "signOut": "Keluar"
   },
   "errorPages": {
@@ -609,7 +609,12 @@
   "comments": {
     "heading": "Komentar",
     "tabs": { "all": "Semua", "comments": "Komentar", "issues": "Issue" },
-    "filter": { "open": "Terbuka", "acknowledged": "Diketahui", "resolved": "Selesai", "all": "Semua status" },
+    "filter": {
+      "open": "Terbuka",
+      "acknowledged": "Diketahui",
+      "resolved": "Selesai",
+      "all": "Semua status"
+    },
     "kindLabel": "Mengirim sebagai",
     "kindComment": "Komentar",
     "kindIssue": "Issue",
@@ -638,7 +643,12 @@
     "tabs": { "all": "Semua", "unread": "Belum dibaca" },
     "seeAll": "Lihat semua notifikasi",
     "filterType": "Saring berdasarkan tipe",
-    "group": { "today": "Hari ini", "yesterday": "Kemarin", "thisWeek": "Minggu ini", "older": "Lebih lama" },
+    "group": {
+      "today": "Hari ini",
+      "yesterday": "Kemarin",
+      "thisWeek": "Minggu ini",
+      "older": "Lebih lama"
+    },
     "empty": "Sudah tidak ada yang baru",
     "emptyBody": "Saat ada yang butuh perhatianmu, kami akan menampilkannya di sini.",
     "type": {

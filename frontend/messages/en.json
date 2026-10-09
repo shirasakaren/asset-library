@@ -385,7 +385,7 @@
     "revokeConfirmBody": "The plugin will sign out immediately. You can re-authenticate it from inside Unity or Unreal later.",
     "revoked": "Device revoked",
     "accountTitle": "Account",
-    "accountBody": "Signing out also revokes the active Keycloak session.",
+    "accountBody": "This is a preview, so signing out is disabled.",
     "signOut": "Sign out"
   },
   "errorPages": {
