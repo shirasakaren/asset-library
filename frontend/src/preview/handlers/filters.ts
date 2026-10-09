@@ -3,7 +3,7 @@ import type { AssetRecord } from '../records';
 import { badRequest } from '../router/errors';
 import { listParam, type CatalogMaps, type Viewer } from './helpers';
 
-const ENGINES: readonly Engine[] = [
+export const ENGINES: readonly Engine[] = [
   'UNITY',
   'UNREAL',
   'BLENDER',

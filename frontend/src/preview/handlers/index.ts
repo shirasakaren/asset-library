@@ -7,3 +7,4 @@ import './search';
 import './library';
 import './notifications';
 import './comments';
+import './assets-write';
