@@ -545,6 +545,185 @@ describe('cross-collection references', () => {
   });
 });
 
+describe('demo realism (fix round 1)', () => {
+  const bodyKey = (c: { body: unknown }) => JSON.stringify(c.body);
+  const live = comments.filter((c) => !c.deletedAt);
+  const DAY_MS = 86_400_000;
+
+  it('has varied comment bodies: 70% distinct, none more than 3 times, none repeated in an asset', () => {
+    const uses = new Map<string, number>();
+    const perAsset = new Set<string>();
+    for (const c of live) {
+      uses.set(bodyKey(c), (uses.get(bodyKey(c)) ?? 0) + 1);
+      const k = `${c.assetId}|${bodyKey(c)}`;
+      expect(perAsset.has(k), `${c.id} repeats a body inside ${c.assetId}`).toBe(false);
+      perAsset.add(k);
+    }
+    expect(uses.size / live.length).toBeGreaterThanOrEqual(0.7);
+    for (const [k, n] of uses) expect(n, k.slice(0, 80)).toBeLessThanOrEqual(3);
+  });
+
+  it('makes replies that fit what they answer (spot checks)', () => {
+    const byId = new Map(comments.map((c) => [c.id, c]));
+    const text = (c: { body: TipTapDoc }) => JSON.stringify(c.body);
+    for (const c of live) {
+      if (!c.parentId) continue;
+      const p = byId.get(c.parentId)!;
+      if (/I do not have a video yet/.test(text(c))) {
+        expect(text(p), c.id).toMatch(/video|tutorial|walkthrough/i);
+      }
+      if (/Fixed in version|is resolved in/.test(text(c))) expect(p.kind, c.id).toBe('ISSUE');
+    }
+  });
+
+  it('keeps comment authors, publish dates and versions in order', () => {
+    const userCreated = new Map(users.map((u) => [u.id, Date.parse(u.createdAt)]));
+    for (const c of comments) {
+      expect(Date.parse(c.createdAt), c.id).toBeGreaterThanOrEqual(userCreated.get(c.authorId)!);
+      expect(Date.parse(c.createdAt), c.id).toBeGreaterThan(
+        Date.parse(assetById.get(c.assetId)!.publishedAt!),
+      );
+    }
+    for (const a of assets) {
+      const pubs = a.versions.map((v) => (v.publishedAt ? Date.parse(v.publishedAt) : Infinity));
+      for (let i = 1; i < pubs.length; i++) expect(pubs[i], a.id).toBeGreaterThan(pubs[i - 1]);
+      for (const v of a.versions) {
+        expect(Date.parse(v.createdAt), v.id).toBeGreaterThanOrEqual(Date.parse(a.createdAt));
+        if (v.publishedAt) {
+          expect(Date.parse(v.publishedAt), v.id).toBeGreaterThanOrEqual(Date.parse(v.createdAt));
+        }
+      }
+      if (a.publishedAt) {
+        expect(Date.parse(a.publishedAt), a.id).toBeGreaterThanOrEqual(Date.parse(a.createdAt));
+        expect(a.versions[0].publishedAt, a.id).toBe(a.publishedAt);
+      }
+    }
+    for (const r of data.reports) {
+      expect(Date.parse(r.createdAt), r.id).toBeGreaterThan(
+        Date.parse(assetById.get(r.assetId)!.publishedAt!),
+      );
+      expect(Date.parse(r.createdAt), r.id).toBeGreaterThanOrEqual(userCreated.get(r.reporterId)!);
+    }
+    for (const r of data.requests) {
+      expect(Date.parse(r.createdAt), r.id).toBeGreaterThanOrEqual(userCreated.get(r.requesterId)!);
+    }
+    for (const e of data.audit) {
+      if (e.subjectType !== 'Asset') continue;
+      const a = assetById.get(e.subjectId)!;
+      expect(Date.parse(e.createdAt), e.id).toBeGreaterThanOrEqual(
+        Date.parse(a.publishedAt ?? a.createdAt),
+      );
+    }
+    for (const an of data.analytics) {
+      if (an.kind !== 'asset' || !an.detail) continue;
+      const pubDay =
+        Math.floor(Date.parse(assetById.get(an.assetId)!.publishedAt!) / DAY_MS) * DAY_MS;
+      const end = Date.parse(`${an.endDate}T00:00:00Z`);
+      an.detail.daily.forEach((n, i) => {
+        if (end - (89 - i) * DAY_MS < pubDay) expect(n, `${an.id}[${i}]`).toBe(0);
+      });
+    }
+  });
+
+  it('applies ownership transfers to the assets', () => {
+    const transfers = data.audit.filter((e) => e.action === 'asset.transfer');
+    expect(transfers.length).toBeGreaterThanOrEqual(3);
+    const lastTo = new Map<string, string>();
+    for (const e of transfers) lastTo.set(e.subjectId, String(e.metadata?.toOwnerId));
+    for (const [assetId, to] of lastTo) expect(assetById.get(assetId)!.ownerId, assetId).toBe(to);
+    for (const e of transfers) {
+      expect(e.metadata?.fromOwnerId).not.toBe(PERSONA);
+      expect(e.metadata?.toOwnerId).not.toBe(PERSONA);
+    }
+    for (const a of assets.filter((x) => x.ownerId === PERSONA)) {
+      expect(a.storeName, a.id).not.toBe('BOOTH');
+    }
+  });
+
+  it('fills the last 30 days: signups and publishes on many days, no all-zero chart series', () => {
+    const lo = ANCHOR - 30 * DAY_MS;
+    const inWindow = (s: string | null) =>
+      s !== null && Date.parse(s) >= lo && Date.parse(s) < ANCHOR;
+    const publishDays = assets
+      .filter((a) => inWindow(a.publishedAt))
+      .map((a) => a.publishedAt!.slice(0, 10));
+    const signupDays = users
+      .filter((u) => inWindow(u.createdAt))
+      .map((u) => u.createdAt.slice(0, 10));
+    expect(new Set([...publishDays, ...signupDays]).size).toBeGreaterThanOrEqual(10);
+    expect(publishDays.length).toBeGreaterThanOrEqual(10);
+    expect(publishDays.length).toBeLessThanOrEqual(16);
+    expect(signupDays.length).toBeGreaterThanOrEqual(6);
+    expect(signupDays.length).toBeLessThanOrEqual(8);
+    const platform = data.analytics.find((a) => a.kind === 'platform');
+    expect(
+      platform?.kind === 'platform' && platform.downloads.slice(60).every((n) => n === 0),
+    ).toBe(false);
+  });
+
+  it('has no self-reviewed requests and whole-second timestamps everywhere', () => {
+    for (const r of data.requests) expect(r.reviewedById, r.id).not.toBe(r.requesterId);
+    for (const c of COLLECTIONS) {
+      const raw = fs.readFileSync(path.join(seedDir, `${c}.json`), 'utf8');
+      expect(raw.match(/"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.(?!000Z)\d+Z"/g), c).toBeNull();
+    }
+  });
+
+  it('has no dangling ids inside payloads and metadata', () => {
+    const fileIds = new Set(
+      assets.flatMap((a) => a.versions.flatMap((v) => v.files.map((f) => f.id))),
+    );
+    const requestIds = new Set(data.requests.map((r) => r.id));
+    const reportIds = new Set(data.reports.map((r) => r.id));
+    const featuredIds = new Set(data.featured.map((f) => f.id));
+    for (const n of data.notifications) {
+      const p = n.payload as Record<string, string>;
+      if (p.requestId) expect(requestIds.has(p.requestId), `${n.id} request`).toBe(true);
+      if (p.reportId) expect(reportIds.has(p.reportId), `${n.id} report`).toBe(true);
+      if (p.featuredId) expect(featuredIds.has(p.featuredId), `${n.id} featured`).toBe(true);
+      if (p.versionId) {
+        expect(
+          assetById.get(p.assetId)!.versions.some((v) => v.id === p.versionId),
+          n.id,
+        ).toBe(true);
+      }
+      if (p.assetId) {
+        const a = assetById.get(p.assetId)!;
+        expect(Date.parse(n.createdAt), n.id).toBeGreaterThan(
+          Date.parse(a.publishedAt ?? a.createdAt),
+        );
+      }
+    }
+    for (const w of data.webhooks) {
+      const body = w.requestBody as { asset?: { id: string; slug: string; title: string } };
+      if (!body.asset) continue;
+      const a = assetById.get(body.asset.id);
+      expect(a, `${w.id} asset`).toBeDefined();
+      expect(body.asset.slug).toBe(a!.slug);
+      expect(body.asset.title).toBe(a!.title);
+      expect(Date.parse(w.createdAt), w.id).toBeGreaterThan(Date.parse(a!.publishedAt!));
+    }
+    for (const e of data.audit) {
+      const m = (e.metadata ?? {}) as Record<string, unknown>;
+      for (const k of ['fromOwnerId', 'toOwnerId']) {
+        if (m[k] !== undefined) expect(userIds.has(String(m[k])), `${e.id} ${k}`).toBe(true);
+      }
+      if (typeof m.assetId === 'string')
+        expect(assetById.has(m.assetId), `${e.id} assetId`).toBe(true);
+    }
+    for (const an of data.analytics) {
+      if (an.kind !== 'asset' || !an.detail) continue;
+      const own = new Set(
+        assetById.get(an.assetId)!.versions.flatMap((v) => v.files.map((f) => f.id)),
+      );
+      for (const f of an.detail.byFile) {
+        expect(fileIds.has(f.fileId), `${an.id} ${f.fileId}`).toBe(true);
+        expect(own.has(f.fileId), `${an.id} file belongs to asset`).toBe(true);
+      }
+    }
+  });
+});
+
 describe('build-seed determinism', () => {
   const tsx = path.join(root, 'node_modules/tsx/dist/cli.mjs');
   const script = path.join(root, 'scripts/seed/build-seed.ts');

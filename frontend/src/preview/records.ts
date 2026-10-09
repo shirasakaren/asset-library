@@ -139,7 +139,7 @@ export interface CategoryRecord extends Doc {
  * Derived: `LicenseSummary.name` is not localized (as in the backend);
  * `LicenseSummary.description` = `description[locale]`; `AdminLicense.assetCount` =
  * number of assets whose `licenseId` is this license.
- * Note: the 153 curated assets only use `lic-commercial`, `lic-cc-by`, `lic-cc0`
+ * Note: the curated assets only use `lic-commercial`, `lic-cc-by`, `lic-cc0`
  * and `lic-mit`; the other three exist so the admin screens have realistic data.
  */
 export interface LicenseRecord extends Doc {
@@ -568,6 +568,13 @@ export interface StorageBucketRecord extends Doc {
  *  - `GET /me/analytics/summary` is computed from the persona's `detail` series
  *    (`totals.downloads30d`/`downloads7d`, `daily90d` = per-day sum over the persona's
  *    assets) plus the assets' `totalDownloads` / `totalSaves`.
+ *  - DRAFT and ARCHIVED assets have NO `AnalyticsRecord` (they have no downloads in the
+ *    window). `GET /me/analytics/assets/{id}` for such an asset (or for a published asset of
+ *    someone else) must still answer for the owner/admin with an EMPTY detail: `daily` of
+ *    zeros, empty `byCountry`/`bySource`, `byVersion`/`byFile` with zero downloads for each
+ *    stored version/file. Assets created at runtime start the same way.
+ *  - `DashboardResponse.topAssets7d[].saves` has no 7-day series behind it: use the asset's
+ *    `totalSaves`; `downloads` comes from `downloads7d`.
  *
  * `kind: 'platform'` (`id: an-platform`): `downloads` = platform-wide downloads per day
  * (the sum of the simulated per-asset daily series for all published assets, 90 values);

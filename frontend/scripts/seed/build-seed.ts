@@ -29,6 +29,7 @@ import path from 'node:path';
 import { parse } from 'yaml';
 import { rootRng, type Rng } from './prng';
 import * as C from './content';
+import * as CP from './comment-pools';
 import { SEED_VERSION } from '../../src/preview/store/version';
 import type {
   AnalyticsRecord,
@@ -83,7 +84,8 @@ const DAY = 86_400_000;
 const PERSONA_ID = 'u-persona';
 const WINDOW_START_MS = Date.parse('2025-04-01T00:00:00Z');
 
-const iso = (ms: number): string => new Date(ms).toISOString();
+/** Whole-second ISO timestamps: every seeded date has `.000Z`. */
+const iso = (ms: number): string => new Date(Math.floor(ms / 1000) * 1000).toISOString();
 const cmp = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 const pad = (n: number, w: number): string => String(n).padStart(w, '0');
 const slugify = (s: string): string =>
@@ -187,7 +189,7 @@ function makeAvatar(name: string, bg: ServerAvatar['bgColor']): ServerAvatar {
   return { initials, bgColor: bg, fgColor: bg === 'brand-yellow' ? 'ink-black' : 'ink-white' };
 }
 
-function buildUsers(rng: Rng): UserRecord[] {
+function buildUsers(rng: Rng, recentDays: number[]): UserRecord[] {
   const users: UserRecord[] = [
     {
       id: PERSONA_ID,
@@ -200,18 +202,32 @@ function buildUsers(rng: Rng): UserRecord[] {
       isAdmin: true,
     },
   ];
+  // Some plain users signed up in the last 30 days so the admin "new users" chart has data.
+  const plain = C.USER_SEEDS.filter((s) => s.role === 'user').map((s) => s.name);
+  const recentUsers = new Map(
+    rng
+      .fork('recent')
+      .shuffle(plain)
+      .slice(0, recentDays.length)
+      .map((n, i) => [n, recentDays[i]] as const),
+  );
+  const timeRng = rng.fork('recent-time');
   C.USER_SEEDS.forEach((s, i) => {
     const slug = slugify(s.name);
     const early = s.role !== 'user';
+    const recentDay = recentUsers.get(s.name);
     users.push({
       id: `u-${slug}`,
       email: `${s.name.toLowerCase().replace(' ', '.')}@preview.example`,
       displayName: s.name,
       role: s.role,
       avatar: makeAvatar(s.name, AVATAR_BG[(i + 1) % 4]),
-      createdAt: early
-        ? rng.date(Date.parse('2025-03-01T00:00:00Z'), Date.parse('2025-11-20T00:00:00Z'))
-        : rng.date(Date.parse('2025-05-01T00:00:00Z'), Date.parse('2026-09-20T00:00:00Z')),
+      createdAt:
+        recentDay !== undefined
+          ? iso(ANCHOR_MS - recentDay * DAY + timeRng.int(0, 23) * HOUR + timeRng.int(0, 59) * MIN)
+          : early
+            ? rng.date(Date.parse('2025-03-01T00:00:00Z'), Date.parse('2025-11-20T00:00:00Z'))
+            : rng.date(Date.parse('2025-05-01T00:00:00Z'), Date.parse('2026-09-20T00:00:00Z')),
       locale: s.locale,
       isAdmin: s.role === 'admin',
     });
@@ -387,7 +403,12 @@ const SEMVER_PLANS: Record<number, string[][]> = {
   ],
 };
 
-function buildAssets(entries: Entry[], users: UserRecord[], rng: Rng): { works: Work[] } {
+function buildAssets(
+  entries: Entry[],
+  users: UserRecord[],
+  rng: Rng,
+  recentDays: number[],
+): { works: Work[] } {
   const cats = C.CATEGORY_SEEDS.map((c) => c.slug);
   const personaRng = rng.fork('persona');
   const statusRng = rng.fork('status');
@@ -465,6 +486,15 @@ function buildAssets(entries: Entry[], users: UserRecord[], rng: Rng): { works: 
   const forceSlug = personaOrder.find((e) => status.get(e.slug) === 'PUBLISHED')!.slug;
   const stateOrder = new Map(entries.map((e, i) => [e.slug, i]));
 
+  // Published assets that go live in the last 30 days (one per distinct day) feed the
+  // admin "publishes" chart.
+  const recentPick = rng
+    .fork('recent')
+    .shuffle(entries.filter((e) => status.get(e.slug) === 'PUBLISHED' && e.slug !== forceSlug))
+    .slice(0, recentDays.length);
+  const recentPublish = new Map(recentPick.map((e, i) => [e.slug, recentDays[i]] as const));
+  const recentRng = rng.fork('recent-time');
+
   const works: Work[] = [];
   for (const entry of entries) {
     const st = status.get(entry.slug)!;
@@ -481,7 +511,13 @@ function buildAssets(entries: Entry[], users: UserRecord[], rng: Rng): { works: 
       lo = ANCHOR_MS - 320 * DAY;
       hi = ANCHOR_MS - 80 * DAY;
     }
-    const createdMs = Date.parse(dateRng.date(lo, hi));
+    let createdMs = Date.parse(dateRng.date(lo, hi));
+    const recentDay = recentPublish.get(entry.slug);
+    let recentPublishedMs: number | null = null;
+    if (recentDay !== undefined) {
+      recentPublishedMs = ANCHOR_MS - recentDay * DAY + recentRng.int(0, 23) * HOUR;
+      createdMs = recentPublishedMs - recentRng.int(0, 2) * DAY - recentRng.int(1, 12) * HOUR;
+    }
     const w: Work = {
       entry,
       id: `a-${entry.slug}`,
@@ -509,10 +545,12 @@ function buildAssets(entries: Entry[], users: UserRecord[], rng: Rng): { works: 
         ANCHOR_MS - HOUR,
       );
     } else {
-      const published = Math.min(
-        createdMs + dateRng.int(0, 6) * DAY + dateRng.int(0, 23) * HOUR,
-        ANCHOR_MS - 2 * DAY,
-      );
+      const published =
+        recentPublishedMs ??
+        Math.min(
+          createdMs + dateRng.int(0, 6) * DAY + dateRng.int(0, 23) * HOUR,
+          ANCHOR_MS - 2 * DAY,
+        );
       w.publishedMs = published;
       let want = verRng.weighted([1, 2, 3], (n) => (n === 1 ? 45 : n === 2 ? 35 : 20));
       if (force) want = 2;
@@ -640,6 +678,8 @@ interface WorkComment {
   authorId: string;
   kind: CommentKind;
   issueStatus: IssueStatus | null;
+  /** Tone of a top-level comment (drives which replies fit); null for replies. */
+  tone: CP.ReplyTone | null;
   depth: number;
   body: TipTapDoc;
   createdMs: number;
@@ -665,7 +705,11 @@ function build(): SeedData {
   const root = rootRng();
   const entries = loadEntries();
 
-  const users = buildUsers(root.fork('users'));
+  // Distinct days (1..29 before the anchor) for sign-ups and publishes in the last 30 days.
+  const dayPool = root.fork('recent-days').shuffle(Array.from({ length: 27 }, (_, i) => i + 3));
+  const userDays = dayPool.slice(0, 7);
+  const assetDays = dayPool.slice(7, 20);
+  const users = buildUsers(root.fork('users'), userDays);
   const userById = new Map(users.map((u) => [u.id, u]));
   const categories = buildCategories();
   const licenses = buildLicenses();
@@ -679,8 +723,30 @@ function build(): SeedData {
     for (const raw of e.tags) tagDisplay.set(slugify(raw), tagDisplayName(raw));
 
   /* ---- assets ---- */
-  const { works } = buildAssets(entries, users, root.fork('assets'));
+  const { works } = buildAssets(entries, users, root.fork('assets'), assetDays);
   const workById = new Map(works.map((w) => [w.id, w]));
+
+  /* ---- ownership transfers (applied to ownerId; the audit log records them) ---- */
+  const trRng = root.fork('transfers');
+  const ownedPublished = new Map<string, number>();
+  for (const w of works) {
+    if (w.status === 'PUBLISHED')
+      ownedPublished.set(w.ownerId, (ownedPublished.get(w.ownerId) ?? 0) + 1);
+  }
+  const transfers: { assetId: string; from: string; to: string }[] = [];
+  for (const w of trRng.shuffle(
+    works.filter((x) => x.status === 'PUBLISHED' && x.ownerId !== PERSONA_ID),
+  )) {
+    if (transfers.length >= 4) break;
+    if ((ownedPublished.get(w.ownerId) ?? 0) < 2) continue;
+    const to = trRng.pick(
+      users.filter((u) => u.role !== 'user' && u.id !== PERSONA_ID && u.id !== w.ownerId),
+    ).id;
+    transfers.push({ assetId: w.id, from: w.ownerId, to });
+    ownedPublished.set(w.ownerId, ownedPublished.get(w.ownerId)! - 1);
+    ownedPublished.set(to, (ownedPublished.get(to) ?? 0) + 1);
+    w.ownerId = to;
+  }
   const verRng = root.fork('version-content');
   for (const w of works) w.versions = buildVersions(w, verRng.fork(w.id), w.entry.category);
 
@@ -717,7 +783,7 @@ function build(): SeedData {
     const isPersona = w.ownerId === PERSONA_ID;
     const age = (ANCHOR_MS - w.publishedMs!) / DAY;
     const pop = Math.pow(metRng.next(), 4);
-    let base = 25 + pop * 9000 * (0.3 + 0.7 * Math.min(1, age / 330));
+    let base = 25 + pop * 9000 * (0.3 + 0.7 * Math.min(1, age / 330)) * Math.min(1, age / 45);
     if (isPersona) base = base * 1.5 + 300 + metRng.int(0, 600);
     w.downloads = Math.round(base);
     const rate = isPersona ? 0.1 + 0.12 * metRng.next() : 0.04 + 0.12 * metRng.next();
@@ -813,22 +879,184 @@ function build(): SeedData {
   const byAsset = new Map<string, WorkComment[]>();
   const TARGET = 318;
   const userWeight = (u: UserRecord): number =>
-    u.id === PERSONA_ID ? 5 : u.role === 'user' ? 2 : 3;
-  const engineVars = (w: Work): Record<string, string> => {
-    const latest = w.versions[w.versions.length - 1];
-    const rows = latest.compatibility;
+    u.id === PERSONA_ID ? 7 : u.role === 'user' ? 2 : 3;
+  const engineBound = (w: Work): boolean => Boolean(ENGINE_NAME[w.entry.engine]);
+
+  /** Latest version of the asset that already existed at `ms` (first one as a fallback). */
+  const versionAt = (w: Work, ms: number): string => {
+    let v = w.versionPlan[0];
+    for (const p of w.versionPlan) if (p.publishedMs !== null && p.publishedMs <= ms) v = p;
+    return v.semver;
+  };
+  /** First version published after `ms`, if any (so "fixed in X" is true). */
+  const nextAfter = (w: Work, ms: number): string => {
+    const p = w.versionPlan.find((x) => x.publishedMs !== null && x.publishedMs > ms);
+    return p ? p.semver : '';
+  };
+  const varsFor = (w: Work, ms: number): Record<string, string> => {
+    const rows = w.versions[w.versions.length - 1].compatibility;
     return {
-      engine: ENGINE_NAME[w.entry.engine] ?? 'my usual tools',
+      title: w.title,
+      engine: ENGINE_NAME[w.entry.engine] ?? '',
       ver: rows.length ? rows[rows.length - 1].engineVersion : '',
+      semver: versionAt(w, ms),
+      next: nextAfter(w, ms),
     };
   };
-  const pickAuthor = (excl: Set<string>, ownerId: string, preferOwner: boolean): string => {
-    if (preferOwner && !excl.has(ownerId)) return ownerId;
-    return cRng.weighted(
-      users.filter((u) => !excl.has(u.id)),
-      (u) => userWeight(u),
-    ).id;
+  const usable = (tpl: string, vars: Record<string, string>): boolean =>
+    [...tpl.matchAll(/\{(\w+)\}/g)].every((m) => Boolean(vars[m[1]]));
+
+  /** Body bookkeeping: no body twice in one asset, none more than 3 times overall. */
+  const bodyUses = new Map<string, number>();
+  const assetBodies = new Map<string, Set<string>>();
+  const reserve = (assetId: string, key: string): void => {
+    bodyUses.set(key, (bodyUses.get(key) ?? 0) + 1);
+    const set = assetBodies.get(assetId) ?? new Set<string>();
+    set.add(key);
+    assetBodies.set(assetId, set);
   };
+  const free = (assetId: string, key: string, cap: number): boolean =>
+    !(assetBodies.get(assetId)?.has(key) ?? false) && (bodyUses.get(key) ?? 0) < cap;
+
+  const pickText = (
+    w: Work,
+    vars: Record<string, string>,
+    pools: string[][],
+    closer: boolean,
+    preferred: string[] = [],
+  ): string => {
+    const cands = cRng.shuffle(pools.flat()).filter((tpl) => usable(tpl, vars));
+    const tail = closer && cRng.chance(0.3) ? ` ${cRng.pick(CP.CLOSERS)}` : '';
+    // topic-specific answers first (kept unique), then the neutral pool
+    for (const cap of [1, 2]) {
+      for (const tpl of cRng.shuffle(preferred).filter((x) => usable(x, vars))) {
+        const text = fill(tpl, vars) + tail;
+        if (free(w.id, text, cap)) {
+          reserve(w.id, text);
+          return text;
+        }
+      }
+    }
+    for (const cap of [1, 2, 3]) {
+      for (const tpl of cands) {
+        const text = fill(tpl, vars) + tail;
+        if (free(w.id, text, cap)) {
+          reserve(w.id, text);
+          return text;
+        }
+      }
+    }
+    const text = `${fill(cands[0], vars)} (${w.title})`;
+    reserve(w.id, text);
+    return text;
+  };
+
+  const issueBody = (w: Work, ms: number): TipTapDoc => {
+    const vars = varsFor(w, ms);
+    const pool = cRng
+      .shuffle(CP.ISSUES[assetGroup(w.entry.category)])
+      .filter((tpl) => usable(tpl.title, vars) && usable(tpl.detail, vars));
+    let chosen = pool[0];
+    search: for (const cap of [1, 2, 3]) {
+      for (const tpl of pool) {
+        if (free(w.id, `issue:${tpl.title}`, cap)) {
+          chosen = tpl;
+          break search;
+        }
+      }
+    }
+    reserve(w.id, `issue:${chosen.title}`);
+    return {
+      type: 'doc',
+      content: [
+        para([t(chosen.title, [{ type: 'bold' }])]),
+        para(fill(chosen.detail, vars)),
+        para('Steps to reproduce:'),
+        bullets(chosen.steps),
+      ],
+    };
+  };
+
+  const topText = (w: Work, author: UserRecord, tone: CP.TopTone, ms: number): string => {
+    const vars = varsFor(w, ms);
+    const pools =
+      author.locale === 'id' && cRng.chance(0.4)
+        ? [CP.TOP_ID[tone]]
+        : engineBound(w)
+          ? [CP.TOP[tone], CP.TOP_ENGINE[tone]]
+          : [CP.TOP[tone]];
+    return pickText(w, vars, pools, tone === 'praise' && author.locale !== 'id');
+  };
+
+  const plainText = (d: TipTapDoc): string =>
+    (d.content ?? []).flatMap((n) => (n.content ?? []).map((x) => x.text ?? '')).join(' ');
+
+  const rootOf = (c: WorkComment): WorkComment => {
+    let cur = c;
+    while (cur.parentSeq !== null) cur = work[cur.parentSeq];
+    return cur;
+  };
+
+  const replyText = (w: Work, author: UserRecord, parent: WorkComment, ms: number): string => {
+    const vars = varsFor(w, ms);
+    const isOwner = author.id === w.ownerId;
+    const id = author.locale === 'id' && cRng.chance(0.3);
+    if (parent.depth === 0 && parent.tone) {
+      const pool = CP.REPLY[parent.tone];
+      if (parent.tone === 'question' && !id) {
+        const topic = CP.questionTopic(plainText(parent.body));
+        const answers = topic ? CP.QUESTION_ANSWERS[topic] : null;
+        if (answers) {
+          return pickText(
+            w,
+            vars,
+            [isOwner ? pool.owner : pool.user],
+            false,
+            isOwner ? answers.owner : answers.user,
+          );
+        }
+      }
+      if (parent.tone === 'suggestion' && isOwner && CP.VIDEO_RE.test(plainText(parent.body))) {
+        return pickText(w, vars, [pool.owner], false, CP.SUGGESTION_VIDEO_OWNER);
+      }
+      if (isOwner) {
+        if (parent.tone === 'bug' && vars.next && cRng.chance(0.8)) {
+          return pickText(w, vars, [CP.REPLY_FIXED], false);
+        }
+        return pickText(w, vars, [id ? pool.ownerId : pool.owner], false);
+      }
+      return pickText(w, vars, [id ? pool.userId : pool.user], false);
+    }
+    if (id) return pickText(w, vars, [CP.FOLLOW.id], false);
+    const op = author.id === rootOf(parent).authorId;
+    return pickText(
+      w,
+      vars,
+      [op ? CP.FOLLOW.op : isOwner ? CP.FOLLOW.owner : CP.FOLLOW.other],
+      false,
+    );
+  };
+
+  const signedUp = (u: UserRecord, ms: number): boolean => Date.parse(u.createdAt) <= ms;
+  const pickAuthor = (ms: number, excl: Set<string>): string =>
+    cRng.weighted(
+      users.filter((u) => !excl.has(u.id) && signedUp(u, ms)),
+      userWeight,
+    ).id;
+  const replyAuthor = (
+    w: Work,
+    parent: WorkComment,
+    ms: number,
+    prefer: 'owner' | 'op' | 'any',
+  ): string => {
+    const ok = (uid: string): boolean =>
+      uid !== parent.authorId && signedUp(userById.get(uid)!, ms);
+    if (prefer === 'owner' && ok(w.ownerId)) return w.ownerId;
+    const op = rootOf(parent).authorId;
+    if (prefer === 'op' && ok(op)) return op;
+    return pickAuthor(ms, new Set([parent.authorId]));
+  };
+
   const recencyDate = (lo: number, hi: number): number => {
     const u = cRng.next();
     return Math.floor(lo + (hi - lo) * (1 - Math.pow(1 - u, 1.3)));
@@ -842,54 +1070,6 @@ function build(): SeedData {
     (w) => (1 + Math.min(6, w.downloads / 600)) * (w.ownerId === PERSONA_ID ? 1.4 : 1),
   );
 
-  const topBody = (
-    w: Work,
-    author: UserRecord,
-    kind: CommentKind,
-  ): { body: TipTapDoc; status: IssueStatus | null } => {
-    const vars = engineVars(w);
-    if (kind === 'ISSUE') {
-      const tpl = cRng.pick(C.ISSUES[assetGroup(w.entry.category)]);
-      const content: TipTapNode[] = [
-        para([t(tpl.title, [{ type: 'bold' }])]),
-        para(fill(tpl.detail, vars)),
-        para('Steps to reproduce:'),
-        bullets(tpl.steps),
-      ];
-      return {
-        body: { type: 'doc', content },
-        status: cRng.weighted(C.ISSUE_STATUS_WEIGHTS, (x) => x[1])[0],
-      };
-    }
-    let sentence: string;
-    if (author.locale === 'id' && cRng.chance(0.4)) sentence = cRng.pick(C.TOP_ID);
-    else if (ENGINE_NAME[w.entry.engine] && cRng.chance(0.3))
-      sentence = fill(cRng.pick(C.TOP_ENGINE), vars);
-    else sentence = cRng.pick(C.TOP_GENERIC);
-    if (author.locale !== 'id' && cRng.chance(0.3)) sentence += ` ${cRng.pick(C.CLOSERS)}`;
-    return { body: doc(para(sentence)), status: null };
-  };
-
-  const replyBody = (
-    w: Work,
-    author: UserRecord,
-    parent: WorkComment,
-    depth: number,
-  ): TipTapDoc => {
-    const vars = engineVars(w);
-    let s: string;
-    if (author.id === w.ownerId) {
-      s = fill(cRng.pick(parent.kind === 'ISSUE' ? C.REPLY_ISSUE_OWNER : C.REPLY_OWNER), vars);
-    } else if (author.locale === 'id' && cRng.chance(0.3)) {
-      s = cRng.pick(C.REPLY_ID);
-    } else if (depth >= 2 && cRng.chance(0.5)) {
-      s = cRng.pick(C.REPLY_DEEP);
-    } else {
-      s = cRng.pick(C.REPLY_USER);
-    }
-    return doc(para(s));
-  };
-
   const addComment = (c: Omit<WorkComment, 'seq'>): WorkComment => {
     const full: WorkComment = { seq: work.length, ...c };
     work.push(full);
@@ -899,30 +1079,51 @@ function build(): SeedData {
     return full;
   };
 
+  const addReply = (w: Work, parent: WorkComment, prefer: 'owner' | 'op' | 'any'): WorkComment => {
+    const createdMs = replyTime(parent.createdMs);
+    const authorId = replyAuthor(w, parent, createdMs, prefer);
+    return addComment({
+      assetId: w.id,
+      parentSeq: parent.seq,
+      authorId,
+      kind: 'COMMENT',
+      issueStatus: null,
+      tone: null,
+      depth: parent.depth + 1,
+      body: doc(para(replyText(w, userById.get(authorId)!, parent, createdMs))),
+      createdMs,
+      editedMs: null,
+      deletedMs: null,
+    });
+  };
+
   while (work.length < TARGET) {
     const w = cRng.weighted(published, (_x, i) => assetWeights[i]);
     const list = byAsset.get(w.id) ?? [];
     const pubMs = w.publishedMs!;
     if (list.length === 0 || cRng.chance(0.45)) {
-      const kind: CommentKind = cRng.chance(0.18) ? 'ISSUE' : 'COMMENT';
-      const author = userById.get(
-        pickAuthor(new Set(cRng.chance(0.9) ? [w.ownerId] : []), w.ownerId, false),
-      )!;
+      const isIssue = cRng.chance(0.18);
       const lo = pubMs + DAY;
       const hi = ANCHOR_MS - 2 * HOUR;
       const recent = w.ownerId === PERSONA_ID && cRng.chance(0.3);
       const createdMs = recent
         ? cRng.int(Math.max(lo, ANCHOR_MS - 28 * DAY), hi)
         : recencyDate(lo, hi);
-      const { body, status } = topBody(w, author, kind);
+      const authorId = pickAuthor(createdMs, new Set(cRng.chance(0.9) ? [w.ownerId] : []));
+      const author = userById.get(authorId)!;
+      const tone: CP.TopTone = cRng.weighted(
+        ['question', 'praise', 'suggestion'] as CP.TopTone[],
+        (x) => (x === 'question' ? 32 : x === 'praise' ? 38 : 30),
+      );
       addComment({
         assetId: w.id,
         parentSeq: null,
-        authorId: author.id,
-        kind,
-        issueStatus: status,
+        authorId,
+        kind: isIssue ? 'ISSUE' : 'COMMENT',
+        issueStatus: isIssue ? cRng.weighted(C.ISSUE_STATUS_WEIGHTS, (x) => x[1])[0] : null,
+        tone: isIssue ? 'bug' : tone,
         depth: 0,
-        body,
+        body: isIssue ? issueBody(w, createdMs) : doc(para(topText(w, author, tone, createdMs))),
         createdMs,
         editedMs: null,
         deletedMs: null,
@@ -934,22 +1135,18 @@ function build(): SeedData {
         parents,
         (c) => 1 + c.depth * c.depth * 1.2 + c.depth * 1.4 + (c.kind === 'ISSUE' ? 1.5 : 0),
       );
-      const authorId = pickAuthor(new Set([parent.authorId]), w.ownerId, cRng.chance(0.35));
-      const author = userById.get(authorId)!;
-      const depth = parent.depth + 1;
-      const createdMs = replyTime(parent.createdMs);
-      addComment({
-        assetId: w.id,
-        parentSeq: parent.seq,
-        authorId,
-        kind: 'COMMENT',
-        issueStatus: null,
-        depth,
-        body: replyBody(w, author, parent, depth),
-        createdMs,
-        editedMs: null,
-        deletedMs: null,
-      });
+      const r = cRng.next();
+      const prefer =
+        parent.depth >= 1
+          ? r < 0.4
+            ? 'op'
+            : r < 0.7
+              ? 'owner'
+              : 'any'
+          : r < 0.4
+            ? 'owner'
+            : 'any';
+      addReply(w, parent, prefer);
     }
   }
 
@@ -978,21 +1175,7 @@ function build(): SeedData {
   for (const c of personaComments) {
     if (added >= 12) break;
     if (work.some((r) => r.parentSeq === c.seq)) continue;
-    const w = pubOf(c.assetId);
-    const authorId = pickAuthor(new Set([PERSONA_ID]), w.ownerId, added % 2 === 0);
-    const author = userById.get(authorId)!;
-    addComment({
-      assetId: c.assetId,
-      parentSeq: c.seq,
-      authorId,
-      kind: 'COMMENT',
-      issueStatus: null,
-      depth: c.depth + 1,
-      body: replyBody(w, author, c, c.depth + 1),
-      createdMs: replyTime(c.createdMs),
-      editedMs: null,
-      deletedMs: null,
-    });
+    addReply(pubOf(c.assetId), c, added % 2 === 0 ? 'owner' : 'any');
     added++;
   }
 
@@ -1001,20 +1184,7 @@ function build(): SeedData {
   for (const c of cRng.shuffle(work.filter((x) => x.depth === 3))) {
     if (deepAdded >= 4) break;
     if (work.some((r) => r.parentSeq === c.seq)) continue;
-    const w = pubOf(c.assetId);
-    const authorId = pickAuthor(new Set([c.authorId]), w.ownerId, deepAdded % 2 === 0);
-    addComment({
-      assetId: c.assetId,
-      parentSeq: c.seq,
-      authorId,
-      kind: 'COMMENT',
-      issueStatus: null,
-      depth: 4,
-      body: replyBody(w, userById.get(authorId)!, c, 4),
-      createdMs: replyTime(c.createdMs),
-      editedMs: null,
-      deletedMs: null,
-    });
+    addReply(pubOf(c.assetId), c, deepAdded % 2 === 0 ? 'owner' : 'op');
     deepAdded++;
   }
 
@@ -1106,14 +1276,18 @@ function build(): SeedData {
             : rqRng.chance(0.6)
               ? rqRng.pick(C.REQUEST_ADMIN_OTHER)
               : null;
+    const requesterId = p.persona
+      ? PERSONA_ID
+      : rqRng.pick(nonPersona.filter((u) => Date.parse(u.createdAt) <= createdMs)).id;
     return {
       status: p.status,
-      requesterId: p.persona ? PERSONA_ID : rqRng.pick(nonPersona).id,
+      requesterId,
       createdMs,
       updatedMs,
       listing: l,
       adminComment: comment,
-      reviewedById: reviewed ? rqRng.pick(adminIds) : null,
+      // an admin never reviews their own request
+      reviewedById: reviewed ? rqRng.pick(adminIds.filter((id) => id !== requesterId)) : null,
       intendedUse: rqRng.pick(C.REQUEST_USES),
       price: rqRng.pick([null, null, 0, 5, 9, 15, 19, 29]),
       notes: rqRng.chance(0.5) ? rqRng.pick(C.REQUEST_NOTES) : null,
@@ -1156,7 +1330,10 @@ function build(): SeedData {
   ];
   const reportRaw = reportPlan.map((p) => {
     const category: ReportCategory = rpRng.chance(0.3) ? 'MALICIOUS_FILE' : 'BROKEN_ASSET';
-    const createdMs = rpRng.int(ANCHOR_MS - 60 * DAY, ANCHOR_MS - 2 * DAY);
+    const createdMs = rpRng.int(
+      Math.max(ANCHOR_MS - 60 * DAY, (p.asset.publishedMs ?? 0) + DAY),
+      ANCHOR_MS - 2 * HOUR,
+    );
     const done = p.status === 'ACTIONED' || p.status === 'DISMISSED';
     const touched = p.status !== 'OPEN';
     return {
@@ -1164,7 +1341,9 @@ function build(): SeedData {
       category,
       createdMs,
       notes: rpRng.pick(C.REPORT_NOTES[category]),
-      reporterId: rpRng.pick(nonPersona.filter((u) => u.id !== p.asset.ownerId)).id,
+      reporterId: rpRng.pick(
+        nonPersona.filter((u) => u.id !== p.asset.ownerId && Date.parse(u.createdAt) <= createdMs),
+      ).id,
       adminNotes: touched ? rpRng.pick(C.REPORT_ADMIN_NOTES) : null,
       resolvedMs: done ? Math.min(createdMs + rpRng.int(1, 7) * DAY, ANCHOR_MS - HOUR) : null,
       resolvedById: done ? rpRng.pick(adminIds) : null,
@@ -1190,11 +1369,16 @@ function build(): SeedData {
   /* ================================================================== */
   const fRng = root.fork('featured');
   const topPersona = [...published]
-    .filter((w) => w.ownerId === PERSONA_ID)
+    .filter((w) => w.ownerId === PERSONA_ID && w.publishedMs! <= ANCHOR_MS - 30 * DAY)
     .sort((a, b) => b.downloads - a.downloads || cmp(a.id, b.id))[0];
   const picked = new Map<string, Work>();
   for (const w of [...published]
-    .filter((x) => x.ownerId !== PERSONA_ID && x.entry.store !== 'BOOTH')
+    .filter(
+      (x) =>
+        x.ownerId !== PERSONA_ID &&
+        x.entry.store !== 'BOOTH' &&
+        x.publishedMs! <= ANCHOR_MS - 30 * DAY,
+    )
     .sort((a, b) => b.downloads - a.downloads || cmp(a.id, b.id))) {
     if (picked.size >= 4) break;
     if (!picked.has(w.entry.category)) picked.set(w.entry.category, w);
@@ -1474,7 +1658,15 @@ function build(): SeedData {
     minMs = windowLo,
     actorId: string | null = actor(),
   ): void => {
-    audits.push({ action, subjectType, subjectId, actorId, metadata, createdMs: at(minMs) });
+    // an entry never predates its subject (asset publish date, user sign-up)
+    let min = minMs;
+    if (subjectType === 'Asset') {
+      const w = workById.get(subjectId)!;
+      min = Math.max(min, w.publishedMs ?? w.createdMs);
+    } else if (subjectType === 'User') {
+      min = Math.max(min, Date.parse(userById.get(subjectId)!.createdAt));
+    }
+    audits.push({ action, subjectType, subjectId, actorId, metadata, createdMs: at(min) });
   };
   for (const r of reports) {
     if (r.status === 'OPEN') continue;
@@ -1522,11 +1714,11 @@ function build(): SeedData {
   for (const w of aRng.shuffle(published).slice(0, 4)) {
     add('asset.admin_restore', 'Asset', w.id, { reason: aRng.pick(C.AUDIT_REASONS) });
   }
-  for (const w of aRng.shuffle(published).slice(0, 4)) {
-    const to = aRng.pick(users.filter((u) => u.role !== 'user' && u.id !== w.ownerId)).id;
-    add('asset.transfer', 'Asset', w.id, {
-      fromOwnerId: w.ownerId,
-      toOwnerId: to,
+  // ownerId already reflects these transfers (applied right after the assets were built)
+  for (const tr of transfers) {
+    add('asset.transfer', 'Asset', tr.assetId, {
+      fromOwnerId: tr.from,
+      toOwnerId: tr.to,
       reason: 'Owner left the team',
     });
   }
@@ -1727,10 +1919,12 @@ function build(): SeedData {
     const w = workById.get(a.id)!;
     const r = anRng.fork(a.id);
     const ageDays = Math.floor((END_MS - w.publishedMs!) / DAY) + 1;
-    const avg = (a.totalDownloads / Math.max(ageDays, 60)) * (1 + 0.6 * r.next());
+    const avg =
+      (a.totalDownloads / (ageDays < 60 ? Math.max(ageDays, 3) : Math.max(ageDays, 60))) *
+      (1 + 0.6 * r.next());
     let daily = Array.from({ length: 90 }, (_, i) => {
       const dayMs = END_MS - (89 - i) * DAY;
-      if (dayMs < w.publishedMs! - DAY) return 0;
+      if (dayMs < Math.floor(w.publishedMs! / DAY) * DAY) return 0;
       const dow = new Date(dayMs).getUTCDay();
       const x = avg * (0.35 + 1.3 * r.next()) * (dow === 0 || dow === 6 ? 0.75 : 1);
       return Math.floor(x + r.next());
