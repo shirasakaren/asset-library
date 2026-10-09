@@ -1,23 +1,26 @@
-import { Bricolage_Grotesque, Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 
-export const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
+// Self-hosted variable fonts (latin subset, from Google Fonts: Bricolage
+// Grotesque, Geist, Geist Mono; all SIL OFL). Loading them locally keeps the
+// static export build free of network access.
+export const bricolage = localFont({
+  src: './fonts/bricolage-grotesque.woff2',
+  weight: '400 800',
   display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-display',
 });
 
-export const geist = Geist({
-  subsets: ['latin'],
+export const geist = localFont({
+  src: './fonts/geist-sans.woff2',
+  weight: '300 700',
   display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-sans',
 });
 
-export const geistMono = Geist_Mono({
-  subsets: ['latin'],
+export const geistMono = localFont({
+  src: './fonts/geist-mono.woff2',
+  weight: '400 600',
   display: 'swap',
-  weight: ['400', '500', '600'],
   variable: '--font-mono',
 });
 

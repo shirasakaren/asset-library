@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 import { Container } from '@/components/layout/container';
@@ -12,6 +12,7 @@ import { DiscoverAllGrid } from '@/components/discover/discover-all-grid';
 import { useAuthedFetch } from '@/lib/api/client';
 import { queryKeys, STALE_TIMES } from '@/lib/api/queries';
 import type { Category, DiscoverResponse, LocaleCode } from '@/lib/api/types';
+import { logger } from '@/lib/logger';
 import { useMe } from '@/preview/session/me-provider';
 
 function DiscoverSkeleton() {
@@ -45,6 +46,17 @@ export function DiscoverPageClient() {
     queryFn: () => fetchApi<Category[]>('/categories', { query: { locale } }),
     staleTime: STALE_TIMES.categories,
   });
+
+  useEffect(() => {
+    if (discoverQ.error) {
+      logger.warn('discover.fetch-failed', { path: '/discover', err: discoverQ.error.message });
+    }
+  }, [discoverQ.error]);
+  useEffect(() => {
+    if (categoriesQ.error) {
+      logger.warn('discover.fetch-failed', { path: '/categories', err: categoriesQ.error.message });
+    }
+  }, [categoriesQ.error]);
 
   // A failed feed leaves the sections out and still shows the "All assets" grid,
   // as the page did when it swallowed fetch errors on the server.

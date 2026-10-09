@@ -62,6 +62,7 @@ describe('AssetDetailPageClient', () => {
     renderWithProviders(<AssetDetailPageClient idOrSlug="missing" />);
     expect(await screen.findByText('notFound.title')).toBeInTheDocument();
     expect(screen.queryByTestId('shell')).not.toBeInTheDocument();
+    await waitFor(() => expect(document.title).toMatch(/^notFound.title/));
   });
 
   it('renders a retryable error view for other failures', async () => {

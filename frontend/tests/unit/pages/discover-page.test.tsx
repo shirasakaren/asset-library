@@ -3,6 +3,11 @@ import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../helpers/render';
 
 const fetchApi = vi.hoisted(() => vi.fn());
+const warn = vi.hoisted(() => vi.fn());
+
+vi.mock('@/lib/logger', () => ({
+  logger: { warn, info: vi.fn(), error: vi.fn(), debug: vi.fn() },
+}));
 
 vi.mock('@/lib/api/client', () => ({ useAuthedFetch: () => fetchApi }));
 vi.mock('@/preview/session/me-provider', () => ({
@@ -52,6 +57,7 @@ const discover = {
 describe('DiscoverPageClient', () => {
   beforeEach(() => {
     fetchApi.mockReset();
+    warn.mockReset();
   });
 
   it('shows a skeleton while pending, then featured, pills, rows and the grid', async () => {
@@ -76,5 +82,14 @@ describe('DiscoverPageClient', () => {
     expect(screen.getByText('all-grid')).toBeInTheDocument();
     expect(screen.queryByText(/^featured:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/^row:/)).not.toBeInTheDocument();
+    await waitFor(() => expect(warn).toHaveBeenCalledTimes(2));
+    expect(warn).toHaveBeenCalledWith('discover.fetch-failed', {
+      path: '/discover',
+      err: 'boom',
+    });
+    expect(warn).toHaveBeenCalledWith('discover.fetch-failed', {
+      path: '/categories',
+      err: 'boom',
+    });
   });
 });

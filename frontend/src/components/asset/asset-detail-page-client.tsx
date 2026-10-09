@@ -48,15 +48,15 @@ export function AssetDetailPageClient({ idOrSlug }: { idOrSlug: string }) {
     queryFn: () =>
       fetchApi<AssetDetail>(`/assets/${encodeURIComponent(idOrSlug)}`, { query: { locale } }),
   });
-  useDocumentTitle(q.data?.title ?? idOrSlug.replace(/-/g, ' '));
+  const tNotFound = useTranslations('notFound');
+  const isNotFound = ApiError.isApiError(q.error) && q.error.status === 404;
+  useDocumentTitle(
+    isNotFound ? tNotFound('title') : (q.data?.title ?? idOrSlug.replace(/-/g, ' ')),
+  );
 
   if (q.isPending) return <AssetDetailSkeleton />;
   if (q.error) {
-    return ApiError.isApiError(q.error) && q.error.status === 404 ? (
-      <NotFoundContent />
-    ) : (
-      <AssetLoadError onRetry={() => void q.refetch()} />
-    );
+    return isNotFound ? <NotFoundContent /> : <AssetLoadError onRetry={() => void q.refetch()} />;
   }
   // The asset detail carries its own isSaved flag; the recommendations module
   // hydrates its card heart state client-side via useSavedIds().
