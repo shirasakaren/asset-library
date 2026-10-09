@@ -1,0 +1,84 @@
+import type { Db } from './types';
+import { createDb } from './store/db';
+import { createIdbOverlay } from './store/overlay';
+import { createSeedSource } from './store/seed-source';
+import { SEED_VERSION } from './store/version';
+import { dispatch, type PreviewContext, type PreviewRequest } from './router/router';
+import { createContext } from './router/context';
+import { internalError } from './router/errors';
+import { toSearchParams } from './router/query';
+import { ApiError } from '@/lib/api/errors';
+import './handlers';
+
+let dbPromise: Promise<Db> | null = null;
+
+/** Lazily-built singleton db (IndexedDB overlay over the static seed; in-memory on failure). */
+export function getDb(): Promise<Db> {
+  if (!dbPromise) {
+    dbPromise = createDb({
+      seed: createSeedSource(),
+      overlay: createIdbOverlay(),
+      seedVersion: SEED_VERSION,
+    }).catch((e) => {
+      dbPromise = null;
+      throw e;
+    });
+  }
+  return dbPromise;
+}
+
+export async function resetDemo(): Promise<void> {
+  const db = await getDb();
+  await db.reset();
+}
+
+let ctxPromise: Promise<PreviewContext> | null = null;
+const getContext = (): Promise<PreviewContext> => {
+  if (!ctxPromise) {
+    ctxPromise = getDb().then((db) => createContext(db));
+    ctxPromise.catch(() => {
+      ctxPromise = null;
+    });
+  }
+  return ctxPromise;
+};
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+export async function previewFetch<T>(
+  path: string,
+  init: {
+    method?: string;
+    query?: Record<string, unknown>;
+    body?: unknown;
+    locale?: 'en' | 'id';
+  } = {},
+): Promise<T> {
+  // Inlined by Next at build time; off in tests/CI.
+  if (process.env.NEXT_PUBLIC_PREVIEW_LATENCY === '1') {
+    await sleep(150 + Math.random() * 200);
+  }
+  try {
+    const qIdx = path.indexOf('?');
+    const pathname = qIdx >= 0 ? path.slice(0, qIdx) : path;
+    const query = toSearchParams(init.query);
+    if (qIdx >= 0) {
+      for (const [k, v] of new URLSearchParams(path.slice(qIdx + 1))) query.append(k, v);
+    }
+    const ctx = await getContext();
+    const result = await dispatch(
+      {
+        method: (init.method ?? 'GET').toUpperCase() as PreviewRequest['method'],
+        path: pathname.startsWith('/') ? pathname : `/${pathname}`,
+        query,
+        body: init.body,
+        locale: init.locale ?? 'en',
+      },
+      ctx,
+    );
+    return (result === undefined ? undefined : structuredClone(result)) as T;
+  } catch (e) {
+    if (ApiError.isApiError(e)) throw e;
+    throw internalError(e instanceof Error ? e.message : String(e));
+  }
+}
