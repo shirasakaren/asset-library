@@ -25,7 +25,8 @@
     "knip": "knip",
     "openapi:gen": "node ./scripts/openapi-gen.mjs",
     "openapi:check": "node ./scripts/openapi-gen.mjs && git diff --exit-code src/lib/api/schema.ts",
-    "seed:thumbs": "tsx scripts/seed/thumbs.ts"
+    "seed:thumbs": "tsx scripts/seed/thumbs.ts",
+    "seed:build": "tsx scripts/seed/build-seed.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
