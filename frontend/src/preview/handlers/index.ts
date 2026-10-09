@@ -10,3 +10,6 @@ import './comments';
 import './assets-write';
 import './versions';
 import './uploads';
+import './downloads';
+import './gifs';
+import './analytics';
