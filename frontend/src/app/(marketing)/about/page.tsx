@@ -47,9 +47,13 @@ function Hero() {
   return (
     <section className="relative overflow-hidden">
       <Container size="2xl">
-        <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-12 items-center pt-20 pb-24 lg:pt-28 lg:pb-32">
+        <div className="relative grid items-center gap-12 pb-24 pt-20 lg:grid-cols-[1.3fr_1fr] lg:pb-32 lg:pt-28">
           <div>
-            <Badge variant="info" size="lg" className="mb-5 uppercase tracking-[0.12em] text-[11px]">
+            <Badge
+              variant="info"
+              size="lg"
+              className="mb-5 text-[11px] uppercase tracking-[0.12em]"
+            >
               MGM Asset Library
             </Badge>
             {/* TODO: replace HERO_HEADLINE */}
@@ -57,20 +61,20 @@ function Hero() {
               A quiet place for our <span className="text-brand-blue">digital tools</span>.
             </h1>
             {/* TODO: replace HERO_SUBHEAD */}
-            <p className="mt-6 text-body-lg text-ink-2 max-w-prose">
+            <p className="mt-6 max-w-prose text-body-lg text-ink-2">
               MGM Asset Library is the lab’s centralized home for game, web, and mobile assets —
               versioned, searchable, and ready to drop into any engine.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button size="lg" asChild>
-                <a href="/auth/signin">Sign in</a>
+                <NextLink href="/">Open the preview</NextLink>
               </Button>
               <Button size="lg" variant="ghost" asChild>
                 <a href="mailto:hello@labmgm.org">Contact us</a>
               </Button>
             </div>
           </div>
-          <div className="hidden lg:flex justify-end" aria-hidden>
+          <div className="hidden justify-end lg:flex" aria-hidden>
             <div className="overflow-hidden rounded-[28px] border border-line">
               <GeometricPattern variant="square" seed="about-hero" size={84} rows={3} cols={3} />
             </div>
@@ -88,19 +92,19 @@ function Vision() {
   return (
     <section className="border-t border-line">
       <Container size="2xl">
-        <div className="grid md:grid-cols-12 gap-8 py-24 lg:py-32">
+        <div className="grid gap-8 py-24 md:grid-cols-12 lg:py-32">
           <div className="md:col-span-5">
-            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">Vision</p>
+            <p className="mb-3 text-eyebrow uppercase tracking-[0.12em] text-ink-3">Vision</p>
             <h2 className="display-lg text-ink">What we believe</h2>
           </div>
           <div className="md:col-span-7">
             {/* TODO: replace VISION_COPY */}
-            <p className="text-body-lg text-ink-2 leading-[1.7]">
+            <p className="text-body-lg leading-[1.7] text-ink-2">
               We believe research moves faster when tools are shared, organized, and easy to find.
               This library exists so a sound effect built for a CV experiment in 2022 can power a
               hardware demo in 2026 — without anyone re-recording it from scratch.
             </p>
-            <p className="mt-5 text-body-lg text-ink-2 leading-[1.7]">
+            <p className="mt-5 text-body-lg leading-[1.7] text-ink-2">
               Shared infrastructure is quiet infrastructure. We hide the pipeline and surface the
               work.
             </p>
@@ -118,23 +122,23 @@ function Mission() {
   return (
     <section className="border-t border-line bg-surface-muted">
       <Container size="2xl">
-        <div className="grid md:grid-cols-12 gap-8 py-24 lg:py-32 items-start">
-          <div className="md:col-span-7 md:order-2">
-            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">Mission</p>
-            <h2 className="display-lg text-ink mb-5">What we’re building</h2>
+        <div className="grid items-start gap-8 py-24 md:grid-cols-12 lg:py-32">
+          <div className="md:order-2 md:col-span-7">
+            <p className="mb-3 text-eyebrow uppercase tracking-[0.12em] text-ink-3">Mission</p>
+            <h2 className="display-lg mb-5 text-ink">What we’re building</h2>
             {/* TODO: replace MISSION_COPY */}
-            <p className="text-body-lg text-ink-2 leading-[1.7]">
+            <p className="text-body-lg leading-[1.7] text-ink-2">
               A single library that any MGM lab member or partner can search, save, and pull from
               directly inside Unity or Unreal. Every asset is versioned, license-stamped, and
               scanned for malware before it lands.
             </p>
-            <p className="mt-5 text-body-lg text-ink-2 leading-[1.7]">
+            <p className="mt-5 text-body-lg leading-[1.7] text-ink-2">
               Contributors publish from the web; consumers grab the same asset two clicks deep from
               inside their editor. No DM links. No "where did that texture go?".
             </p>
           </div>
-          <div className="md:col-span-5 md:order-1">
-            <div className="rounded-[28px] overflow-hidden border border-line bg-bg">
+          <div className="md:order-1 md:col-span-5">
+            <div className="overflow-hidden rounded-[28px] border border-line bg-bg">
               <GeometricPattern variant="banner" seed="about-mission" size={64} rows={2} cols={4} />
             </div>
           </div>
@@ -151,23 +155,24 @@ function Problem() {
   return (
     <section className="border-t border-line">
       <Container size="2xl">
-        <div className="py-24 lg:py-32 max-w-[920px]">
-          <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
+        <div className="max-w-[920px] py-24 lg:py-32">
+          <p className="mb-3 text-eyebrow uppercase tracking-[0.12em] text-ink-3">
             Why this matters
           </p>
-          <h2 className="display-lg text-ink mb-6">
+          <h2 className="display-lg mb-6 text-ink">
             Lab assets live in five Slack threads and three USB drives.
           </h2>
           {/* TODO: replace PROBLEM_COPY */}
-          <div className="grid md:grid-cols-2 gap-x-12 gap-y-4 text-body-lg text-ink-2 leading-[1.7]">
+          <div className="grid gap-x-12 gap-y-4 text-body-lg leading-[1.7] text-ink-2 md:grid-cols-2">
             <p>
-              Without a library, every new project starts the same way — someone DMs a half-remembered
-              link, someone else re-imports a model with the wrong scale, and the original is lost the
-              moment the laptop is reformatted.
+              Without a library, every new project starts the same way — someone DMs a
+              half-remembered link, someone else re-imports a model with the wrong scale, and the
+              original is lost the moment the laptop is reformatted.
             </p>
             <p>
-              We want the lab’s best tools to compound. That only happens when there’s one trustworthy
-              place to put them, one search that finds them, and one click that installs them.
+              We want the lab’s best tools to compound. That only happens when there’s one
+              trustworthy place to put them, one search that finds them, and one click that installs
+              them.
             </p>
           </div>
         </div>
@@ -185,22 +190,19 @@ function Solution() {
       icon: Library,
       title: 'Centralized asset library',
       // TODO: replace OFFERING_1_BODY
-      body:
-        'Discover, save, and download Unity, Unreal, and engine-agnostic assets. Versioned, searchable, and license-stamped.',
+      body: 'Discover, save, and download Unity, Unreal, and engine-agnostic assets. Versioned, searchable, and license-stamped.',
     },
     {
       icon: Plug,
       title: 'In-engine plugins',
       // TODO: replace OFFERING_2_BODY
-      body:
-        'Pull any saved asset into your Unity or Unreal project directly — same account, same library, two clicks.',
+      body: 'Pull any saved asset into your Unity or Unreal project directly — same account, same library, two clicks.',
     },
     {
       icon: GitBranch,
       title: 'Versioned + searchable',
       // TODO: replace OFFERING_3_BODY
-      body:
-        'Every version is preserved. Search by tag, engine, target platform, or license. Old work doesn’t disappear.',
+      body: 'Every version is preserved. Search by tag, engine, target platform, or license. Old work doesn’t disappear.',
     },
   ];
   return (
@@ -208,17 +210,19 @@ function Solution() {
       <Container size="2xl">
         <div className="py-24 lg:py-32">
           <div className="max-w-[760px]">
-            <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">What’s inside</p>
-            <h2 className="display-lg text-ink mb-12">Three surfaces, one library.</h2>
+            <p className="mb-3 text-eyebrow uppercase tracking-[0.12em] text-ink-3">
+              What’s inside
+            </p>
+            <h2 className="display-lg mb-12 text-ink">Three surfaces, one library.</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid gap-5 md:grid-cols-3">
             {offerings.map(({ icon: Icon, title, body }) => (
               <Card key={title} variant="outlined" padding="lg">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] bg-brand-blue-50 text-brand-blue">
                   <Icon className="h-5 w-5" strokeWidth={2.25} />
                 </span>
-                <h3 className="mt-5 font-display text-h2 text-ink tracking-[-0.01em]">{title}</h3>
-                <p className="mt-2 text-body text-ink-2 leading-[1.7]">{body}</p>
+                <h3 className="mt-5 font-display text-h2 tracking-[-0.01em] text-ink">{title}</h3>
+                <p className="mt-2 text-body leading-[1.7] text-ink-2">{body}</p>
               </Card>
             ))}
           </div>
@@ -235,23 +239,21 @@ function Access() {
   return (
     <section className="bg-surface-inverse text-white">
       <Container size="2xl">
-        <div className="grid md:grid-cols-12 gap-8 py-24 lg:py-32 items-center">
+        <div className="grid items-center gap-8 py-24 md:grid-cols-12 lg:py-32">
           <div className="md:col-span-7">
-            <p className="text-eyebrow uppercase tracking-[0.12em] text-white/60 mb-3">Access</p>
-            <h2 className="display-lg !text-white">Internal use only.</h2>
+            <p className="mb-3 text-eyebrow uppercase tracking-[0.12em] text-white/60">Access</p>
+            <h2 className="display-lg !text-white">A public preview.</h2>
             {/* TODO: replace ACCESS_COPY */}
-            <p className="mt-6 text-body-lg text-white/85 leading-[1.7] max-w-prose">
-              MGM Asset Library is gated behind sign-in. Only MGM Laboratory members and approved
-              partners have accounts. This About page is the one public-facing surface — everything
-              else lives behind authentication.
+            <p className="mt-6 max-w-prose text-body-lg leading-[1.7] text-white/85">
+              This is a demo of MGM Asset Library running entirely in your browser, with sample
+              data. No account is needed and nothing you do leaves your device.
             </p>
-            <p className="mt-4 text-body-lg text-white/85 leading-[1.7] max-w-prose">
-              If you’re part of the lab and don’t yet have access, ask a workspace admin to invite
-              you through Keycloak.
+            <p className="mt-4 max-w-prose text-body-lg leading-[1.7] text-white/85">
+              The production library is for MGM Laboratory members and approved partners only.
             </p>
           </div>
-          <div className="md:col-span-5 hidden md:block">
-            <div className="rounded-[28px] overflow-hidden border border-white/10 bg-white/[0.04]">
+          <div className="hidden md:col-span-5 md:block">
+            <div className="overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04]">
               <GeometricPattern variant="square" seed="about-access" size={72} rows={3} cols={3} />
             </div>
           </div>
@@ -268,18 +270,18 @@ function ClosingCta() {
   return (
     <section className="border-t border-line">
       <Container size="2xl">
-        <div className="py-24 lg:py-32 text-center max-w-[680px] mx-auto">
+        <div className="mx-auto max-w-[680px] py-24 text-center lg:py-32">
           <h2 className="display-xl text-ink">Get started.</h2>
           <p className="mt-4 text-body-lg text-ink-2">
-            Sign in with your MGM Keycloak account. The library, the plugins, and your saved work
-            are all one click away.
+            Open the preview to explore the library, the plugins, and a workspace of saved work.
+            Everything you change stays in your browser.
           </p>
           <div className="mt-8 inline-flex items-center gap-2">
             <Button size="lg" asChild>
-              <a href="/auth/signin">
-                Sign in
-                <ArrowRight className="h-4 w-4 ml-1" strokeWidth={2.25} />
-              </a>
+              <NextLink href="/">
+                Open the preview
+                <ArrowRight className="ml-1 h-4 w-4" strokeWidth={2.25} />
+              </NextLink>
             </Button>
             <Button size="lg" variant="ghost" asChild>
               <NextLink href="#whats-inside">Learn more</NextLink>

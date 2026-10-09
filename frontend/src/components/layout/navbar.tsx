@@ -1,4 +1,7 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import NextLink from 'next/link';
 import { Logo } from '@/components/brand/logo';
 import { Container } from './container';
 import { NavLink } from '@/components/navigation/nav-link';
@@ -15,8 +18,8 @@ interface NavbarProps {
   user: MeResponse;
 }
 
-export async function Navbar({ user }: NavbarProps) {
-  const t = await getTranslations('nav');
+export function Navbar({ user }: NavbarProps) {
+  const t = useTranslations('nav');
 
   const links = [
     { href: '/', label: t('discover'), exact: true },
@@ -27,15 +30,15 @@ export async function Navbar({ user }: NavbarProps) {
 
   return (
     <ScrollAwareShell
-      className="bg-bg/70 backdrop-blur-[6px] border-b border-transparent"
+      className="bg-bg/70 border-b border-transparent backdrop-blur-[6px]"
       scrolledClassName="bg-bg/85 backdrop-blur-[8px] border-b border-line"
     >
       <Container size="2xl">
-        <div className="flex items-center gap-4 h-16">
+        <div className="flex h-16 items-center gap-4">
           {/* Left: brand + primary nav */}
-          <div className="flex items-center gap-7 min-w-0">
+          <div className="flex min-w-0 items-center gap-7">
             <Logo size="sm" href="/" priority />
-            <nav aria-label="Primary" className="hidden md:flex items-center gap-5">
+            <nav aria-label="Primary" className="hidden items-center gap-5 md:flex">
               {links.map((l) => (
                 <NavLink key={l.href} href={l.href} exact={l.exact}>
                   {l.label}
@@ -49,7 +52,7 @@ export async function Navbar({ user }: NavbarProps) {
           {/* Right: utilities */}
           <div className="ml-auto flex items-center gap-1">
             <SearchBar />
-            <div className="hidden md:block mx-1 h-6 w-px bg-line" aria-hidden />
+            <div className="mx-1 hidden h-6 w-px bg-line md:block" aria-hidden />
             <LocaleSwitcher />
             <NotificationBell initialUnreadCount={user.unreadNotifications} />
             <AdminModePill isAdmin={user.isAdmin} />
@@ -63,23 +66,23 @@ export async function Navbar({ user }: NavbarProps) {
   );
 }
 
-/** Stripped navbar used on the marketing /about route. */
-export async function MarketingNavbar() {
-  const tc = await getTranslations('common');
+/** Stripped navbar used on the marketing /about route; its CTA opens the demo app. */
+export function MarketingNavbar() {
+  const t = useTranslations('nav');
   return (
     <ScrollAwareShell
-      className="bg-bg/70 backdrop-blur-[6px] border-b border-transparent"
+      className="bg-bg/70 border-b border-transparent backdrop-blur-[6px]"
       scrolledClassName="bg-bg/85 backdrop-blur-[8px] border-b border-line"
     >
       <Container size="2xl">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           <Logo size="sm" href="/about" priority />
-          <a
-            href="/auth/signin"
-            className="inline-flex h-10 items-center justify-center px-4 rounded-[12px] bg-ink text-white text-[14px] font-medium hover:bg-[#1a1f29] transition-colors"
+          <NextLink
+            href="/"
+            className="inline-flex h-10 items-center justify-center rounded-[12px] bg-ink px-4 text-[14px] font-medium text-white transition-colors hover:bg-[#1a1f29]"
           >
-            {tc('signIn')}
-          </a>
+            {t('discover')}
+          </NextLink>
         </div>
       </Container>
     </ScrollAwareShell>

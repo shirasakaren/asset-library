@@ -1,12 +1,14 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Logo } from '@/components/brand/logo';
 import { Container } from './container';
 import { FooterStrip } from '@/components/brand/footer-strip';
 import { publicEnv } from '@/lib/env.public';
 
-export async function Footer() {
-  const t = await getTranslations('footer');
-  const tnav = await getTranslations('nav');
+export function Footer() {
+  const t = useTranslations('footer');
+  const tnav = useTranslations('nav');
   const year = new Date().getFullYear();
 
   const cols = [
@@ -36,7 +38,11 @@ export async function Footer() {
           ? { label: t('docs'), href: publicEnv.NEXT_PUBLIC_COMMUNITY_DOCS_URL, external: true }
           : null,
         publicEnv.NEXT_PUBLIC_COMMUNITY_LEARNING_URL
-          ? { label: t('learning'), href: publicEnv.NEXT_PUBLIC_COMMUNITY_LEARNING_URL, external: true }
+          ? {
+              label: t('learning'),
+              href: publicEnv.NEXT_PUBLIC_COMMUNITY_LEARNING_URL,
+              external: true,
+            }
           : null,
         publicEnv.NEXT_PUBLIC_COMMUNITY_HELP_URL
           ? { label: t('help'), href: publicEnv.NEXT_PUBLIC_COMMUNITY_HELP_URL, external: true }
@@ -56,14 +62,14 @@ export async function Footer() {
   return (
     <footer className="mt-24 border-t border-line bg-bg">
       <Container size="2xl">
-        <div className="grid grid-cols-2 md:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))] gap-10 py-14">
+        <div className="grid grid-cols-2 gap-10 py-14 md:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))]">
           <div className="col-span-2 md:col-span-1">
             <Logo size="md" href="/" />
             <p className="mt-4 max-w-[280px] text-body-sm text-ink-3">{t('tagline')}</p>
           </div>
           {cols.map((col) => (
             <nav key={col.heading} aria-label={col.heading} className="text-body-sm">
-              <h3 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
+              <h3 className="mb-3 text-eyebrow uppercase tracking-[0.12em] text-ink-3">
                 {col.heading}
               </h3>
               <ul className="flex flex-col gap-2.5">
@@ -74,14 +80,14 @@ export async function Footer() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-ink-2 hover:text-ink transition-colors duration-120"
+                        className="text-ink-2 transition-colors duration-120 hover:text-ink"
                       >
                         {link.label}
                       </a>
                     ) : (
                       <a
                         href={link.href}
-                        className="text-ink-2 hover:text-ink transition-colors duration-120"
+                        className="text-ink-2 transition-colors duration-120 hover:text-ink"
                       >
                         {link.label}
                       </a>
