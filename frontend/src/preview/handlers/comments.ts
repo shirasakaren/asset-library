@@ -19,6 +19,7 @@ import {
   validateLiteBody,
 } from './comment-core';
 import { getMe } from './helpers';
+import { scheduleSimulatedReply } from './simulated-replies';
 
 const KIND_FILTERS = ['ALL', 'COMMENT', 'ISSUE'] as const;
 const KINDS: readonly CommentKind[] = ['COMMENT', 'ISSUE'];
@@ -149,6 +150,8 @@ route('POST', '/assets/{assetId}/comments', async (req, ctx) => {
     author: (await getMe(ctx)).user,
     parent,
   });
+  // The owner of somebody else's asset answers a little later (no-op when timers are off).
+  scheduleSimulatedReply(ctx, comment.id);
   return { id: comment.id };
 });
 
