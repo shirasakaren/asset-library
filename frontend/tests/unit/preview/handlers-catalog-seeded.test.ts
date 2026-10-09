@@ -88,6 +88,27 @@ describe('catalog handlers over the real seed', () => {
     }
   });
 
+  it('a Japanese run of an originalTitle finds the listing in /search/assets and /assets', async () => {
+    const jp = published.filter((a) => a.originalTitle);
+    expect(jp.length).toBeGreaterThan(0);
+    for (const a of jp) {
+      // A run of kana/kanji from the original title (the English title has none of it).
+      const q = /[぀-ヿ一-鿿]{3,}/u.exec(a.originalTitle!)![0];
+      const hits = await app.call<SearchAssetsResponse>('GET', '/search/assets', {
+        query: { q, limit: 100 },
+      });
+      expect(
+        hits.hits.map((h) => h.id),
+        `${a.id} via ${q}`,
+      ).toContain(a.id);
+      const list = await app.call<AssetListPage>('GET', '/assets', { query: { q, limit: 100 } });
+      expect(
+        list.items.map((h) => h.id),
+        `${a.id} via ${q}`,
+      ).toContain(a.id);
+    }
+  });
+
   it('/search/assets?q=unity returns hits and a typo-free prefix works', async () => {
     const r = await app.call<SearchAssetsResponse>('GET', '/search/assets', {
       query: { q: 'unity', limit: 100 },

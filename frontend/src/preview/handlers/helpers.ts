@@ -276,7 +276,7 @@ export async function toDetail(
     // The detail gallery already leads with `thumbnail`; the seed also lists the cover as a
     // preview item, which would show twice.
     previewMedia: a.previewMedia.filter(
-      (m) => !(a.thumbnail?.url && (m.viewUrl === a.thumbnail.url || m.key === a.thumbnail.key)),
+      (pm) => !(a.thumbnail?.url && (pm.viewUrl === a.thumbnail.url || pm.key === a.thumbnail.key)),
     ),
     owner: {
       id: a.ownerId,

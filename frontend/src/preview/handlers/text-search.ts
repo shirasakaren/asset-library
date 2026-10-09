@@ -80,12 +80,18 @@ const distinct = (xs: (string | undefined)[]): string[] => [
   ...new Set(xs.filter((x): x is string => !!x)),
 ];
 
-/** Search fields of an asset: title x3, tags x2, short description / category / owner x1. */
+/**
+ * Search fields of an asset: title x3 (English/Indonesian titles plus the `originalTitle` of the
+ * Japanese-titled listings), tags x2, short description / category / owner x1.
+ */
 export function assetSearchFields(a: AssetRecord, maps: CatalogMaps): SearchField[] {
   const category = maps.categories.get(a.categoryId);
   const owner = maps.users.get(a.ownerId);
   return [
-    { text: distinct([a.title, a.titleI18n?.en, a.titleI18n?.id]).join(' '), weight: 3 },
+    {
+      text: distinct([a.title, a.titleI18n?.en, a.titleI18n?.id, a.originalTitle]).join(' '),
+      weight: 3,
+    },
     {
       text: a.tagIds.map((id) => maps.tags.get(id)?.displayName ?? '').join(' '),
       weight: 2,
