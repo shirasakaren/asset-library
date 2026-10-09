@@ -58,6 +58,40 @@ describe('WsBootstrap (event bus bridge)', () => {
     off();
   });
 
+  it.each([
+    ['COMMENT_REPLY', 'comment.reply'],
+    ['COMMENT_CREATED', 'comment.created'],
+    ['ISSUE_CREATED', 'comment.created'],
+  ])('notification: a new %s also raises %s for the thread of that asset', async (type, wsType) => {
+    const n = { ...item, id: 'n9', type, payload: { assetId: 'a7', commentId: 'c-1' } };
+    apiFetch.mockImplementation(async (path: string) =>
+      path === '/notifications/unread-count' ? { count: 1 } : { items: [n] },
+    );
+    const received: unknown[] = [];
+    const off = useWsStore.getState().subscribe(wsType, (m) => received.push(m.payload));
+    setup();
+
+    bus.emit({ type: 'notification', notificationId: 'n9' });
+
+    await waitFor(() => expect(received).toEqual([{ assetId: 'a7', commentId: 'c-1' }]));
+    off();
+  });
+
+  it('notification: other notification types do not raise comment events', async () => {
+    apiFetch.mockImplementation(async (path: string) =>
+      path === '/notifications/unread-count' ? { count: 1 } : { items: [item] },
+    );
+    const received: unknown[] = [];
+    const offs = ['comment.reply', 'comment.created'].map((t) =>
+      useWsStore.getState().subscribe(t, (m) => received.push(m)),
+    );
+    setup();
+    bus.emit({ type: 'notification', notificationId: 'n1' });
+    await waitFor(() => expect(useNotificationsStore.getState().recent[0]?.id).toBe('n1'));
+    expect(received).toHaveLength(0);
+    offs.forEach((off) => off());
+  });
+
   it('notification: an event for an item that was only marked read is not announced as new', async () => {
     const read = { ...item, readAt: '2026-01-02T00:00:00.000Z' } as NotificationItem;
     apiFetch.mockImplementation(async (path: string) =>

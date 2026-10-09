@@ -16,6 +16,22 @@ type Fetcher = ReturnType<typeof useAuthedFetch>;
 /** Query-key prefixes that depend on the catalog and must refresh when it changes. */
 const CATALOG_PREFIXES = ['assets', 'discover', 'library', 'search', 'asset'] as const;
 
+const COMMENT_EVENTS: Record<string, string> = {
+  COMMENT_REPLY: 'comment.reply',
+  COMMENT_CREATED: 'comment.created',
+  ISSUE_CREATED: 'comment.created',
+};
+
+/**
+ * A new comment notification also tells an open comment thread of that asset about it
+ * (`CommentsSection` then offers "N new comments"), like the old socket's comment frames.
+ */
+function announceComment(item: NotificationItem) {
+  const type = COMMENT_EVENTS[item.type];
+  if (!type || typeof item.payload.assetId !== 'string') return;
+  useWsStore.getState().dispatch({ type, id: item.id, payload: item.payload });
+}
+
 async function refreshNotifications(fetcher: Fetcher, notificationId: string) {
   try {
     const [count, page] = await Promise.all([
@@ -37,6 +53,7 @@ async function refreshNotifications(fetcher: Fetcher, notificationId: string) {
           id: item.id,
           payload: { type: item.type, payload: item.payload },
         });
+        announceComment(item);
       }
     }
     useNotificationsStore.setState({ unreadCount: count.count });
