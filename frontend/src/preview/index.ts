@@ -45,6 +45,10 @@ const getContext = (): Promise<PreviewContext> => {
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
+/**
+ * Handlers must return JSON-shaped values (no Date/Map/Set/functions) so results
+ * match what the real API would send over the wire; results are structuredClone'd.
+ */
 export async function previewFetch<T>(
   path: string,
   init: {
@@ -58,6 +62,7 @@ export async function previewFetch<T>(
   if (process.env.NEXT_PUBLIC_PREVIEW_LATENCY === '1') {
     await sleep(150 + Math.random() * 200);
   }
+  const method = (init.method ?? 'GET').toUpperCase() as PreviewRequest['method'];
   try {
     const qIdx = path.indexOf('?');
     const pathname = qIdx >= 0 ? path.slice(0, qIdx) : path;
@@ -68,7 +73,7 @@ export async function previewFetch<T>(
     const ctx = await getContext();
     const result = await dispatch(
       {
-        method: (init.method ?? 'GET').toUpperCase() as PreviewRequest['method'],
+        method,
         path: pathname.startsWith('/') ? pathname : `/${pathname}`,
         query,
         body: init.body,
@@ -79,6 +84,7 @@ export async function previewFetch<T>(
     return (result === undefined ? undefined : structuredClone(result)) as T;
   } catch (e) {
     if (ApiError.isApiError(e)) throw e;
+    console.error('[preview] request failed', method, path, e);
     throw internalError(e instanceof Error ? e.message : String(e));
   }
 }

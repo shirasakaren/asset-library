@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createTestApp } from '@/preview/test-utils';
 import { paginate } from '@/preview/router/paginate';
 import { route, dispatch, type PreviewContext } from '@/preview/router/router';
-import { notFound, badRequest, forbidden } from '@/preview/router/errors';
+import { notFound, badRequest, forbidden, conflict, internalError } from '@/preview/router/errors';
 import { previewFetch } from '@/preview';
 import { ApiError } from '@/lib/api/errors';
 
@@ -152,6 +152,53 @@ describe('errors', () => {
     expect([f.status, f.code]).toEqual([403, 'http.forbidden']);
     expect(notFound('gone').message).toBe('gone');
   });
+
+  it('accepts code / fields / extra overrides and builds 409 and 500', () => {
+    const fields = [{ path: 'thumbnail', code: 'required', message: 'Thumbnail required' }];
+    const blocked = conflict('cannot publish', { code: 'asset.publish_blocked', fields });
+    expect(blocked).toBeInstanceOf(ApiError);
+    expect([blocked.status, blocked.code, blocked.message]).toEqual([
+      409,
+      'asset.publish_blocked',
+      'cannot publish',
+    ]);
+    expect(blocked.fields).toEqual(fields);
+    expect(conflict('dup').code).toBe('http.conflict');
+
+    const bad = badRequest('x', { code: 'validation.failed' });
+    expect([bad.status, bad.code]).toEqual([400, 'validation.failed']);
+    expect(forbidden('no', { code: 'auth.forbidden' }).code).toBe('auth.forbidden');
+    expect(notFound('gone', { code: 'asset.not_found' }).code).toBe('asset.not_found');
+    const ise = internalError('oops', { extra: { traceId: 't1' } });
+    expect([ise.status, ise.code]).toEqual([500, 'http.internal']);
+    expect((ise as ApiError & { extra?: unknown }).extra).toEqual({ traceId: 't1' });
+  });
+});
+
+describe('route registration', () => {
+  it('normalizes a trailing slash in registered patterns', async () => {
+    route('GET', '/t-trail-pattern/', () => 'ok');
+    route('GET', '/t-trail-param/:id/', (req) => req.params.id);
+    const app = await createTestApp();
+    expect(await app.call('GET', '/t-trail-pattern')).toBe('ok');
+    expect(await app.call('GET', '/t-trail-pattern/')).toBe('ok');
+    expect(await app.call('GET', '/t-trail-param/q')).toBe('q');
+  });
+
+  it('throws at registration for a param mixed with literal text', () => {
+    expect(() => route('GET', '/f/{id}.pdf', () => 1)).toThrow(/unsupported/i);
+    expect(() => route('GET', '/f/pre{id}', () => 1)).toThrow(/unsupported/i);
+    expect(() => route('GET', '/f/:id.pdf', () => 1)).toThrow(/unsupported/i);
+    expect(() => route('GET', '/f/{}', () => 1)).toThrow(/unsupported/i);
+  });
+
+  it('request path with trailing slash and unicode/space slugs resolve', async () => {
+    route('GET', '/t-slug/:slug', (req) => req.params.slug);
+    const app = await createTestApp();
+    expect(await app.call('GET', '/t-slug/abc/')).toBe('abc');
+    const slug = 'café mañana/日本';
+    expect(await app.call('GET', `/t-slug/${encodeURIComponent(slug)}`)).toBe(slug);
+  });
 });
 
 describe('previewFetch', () => {
@@ -206,14 +253,51 @@ describe('paginate', () => {
     const page = paginate(items, new URLSearchParams({ limit: '25' }));
     expect(page.pageInfo.hasMore).toBe(false);
   });
-  it('invalid or unknown cursor is treated as the start', () => {
-    const start = paginate(items, new URLSearchParams({ limit: '5' }));
-    expect(
-      paginate(items, new URLSearchParams({ limit: '5', cursor: '!!!not-base64' })).items,
-    ).toEqual(start.items);
-    const unknown = btoa('does-not-exist');
-    expect(paginate(items, new URLSearchParams({ limit: '5', cursor: unknown })).items).toEqual(
-      start.items,
+  const emptyPage = { items: [], pageInfo: { nextCursor: null, hasMore: false } };
+  it('garbage / forged cursors return an empty page and never throw', () => {
+    const forged = [
+      '!!!not-base64',
+      btoa('does-not-exist'), // valid base64, not JSON
+      btoa('{"id":5,"i":1}'), // wrong types
+      btoa('{"id":"id01"}'), // missing index
+      btoa('{"id":"id01","i":-3}'), // negative index
+      btoa('[]'),
+      btoa('null'),
+    ];
+    for (const cursor of forged) {
+      expect(paginate(items, new URLSearchParams({ limit: '5', cursor }))).toEqual(emptyPage);
+    }
+  });
+  it('a stale cursor (last returned item deleted) continues without duplicates or gaps', () => {
+    const p1 = paginate(items, new URLSearchParams({ limit: '5' }));
+    const lastId = p1.items[p1.items.length - 1]!.id; // id04
+    const after = items.filter((x) => x.id !== lastId);
+    const p2 = paginate(
+      after,
+      new URLSearchParams({ limit: '5', cursor: p1.pageInfo.nextCursor! }),
+    );
+    expect(p2.items.map((x) => x.id)).toEqual(['id05', 'id06', 'id07', 'id08', 'id09']);
+    const seen = new Set(p1.items.map((x) => x.id));
+    expect(p2.items.some((x) => seen.has(x.id))).toBe(false);
+  });
+  it('a stale cursor past the end of a shrunk list yields an empty final page', () => {
+    const p1 = paginate(items, new URLSearchParams({ limit: '20' }));
+    const short = items.slice(0, 3);
+    const p2 = paginate(short, new URLSearchParams({ cursor: p1.pageInfo.nextCursor! }));
+    expect(p2.items).toEqual([]);
+    expect(p2.pageInfo).toEqual({ nextCursor: null, hasMore: false });
+  });
+  it('cursor is base64url (no + / =) so it survives a URL query string', () => {
+    // ids chosen so standard base64 of the JSON would contain + / and padding
+    const odd = Array.from({ length: 6 }, (_, i) => ({ id: `??>>~~ü${i}` }));
+    const p = paginate(odd, new URLSearchParams({ limit: '2' }));
+    const cursor = p.pageInfo.nextCursor!;
+    expect(cursor).toMatch(/^[A-Za-z0-9_-]+$/);
+    const roundTripped = new URL(
+      `http://x/?${new URLSearchParams({ limit: '2', cursor }).toString()}`,
+    ).searchParams;
+    expect(paginate(odd, roundTripped).items.map((x) => x.id)).toEqual(
+      odd.slice(2, 4).map((x) => x.id),
     );
   });
   it('defaults to 24 and clamps limit to 1..100', () => {
@@ -225,10 +309,11 @@ describe('paginate', () => {
     expect(paginate(many, new URLSearchParams({ limit: 'abc' })).items).toHaveLength(24);
     expect(paginate(many, new URLSearchParams(), 10).items).toHaveLength(10);
   });
-  it('cursor is the opaque base64 of the last id; equal sort keys cannot tie', () => {
+  it('cursor is opaque base64url of {id,i}; equal sort keys cannot tie', () => {
     const page = paginate(items, new URLSearchParams({ limit: '3' }));
     expect(page.pageInfo.hasMore).toBe(true);
-    expect(atob(page.pageInfo.nextCursor!)).toBe('id02');
+    const padded = page.pageInfo.nextCursor!.replace(/-/g, '+').replace(/_/g, '/');
+    expect(JSON.parse(atob(padded))).toEqual({ id: 'id02', i: 2 });
     const tied = [
       { id: 'a', s: 1 },
       { id: 'b', s: 1 },

@@ -40,7 +40,10 @@ const routes: Route[] = [];
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-function compile(pattern: string): { regex: RegExp; names: string[] } {
+const normalizePath = (p: string) => (p.length > 1 ? p.replace(/\/+$/, '') || '/' : p);
+
+function compile(rawPattern: string): { regex: RegExp; names: string[] } {
+  const pattern = normalizePath(rawPattern);
   const names: string[] = [];
   const src = pattern
     .split('/')
@@ -49,6 +52,10 @@ function compile(pattern: string): { regex: RegExp; names: string[] } {
       if (m) {
         names.push(m[1]!);
         return '([^/]+)';
+      }
+      // A param must be the whole segment; mixing it with literal text is not supported.
+      if (/[{}]/.test(seg) || seg.startsWith(':')) {
+        throw new Error(`Unsupported route pattern segment "${seg}" in "${rawPattern}"`);
       }
       return escapeRe(seg);
     })
@@ -74,7 +81,7 @@ export async function dispatch(
   req: Omit<PreviewRequest, 'params'>,
   ctx: PreviewContext,
 ): Promise<unknown> {
-  const path = req.path.length > 1 ? req.path.replace(/\/+$/, '') : req.path;
+  const path = normalizePath(req.path);
   for (const r of routes) {
     if (r.method !== req.method) continue;
     const m = r.regex.exec(path);
