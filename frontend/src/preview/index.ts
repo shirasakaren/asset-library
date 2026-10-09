@@ -8,6 +8,8 @@ import { createContext } from './router/context';
 import { internalError } from './router/errors';
 import { toSearchParams } from './router/query';
 import { ApiError } from '@/lib/api/errors';
+import { getBlobStore } from './uploads/blob-store';
+import { clearObjectUrls } from './uploads/blob-url';
 import './handlers';
 
 let dbPromise: Promise<Db> | null = null;
@@ -27,9 +29,15 @@ export function getDb(): Promise<Db> {
   return dbPromise;
 }
 
+/**
+ * Wipes the visitor's changes: the record overlay AND every uploaded blob (they live in a
+ * separate IndexedDB, `mgm-preview-blobs`), and revokes the `blob:` download URLs handed out so far.
+ */
 export async function resetDemo(): Promise<void> {
   const db = await getDb();
   await db.reset();
+  await getBlobStore().clear();
+  clearObjectUrls();
 }
 
 let ctxPromise: Promise<PreviewContext> | null = null;

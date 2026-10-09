@@ -4,6 +4,8 @@ import { getDb, resetDemo, previewFetch } from '@/preview';
 import { route } from '@/preview/router/router';
 import { createIdbOverlay } from '@/preview/store/overlay';
 import { ApiError } from '@/lib/api/errors';
+import { getBlobStore } from '@/preview/uploads/blob-store';
+import { objectUrlFor } from '@/preview/uploads/blob-url';
 
 describe('preview index singleton', () => {
   it('concurrent first calls to getDb share one instance', async () => {
@@ -33,6 +35,31 @@ describe('preview index singleton', () => {
     const o = createIdbOverlay();
     await o.open();
     expect((await o.all()).size).toBe(0);
+  });
+});
+
+describe('resetDemo and the blob store', () => {
+  it('also clears uploaded blobs and revokes their object URLs', async () => {
+    const store = getBlobStore();
+    await store.put('up-reset', new Blob(['bytes']));
+    await store.putMetadata('up-big', { size: 99 });
+    const revoked: string[] = [];
+    URL.createObjectURL = () => 'blob:test/reset';
+    URL.revokeObjectURL = (u: string) => void revoked.push(u);
+    try {
+      objectUrlFor('file:reset', new Blob(['x']));
+      expect((await store.list()).length).toBe(2);
+
+      await resetDemo();
+
+      expect(await store.list()).toEqual([]);
+      expect(revoked).toEqual(['blob:test/reset']);
+    } finally {
+      // @ts-expect-error restore jsdom default
+      delete URL.createObjectURL;
+      // @ts-expect-error restore jsdom default
+      delete URL.revokeObjectURL;
+    }
   });
 });
 
