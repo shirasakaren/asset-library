@@ -24,6 +24,20 @@ function lazyPage<P extends object>(
 }
 
 /**
+ * Like `lazyPage`, for `/admin/*` pages: the page body is rendered inside the shared admin
+ * chrome (`AdminChrome`: sidebar + admin gate), which the 404 shell does not provide.
+ */
+function adminLazyPage<P extends object>(
+  load: () => Promise<ComponentType<P>>,
+  toProps: (params: DynamicParams) => P,
+): DynamicPage {
+  return lazyPage(async () => {
+    const [Page, chrome] = await Promise.all([load(), import('@/components/admin/admin-chrome')]);
+    return chrome.withAdminChrome(Page);
+  }, toProps);
+}
+
+/**
  * Route key (a pattern from `ROUTES` in `./dynamic-route`) -> client page.
  * Adding a dynamic page is one line:
  *
@@ -33,8 +47,7 @@ function lazyPage<P extends object>(
  *   ),
  *
  * The shell wraps every entry in `AppShell`. Pages that live under a nested
- * layout (e.g. `/admin/*`) must bring that layout themselves in their client
- * component. A route with no entry falls back to the 404 view.
+ * layout (e.g. `/admin/*`) must bring that layout themselves (`adminLazyPage`). A route with no entry falls back to the 404 view.
  */
 const PAGES: Record<string, DynamicPage | undefined> = {
   '/assets/[idOrSlug]': lazyPage(
@@ -56,6 +69,25 @@ const PAGES: Record<string, DynamicPage | undefined> = {
   ),
   '/publish/manage/[id]/analytics': lazyPage(
     () => import('@/components/publish/analytics-page-client').then((m) => m.AnalyticsPageClient),
+    (p) => ({ id: p.id ?? '' }),
+  ),
+  '/admin/assets/[id]/edit': adminLazyPage(
+    () =>
+      import('@/components/admin/asset-edit-page-client').then((m) => m.AdminAssetEditPageClient),
+    (p) => ({ id: p.id ?? '' }),
+  ),
+  '/admin/reports/[id]': adminLazyPage(
+    () =>
+      import('@/components/admin/report-detail-page-client').then((m) => m.AdminReportPageClient),
+    (p) => ({ id: p.id ?? '' }),
+  ),
+  '/admin/requests/[id]': adminLazyPage(
+    () =>
+      import('@/components/admin/request-detail-page-client').then((m) => m.AdminRequestPageClient),
+    (p) => ({ id: p.id ?? '' }),
+  ),
+  '/admin/users/[id]': adminLazyPage(
+    () => import('@/components/admin/user-detail-page-client').then((m) => m.AdminUserPageClient),
     (p) => ({ id: p.id ?? '' }),
   ),
 };

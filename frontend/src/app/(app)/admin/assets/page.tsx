@@ -3,7 +3,6 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header';
 import { AdminAssetsTable } from '@/components/admin/assets-table';
 
 export const metadata = { title: 'Assets · Admin' };
-export const dynamic = 'force-dynamic';
 
 export default function AdminAssetsPage() {
   return (

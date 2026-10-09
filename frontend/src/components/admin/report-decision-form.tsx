@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { Field, Input, Textarea } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuthedFetch } from '@/lib/api/client';
+import { queryKeys } from '@/lib/api/queries';
 import { toast } from '@/components/ui/toaster';
 import type { AdminReport, ReportAction } from '@/lib/api/admin-types';
 
@@ -22,6 +24,13 @@ interface Props {
 export function ReportDecisionForm({ report }: Props) {
   const fetcher = useAuthedFetch();
   const router = useRouter();
+  const queryClient = useQueryClient();
+  // Client-fetched data: `router.refresh()` would not reload it, so invalidate the report + lists.
+  const invalidateReports = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminReport(report.id) }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminReports() }),
+    ]);
   const [action, setAction] = useState<ReportAction>('NOTHING');
   const [adminNotes, setAdminNotes] = useState(report.adminNotes ?? '');
   const [confirmText, setConfirmText] = useState('');
@@ -34,9 +43,11 @@ export function ReportDecisionForm({ report }: Props) {
     try {
       await fetcher(`/admin/reports/${report.id}/start-review`, { method: 'POST' });
       toast.success('Report marked under review');
-      router.refresh();
+      await invalidateReports();
     } catch (err) {
-      toast.error('Could not start review', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Could not start review', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -54,9 +65,12 @@ export function ReportDecisionForm({ report }: Props) {
         body: { adminNotes },
       });
       toast.success('Report dismissed');
+      await invalidateReports();
       router.push('/admin/reports');
     } catch (err) {
-      toast.error('Could not dismiss', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Could not dismiss', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -83,9 +97,12 @@ export function ReportDecisionForm({ report }: Props) {
         },
       });
       toast.success('Decision submitted');
+      await invalidateReports();
       router.push('/admin/reports');
     } catch (err) {
-      toast.error('Decision failed', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Decision failed', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -100,8 +117,8 @@ export function ReportDecisionForm({ report }: Props) {
             return (
               <label
                 key={opt.value}
-                className={`inline-flex items-center gap-2.5 px-3 h-9 rounded-[10px] border cursor-pointer transition-colors ${
-                  active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40'
+                className={`inline-flex h-9 cursor-pointer items-center gap-2.5 rounded-[10px] border px-3 transition-colors ${
+                  active ? 'bg-surface-muted/60 border-ink' : 'hover:border-ink/40 border-line'
                 }`}
               >
                 <input
@@ -130,7 +147,12 @@ export function ReportDecisionForm({ report }: Props) {
 
       {requireConfirm ? (
         <Field id="report-confirm" label='Type "I understand" to confirm' required>
-          <Input id="report-confirm" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="I understand" />
+          <Input
+            id="report-confirm"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder="I understand"
+          />
         </Field>
       ) : null}
 
