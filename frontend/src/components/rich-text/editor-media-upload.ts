@@ -1,7 +1,7 @@
 'use client';
 
 import { apiFetch } from '@/lib/api/fetcher';
-import { putWithProgress } from '@/lib/upload/put-with-progress';
+import { PREVIEW_URL_SCHEME, putWithProgress } from '@/lib/upload/put-with-progress';
 
 interface InitiateResponse {
   putUrl: string;
@@ -42,6 +42,18 @@ export async function uploadEditorMedia(
     onProgress: options?.onProgress,
     signal: options?.signal,
   });
+
+  // Static preview: the bytes went to the local blob store, so `initiate.viewUrl` is only a
+  // reference. `refresh` (a real endpoint of the API) returns the URL the editor can display and
+  // that is safe to persist in the document.
+  if (initiate.putUrl.startsWith(PREVIEW_URL_SCHEME)) {
+    const fresh = await apiFetch<{ viewUrl: string }>('/files/editor-media/refresh', {
+      method: 'POST',
+      body: { key: initiate.key },
+      accessToken,
+    });
+    return { viewUrl: fresh.viewUrl, key: initiate.key };
+  }
 
   return { viewUrl: initiate.viewUrl, key: initiate.key };
 }

@@ -9,3 +9,4 @@ import './notifications';
 import './comments';
 import './assets-write';
 import './versions';
+import './uploads';
