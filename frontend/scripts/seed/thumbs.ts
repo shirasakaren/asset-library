@@ -272,6 +272,21 @@ async function main(): Promise<void> {
         console.log(`FAIL  ${e.slug}: ${reason}`);
         return;
       }
+    }
+    try {
+      await writeThumbs(buf, e.slug, quality);
+    } catch (err) {
+      fs.rmSync(large, { force: true });
+      fs.rmSync(small, { force: true });
+      failed.push({
+        entry: e,
+        reason: `image could not be decoded/resized (${(err as Error).message})`,
+      });
+      console.log(`FAIL  ${e.slug}: decode error ${(err as Error).message}`);
+      return;
+    }
+    // Record the og:image fallback only once its thumbnails were written.
+    if (primaryErr) {
       newImages.set(e.slug, image);
       const rec: SubstitutionRow = {
         slug: e.slug,
@@ -287,25 +302,25 @@ async function main(): Promise<void> {
       if (i >= 0) subs[i] = rec;
       else subs.push(rec);
     }
-    try {
-      await writeThumbs(buf, e.slug, quality);
-    } catch (err) {
-      fs.rmSync(large, { force: true });
-      fs.rmSync(small, { force: true });
-      failed.push({
-        entry: e,
-        reason: `image could not be decoded/resized (${(err as Error).message})`,
-      });
-      console.log(`FAIL  ${e.slug}: decode error ${(err as Error).message}`);
-      return;
-    }
     manifest[e.slug] = row(image, new Date().toISOString());
     downloaded++;
     console.log(`OK    ${e.slug}${primaryErr ? ' (og:image fallback)' : ''}`);
   });
 
-  // Persist yaml changes (fallback images, pruned failures).
   const failedSlugs = new Set(failed.map((f) => f.entry.slug));
+  // Bail out before touching assets.yaml / substitutions.json when too few
+  // thumbnails succeeded, so a bad run (e.g. offline) cannot prune the catalog.
+  const okCount = Object.keys(manifest).filter((s) => !failedSlugs.has(s)).length;
+  if (okCount < MIN_SUCCESS) {
+    for (const f of failed) console.log(`  - ${f.entry.slug} [${f.entry.store}] ${f.reason}`);
+    console.error(
+      `only ${okCount} thumbnails succeeded; need at least ${MIN_SUCCESS}. ` +
+        `assets.yaml, substitutions and manifest were left untouched.`,
+    );
+    process.exit(1);
+  }
+
+  // Persist yaml changes (fallback images, pruned failures).
   let yamlChanged = false;
   for (const item of [...seq.items]) {
     if (!isMap(item)) continue;
@@ -332,7 +347,8 @@ async function main(): Promise<void> {
       yamlChanged = true;
     }
   }
-  if (yamlChanged) fs.writeFileSync(YAML_PATH, doc.toString({ lineWidth: 0 }));
+  if (yamlChanged)
+    fs.writeFileSync(YAML_PATH, doc.toString({ lineWidth: 0, flowCollectionPadding: false }));
   if (prune) {
     for (const f of failed) {
       subs.push({
@@ -351,7 +367,7 @@ async function main(): Promise<void> {
     entries.filter((e) => !(prune && failedSlugs.has(e.slug))).map((e) => e.slug),
   );
   for (const f of fs.readdirSync(OUT_DIR)) {
-    const m = f.match(/^(.+?)(-sm)?.webp$/);
+    const m = f.match(/^(.+?)(-sm)?\.webp$/);
     if (m && !live.has(m[1])) fs.rmSync(path.join(OUT_DIR, f));
   }
   const sortedManifest = Object.fromEntries(
@@ -371,10 +387,6 @@ async function main(): Promise<void> {
     }`,
   );
   for (const f of failed) console.log(`  - ${f.entry.slug} [${f.entry.store}] ${f.reason}`);
-  if (ok < MIN_SUCCESS) {
-    console.error(`only ${ok} thumbnails succeeded; need at least ${MIN_SUCCESS}`);
-    process.exit(1);
-  }
 }
 
 main().catch((e) => {

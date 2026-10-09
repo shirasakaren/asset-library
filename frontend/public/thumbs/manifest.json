@@ -95,14 +95,6 @@
     "store": "Gumroad",
     "fetchedAt": "2026-10-09T15:16:38.995Z"
   },
-  "action-rpg-starter-kit": {
-    "file": "action-rpg-starter-kit.webp",
-    "small": "action-rpg-starter-kit-sm.webp",
-    "sourceImage": "https://assetstorev1-prd-cdn.unity3d.com/key-image/4b439a45-7ef9-4649-8936-ee26bb897dd9.png?v=1",
-    "sourcePage": "https://assetstore.unity.com/packages/templates/systems/action-rpg-starter-kit-9076",
-    "store": "Unity Asset Store",
-    "fetchedAt": "2026-10-09T15:16:38.366Z"
-  },
   "aerial-rocks-02-texture": {
     "file": "aerial-rocks-02-texture.webp",
     "small": "aerial-rocks-02-texture-sm.webp",
@@ -678,14 +670,6 @@
     "sourcePage": "https://opengameart.org/content/lightning",
     "store": "OpenGameArt",
     "fetchedAt": "2026-10-09T15:16:33.702Z"
-  },
-  "liltoon": {
-    "file": "liltoon.webp",
-    "small": "liltoon-sm.webp",
-    "sourceImage": "https://booth.pximg.net/c/620x620/d39ea11b-78fc-488b-90dd-457109c7cd9b/i/3087170/235a98b9-7d60-49c5-980d-8028f6d0c6ad_base_resized.jpg",
-    "sourcePage": "https://lilxyzw.booth.pm/items/3087170",
-    "store": "BOOTH",
-    "fetchedAt": "2026-10-09T15:16:39.551Z"
   },
   "locomotion-animation-pack": {
     "file": "locomotion-animation-pack.webp",

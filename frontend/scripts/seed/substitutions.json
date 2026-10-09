@@ -34,5 +34,23 @@
     "action": "removed-manual",
     "originalImage": "https://booth.pximg.net/c/620x620/e2167a36-8720-4899-bb1a-4951e0941310/i/2764661/a5429b10-c410-4216-a9c6-961692262ba9_base_resized.jpg",
     "reason": "Listing image is a close-up of a swimsuit-clad avatar body; not suitable for a public demo"
+  },
+  {
+    "slug": "action-rpg-starter-kit",
+    "title": "Action-RPG Starter Kit",
+    "store": "Unity Asset Store",
+    "url": "https://assetstore.unity.com/packages/templates/systems/action-rpg-starter-kit-9076",
+    "action": "removed-manual",
+    "originalImage": "https://assetstorev1-prd-cdn.unity3d.com/key-image/4b439a45-7ef9-4649-8936-ee26bb897dd9.png?v=1",
+    "reason": "Borderline listing art (stylised character imagery); removed for content-safety consistency with the earlier avatar-art removals"
+  },
+  {
+    "slug": "liltoon",
+    "title": "【無料】lilToon",
+    "store": "BOOTH",
+    "url": "https://lilxyzw.booth.pm/items/3087170",
+    "action": "removed-manual",
+    "originalImage": "https://booth.pximg.net/c/620x620/d39ea11b-78fc-488b-90dd-457109c7cd9b/i/3087170/235a98b9-7d60-49c5-980d-8028f6d0c6ad_base_resized.jpg",
+    "reason": "Borderline listing art (stylised character imagery); removed for content-safety consistency with the earlier avatar-art removals"
   }
 ]
