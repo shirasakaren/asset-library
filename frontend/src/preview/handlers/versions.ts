@@ -57,7 +57,7 @@ function parseReleaseNotes(raw: unknown): AssetVersionRecord['releaseNotes'] {
     if (docHasContent(clean)) out[locale] = clean;
   }
   // Stored the way the backend does (`{ en?, id? }`), which `versions-list.tsx` reads.
-  return Object.keys(out).length ? (out as unknown as TipTapDoc) : null;
+  return Object.keys(out).length ? out : null;
 }
 
 const toSummary = (v: AssetVersionRecord): VersionSummary => ({

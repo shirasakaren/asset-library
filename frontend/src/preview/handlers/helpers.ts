@@ -3,7 +3,9 @@ import type {
   AssetSummary,
   AssetVersionPayload,
   LocaleCode,
+  ReleaseNotes,
   SortOrder,
+  TipTapDoc,
 } from '@/lib/api/types';
 import type {
   AssetRecord,
@@ -223,13 +225,33 @@ function compareSemverDesc(a: string, b: string): number {
   return 0;
 }
 
+const isDoc = (v: unknown): v is TipTapDoc =>
+  typeof v === 'object' && v !== null && (v as { type?: unknown }).type === 'doc';
+
+/**
+ * Release notes as the API returns them: `{ en?, id? }`. A bare TipTap document (what the seed
+ * stored before it used locale maps, and so possibly data in an older overlay) is wrapped as
+ * `{ en: doc }`; anything unusable is `null`. Use it wherever stored notes leave the handlers
+ * (asset detail, download options).
+ */
+export function normalizeReleaseNotes(raw: unknown): ReleaseNotes | null {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return null;
+  if (isDoc(raw)) return { en: raw };
+  const out: ReleaseNotes = {};
+  for (const l of ['en', 'id'] as const) {
+    const v = (raw as Record<string, unknown>)[l];
+    if (isDoc(v)) out[l] = v;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 /** Strips the stored-only fields (`createdAt`, `avStatus`, `avAcknowledgedAt`). */
 function toVersionPayload(v: AssetVersionRecord): AssetVersionPayload {
   const { createdAt: _c, avStatus: _s, avAcknowledgedAt: _a, ...payload } = v;
   void _c;
   void _s;
   void _a;
-  return payload;
+  return { ...payload, releaseNotes: normalizeReleaseNotes(v.releaseNotes) };
 }
 
 /** Full `AssetDetail`. Pass `maps` when mapping many assets. */

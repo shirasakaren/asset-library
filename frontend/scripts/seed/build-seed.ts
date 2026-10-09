@@ -599,7 +599,8 @@ function buildVersions(w: Work, rng: Rng, catSlug: string): AssetVersionRecord[]
     return {
       id: `v-${w.entry.slug}-${dash}`,
       semver: vp.semver,
-      releaseNotes: releaseNotes(rng, vp.semver, k),
+      // Locale map, as the API and `versions-list.tsx` use it (English only in the seed).
+      releaseNotes: { en: releaseNotes(rng, vp.semver, k) },
       publishedAt: vp.publishedMs === null ? null : iso(vp.publishedMs),
       isLatest: k === n - 1,
       analysisStatus: 'READY',

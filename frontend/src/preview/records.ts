@@ -203,6 +203,9 @@ export interface AssetFileRecord extends AssetFile {
  *
  * Extra stored facts:
  *  - `createdAt`: for `VersionSummary.createdAt` (`GET /assets/{id}/versions`).
+ *  - `releaseNotes` is a locale map `{ en?, id? }` of TipTap docs (`ReleaseNotes`), never a bare
+ *    document; the seed only has `en`. Handlers still adapt a bare doc on read
+ *    (`normalizeReleaseNotes`), for overlay data written by older code.
  *  - `avStatus`: see {@link AvStatus}. Exactly one version in the seed is `INFECTED`
  *    (a non-latest version of a published asset owned by someone other than the persona).
  *  - `avAcknowledgedAt`: set when an admin acknowledges an infected version in the AV queue.

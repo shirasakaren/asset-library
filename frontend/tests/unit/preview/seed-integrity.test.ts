@@ -208,7 +208,18 @@ describe('assets', () => {
         expect(f.meta.content).toBe(`Original asset page:\n${a.storeUrl}\n`);
         expect(f.bytes).toBe(String(Buffer.byteLength(f.meta.content, 'utf8')));
         expect(v.bytesTotal).toBe(f.bytes);
-        if (v.releaseNotes) checkDoc(v.releaseNotes, LITE_ALLOWED_NODES, `${v.id} notes`);
+        // Locale map (what the API and versions-list.tsx use), not a bare document.
+        expect(v.releaseNotes, `${v.id} notes`).not.toBeNull();
+        expect((v.releaseNotes as { type?: unknown }).type, `${v.id} bare doc`).toBeUndefined();
+        const locales = Object.keys(v.releaseNotes!);
+        expect(locales, `${v.id} locales`).toEqual(['en']);
+        for (const l of locales) {
+          checkDoc(
+            (v.releaseNotes as Record<string, never>)[l],
+            LITE_ALLOWED_NODES,
+            `${v.id} notes.${l}`,
+          );
+        }
         if (a.status === 'DRAFT') expect(v.publishedAt).toBeNull();
       }
     }

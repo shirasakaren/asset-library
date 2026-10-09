@@ -21,7 +21,6 @@ export type AssetStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED';
 
 export type AnalysisStatus = 'PENDING' | 'ANALYZING' | 'READY' | 'FAILED';
 
-
 export type FileKind =
   | 'UNITYPACKAGE'
   | 'UPLUGIN'
@@ -44,11 +43,7 @@ export type FileKind =
   | 'OTHER';
 
 export type SortOrder =
-  | 'newest'
-  | 'mostDownloaded'
-  | 'recentlyUpdated'
-  | 'alphabetical'
-  | 'mostSaved';
+  'newest' | 'mostDownloaded' | 'recentlyUpdated' | 'alphabetical' | 'mostSaved';
 
 export type LibrarySort = 'savedAt' | 'alphabetical' | 'recentlyUpdated';
 
@@ -72,14 +67,7 @@ export type RenderPipeline =
   | 'NA';
 
 export type TargetPlatform =
-  | 'WINDOWS'
-  | 'MAC'
-  | 'LINUX'
-  | 'IOS'
-  | 'ANDROID'
-  | 'CONSOLE'
-  | 'WEB'
-  | 'VR';
+  'WINDOWS' | 'MAC' | 'LINUX' | 'IOS' | 'ANDROID' | 'CONSOLE' | 'WEB' | 'VR';
 
 export interface ServerAvatar {
   initials: string;
@@ -181,10 +169,13 @@ export interface VersionSummary {
   createdAt: string;
 }
 
+/** Release notes are TipTap documents keyed by locale (`{ en?, id? }`), like the backend DTO. */
+export type ReleaseNotes = Partial<Record<LocaleCode, TipTapDoc>>;
+
 export interface AssetVersionPayload {
   id: string;
   semver: string;
-  releaseNotes: TipTapDoc | null;
+  releaseNotes: ReleaseNotes | null;
   publishedAt: string | null;
   isLatest: boolean;
   analysisStatus: AnalysisStatus;
@@ -286,7 +277,7 @@ export interface DownloadOptionsFile {
 
 export interface DownloadOptions {
   asset: { id: string; title: string };
-  version: { id: string; semver: string; releaseNotes: TipTapDoc | null };
+  version: { id: string; semver: string; releaseNotes: ReleaseNotes | null };
   files: DownloadOptionsFile[];
   olderVersions: { id: string; semver: string; publishedAt: string | null }[];
 }
@@ -337,12 +328,7 @@ export interface NotificationPage {
   pageInfo: PageInfo;
 }
 
-export type AssetRequestStatus =
-  | 'SENT'
-  | 'IN_REVIEW'
-  | 'PENDING'
-  | 'APPROVED'
-  | 'REJECTED';
+export type AssetRequestStatus = 'SENT' | 'IN_REVIEW' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export interface AssetRequest {
   id: string;
