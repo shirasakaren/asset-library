@@ -111,7 +111,8 @@ describe('public/thumbs', () => {
         const p = path.join(dir, f);
         expect(fs.existsSync(p), f).toBe(true);
         const size = fs.statSync(p).size;
-        expect(size, f).toBeGreaterThan(2 * 1024);
+        // flat key art (e.g. Kenney audio packs) compresses to ~1 KB
+        expect(size, f).toBeGreaterThan(512);
         expect(size, f).toBeLessThan(200 * 1024);
       }
     }

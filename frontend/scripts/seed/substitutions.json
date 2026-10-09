@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "and-v12-1",
+    "title": "シロモジ&クロモジ キャラクター素体 v12.1",
+    "store": "BOOTH",
+    "url": "https://jumpjun.booth.pm/items/2181568",
+    "action": "removed-manual",
+    "originalImage": "https://booth.pximg.net/c/620x620/0d6515fa-d2ad-4fa0-93ab-514ff877670d/i/2181568/ec82f0db-dcec-4185-b2e1-a01c2ef03624_base_resized.jpg",
+    "reason": "Listing image shows base-body avatars in underwear-style outfits; not suitable for a public demo"
+  },
+  {
+    "slug": "for-avatar-pcss-for-vrc",
+    "title": "リアル影システム (for Avatar) PCSS For VRC",
+    "store": "BOOTH",
+    "url": "https://nharuka.booth.pm/items/4493526",
+    "action": "removed-manual",
+    "originalImage": "https://booth.pximg.net/c/620x620/097baf76-9858-45ba-86a5-30a1e5273196/i/4493526/9e6712b5-5de8-448e-ba52-d53bc9a249be_base_resized.jpg",
+    "reason": "Listing image is a tight crop of an avatar upper body; not suitable for a public demo"
+  },
+  {
+    "slug": "pb-marshmallow-pb",
+    "title": "ましゅまろPB (Marshmallow PB)",
+    "store": "BOOTH",
+    "url": "https://wataame89.booth.pm/items/4511536",
+    "action": "removed-manual",
+    "originalImage": "https://booth.pximg.net/c/620x620/fa10e05a-2beb-4ed5-bce0-808f4aa52e0b/i/4511536/1ad42baf-565a-467e-b4ff-8891eb62112a_base_resized.jpg",
+    "reason": "Listing image is a close-up of a body-physics (jiggle) effect; not suitable for a public demo"
+  },
+  {
+    "slug": "vectorflow-shader",
+    "title": "VectorFlow Shader",
+    "store": "BOOTH",
+    "url": "https://hheaven.booth.pm/items/2764661",
+    "action": "removed-manual",
+    "originalImage": "https://booth.pximg.net/c/620x620/e2167a36-8720-4899-bb1a-4951e0941310/i/2764661/a5429b10-c410-4216-a9c6-961692262ba9_base_resized.jpg",
+    "reason": "Listing image is a close-up of a swimsuit-clad avatar body; not suitable for a public demo"
+  }
+]

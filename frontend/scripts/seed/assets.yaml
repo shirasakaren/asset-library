@@ -84,17 +84,6 @@
   store: BOOTH
   url: https://mukumi.booth.pm/items/5813187
   image: https://booth.pximg.net/c/620x620/c80ffe79-d9d7-4481-bc64-40d80bcd71e6/i/5813187/9163df6c-cc4e-4a07-ace2-d22e3be58be8_base_resized.jpg
-- slug: and-v12-1
-  title: シロモジ&クロモジ キャラクター素体 v12.1
-  short: Base-body character models for VRChat and Blender with updated textures and menus.
-  short_id: Model dasar karakter untuk VRChat dan Blender dengan tekstur dan menu yang diperbarui.
-  category: 3d-models
-  engine: BLENDER
-  tags: [base-body, character, blender, vrchat, original]
-  license: commercial
-  store: BOOTH
-  url: https://jumpjun.booth.pm/items/2181568
-  image: https://booth.pximg.net/c/620x620/0d6515fa-d2ad-4fa0-93ab-514ff877670d/i/2181568/ec82f0db-dcec-4185-b2e1-a01c2ef03624_base_resized.jpg
 - slug: factory-kit
   title: Factory Kit
   short: 140 CC0 low-poly 3D factory pieces, machines, and conveyors.
@@ -964,17 +953,6 @@
   store: BOOTH
   url: https://yamirin.booth.pm/items/7657840
   image: https://booth.pximg.net/c/620x620/11d082f4-13bc-482b-b48f-07e27703a8aa/i/7657840/03e2fc69-287b-4940-8ddd-d703530b078c_base_resized.jpg
-- slug: for-avatar-pcss-for-vrc
-  title: リアル影システム (for Avatar) PCSS For VRC
-  short: VRChat avatar gimmick that casts real-time soft PCSS shadows onto lilToon or Poiyomi avatars.
-  short_id: Gimmick avatar VRChat yang menghasilkan bayangan lembut PCSS real-time untuk avatar lilToon atau Poiyomi.
-  category: tools
-  engine: UNITY
-  tags: [vrchat, shadow, pcss, avatar, gimmick]
-  license: commercial
-  store: BOOTH
-  url: https://nharuka.booth.pm/items/4493526
-  image: https://booth.pximg.net/c/620x620/097baf76-9858-45ba-86a5-30a1e5273196/i/4493526/9e6712b5-5de8-448e-ba52-d53bc9a249be_base_resized.jpg
 - slug: cgx-action-prompt-for-rpg-maker-mz
   title: CGX Action Prompt for RPG Maker MZ
   short: RPG Maker MZ plugin for floating interact prompts that match keybinds and game style.
@@ -1096,17 +1074,6 @@
   store: Gumroad
   url: https://bartoszstyperek.gumroad.com/l/hairtool
   image: https://public-files.gumroad.com/izvmvvefyns8v1rvnl2zst5oqe46
-- slug: pb-marshmallow-pb
-  title: ましゅまろPB (Marshmallow PB)
-  short: VRChat PhysBone gimmick for squishy, heavy-feeling jiggle with side-squash and anti-clipping.
-  short_id: Gimmick PhysBone VRChat untuk efek goyangan empuk dan berat dengan squash samping dan anti-tembus.
-  category: tools
-  engine: UNITY
-  tags: [vrchat, physbone, jiggle, gimmick, unity]
-  license: commercial
-  store: BOOTH
-  url: https://wataame89.booth.pm/items/4511536
-  image: https://booth.pximg.net/c/620x620/fa10e05a-2beb-4ed5-bce0-808f4aa52e0b/i/4511536/1ad42baf-565a-467e-b4ff-8891eb62112a_base_resized.jpg
 - slug: dialogue-system-for-unity
   title: Dialogue System for Unity
   short: Top-rated dialogue and quest system used in many shipped games.
@@ -1547,17 +1514,6 @@
   store: Superhive
   url: https://superhivemarket.com/products/lcdsim
   image: https://assets.superhivemarket.com/store/product/266281/image/xlarge-7715bf1b9928e5fd9d90164e8b25466b.png
-- slug: vectorflow-shader
-  title: VectorFlow Shader
-  short: Shader for Unity and VRChat that adds flowing water and droplet effects to surfaces.
-  short_id: Shader untuk Unity dan VRChat yang menambahkan efek air dan tetesan mengalir pada permukaan.
-  category: shaders
-  engine: UNITY
-  tags: [water, flow, droplets, unity, vrchat]
-  license: commercial
-  store: BOOTH
-  url: https://hheaven.booth.pm/items/2764661
-  image: https://booth.pximg.net/c/620x620/e2167a36-8720-4899-bb1a-4951e0941310/i/2764661/a5429b10-c410-4216-a9c6-961692262ba9_base_resized.jpg
 - slug: cyberpunk-style-neon-translucence-material
   title: Cyberpunk-style Neon Translucence Material
   short: Five cyberpunk neon translucent lilToon presets, three animated, for clothing and accessories.
