@@ -551,6 +551,24 @@ describe('GET /assets/{idOrSlug}', () => {
     expect(d.versions[0]!.files[0]!.id).toBeTruthy();
   });
 
+  it('does not repeat the cover thumbnail in previewMedia', async () => {
+    const seed = fixtureCatalog(1);
+    const media = (id: string, url: string, key: string) => ({
+      id,
+      kind: 'image' as const,
+      key,
+      label: id,
+      viewUrl: url,
+    });
+    (seed.assets as AssetRecord[])[0]!.previewMedia = [
+      media('pm-1', '/thumbs/fx-001.webp', 'thumbs/fx-001.webp'),
+      media('pm-2', '/other.webp', 'other.webp'),
+    ];
+    const app = await createTestApp(seed);
+    const d = await app.call<AssetDetail>('GET', '/assets/fx-001');
+    expect(d.previewMedia.map((m) => m.id)).toEqual(['pm-2']);
+  });
+
   it('keeps thumbnail.url and falls back to the auto thumbnail for the summary', async () => {
     const seed = fixtureCatalog(1);
     (seed.assets as AssetRecord[])[0]!.thumbnail = { key: null, url: null };
