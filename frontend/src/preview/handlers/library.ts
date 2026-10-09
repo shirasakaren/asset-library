@@ -5,6 +5,7 @@ import { badRequest, notFound } from '../router/errors';
 import { paginate } from '../router/paginate';
 import { filterAssets, parseAssetFilters } from './filters';
 import { loadCatalogMaps, reqLocale, toSummary } from './helpers';
+import { serialized } from './write-queue';
 import { matchesTitleOrTags, parseQuery } from './text-search';
 
 const LIBRARY_SORTS: readonly LibrarySort[] = ['savedAt', 'alphabetical', 'recentlyUpdated'];
@@ -12,15 +13,6 @@ const HIDDEN_FILTERS: readonly HiddenFilter[] = ['true', 'false', 'all'];
 
 const assetNotFound = (id: string) =>
   notFound(`Asset ${id} not found.`, { code: 'asset.not_found' });
-
-// Library writes are read-modify-write over two collections (the library row and the asset's
-// `totalSaves`), so serialize them: a double click must not count twice.
-let writeChain: Promise<unknown> = Promise.resolve();
-function serialized<T>(fn: () => Promise<T>): Promise<T> {
-  const next = writeChain.then(fn, fn);
-  writeChain = next.catch(() => undefined);
-  return next;
-}
 
 const cmp = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 
