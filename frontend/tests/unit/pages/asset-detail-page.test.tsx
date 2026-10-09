@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../helpers/render';
 import { ApiError } from '@/lib/api/errors';
+import { queryKeys } from '@/lib/api/queries';
 import type { AssetDetail } from '@/lib/api/types';
 
 const fetchApi = vi.hoisted(() => vi.fn());
@@ -72,4 +73,26 @@ describe('AssetDetailPageClient', () => {
     expect(screen.getByRole('button', { name: 'errors.tryAgain' })).toBeInTheDocument();
     expect(screen.queryByText('notFound.title')).not.toBeInTheDocument();
   });
+  it.each([500, 404])(
+    'keeps the loaded asset when a BACKGROUND refetch fails with %s (data + error coexist)',
+    async (status) => {
+      fetchApi.mockResolvedValue({ id: 'a1', title: 'Cool Asset' });
+      const { client } = renderWithProviders(<AssetDetailPageClient idOrSlug="cool-asset" />);
+      expect(await screen.findByTestId('shell')).toBeInTheDocument();
+      const key = queryKeys.asset('cool-asset', 'en');
+
+      fetchApi.mockRejectedValue(new ApiError(problem(status)));
+      await act(async () => {
+        await client.invalidateQueries({ queryKey: key });
+      });
+      await act(async () => new Promise((r) => setTimeout(r, 20)));
+      // Precondition: the query is in the error state while still holding the asset.
+      expect(client.getQueryState(key)?.status).toBe('error');
+      expect(client.getQueryData(key)).toMatchObject({ title: 'Cool Asset' });
+
+      expect(screen.getByTestId('shell')).toHaveTextContent('Cool Asset');
+      expect(screen.queryByText('errors.assetLoadTitle')).not.toBeInTheDocument();
+      expect(screen.queryByText('notFound.title')).not.toBeInTheDocument();
+    },
+  );
 });

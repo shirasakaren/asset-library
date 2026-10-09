@@ -49,13 +49,16 @@ export function AssetDetailPageClient({ idOrSlug }: { idOrSlug: string }) {
       fetchApi<AssetDetail>(`/assets/${encodeURIComponent(idOrSlug)}`, { query: { locale } }),
   });
   const tNotFound = useTranslations('notFound');
-  const isNotFound = ApiError.isApiError(q.error) && q.error.status === 404;
+  // A failed BACKGROUND refetch keeps `data` and sets `error`; only a load with no data is a 404.
+  const isNotFound = !q.data && ApiError.isApiError(q.error) && q.error.status === 404;
   useDocumentTitle(
     isNotFound ? tNotFound('title') : (q.data?.title ?? idOrSlug.replace(/-/g, ' ')),
   );
 
-  if (q.isPending) return <AssetDetailSkeleton />;
-  if (q.error) {
+  // Decide from the loaded asset first: a failed background refetch must not replace it
+  // with an error view (mirrors OwnedAssetGate).
+  if (!q.data) {
+    if (q.isPending) return <AssetDetailSkeleton />;
     return isNotFound ? <NotFoundContent /> : <AssetLoadError onRetry={() => void q.refetch()} />;
   }
   // The asset detail carries its own isSaved flag; the recommendations module
