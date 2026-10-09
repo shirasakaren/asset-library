@@ -58,6 +58,56 @@ describe('WsBootstrap (event bus bridge)', () => {
     off();
   });
 
+  it('notification: an event for an item that was only marked read is not announced as new', async () => {
+    const read = { ...item, readAt: '2026-01-02T00:00:00.000Z' } as NotificationItem;
+    apiFetch.mockImplementation(async (path: string) =>
+      path === '/notifications/unread-count' ? { count: 0 } : { items: [read] },
+    );
+    const received: unknown[] = [];
+    const off = useWsStore.getState().subscribe('notification:new', (m) => received.push(m));
+    setup();
+
+    bus.emit({ type: 'notification', notificationId: 'n1' });
+
+    await waitFor(() => expect(useNotificationsStore.getState().unreadCount).toBe(0));
+    expect(received).toHaveLength(0);
+    off();
+  });
+
+  it('notification: an unread item the store already knows is not announced a second time', async () => {
+    useNotificationsStore.setState({ unreadCount: 1, recent: [item] });
+    apiFetch.mockImplementation(async (path: string) =>
+      path === '/notifications/unread-count' ? { count: 1 } : { items: [item] },
+    );
+    const received: unknown[] = [];
+    const off = useWsStore.getState().subscribe('notification:new', (m) => received.push(m));
+    setup();
+
+    bus.emit({ type: 'notification', notificationId: 'n1' });
+
+    await waitFor(() => expect(apiFetch).toHaveBeenCalledTimes(2));
+    await new Promise((r) => setTimeout(r, 20));
+    expect(received).toHaveLength(0);
+    expect(useNotificationsStore.getState().recent).toHaveLength(1);
+    off();
+  });
+
+  it('notification: an empty id (bulk read) only refreshes the counters', async () => {
+    useNotificationsStore.setState({ unreadCount: 3, recent: [item] });
+    apiFetch.mockImplementation(async (path: string) =>
+      path === '/notifications/unread-count' ? { count: 0 } : { items: [item] },
+    );
+    const received: unknown[] = [];
+    const off = useWsStore.getState().subscribe('notification:new', (m) => received.push(m));
+    setup();
+
+    bus.emit({ type: 'notification', notificationId: '' });
+
+    await waitFor(() => expect(useNotificationsStore.getState().unreadCount).toBe(0));
+    expect(received).toHaveLength(0);
+    off();
+  });
+
   it('notification: a failing refresh does not throw and still invalidates', async () => {
     apiFetch.mockRejectedValue(new Error('down'));
     const log = vi.spyOn(console, 'warn').mockImplementation(() => {});

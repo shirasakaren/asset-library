@@ -24,14 +24,20 @@ async function refreshNotifications(fetcher: Fetcher, notificationId: string) {
     ]);
     const item = page.items.find((n) => n.id === notificationId);
     if (item) {
-      useNotificationsStore.getState().applyIncoming(item);
-      // Same envelope the old `notification:new` socket frame carried, for
-      // subscribers (e.g. the library "new version" badge) that listen on it.
-      useWsStore.getState().dispatch({
-        type: 'notification:new',
-        id: item.id,
-        payload: { type: item.type, payload: item.payload },
-      });
+      const store = useNotificationsStore.getState();
+      // The same event also announces "this one was read" (and read-all), so only an
+      // unread item the store has not seen yet counts as a new notification.
+      const isNew = !item.readAt && !store.recent.some((n) => n.id === item.id);
+      store.applyIncoming(item);
+      if (isNew) {
+        // Same envelope the old `notification:new` socket frame carried, for
+        // subscribers (e.g. the library "new version" badge) that listen on it.
+        useWsStore.getState().dispatch({
+          type: 'notification:new',
+          id: item.id,
+          payload: { type: item.type, payload: item.payload },
+        });
+      }
     }
     useNotificationsStore.setState({ unreadCount: count.count });
   } catch (err) {

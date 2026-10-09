@@ -5,3 +5,5 @@ import './catalog';
 import './assets-read';
 import './search';
 import './library';
+import './notifications';
+import './comments';

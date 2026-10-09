@@ -65,8 +65,8 @@ route('GET', '/assets', async (req, ctx): Promise<AssetListPage> => {
   };
 });
 
-/** Resolves the asset for `/assets/{idOrSlug}...`; a 404 when it does not exist or is not visible. */
-async function resolveVisible(idOrSlug: string, ctx: Parameters<typeof getMe>[0]) {
+/** Resolves the asset for `/assets/{idOrSlug}...` (and the comment routes); a 404 when it does not exist or is not visible. */
+export async function resolveVisible(idOrSlug: string, ctx: Parameters<typeof getMe>[0]) {
   const [viewer, assets] = await Promise.all([getMe(ctx), ctx.db.list<AssetRecord>('assets')]);
   const asset = findAsset(assets, idOrSlug);
   if (!asset || !visibleTo(asset, viewer.id, viewer.isAdmin)) {
