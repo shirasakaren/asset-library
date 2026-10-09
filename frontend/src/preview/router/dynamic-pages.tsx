@@ -42,6 +42,22 @@ const PAGES: Record<string, DynamicPage | undefined> = {
       import('@/components/asset/asset-detail-page-client').then((m) => m.AssetDetailPageClient),
     (p) => ({ idOrSlug: p.idOrSlug ?? '' }),
   ),
+  '/publish/[id]': lazyPage(
+    () =>
+      import('@/components/publish/publish-wizard-page-client').then(
+        (m) => m.PublishWizardPageClient,
+      ),
+    (p) => ({ id: p.id ?? '' }),
+  ),
+  '/publish/[id]/versions/new': lazyPage(
+    () =>
+      import('@/components/publish/new-version-page-client').then((m) => m.NewVersionPageClient),
+    (p) => ({ id: p.id ?? '' }),
+  ),
+  '/publish/manage/[id]/analytics': lazyPage(
+    () => import('@/components/publish/analytics-page-client').then((m) => m.AnalyticsPageClient),
+    (p) => ({ id: p.id ?? '' }),
+  ),
 };
 
 export function getDynamicPage(route: string): DynamicPage | null {

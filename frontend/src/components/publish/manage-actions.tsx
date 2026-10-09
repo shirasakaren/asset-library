@@ -2,9 +2,18 @@
 
 import NextLink from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { MoreVertical, Edit, ExternalLink, Plus, Archive, RefreshCcw, Trash2, BarChart3 } from 'lucide-react';
+import {
+  MoreVertical,
+  Edit,
+  ExternalLink,
+  Plus,
+  Archive,
+  RefreshCcw,
+  Trash2,
+  BarChart3,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -12,11 +21,19 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from '@/components/ui/modal';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalFooter,
+} from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/toaster';
 import { useAuthedFetch } from '@/lib/api/client';
+import { queryKeys } from '@/lib/api/queries';
 import type { AssetSummary } from '@/lib/api/types';
 
 interface ManageActionsProps {
@@ -27,11 +44,18 @@ interface ManageActionsProps {
 export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) {
   const t = useTranslations('publish.manageView');
   const fetcher = useAuthedFetch();
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteText, setDeleteText] = useState('');
   const [busy, setBusy] = useState(false);
+
+  // The lists are client-fetched; there is no server render to refresh.
+  const refreshLists = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.publishManageList() }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets() }),
+    ]);
 
   const doArchive = async () => {
     setBusy(true);
@@ -39,9 +63,11 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
       await fetcher(`/assets/${asset.id}/archive`, { method: 'POST' });
       toast.success('Archived');
       setArchiveOpen(false);
-      router.refresh();
+      void refreshLists();
     } catch (err) {
-      toast.error('Could not archive', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Could not archive', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -51,9 +77,11 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
     try {
       await fetcher(`/assets/${asset.id}/restore`, { method: 'POST' });
       toast.success('Restored');
-      router.refresh();
+      void refreshLists();
     } catch (err) {
-      toast.error('Could not restore', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Could not restore', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     }
   };
 
@@ -64,9 +92,11 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
       await fetcher(`/assets/${asset.id}`, { method: 'DELETE' });
       toast.success('Deleted');
       setDeleteOpen(false);
-      router.refresh();
+      void refreshLists();
     } catch (err) {
-      toast.error('Could not delete', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Could not delete', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -79,7 +109,7 @@ export function ManageActions({ asset, isAdmin: _isAdmin }: ManageActionsProps) 
           <button
             type="button"
             aria-label="Actions"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-ink-2 transition-colors hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
           >
             <MoreVertical className="h-4 w-4" strokeWidth={2.25} />
           </button>

@@ -20,6 +20,16 @@ vi.mock('@/components/asset/asset-detail-page-client', () => ({
   ),
 }));
 
+vi.mock('@/components/publish/publish-wizard-page-client', () => ({
+  PublishWizardPageClient: ({ id }: { id: string }) => <div>wizard:{id}</div>,
+}));
+vi.mock('@/components/publish/new-version-page-client', () => ({
+  NewVersionPageClient: ({ id }: { id: string }) => <div>new-version:{id}</div>,
+}));
+vi.mock('@/components/publish/analytics-page-client', () => ({
+  AnalyticsPageClient: ({ id }: { id: string }) => <div>analytics:{id}</div>,
+}));
+
 import NotFound from '@/app/not-found';
 
 describe('not-found shell', () => {
@@ -33,6 +43,18 @@ describe('not-found shell', () => {
     renderRaw(<NotFound />);
     expect(await screen.findByText('asset:brand-new-slug')).toBeInTheDocument();
     expect(screen.getByTestId('app-shell')).toContainElement(screen.getByTestId('asset-page'));
+    expect(screen.queryByText('notFound.title')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['/publish/new-asset-1/', 'wizard:new-asset-1'],
+    ['/publish/new-asset-1/versions/new', 'new-version:new-asset-1'],
+    ['/publish/manage/new-asset-1/analytics/', 'analytics:new-asset-1'],
+  ])('renders the publish page registered for %s inside the app shell', async (path, text) => {
+    pathname.value = path;
+    renderRaw(<NotFound />);
+    expect(await screen.findByText(text)).toBeInTheDocument();
+    expect(screen.getByTestId('app-shell')).toContainElement(screen.getByText(text));
     expect(screen.queryByText('notFound.title')).not.toBeInTheDocument();
   });
 
