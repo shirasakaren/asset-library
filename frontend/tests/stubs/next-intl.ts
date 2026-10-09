@@ -1,3 +1,4 @@
+import { createContext, createElement, useContext, type ReactNode } from 'react';
 import { vi } from 'vitest';
 
 type Replacements = Record<string, unknown>;
@@ -18,7 +19,26 @@ export function useTranslations(scope?: string) {
   };
 }
 
-export const useLocale = () => 'en';
+const IntlContext = createContext<{ locale: string; messages: unknown }>({
+  locale: 'en',
+  messages: {},
+});
+
+export function NextIntlClientProvider({
+  locale,
+  messages,
+  children,
+}: {
+  locale: string;
+  messages: unknown;
+  children?: ReactNode;
+}) {
+  return createElement(IntlContext.Provider, { value: { locale, messages } }, children);
+}
+
+export const useLocale = () => useContext(IntlContext).locale;
+
+export const useMessages = () => useContext(IntlContext).messages;
 
 export const useNow = () => new Date();
 

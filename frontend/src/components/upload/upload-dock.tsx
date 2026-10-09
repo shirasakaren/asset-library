@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { getSession } from 'next-auth/react';
+import { getPreviewAccessToken } from '@/preview/session/me-provider';
 import { useLocale } from 'next-intl';
 import { ChevronUp, ChevronDown, X, Loader2, Check, AlertCircle, FileBox } from 'lucide-react';
 import { useUploadStore } from '@/lib/upload/upload-store';
@@ -37,14 +37,9 @@ export function UploadDock() {
   const pathname = usePathname() ?? '';
   const [expanded, setExpanded] = useState(false);
 
-  // Hand the store a *getter*, not a cached token. getSession() forces a
-  // refetch against /api/auth/session when the in-memory session is stale,
-  // which triggers the Auth.js JWT callback's refresh-token grant. Long
-  // uploads (e.g. a 300 MB tarball) thus always send their tail-end
-  // `complete` request with a token that's valid right now, instead of the
-  // one that was current when the upload started ~10 min ago.
+  // The store takes a token *getter*; in the preview it is a static placeholder.
   useEffect(() => {
-    setAuthProvider(async () => (await getSession())?.accessToken, locale);
+    setAuthProvider(getPreviewAccessToken, locale);
   }, [locale, setAuthProvider]);
 
   // Hide the dock for the asset whose publish page we're currently on — that

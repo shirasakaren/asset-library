@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { signOut } from 'next-auth/react';
 import { Cpu, LogOut } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +17,7 @@ import {
 import { useAuthedFetch } from '@/lib/api/client';
 import { toast } from '@/components/ui/toaster';
 import { formatDate, formatRelative } from '@/lib/format';
-import { broadcast } from '@/lib/ws/broadcast';
+import { signOut } from '@/preview/session/me-provider';
 import type { LocaleCode } from '@/lib/api/types';
 
 interface PluginDevice {
@@ -38,7 +36,6 @@ interface Props {
 export function ProfileSurface({ devices: initial, locale }: Props) {
   const fetcher = useAuthedFetch();
   const queryClient = useQueryClient();
-  const router = useRouter();
   const [confirmRevoke, setConfirmRevoke] = useState<PluginDevice | null>(null);
 
   const list = useQuery({
@@ -49,30 +46,29 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
   });
 
   const revoke = useMutation({
-    mutationFn: async (id: string) =>
-      fetcher(`/me/devices/${id}/revoke`, { method: 'POST' }),
+    mutationFn: async (id: string) => fetcher(`/me/devices/${id}/revoke`, { method: 'POST' }),
     onSuccess: () => toast.success('Device revoked'),
     onError: (err) =>
-      toast.error('Revoke failed', { description: err instanceof Error ? err.message : String(err) }),
+      toast.error('Revoke failed', {
+        description: err instanceof Error ? err.message : String(err),
+      }),
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['me', 'devices'] }),
   });
 
   const handleSignOut = async () => {
-    broadcast({ type: 'auth:sign-out' });
     await signOut({ callbackUrl: '/about' });
-    router.refresh();
   };
 
   return (
     <>
       <Card padding="lg" className="mt-6">
-        <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">
+        <h2 className="font-display text-h2 tracking-[-0.01em] text-ink">
           Engines connected to your account
         </h2>
-        <p className="mt-1 text-body-sm text-ink-3 max-w-prose">
+        <p className="mt-1 max-w-prose text-body-sm text-ink-3">
           These are the Unity / Unreal editors you’ve signed in from. Revoke any you no longer use.
         </p>
-        <ul className="mt-5 divide-y divide-line border border-line rounded-[12px] overflow-hidden">
+        <ul className="mt-5 divide-y divide-line overflow-hidden rounded-[12px] border border-line">
           {(list.data ?? []).length === 0 ? (
             <li className="px-4 py-8 text-center text-body-sm text-ink-3">
               No plugin devices yet.
@@ -83,9 +79,9 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-surface-muted text-ink-2">
                   <Cpu className="h-4 w-4" strokeWidth={2.25} />
                 </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-medium text-ink truncate">{d.deviceLabel}</p>
-                  <p className="text-caption text-ink-3 geist-tnum truncate">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[14px] font-medium text-ink">{d.deviceLabel}</p>
+                  <p className="geist-tnum truncate text-caption text-ink-3">
                     Created {formatDate(d.createdAt, locale)} ·{' '}
                     {d.lastUsedAt
                       ? `Last used ${formatRelative(d.lastUsedAt, locale)}`
@@ -106,7 +102,7 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
       </Card>
 
       <Card padding="lg" className="mt-6">
-        <h2 className="font-display text-h2 text-ink tracking-[-0.01em]">Account</h2>
+        <h2 className="font-display text-h2 tracking-[-0.01em] text-ink">Account</h2>
         <p className="mt-1 text-body-sm text-ink-3">
           Signing out also revokes the active Keycloak session.
         </p>

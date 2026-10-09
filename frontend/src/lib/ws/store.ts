@@ -2,8 +2,6 @@
 
 import { create } from 'zustand';
 
-export type WsStatus = 'idle' | 'connecting' | 'open' | 'closed' | 'reconnecting';
-
 export interface WsMessage {
   type: string;
   id?: string;
@@ -14,34 +12,24 @@ export interface WsMessage {
 type Handler = (msg: WsMessage) => void;
 
 interface WsState {
-  status: WsStatus;
   lastMessage: WsMessage | null;
-  lastError: string | null;
-  reconnectAttempts: number;
   handlers: Map<string, Set<Handler>>;
-  setStatus: (s: WsStatus) => void;
-  setError: (e: string | null) => void;
-  bumpAttempts: () => void;
-  resetAttempts: () => void;
   dispatch: (msg: WsMessage) => void;
   subscribe: (type: string, handler: Handler) => () => void;
 }
 
+/**
+ * In-process fan-out of server-style messages to typed handlers. There is no
+ * socket any more: `WsBootstrap` translates event-bus events into messages here.
+ */
 export const useWsStore = create<WsState>((set, get) => ({
-  status: 'idle',
   lastMessage: null,
-  lastError: null,
-  reconnectAttempts: 0,
   handlers: new Map(),
-  setStatus: (status) => set({ status }),
-  setError: (lastError) => set({ lastError }),
-  bumpAttempts: () => set((s) => ({ reconnectAttempts: s.reconnectAttempts + 1 })),
-  resetAttempts: () => set({ reconnectAttempts: 0 }),
   dispatch: (msg) => {
     set({ lastMessage: msg });
     const bucket = get().handlers.get(msg.type);
     if (!bucket) return;
-    for (const handler of bucket) handler(msg);
+    for (const handler of [...bucket]) handler(msg);
   },
   subscribe: (type, handler) => {
     const handlers = get().handlers;

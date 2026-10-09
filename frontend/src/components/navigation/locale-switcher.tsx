@@ -1,20 +1,19 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Globe, Check } from 'lucide-react';
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/ui/toaster';
+import { apiFetch } from '@/lib/api/fetcher';
+import { useLocaleSwitch } from '@/providers/locale-provider';
+import { useRefetchMe } from '@/preview/session/me-provider';
+import type { Locale } from '@/lib/env.public';
 
-const LOCALES = [
-  { code: 'en', labelKey: 'english' as const },
-  { code: 'id', labelKey: 'indonesian' as const },
+const LOCALES: { code: Locale; labelKey: 'english' | 'indonesian' }[] = [
+  { code: 'en', labelKey: 'english' },
+  { code: 'id', labelKey: 'indonesian' },
 ];
 
 interface LocaleSwitcherProps {
@@ -22,30 +21,27 @@ interface LocaleSwitcherProps {
 }
 
 export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
-  const router = useRouter();
   const t = useTranslations('locale');
   const tCommon = useTranslations('common');
+  const tErrors = useTranslations('errors');
   const current = useLocale();
   const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const { setLocale } = useLocaleSwitch();
+  const refetchMe = useRefetchMe();
 
-  async function change(next: string) {
-    if (next === current || isPending) return;
+  function change(next: Locale) {
+    if (next === current) return;
     setOpen(false);
-    startTransition(async () => {
-      try {
-        await fetch('/api/me/locale', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ locale: next }),
-        });
-      } catch {
-        /* ignore — cookie set is still authoritative for now */
-      }
-      document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=${60 * 60 * 24 * 365}; sameSite=Lax`;
-      toast.success(t('updated'));
-      router.refresh();
-    });
+    // The UI switches immediately (client state + localStorage); the persona's
+    // saved locale is updated in the background.
+    setLocale(next);
+    toast.success(t('updated'));
+    void apiFetch('/auth/me/locale', { method: 'PATCH', body: { locale: next }, locale: next })
+      .then(() => refetchMe())
+      .catch((err: unknown) => {
+        console.error('[preview] failed to save locale', err);
+        toast.error(tErrors('boundaryTitle'));
+      });
   }
 
   return (
@@ -55,9 +51,8 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
           type="button"
           aria-label={t('switchLabel')}
           className={cn(
-            'inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120',
+            'inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 transition-colors duration-120 hover:bg-surface-muted hover:text-ink',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
-            isPending && 'opacity-60',
             className,
           )}
         >
@@ -76,15 +71,13 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
               key={opt.code}
               type="button"
               onClick={() => change(opt.code)}
-              className="flex items-center justify-between w-full px-2.5 h-9 rounded-[8px] text-[13.5px] text-ink hover:bg-surface-muted text-left focus-visible:outline-none focus-visible:bg-surface-muted"
+              className="flex h-9 w-full items-center justify-between rounded-[8px] px-2.5 text-left text-[13.5px] text-ink hover:bg-surface-muted focus-visible:bg-surface-muted focus-visible:outline-none"
             >
               <span className="flex items-center gap-2">
-                <span className="font-mono text-[11px] text-ink-3 uppercase">{opt.code}</span>
+                <span className="font-mono text-[11px] uppercase text-ink-3">{opt.code}</span>
                 {t(opt.labelKey)}
               </span>
-              {active ? (
-                <Check className="h-4 w-4 text-brand-blue" strokeWidth={2.5} />
-              ) : null}
+              {active ? <Check className="h-4 w-4 text-brand-blue" strokeWidth={2.5} /> : null}
             </button>
           );
         })}

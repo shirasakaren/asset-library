@@ -7,18 +7,16 @@ import { UploadDock } from '@/components/upload/upload-dock';
 import { requireSession, fetchMe } from '@/lib/auth/server';
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  // Middleware already short-circuits unauthenticated requests to /auth/signin
-  // with a real callbackUrl. requireSession here is a belt-and-suspenders
-  // guarantee for any RSC-only render path.
+  // TEMPORARY: server-side session shim; this layout becomes a client layout in Task 5.
   const session = await requireSession();
   const me = await fetchMe(session);
 
   return (
-    <div className="min-h-dvh flex flex-col bg-bg">
+    <div className="flex min-h-dvh flex-col bg-bg">
       <Navbar user={me} />
       <main className="flex-1">{children}</main>
       <Footer />
-      <WsBootstrap token={session.accessToken ?? null} />
+      <WsBootstrap />
       <NotificationsLive />
       <UploadDock />
     </div>
