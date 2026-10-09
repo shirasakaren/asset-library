@@ -29,13 +29,13 @@ multi-user interaction, SEO (the site stays `noindex`).
 
 ## 2. Decisions already made
 
-| Topic | Decision |
-| --- | --- |
-| Existing app | Convert `frontend/` **in place** on a branch, merge to `main`. Backend workspace untouched. |
-| Hosting | GitHub Pages from `shirasakaren/asset-library` (public repo), custom domain `asset.creations.ren` (served at site root, no base path). |
-| Thumbnails | Taken from real store listings (Unity Asset Store, Fab, Sketchfab, BOOTH, etc.), **downloaded and bundled** in the repo; every asset links back to the original page. |
-| Asset files | Dummy `.txt` files containing the real store link. |
-| Persona | Admin user, so the admin panel is demonstrable. |
+| Topic        | Decision                                                                                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Existing app | Convert `frontend/` **in place** on a branch, merge to `main`. Backend workspace untouched.                                                                           |
+| Hosting      | GitHub Pages from `shirasakaren/asset-library` (public repo), custom domain `asset.creations.ren` (served at site root, no base path).                                |
+| Thumbnails   | Taken from real store listings (Unity Asset Store, Fab, Sketchfab, BOOTH, etc.), **downloaded and bundled** in the repo; every asset links back to the original page. |
+| Asset files  | Dummy `.txt` files containing the real store link.                                                                                                                    |
+| Persona      | Admin user, so the admin panel is demonstrable.                                                                                                                       |
 
 ## 3. Architecture
 
@@ -98,6 +98,22 @@ need pre-rendering. Plan:
   a local static server. Fallback if it fails: query-string routes for
   user-created entities (`/assets/view/?id=…`).
 
+**Outcome (spike result): works, no fallback needed.** Verified against
+`scripts/serve-export.mjs` (serves `/404.html` with HTTP 404 for unknown paths,
+as GitHub Pages does) with headless Chromium: `/spike/seeded/` returns 200,
+`/spike/brand-new-id/` returns 404 and the exported `not-found` shell renders
+the client page for `brand-new-id`. Hard load, hard reload and in-app
+navigation (`router.push` to an unknown id falls back to a full load of the
+404 shell) all work. Two requirements for the `not-found` client component:
+(1) read the URL with `usePathname()` and match it with
+`matchDynamicRoute()` (`src/preview/router/dynamic-route.ts`);
+(2) render a neutral placeholder until hydrated (`useSyncExternalStore` with
+server snapshot `false`), because `404.html` is prerendered for
+`/_not-found` yet served for any URL, and branching on the real pathname in the
+first client render causes hydration error #418. Note the 404 status means
+crawlers and the browser network log see a 404 for user-created ids; acceptable
+for a demo.
+
 ## 4. Persistence
 
 - Seed JSON is immutable and shipped in the build.
@@ -146,7 +162,7 @@ rebuilds are identical):**
   be fetched, that entry is substituted with another listing from the same or a
   similar store and the substitution is reported to the user.
 - The "file" of each version is a generated `.txt` (`Original asset page:
-  <url>`). The download flow builds it as a Blob in the browser.
+<url>`). The download flow builds it as a Blob in the browser.
 - Each asset detail page shows "View on <Store>" linking to the original. The
   footer carries a short notice that thumbnails belong to their creators and a
   contact for removal requests. The contact address is an owner decision; the
@@ -154,16 +170,16 @@ rebuilds are identical):**
 
 ## 7. Simulated side effects
 
-| Real behavior | Preview behavior |
-| --- | --- |
-| Presigned S3 upload + multipart | Read file locally, simulate progress, store small blobs in IndexedDB, record metadata only for large files. |
-| Analyzer / thumbnail jobs | Timer marks version `READY` after a short delay and emits a notification via the event bus. |
-| WebSocket notifications | Event bus feeds the same notification store and bell. |
-| Downloads | Generate `.txt` Blob, increment counters in overlay. |
-| Search (Meilisearch) | In-memory index over seed + overlay: tokenized match, filters, facets, sort, cursor pagination. |
-| GIF search | Small bundled set. |
-| 3D viewer | Kept; no GLBs seeded. |
-| Rate limits, idempotency, AV scan | Not simulated, except one seeded quarantined version to show the AV queue. |
+| Real behavior                     | Preview behavior                                                                                            |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Presigned S3 upload + multipart   | Read file locally, simulate progress, store small blobs in IndexedDB, record metadata only for large files. |
+| Analyzer / thumbnail jobs         | Timer marks version `READY` after a short delay and emits a notification via the event bus.                 |
+| WebSocket notifications           | Event bus feeds the same notification store and bell.                                                       |
+| Downloads                         | Generate `.txt` Blob, increment counters in overlay.                                                        |
+| Search (Meilisearch)              | In-memory index over seed + overlay: tokenized match, filters, facets, sort, cursor pagination.             |
+| GIF search                        | Small bundled set.                                                                                          |
+| 3D viewer                         | Kept; no GLBs seeded.                                                                                       |
+| Rate limits, idempotency, AV scan | Not simulated, except one seeded quarantined version to show the AV queue.                                  |
 
 ## 8. CI/CD
 

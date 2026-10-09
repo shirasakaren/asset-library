@@ -1,33 +1,58 @@
+'use client';
+
+import { useSyncExternalStore } from 'react';
 import NextLink from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { matchDynamicRoute } from '@/preview/router/dynamic-route';
 import { Logo } from '@/components/brand/logo';
 import { Container } from '@/components/layout/container';
 import { Button } from '@/components/ui/button';
 import { GeometricPattern } from '@/components/brand/geometric-pattern';
 import { FooterStrip } from '@/components/brand/footer-strip';
 
-export const metadata = { title: 'Not found' };
+const noopSubscribe = () => () => {};
 
-export default async function NotFound() {
-  const t = await getTranslations('notFound');
+/**
+ * False while rendering on the server / during hydration, true afterwards.
+ * The exported 404.html is prerendered for "/_not-found", but is served for
+ * ANY unknown URL, so the first client render must not depend on the real
+ * pathname (otherwise React throws hydration error #418).
+ */
+function useHydrated() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+}
+
+export default function NotFound() {
+  const t = useTranslations('notFound');
+  const pathname = usePathname();
+  const hydrated = useHydrated();
+  if (!hydrated) return <div className="min-h-dvh bg-bg" />;
+  const match = matchDynamicRoute(pathname);
+  // TODO(task-5): render the client page registered for `match.route` with `match.params`.
+  if (match) return null;
   return (
-    <div className="min-h-dvh flex flex-col bg-bg">
+    <div className="flex min-h-dvh flex-col bg-bg">
       <header className="border-b border-line">
         <Container size="2xl">
-          <div className="h-16 flex items-center">
+          <div className="flex h-16 items-center">
             <Logo size="sm" href="/" />
           </div>
         </Container>
       </header>
-      <main className="flex-1 flex items-center">
+      <main className="flex flex-1 items-center">
         <Container size="md">
-          <div className="grid md:grid-cols-[1fr_auto] gap-12 items-center py-20">
+          <div className="grid items-center gap-12 py-20 md:grid-cols-[1fr_auto]">
             <div>
-              <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3 geist-tnum">
+              <p className="geist-tnum mb-3 text-eyebrow uppercase tracking-[0.12em] text-ink-3">
                 {t('eyebrow')}
               </p>
               <h1 className="display-xl text-ink">{t('title')}</h1>
-              <p className="text-body-lg text-ink-2 mt-4 max-w-prose">{t('body')}</p>
+              <p className="mt-4 max-w-prose text-body-lg text-ink-2">{t('body')}</p>
               <div className="mt-8 flex flex-wrap items-center gap-2">
                 <Button size="lg" asChild>
                   <NextLink href="/">{t('goHome')}</NextLink>
