@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Container } from '@/components/layout/container';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -9,9 +12,10 @@ interface PageSkeletonProps {
 
 /** Generic pending UI for client-rendered pages: a title row and stacked content blocks. */
 export function PageSkeleton({ size = 'lg', rows = 3 }: PageSkeletonProps) {
+  const t = useTranslations('common');
   return (
     <Container size={size}>
-      <div role="status" aria-label="Loading" className="pb-20 pt-6">
+      <div role="status" aria-label={t('loading')} className="pb-20 pt-6">
         <Skeleton className="h-9 w-1/3" />
         <Skeleton className="mt-3 h-4 w-1/2" />
         <div className="mt-8 space-y-3">

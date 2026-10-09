@@ -36,14 +36,17 @@ export function OwnedAssetGate({ id, children }: OwnedAssetGateProps) {
     refetchOnWindowFocus: false,
   });
 
-  if (q.isPending) return <PageSkeleton size="2xl" />;
-  if (q.error) {
-    return ApiError.isApiError(q.error) && q.error.status === 404 ? (
-      <NotFoundContent />
-    ) : (
-      <PageLoadError onRetry={() => void q.refetch()} />
-    );
+  // Decide from the cached data first. A failed BACKGROUND refetch (e.g. after the wizard
+  // invalidates this key) keeps `data` and sets `error`; it must not replace the live
+  // wizard/form, which would discard unsaved edits, nor flip the owner/admin decision.
+  if (q.data) {
+    if (q.data.owner.id !== me.id && !me.isAdmin) return <NotFoundContent />;
+    return <>{children(q.data)}</>;
   }
-  if (q.data.owner.id !== me.id && !me.isAdmin) return <NotFoundContent />;
-  return <>{children(q.data)}</>;
+  if (q.isPending) return <PageSkeleton size="2xl" />;
+  return ApiError.isApiError(q.error) && q.error.status === 404 ? (
+    <NotFoundContent />
+  ) : (
+    <PageLoadError onRetry={() => void q.refetch()} />
+  );
 }

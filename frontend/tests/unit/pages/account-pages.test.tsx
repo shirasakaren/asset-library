@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../../helpers/render';
+import { queryKeys } from '@/lib/api/queries';
 
 const fetchApi = vi.hoisted(() => vi.fn());
 const warn = vi.hoisted(() => vi.fn());
@@ -56,7 +57,7 @@ beforeEach(() => {
 
 describe('ProfilePageClient', () => {
   it('shows a skeleton while pending, then the persona card and the fetched devices', async () => {
-    fetchApi.mockResolvedValue([
+    const devices = [
       {
         id: 'd1',
         deviceLabel: 'Unity on laptop',
@@ -64,14 +65,21 @@ describe('ProfilePageClient', () => {
         lastUsedAt: null,
         expiresAt: '2099-01-01T00:00:00.000Z',
       },
-    ]);
-    renderWithProviders(<ProfilePageClient />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    ];
+    fetchApi.mockResolvedValue(devices);
+    const { client } = renderWithProviders(<ProfilePageClient />);
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(await screen.findByText('Demo User')).toBeInTheDocument();
     expect(screen.getByText('demo@example.org')).toBeInTheDocument();
     expect(screen.getByText('Contributor')).toBeInTheDocument();
     expect(await screen.findByText('Unity on laptop')).toBeInTheDocument();
     expect(fetchApi).toHaveBeenCalledWith('/auth/plugin/devices');
+    // Page and ProfileSurface observe the SAME cache entry under queryKeys.myDevices.
+    expect(client.getQueryData(queryKeys.myDevices)).toEqual(devices);
+    expect(client.getQueryCache().findAll({ queryKey: ['me'] })).toHaveLength(1);
+    expect(
+      client.getQueryCache().find({ queryKey: queryKeys.myDevices })!.getObserversCount(),
+    ).toBe(2);
   });
 
   it('treats a failed device list as non-fatal: empty state, failure logged', async () => {
@@ -87,7 +95,7 @@ describe('ProfilePageClient', () => {
   it('stays on the skeleton while the request is in flight', () => {
     fetchApi.mockImplementation(never);
     renderWithProviders(<ProfilePageClient />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(screen.queryByText('Demo User')).not.toBeInTheDocument();
   });
 });
@@ -98,6 +106,20 @@ describe('ProfileSurface account copy', () => {
     expect(screen.getByText('profile.accountBody')).toBeInTheDocument();
     expect(screen.queryByText(/Keycloak/)).not.toBeInTheDocument();
   });
+
+  it('registers its device list under queryKeys.myDevices, seeded from the initial devices', () => {
+    const initial = [
+      {
+        id: 'd9',
+        deviceLabel: 'Unreal box',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        lastUsedAt: null,
+        expiresAt: '2099-01-01T00:00:00.000Z',
+      },
+    ];
+    const { client } = renderWithProviders(<ProfileSurface devices={initial} locale="en" />);
+    expect(client.getQueryData(queryKeys.myDevices)).toEqual(initial);
+  });
 });
 
 describe('NotificationsPageClient', () => {
@@ -106,9 +128,13 @@ describe('NotificationsPageClient', () => {
       items: [{ id: 'n1' }, { id: 'n2' }],
       pageInfo: { nextCursor: 'c2', hasMore: true },
     });
-    renderWithProviders(<NotificationsPageClient />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    const { client } = renderWithProviders(<NotificationsPageClient />);
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(await screen.findByTestId('inbox')).toHaveTextContent('2|c2');
+    expect(client.getQueryData(queryKeys.notifications())).toEqual({
+      items: [{ id: 'n1' }, { id: 'n2' }],
+      pageInfo: { nextCursor: 'c2', hasMore: true },
+    });
     expect(screen.getByRole('heading', { name: 'notif.heading' })).toBeInTheDocument();
     expect(fetchApi).toHaveBeenCalledWith('/notifications', { query: { limit: 50 } });
   });
@@ -126,13 +152,12 @@ describe('NotificationsPageClient', () => {
 
 describe('RequestPageClient', () => {
   it('shows a skeleton, then the surface with the current user and history', async () => {
-    fetchApi.mockResolvedValue({
-      items: [{ id: 'r1' }],
-      pageInfo: { nextCursor: null, hasMore: false },
-    });
-    renderWithProviders(<RequestPageClient />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    const data = { items: [{ id: 'r1' }], pageInfo: { nextCursor: null, hasMore: false } };
+    fetchApi.mockResolvedValue(data);
+    const { client } = renderWithProviders(<RequestPageClient />);
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(await screen.findByTestId('requests')).toHaveTextContent('me-1|1');
+    expect(client.getQueryData(queryKeys.assetRequests({ requesterId: 'me-1' }))).toEqual(data);
     expect(fetchApi).toHaveBeenCalledWith('/asset-requests', { query: { limit: 50 } });
   });
 

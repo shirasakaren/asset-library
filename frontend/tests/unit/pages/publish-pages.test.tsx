@@ -74,15 +74,14 @@ beforeEach(() => {
 
 describe('PublishLandingPageClient', () => {
   it('shows a skeleton, then drafts and published assets for the current user', async () => {
-    fetchApi.mockResolvedValue(
-      page([
-        asset({ id: 'd1', title: 'Draft One', status: 'DRAFT' }),
-        asset({ id: 'p1', title: 'Pub One' }),
-        asset({ id: 'x1', title: 'Archived', status: 'ARCHIVED' }),
-      ]),
-    );
-    renderWithProviders(<PublishLandingPageClient />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    const data = page([
+      asset({ id: 'd1', title: 'Draft One', status: 'DRAFT' }),
+      asset({ id: 'p1', title: 'Pub One' }),
+      asset({ id: 'x1', title: 'Archived', status: 'ARCHIVED' }),
+    ]);
+    fetchApi.mockResolvedValue(data);
+    const { client } = renderWithProviders(<PublishLandingPageClient />);
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(await screen.findByText('Draft One')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'card:Pub One' })).toHaveAttribute(
       'href',
@@ -92,6 +91,11 @@ describe('PublishLandingPageClient', () => {
     expect(fetchApi).toHaveBeenCalledWith('/assets', {
       query: { ownerId: 'me-1', includeUnpublished: 'true', limit: 50 },
     });
+    expect(
+      client.getQueryData(
+        queryKeys.publishManageList({ scope: 'landing', ownerId: 'me-1', locale: 'en' }),
+      ),
+    ).toEqual(data);
   });
 
   it('shows the empty state when the user has nothing', async () => {
@@ -110,17 +114,30 @@ describe('PublishLandingPageClient', () => {
 
 describe('PublishManagePageClient', () => {
   it('shows a skeleton, then totals and a row per asset', async () => {
-    fetchApi.mockResolvedValue(
-      page([asset(), asset({ id: 'd1', title: 'Draft One', status: 'DRAFT', totalDownloads: 0 })]),
-    );
-    renderWithProviders(<PublishManagePageClient />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    const data = page([
+      asset(),
+      asset({ id: 'd1', title: 'Draft One', status: 'DRAFT', totalDownloads: 0 }),
+    ]);
+    fetchApi.mockResolvedValue(data);
+    const { client } = renderWithProviders(<PublishManagePageClient />);
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(await screen.findByText('Asset One')).toBeInTheDocument();
     expect(screen.getByText('actions:d1')).toBeInTheDocument();
     expect(screen.getByText('1,200')).toBeInTheDocument();
     expect(fetchApi).toHaveBeenCalledWith('/assets', {
       query: { ownerId: 'me-1', includeUnpublished: 'true', limit: 100, sort: 'recentlyUpdated' },
     });
+    expect(
+      client.getQueryData(
+        queryKeys.publishManageList({ scope: 'manage', ownerId: 'me-1', locale: 'en' }),
+      ),
+    ).toEqual(data);
+    // The landing and manage lists are separate cache entries.
+    expect(
+      client.getQueryData(
+        queryKeys.publishManageList({ scope: 'landing', ownerId: 'me-1', locale: 'en' }),
+      ),
+    ).toBeUndefined();
   });
 
   it('renders zero totals when the list fails, and logs it', async () => {
@@ -141,11 +158,15 @@ describe.each([
 ] as const)('%s', (_name, Page, testId) => {
   it('shows a skeleton, then the body for the asset owner (drafts included)', async () => {
     fetchApi.mockResolvedValue({ ...asset(), owner: { id: 'me-1' } });
-    renderWithProviders(<Page id="a1" />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    const { client } = renderWithProviders(<Page id="a1" />);
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(await screen.findByTestId(testId)).toHaveTextContent('Asset One');
     expect(fetchApi).toHaveBeenCalledWith('/assets/a1', {
       query: { locale: 'en', includeUnpublished: 'true' },
+    });
+    expect(client.getQueryData(queryKeys.asset('a1', 'en'))).toEqual({
+      ...asset(),
+      owner: { id: 'me-1' },
     });
   });
 
@@ -190,10 +211,11 @@ describe.each([
 describe('AnalyticsPageClient', () => {
   it('shows a skeleton, then the charts', async () => {
     fetchApi.mockResolvedValue({ label: 'series' });
-    renderWithProviders(<AnalyticsPageClient id="a1" />);
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    const { client } = renderWithProviders(<AnalyticsPageClient id="a1" />);
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument();
     expect(await screen.findByTestId('charts')).toHaveTextContent('series');
     expect(fetchApi).toHaveBeenCalledWith('/me/analytics/assets/a1');
+    expect(client.getQueryData(queryKeys.myAnalyticsAsset('a1'))).toEqual({ label: 'series' });
   });
 
   it('renders the empty card (non-fatal) when analytics fail to load, and logs it', async () => {
