@@ -1,23 +1,22 @@
-import 'server-only';
-import { cache } from 'react';
+// TEMPORARY — deleted in Task 5 when server pages become client pages
+//
+// Trivial stand-ins so the not-yet-converted server pages keep type-checking
+// after real auth was removed. They are NOT functional at runtime in the
+// static export; every caller is replaced by `useMe()` / client queries.
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { auth, isMockAuth } from './index';
-import { apiFetch } from '@/lib/api/fetcher';
 import type { MeResponse } from '@/lib/api/types';
-import { logger } from '@/lib/logger';
 
-const MOCK_USER: MeResponse = {
-  id: 'mock-admin',
-  email: 'admin@labmgm.org',
-  displayName: 'Mock Admin',
+const PREVIEW_ME: MeResponse = {
+  id: 'preview-admin',
+  email: 'demo@asset.creations.ren',
+  displayName: 'Preview Admin',
   locale: 'en',
   isAdmin: true,
   role: 'admin',
-  avatar: { initials: 'MA', bgColor: 'brand-blue', fgColor: 'ink-white' },
-  hasPublishedAssets: false,
+  avatar: { initials: 'PA', bgColor: 'brand-blue', fgColor: 'ink-white' },
+  hasPublishedAssets: true,
   unreadNotifications: 0,
-  createdAt: new Date('2025-01-01T00:00:00Z').toISOString(),
+  createdAt: '2026-01-01T00:00:00.000Z',
 };
 
 export interface ResolvedSession {
@@ -27,52 +26,16 @@ export interface ResolvedSession {
   mock?: true;
 }
 
-// Cached per request so layout + page server components share a single
-// underlying call to `auth()` instead of running it twice on every navigation.
-export const getSession = cache(async (): Promise<ResolvedSession | null> => {
-  if (isMockAuth) {
-    return { mock: true, accessToken: 'mock', expiresAt: Number.MAX_SAFE_INTEGER };
-  }
-  const session = await auth();
-  if (!session) return null;
-  return {
-    accessToken: session.accessToken,
-    expiresAt: session.expiresAt,
-    error: session.error,
-  };
-});
-
-export async function requireSession(callbackUrl?: string): Promise<ResolvedSession> {
-  const session = await getSession();
-  if (!session || session.error === 'RefreshAccessTokenError') {
-    const target = callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : '';
-    redirect(`/auth/signin${target}`);
-  }
-  return session;
+export async function requireSession(_callbackUrl?: string): Promise<ResolvedSession> {
+  return { mock: true, accessToken: 'preview', expiresAt: Number.MAX_SAFE_INTEGER };
 }
 
-// Cached per request, keyed by access token. Layout + page can both call
-// fetchMe without producing a duplicate /auth/me round-trip.
-export const fetchMe = cache(async (session: ResolvedSession): Promise<MeResponse> => {
-  if (session.mock) return MOCK_USER;
-  const locale = (await cookies()).get('NEXT_LOCALE')?.value as 'en' | 'id' | undefined;
-  try {
-    return await apiFetch<MeResponse>('/auth/me', {
-      accessToken: session.accessToken,
-      locale,
-      cache: 'no-store',
-    });
-  } catch (err) {
-    logger.warn('fetchMe failed', { err: err instanceof Error ? err.message : String(err) });
-    throw err;
-  }
-});
+export async function fetchMe(_session: ResolvedSession): Promise<MeResponse> {
+  return PREVIEW_ME;
+}
 
 export async function requireAdmin(): Promise<MeResponse> {
-  const session = await requireSession();
-  const me = await fetchMe(session);
-  if (!me.isAdmin) {
-    redirect('/403');
-  }
+  const me = await fetchMe(await requireSession());
+  if (!me.isAdmin) redirect('/403');
   return me;
 }

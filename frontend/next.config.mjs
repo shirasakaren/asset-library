@@ -1,7 +1,5 @@
-import createNextIntlPlugin from 'next-intl/plugin';
 import bundleAnalyzer from '@next/bundle-analyzer';
 
-const withNextIntl = createNextIntlPlugin('./src/lib/i18n/request.ts');
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -33,4 +31,4 @@ const nextConfig = {
   images: { unoptimized: true },
 };
 
-export default withBundleAnalyzer(withNextIntl(nextConfig));
+export default withBundleAnalyzer(nextConfig);

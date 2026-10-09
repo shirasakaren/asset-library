@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { captureException } from '@/lib/sentry';
+import { logger } from '@/lib/logger';
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -10,7 +10,7 @@ interface GlobalErrorProps {
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
-    void captureException(error, { digest: error.digest });
+    logger.error('error.global', { message: error.message, digest: error.digest });
   }, [error]);
 
   return (

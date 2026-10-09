@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Container } from '@/components/layout/container';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
-import { captureException } from '@/lib/sentry';
+import { logger } from '@/lib/logger';
 
 export default function SearchErrorPage({
   error,
@@ -17,7 +17,11 @@ export default function SearchErrorPage({
 }) {
   const t = useTranslations('errors');
   useEffect(() => {
-    void captureException(error, { digest: error.digest, scope: 'search' });
+    logger.error('error.boundary', {
+      message: error.message,
+      digest: error.digest,
+      scope: 'search',
+    });
   }, [error]);
   return (
     <Container size="lg">

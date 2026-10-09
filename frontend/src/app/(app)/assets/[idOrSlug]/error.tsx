@@ -7,7 +7,7 @@ import { Container } from '@/components/layout/container';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
 import { GeometricPattern } from '@/components/brand/geometric-pattern';
-import { captureException } from '@/lib/sentry';
+import { logger } from '@/lib/logger';
 
 export default function AssetErrorPage({
   error,
@@ -18,15 +18,19 @@ export default function AssetErrorPage({
 }) {
   const t = useTranslations('errors');
   useEffect(() => {
-    void captureException(error, { digest: error.digest, scope: 'asset.detail' });
+    logger.error('error.boundary', {
+      message: error.message,
+      digest: error.digest,
+      scope: 'asset.detail',
+    });
   }, [error]);
 
   return (
     <Container size="md">
-      <div className="grid md:grid-cols-[1fr_auto] gap-12 items-center py-20">
+      <div className="grid items-center gap-12 py-20 md:grid-cols-[1fr_auto]">
         <div>
           <h1 className="display-lg text-ink">{t('assetLoadTitle')}</h1>
-          <p className="mt-3 text-body text-ink-2 max-w-prose">{t('assetLoadBody')}</p>
+          <p className="mt-3 max-w-prose text-body text-ink-2">{t('assetLoadBody')}</p>
           {error.digest ? (
             <Alert variant="warning" className="mt-5" title={t('requestIdLabel')}>
               <code className="font-mono text-[12.5px]">{error.digest}</code>
