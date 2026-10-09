@@ -145,4 +145,73 @@ describe('write handlers over the real seed', () => {
     });
     expect(list.items[0]!.id).toBe(id);
   });
+
+  it('a seeded draft is fixed through the compatibility endpoint and then publishes', async () => {
+    const app = await createSeededTestApp();
+    const id = 'a-kaykit-character-animations';
+    const detail = await app.call<AssetDetail>('GET', `/assets/${id}`);
+    const vid = detail.versions[0]!.id;
+    await app.call('POST', `/assets/${id}/versions/${vid}/compatibility`, {
+      body: { rows: [{ engineVersion: 'FBX 2020', targets: ['WINDOWS', 'MAC'] }] },
+    });
+    expect(await app.call('POST', `/assets/${id}/publish`, { body: {} })).toEqual({ warnings: [] });
+    const after = await app.call<AssetDetail>('GET', `/assets/${id}`);
+    expect(after.status).toBe('PUBLISHED');
+    expect(after.versions[0]!.compatibility).toEqual([
+      { engineVersion: 'FBX 2020', renderPipelines: [], targets: ['WINDOWS', 'MAC'] },
+    ]);
+    const me = await app.call<MeResponse>('GET', '/auth/me');
+    expect(me.hasPublishedAssets).toBe(true);
+  });
+
+  it('adds, fills and publishes a new version of a seeded published asset', async () => {
+    const app = await createSeededTestApp({ timers: false });
+    const id = 'a-ucupaint';
+    const before = await app.call<AssetDetail>('GET', `/assets/${id}`);
+    const latestBefore = before.versions.find((v) => v.isLatest)!;
+    const { id: vid } = await app.call<{ id: string }>('POST', `/assets/${id}/versions`, {
+      body: {
+        semver: '99.0.0',
+        releaseNotes: {
+          en: {
+            type: 'doc',
+            content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Big' }] }],
+          },
+        },
+      },
+    });
+    const listed = await app.call<{ id: string; isLatest: boolean }[]>(
+      'GET',
+      `/assets/${id}/versions`,
+    );
+    expect(listed[0]).toMatchObject({ id: vid, isLatest: false });
+    await app.call('PATCH', `/assets/${id}/versions/${vid}`, {
+      body: {
+        releaseNotes: {
+          en: {
+            type: 'doc',
+            content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Bigger' }] }],
+          },
+        },
+      },
+    });
+    await expect(app.call('POST', `/assets/${id}/versions/${vid}/publish`)).rejects.toSatisfy(
+      status(400, 'asset.publish_blocked'),
+    );
+    const { attachFileToVersion } = await import('@/preview/handlers/versions');
+    await attachFileToVersion(app.ctx, {
+      assetId: id,
+      versionId: vid,
+      file: { id: 'f-new', relativePath: 'Ucupaint-99.zip', bytes: 123 },
+    });
+    await app.call('POST', `/assets/${id}/versions/${vid}/publish`);
+    const after = await app.call<AssetDetail>('GET', `/assets/${id}`);
+    expect(after.versions.filter((v) => v.isLatest).map((v) => v.id)).toEqual([vid]);
+    expect(after.versions.find((v) => v.id === latestBefore.id)!.isLatest).toBe(false);
+    const stored = (await app.db.get<AssetRecord>('assets', id))!;
+    expect(stored.versions.find((v) => v.id === vid)!.files[0]).toMatchObject({
+      kind: 'ARCHIVE',
+      bytes: '123',
+    });
+  });
 });
