@@ -1,5 +1,96 @@
 # MGM Asset Library
 
+## Static preview
+
+**Live demo: [asset.creations.ren](https://asset.creations.ren)**
+
+`frontend/` is now a static, login-free preview of the asset library. You are
+signed in as a fake admin persona (Aria Wijaya) and every page works: browse
+and search, save to your library, publish and edit assets, comment, request,
+report, and use the admin panel. There is no account, no server and no
+database; the whole backend runs inside the browser. The site is `noindex`.
+
+### How your changes are stored
+
+- The catalog ships as JSON seed data in the build. The seed's dates are
+  shifted forward to your first visit, so "3 days ago" stays "3 days ago".
+- Everything you change (new assets, edits, comments, saves, deletions) is an
+  **overlay** in your browser's IndexedDB. What you see is seed + overlay.
+  Uploaded files (thumbnails, gallery media, package files up to 5 MB) are kept
+  in a second IndexedDB (`mgm-preview-blobs`).
+- Nothing leaves your browser, so other visitors never see your changes and a
+  different browser or a private window starts from the original data.
+- **Reset demo data** (profile menu, the banner, or the footer) clears the
+  overlay and the uploaded files and reloads the demo.
+- If IndexedDB is unavailable or full, the demo keeps working in memory, shows a
+  warning banner and a one-time toast, and your changes are lost on reload.
+
+### Architecture
+
+- `frontend/` is a Next.js 15 static export (`output: 'export'`, built for
+  GitHub Pages). All pages are client-rendered with TanStack Query.
+- `apiFetch` is the single network boundary. In the preview it calls
+  `previewFetch` (`frontend/src/preview/index.ts`) instead of `fetch`, so
+  components, query keys and API types are unchanged.
+- `src/preview/router/` matches method + path to a handler and maps errors to
+  the same problem-details `ApiError`s the real API produced.
+- `src/preview/handlers/` holds one module per domain (assets, library, search,
+  discover, comments, requests, reports, downloads, uploads, analytics, admin/*).
+  They are typed against the API types, so contract drift fails typecheck.
+- `src/preview/store/` merges the seed with the IndexedDB overlay (puts and
+  tombstones) and applies the date rebase when the seed loads.
+- `src/preview/seed-data/` is the generated seed (committed, loaded lazily per
+  collection); `frontend/scripts/seed/` generates it deterministically from
+  `assets.yaml`, and `public/thumbs/` holds the thumbnails.
+- `src/preview/events/` is a local event bus that replaces the WebSocket
+  (notifications, simulated replies); `src/preview/session/` provides the
+  persona; `src/preview/uploads/` simulates uploads and downloads with Blobs.
+- User-created ids are unknown at build time: the exported `404.html` shell
+  matches the URL against the dynamic route patterns and renders the right page.
+
+### Commands
+
+Run from the repository root (or `cd frontend` and drop the filter):
+
+```bash
+pnpm install
+pnpm --filter mgm-asset-library-frontend dev        # http://localhost:3000
+pnpm --filter mgm-asset-library-frontend build      # static export to frontend/out
+pnpm --filter mgm-asset-library-frontend test       # Vitest unit tests
+pnpm --filter mgm-asset-library-frontend test:e2e   # Playwright
+pnpm --filter mgm-asset-library-frontend seed:build   # regenerate src/preview/seed-data from scripts/seed/assets.yaml
+pnpm --filter mgm-asset-library-frontend seed:thumbs  # download and resize listing thumbnails into public/thumbs
+```
+
+To try the export locally: `cd frontend && NEXT_PUBLIC_APP_URL=http://localhost:4173 pnpm build && node scripts/serve-export.mjs out 4173`.
+Build-time options (`NEXT_PUBLIC_BASE_PATH`, `NEXT_PUBLIC_PREVIEW_LATENCY`, ...)
+are listed in `frontend/.env.example`. Bumping `SEED_VERSION`
+(`src/preview/store/version.ts`) discards visitors' overlays on their next visit.
+
+### Data credits and takedown
+
+The asset listings are real store listings, shown for demonstration only. The
+thumbnails and listings belong to their respective creators and stores; every
+asset page links back to the original ("View on ..."). To request removal of a
+listing or thumbnail, contact [it@labmgm.org](mailto:it@labmgm.org).
+
+### Custom domain (DNS)
+
+The site is served from GitHub Pages at the domain root. Create a `CNAME` record
+`asset` pointing to `shirasakaren.github.io` on `creations.ren`
+(`asset.creations.ren` -> `shirasakaren.github.io`), then enable "Enforce HTTPS"
+in the repository's Pages settings once it propagates.
+
+---
+
+## The original full stack
+
+> The rest of this README describes the original full stack (`backend/`, Keycloak
+> sign-in, Docker Compose, CI/CD for the API). `frontend/` **no longer talks to
+> it**: the auth, API-proxy and WebSocket parts described below were replaced by
+> the in-browser preview above. The backend remains in the repository as a
+> reference.
+
 A centralized, internal digital asset library for the MGM research lab and its
 partners — think "Unity Asset Store, but private". Teams share `.unitypackage`
 files, `.uplugin` modules, full Unreal projects, 2D/3D models, VFX, audio,
@@ -10,10 +101,10 @@ animations, tools, and scripts with a web UI at
 This repository is a **monorepo** containing the two server-side pieces of the
 platform:
 
-| Workspace member                | Purpose                                                                    |
-| ------------------------------- | -------------------------------------------------------------------------- |
-| [`frontend/`](./frontend)       | Next.js 15 web client served at `asset.labmgm.org`.                        |
-| [`backend/`](./backend)         | NestJS REST API, BullMQ workers, database, search, and file pipeline.      |
+| Workspace member          | Purpose                                                               |
+| ------------------------- | --------------------------------------------------------------------- |
+| [`frontend/`](./frontend) | Next.js 15 web client served at `asset.labmgm.org`.                   |
+| [`backend/`](./backend)   | NestJS REST API, BullMQ workers, database, search, and file pipeline. |
 
 Two companion repositories hold the editor integrations and live outside this
 monorepo: `mgm-asset-library-unity` (Unity editor plugin) and
@@ -120,12 +211,12 @@ cron maintenance tasks. Two backend images (`backend/Dockerfile` and
 
 ### 1.1 Development workstation
 
-| Tool  | Version                                             |
-| ----- | --------------------------------------------------- |
-| Node  | ≥ 20                                                |
-| pnpm  | 9.x (corepack picks the pinned version from `packageManager`) |
-| Docker | ≥ 24 with Compose v2 (for the local stack)         |
-| Git   | ≥ 2.40                                              |
+| Tool   | Version                                                       |
+| ------ | ------------------------------------------------------------- |
+| Node   | ≥ 20                                                          |
+| pnpm   | 9.x (corepack picks the pinned version from `packageManager`) |
+| Docker | ≥ 24 with Compose v2 (for the local stack)                    |
+| Git    | ≥ 2.40                                                        |
 
 ### 1.2 External services
 
@@ -198,13 +289,13 @@ database is created by **one consolidated migration script** shipped at
 migration sprawl — a fresh environment is one `migrate deploy` away from a
 fully provisioned schema (28 tables, all enums, indexes, and foreign keys).
 
-| Command                    | Use                                                              |
-| -------------------------- | ---------------------------------------------------------------- |
-| `pnpm db:migrate`          | `prisma migrate deploy` — apply pending migrations (CI/prod boot) |
-| `pnpm db:migrate:dev`      | `prisma migrate dev` — create + apply a new migration locally    |
-| `pnpm db:generate`         | Regenerate the Prisma client                                     |
-| `pnpm db:seed`             | Idempotent bootstrap: admin user, categories, licenses           |
-| `pnpm db:studio`           | Prisma Studio                                                    |
+| Command               | Use                                                               |
+| --------------------- | ----------------------------------------------------------------- |
+| `pnpm db:migrate`     | `prisma migrate deploy` — apply pending migrations (CI/prod boot) |
+| `pnpm db:migrate:dev` | `prisma migrate dev` — create + apply a new migration locally     |
+| `pnpm db:generate`    | Regenerate the Prisma client                                      |
+| `pnpm db:seed`        | Idempotent bootstrap: admin user, categories, licenses            |
+| `pnpm db:studio`      | Prisma Studio                                                     |
 
 The production API image runs `prisma migrate deploy` automatically on
 container start, before the HTTP server binds — deploys are migration-safe
@@ -219,6 +310,9 @@ it repeatedly is safe.
 ---
 
 ## 4. Frontend guide
+
+> Preview note: sections 4.1 (Auth) and 4.4 (OpenAPI sync) describe the original
+> full stack. The preview frontend has no authentication and never calls the API.
 
 ### 4.1 Auth
 
@@ -309,19 +403,19 @@ aggregated error. Canonical, commented lists live in
 [`backend/.env.example`](./backend/.env.example) and
 [`frontend/.env.example`](./frontend/.env.example). Highlights:
 
-| Group              | App      | Notes                                                                  |
-| ------------------ | -------- | ---------------------------------------------------------------------- |
-| Runtime            | backend  | `NODE_ENV`, `PROCESS_ROLE`, `PORT`, `PUBLIC_BASE_URL`, `CORS_ORIGINS`.  |
-| Postgres / Mongo   | backend  | Compose defaults work out of the box.                                  |
-| Redis              | backend  | BullMQ + JWKS cache + `ws:fanout`.                                      |
-| Keycloak           | both     | Issuer URL, audience, JWKS URI; client credentials on the frontend.    |
-| S3                 | backend  | Local: MinIO at `http://minio:9000`; production: AWS S3 (endpoint blank). |
-| Meilisearch        | backend  | Master key optional in dev.                                            |
-| SMTP / n8n         | backend  | Blank host/URL makes each integration a no-op.                         |
-| Sentry             | both     | Blank DSN disables telemetry.                                          |
-| Public URLs        | frontend | `NEXT_PUBLIC_*` values are inlined at build time.                      |
-| Auth               | frontend | `NEXTAUTH_*`, `KEYCLOAK_*`, `SESSION_MAX_AGE_SECONDS`.                 |
-| Feature flags      | backend  | `FEATURE_SWAGGER_PUBLIC`, `FEATURE_QUEUE_DASHBOARD`.                   |
+| Group            | App      | Notes                                                                     |
+| ---------------- | -------- | ------------------------------------------------------------------------- |
+| Runtime          | backend  | `NODE_ENV`, `PROCESS_ROLE`, `PORT`, `PUBLIC_BASE_URL`, `CORS_ORIGINS`.    |
+| Postgres / Mongo | backend  | Compose defaults work out of the box.                                     |
+| Redis            | backend  | BullMQ + JWKS cache + `ws:fanout`.                                        |
+| Keycloak         | both     | Issuer URL, audience, JWKS URI; client credentials on the frontend.       |
+| S3               | backend  | Local: MinIO at `http://minio:9000`; production: AWS S3 (endpoint blank). |
+| Meilisearch      | backend  | Master key optional in dev.                                               |
+| SMTP / n8n       | backend  | Blank host/URL makes each integration a no-op.                            |
+| Sentry           | both     | Blank DSN disables telemetry.                                             |
+| Public URLs      | frontend | `NEXT_PUBLIC_*` values are inlined at build time.                         |
+| Auth             | frontend | `NEXTAUTH_*`, `KEYCLOAK_*`, `SESSION_MAX_AGE_SECONDS`.                    |
+| Feature flags    | backend  | `FEATURE_SWAGGER_PUBLIC`, `FEATURE_QUEUE_DASHBOARD`.                      |
 
 The authoritative backend shape lives in `backend/src/config/env.schema.ts`;
 the frontend's in `frontend/src/lib/env.ts`.
@@ -381,11 +475,11 @@ database migrations on boot; the worker image ships the full media toolchain.
 
 ## 9. CI/CD
 
-| Workflow                     | Trigger                         | Purpose                                    |
-| ---------------------------- | ------------------------------- | ------------------------------------------ |
-| `.github/workflows/ci.yml`   | PRs, pushes to `main`/`staging`/`production`, manual | Path-filtered jobs per app: lint → typecheck → test → build (+ OpenAPI freshness checks) |
-| `.github/workflows/staging.yml` | PRs to any branch, manual    | CI, then build & push `api`/`worker`/`web` images tagged `staging-*` |
-| `.github/workflows/production.yml` | Push to `main`, manual     | CI, then build & push the three images tagged `latest-*` |
+| Workflow                           | Trigger                                              | Purpose                                                                                  |
+| ---------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`         | PRs, pushes to `main`/`staging`/`production`, manual | Path-filtered jobs per app: lint → typecheck → test → build (+ OpenAPI freshness checks) |
+| `.github/workflows/staging.yml`    | PRs to any branch, manual                            | CI, then build & push `api`/`worker`/`web` images tagged `staging-*`                     |
+| `.github/workflows/production.yml` | Push to `main`, manual                               | CI, then build & push the three images tagged `latest-*`                                 |
 
 The `staging` and `production` branches should be protected: updates only
 via pull request, CI must pass, and at least one approving review is
