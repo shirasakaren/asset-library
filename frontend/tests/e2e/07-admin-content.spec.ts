@@ -33,8 +33,16 @@ test.describe('admin: dashboard and assets', () => {
   test('an asset can be archived and restored from the assets list', async ({ page }) => {
     const asset = pickOthersAsset(4);
     await gotoApp(page, '/admin/assets/');
+    const rows = page.getByRole('row');
+    await expect(rows.nth(1)).toBeVisible();
+    const unfiltered = await rows.count();
+
+    // The search is debounced and the table swaps to the filtered result set; interact only
+    // once that happened (the unfiltered list may already contain the row, but it gets replaced).
     await page.getByRole('searchbox', { name: /Search title/ }).fill(asset.slug);
-    const row = page.getByRole('row').filter({ hasText: asset.title });
+    await expect(page).toHaveURL(/[?&]q=/);
+    await expect.poll(() => rows.count()).toBeLessThan(unfiltered);
+    const row = rows.filter({ hasText: asset.title });
     await expect(row).toHaveCount(1);
     await expect(row).toContainText('PUBLISHED');
 
