@@ -18,6 +18,7 @@ import { useAuthedFetch } from '@/lib/api/client';
 import { useDebouncedValue } from '@/lib/hooks/use-debounced-value';
 import { toast } from '@/components/ui/toaster';
 import { ApiError } from '@/lib/api/errors';
+import { putWithProgress } from '@/lib/upload/put-with-progress';
 import type { AdminAssetRow, AdminFeaturedSlot } from '@/lib/api/admin-types';
 import type { LocaleCode } from '@/lib/api/types';
 
@@ -96,15 +97,18 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
         method: 'POST',
         body: { contentType: file.type || 'image/png', bytes: file.size },
       });
-      await fetch(initiate.putUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type || 'image/png' },
+      // `putWithProgress` also understands the static preview's `preview://` upload URLs.
+      await putWithProgress({
+        url: initiate.putUrl,
         body: file,
+        contentType: file.type || 'image/png',
       });
       setCustomBannerKey(initiate.key);
       setCustomBannerUrl(URL.createObjectURL(file));
     } catch (err) {
-      toast.error('Banner upload failed', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Banner upload failed', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setUploading(false);
     }
@@ -163,10 +167,10 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
 
         <Field label="Asset" required>
           {picked ? (
-            <div className="flex items-center justify-between p-3 rounded-[12px] border border-line bg-surface-muted/50">
+            <div className="bg-surface-muted/50 flex items-center justify-between rounded-[12px] border border-line p-3">
               <div className="min-w-0">
-                <p className="text-[14px] font-semibold text-ink truncate">{picked.title}</p>
-                <p className="text-caption text-ink-3 font-mono truncate">{picked.slug}</p>
+                <p className="truncate text-[14px] font-semibold text-ink">{picked.title}</p>
+                <p className="truncate font-mono text-caption text-ink-3">{picked.slug}</p>
               </div>
               {!editing ? (
                 <Button variant="ghost" size="sm" onClick={() => setPicked(null)}>
@@ -188,17 +192,23 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
                       <button
                         type="button"
                         onClick={() => setPicked(a)}
-                        className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-muted/60 transition-colors"
+                        className="hover:bg-surface-muted/60 flex w-full items-center gap-3 px-3 py-2 text-left transition-colors"
                       >
                         {a.thumbnailUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={a.thumbnailUrl} alt="" className="h-9 w-14 object-cover rounded-[6px]" />
+                          <img
+                            src={a.thumbnailUrl}
+                            alt=""
+                            className="h-9 w-14 rounded-[6px] object-cover"
+                          />
                         ) : (
                           <span className="h-9 w-14 rounded-[6px] bg-surface-muted" />
                         )}
                         <span>
-                          <span className="block text-[14px] font-medium text-ink truncate">{a.title}</span>
-                          <span className="block text-caption text-ink-3 font-mono">{a.slug}</span>
+                          <span className="block truncate text-[14px] font-medium text-ink">
+                            {a.title}
+                          </span>
+                          <span className="block font-mono text-caption text-ink-3">{a.slug}</span>
                         </span>
                       </button>
                     </li>
@@ -211,7 +221,7 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
 
         <Field label="Banner">
           <div className="flex flex-col gap-2">
-            <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+            <label className="inline-flex cursor-pointer items-center gap-2 text-[13.5px] text-ink">
               <input
                 type="radio"
                 checked={bannerMode === 'thumb'}
@@ -220,7 +230,7 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
               />
               Use asset thumbnail
             </label>
-            <label className="inline-flex items-center gap-2 text-[13.5px] text-ink cursor-pointer">
+            <label className="inline-flex cursor-pointer items-center gap-2 text-[13.5px] text-ink">
               <input
                 type="radio"
                 checked={bannerMode === 'custom'}
@@ -230,17 +240,17 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
               Upload custom banner
             </label>
             {bannerMode === 'custom' ? (
-              <div className="mt-1 rounded-[14px] border border-dashed border-line bg-surface-muted/40 p-4">
+              <div className="bg-surface-muted/40 mt-1 rounded-[14px] border border-dashed border-line p-4">
                 <div className="flex items-center gap-3">
                   {customBannerUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={customBannerUrl}
                       alt=""
-                      className="h-20 w-36 object-cover rounded-[8px] border border-line"
+                      className="h-20 w-36 rounded-[8px] border border-line object-cover"
                     />
                   ) : (
-                    <div className="h-20 w-36 rounded-[8px] bg-surface flex items-center justify-center text-ink-3">
+                    <div className="flex h-20 w-36 items-center justify-center rounded-[8px] bg-surface text-ink-3">
                       <ImagePlus className="h-5 w-5" strokeWidth={2.25} />
                     </div>
                   )}
@@ -249,7 +259,9 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
                     onClick={() => fileRef.current?.click()}
                     loading={uploading}
                     leadingIcon={
-                      uploading ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} /> : undefined
+                      uploading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                      ) : undefined
                     }
                   >
                     {customBannerKey ? 'Replace banner' : 'Upload banner'}
@@ -281,12 +293,22 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
         </Field>
 
         {bannerMode === 'custom' ? (
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Field id="short-en" label="Short description (EN)">
-              <Textarea id="short-en" rows={2} value={shortEn} onChange={(e) => setShortEn(e.target.value)} />
+              <Textarea
+                id="short-en"
+                rows={2}
+                value={shortEn}
+                onChange={(e) => setShortEn(e.target.value)}
+              />
             </Field>
             <Field id="short-id" label="Short description (ID)">
-              <Textarea id="short-id" rows={2} value={shortId} onChange={(e) => setShortId(e.target.value)} />
+              <Textarea
+                id="short-id"
+                rows={2}
+                value={shortId}
+                onChange={(e) => setShortId(e.target.value)}
+              />
             </Field>
           </div>
         ) : null}
@@ -297,7 +319,7 @@ export function FeaturedEditModal({ slot, onOpenChange, onDone }: Props) {
           </Alert>
         ) : null}
 
-        <label className="inline-flex items-center gap-2 text-[13.5px] text-ink mt-2 cursor-pointer">
+        <label className="mt-2 inline-flex cursor-pointer items-center gap-2 text-[13.5px] text-ink">
           <input
             type="checkbox"
             checked={isActive}
