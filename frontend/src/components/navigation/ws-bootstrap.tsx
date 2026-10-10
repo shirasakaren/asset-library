@@ -14,7 +14,21 @@ import type { NotificationItem } from '@/lib/api/types';
 type Fetcher = ReturnType<typeof useAuthedFetch>;
 
 /** Query-key prefixes that depend on the catalog and must refresh when it changes. */
-const CATALOG_PREFIXES = ['assets', 'discover', 'library', 'search', 'asset'] as const;
+/**
+ * Query prefixes refetched on `assets.changed`: the catalog itself plus the reference lists (categories,
+ * licenses, tags) that the admin screens edit, whose long `staleTime` would otherwise keep showing
+ * the old names for the rest of the visit.
+ */
+const CATALOG_PREFIXES = [
+  'assets',
+  'discover',
+  'library',
+  'search',
+  'asset',
+  'categories',
+  'licenses',
+  'tags',
+] as const;
 
 const COMMENT_EVENTS: Record<string, string> = {
   COMMENT_REPLY: 'comment.reply',

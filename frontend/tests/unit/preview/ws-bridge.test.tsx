@@ -160,10 +160,19 @@ describe('WsBootstrap (event bus bridge)', () => {
     expect(keys()).toContainEqual(['asset', 'a1', 'versions']);
   });
 
-  it('assets.changed: invalidates assets, discover, library, search and asset prefixes', () => {
+  it('assets.changed: invalidates the catalog prefixes (assets, discover, library, search, asset) and the reference lists admins edit', () => {
     const { keys } = setup();
     bus.emit({ type: 'assets.changed' });
-    for (const p of ['assets', 'discover', 'library', 'search', 'asset']) {
+    for (const p of [
+      'assets',
+      'discover',
+      'library',
+      'search',
+      'asset',
+      'categories',
+      'licenses',
+      'tags',
+    ]) {
       expect(keys()).toContainEqual([p]);
     }
   });

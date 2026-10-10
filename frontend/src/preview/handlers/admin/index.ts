@@ -10,3 +10,5 @@ import './users';
 import './reports';
 import './requests';
 import './featured';
+import './categories';
+import './licenses';

@@ -18,6 +18,7 @@ import {
 } from '../upload-core';
 import { serialized } from '../write-queue';
 import { adminRoute, cmpStr } from './common';
+import { renumber } from './ordering';
 import {
   asBody,
   Problems,
@@ -373,17 +374,7 @@ adminRoute('POST', '/admin/featured/reorder', (req, ctx) => {
   const orderedIds = readOrderedIds(req.body);
   return serialized(async () => {
     const slots = (await ctx.db.list<FeaturedRecord>('featured')).sort(byPosition);
-    const known = new Set(slots.map((s) => s.id));
-    for (const id of orderedIds) if (!known.has(id)) throw slotNotFound(id);
-    const listed = new Set(orderedIds);
-    const finalOrder = [...orderedIds, ...slots.filter((s) => !listed.has(s.id)).map((s) => s.id)];
-    const now = ctx.now().toISOString();
-    for (const [index, id] of finalOrder.entries()) {
-      const row = slots.find((s) => s.id === id)!;
-      if (row.sortOrder !== index) {
-        await ctx.db.patch<FeaturedRecord>('featured', id, { sortOrder: index, updatedAt: now });
-      }
-    }
+    await renumber(ctx, 'featured', slots, orderedIds, slotNotFound);
     await recordAudit(ctx, {
       action: 'featured.reorder',
       subjectType: 'FeaturedSlot',
