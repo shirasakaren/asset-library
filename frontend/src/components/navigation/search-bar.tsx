@@ -148,13 +148,13 @@ export function SearchBar({ className }: SearchBarProps) {
       <a
         href="/search"
         aria-label={t('search')}
-        className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 transition-colors duration-120 hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 lg:hidden"
       >
         <Search className="h-5 w-5" strokeWidth={2.25} />
       </a>
 
       {/* Desktop: inline input */}
-      <form role="search" onSubmit={onSubmit} className="hidden lg:flex relative w-[300px]">
+      <form role="search" onSubmit={onSubmit} className="relative hidden w-[300px] lg:flex">
         <Input
           ref={inputRef}
           inputSize="sm"
@@ -169,6 +169,8 @@ export function SearchBar({ className }: SearchBarProps) {
           }}
           onFocus={() => value && setOpen(true)}
           onKeyDown={onKey}
+          role="combobox"
+          aria-autocomplete="list"
           aria-expanded={showPanel}
           aria-controls="search-typeahead"
           aria-activedescendant={rows[activeIndex]?.id}
@@ -180,21 +182,21 @@ export function SearchBar({ className }: SearchBarProps) {
               <Search className="h-4 w-4" strokeWidth={2.25} />
             )
           }
-          className="bg-surface-muted border-transparent focus-visible:bg-surface focus-visible:border-line-strong"
+          className="border-transparent bg-surface-muted focus-visible:border-line-strong focus-visible:bg-surface"
         />
 
         {showPanel ? (
           <div
             id="search-typeahead"
             role="listbox"
-            className="absolute top-full mt-2 left-0 right-0 z-50 rounded-[14px] border border-line bg-surface shadow-2 overflow-hidden"
+            className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-[14px] border border-line bg-surface shadow-2"
           >
             {rows.length === 0 && !isFetching ? (
               <div className="p-4 text-body-sm text-ink-3">{tNav('noMatches')}</div>
             ) : (
               <>
                 {(tagsQ.data?.length ?? 0) > 0 ? (
-                  <div className="px-3 pt-2.5 pb-1">
+                  <div className="px-3 pb-1 pt-2.5">
                     <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">
                       {tNav('tags')}
                     </p>
@@ -213,13 +215,13 @@ export function SearchBar({ className }: SearchBarProps) {
                       onMouseEnter={() => setActiveIndex(rowIndex)}
                       onClick={() => setOpen(false)}
                       className={cn(
-                        'flex items-center gap-2.5 px-3 h-9 text-[13.5px] text-ink hover:bg-surface-muted/60 transition-colors duration-120',
+                        'hover:bg-surface-muted/60 flex h-9 items-center gap-2.5 px-3 text-[13.5px] text-ink transition-colors duration-120',
                         active && 'bg-surface-muted/60',
                       )}
                     >
                       <TagIcon className="h-3.5 w-3.5 text-ink-3" strokeWidth={2.25} />
                       <span className="font-medium">{tag.displayName}</span>
-                      <span className="ml-auto text-caption text-ink-3 geist-tnum">
+                      <span className="geist-tnum ml-auto text-caption text-ink-3">
                         {tag.usageCount}
                       </span>
                     </NextLink>
@@ -227,7 +229,7 @@ export function SearchBar({ className }: SearchBarProps) {
                 })}
 
                 {(assetsQ.data?.hits?.length ?? 0) > 0 ? (
-                  <div className="px-3 pt-2.5 pb-1 border-t border-line">
+                  <div className="border-t border-line px-3 pb-1 pt-2.5">
                     <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3">
                       {tNav('assets')}
                     </p>
@@ -246,11 +248,11 @@ export function SearchBar({ className }: SearchBarProps) {
                       onMouseEnter={() => setActiveIndex(rowIndex)}
                       onClick={() => setOpen(false)}
                       className={cn(
-                        'flex items-center gap-3 px-3 py-2 hover:bg-surface-muted/60 transition-colors duration-120',
+                        'hover:bg-surface-muted/60 flex items-center gap-3 px-3 py-2 transition-colors duration-120',
                         active && 'bg-surface-muted/60',
                       )}
                     >
-                      <div className="relative h-10 w-[60px] shrink-0 rounded-[8px] overflow-hidden bg-surface-muted border border-line">
+                      <div className="relative h-10 w-[60px] shrink-0 overflow-hidden rounded-[8px] border border-line bg-surface-muted">
                         {hit.thumbnailUrl ? (
                           <Image
                             src={hit.thumbnailUrl}
@@ -263,8 +265,8 @@ export function SearchBar({ className }: SearchBarProps) {
                         ) : null}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[13.5px] font-medium text-ink truncate">{hit.title}</p>
-                        <p className="text-caption text-ink-3 truncate">{hit.categoryName}</p>
+                        <p className="truncate text-[13.5px] font-medium text-ink">{hit.title}</p>
+                        <p className="truncate text-caption text-ink-3">{hit.categoryName}</p>
                       </div>
                     </NextLink>
                   );
@@ -278,7 +280,7 @@ export function SearchBar({ className }: SearchBarProps) {
                   onMouseEnter={() => setActiveIndex(rows.length - 1)}
                   onClick={() => submitRaw(debouncedQuery)}
                   className={cn(
-                    'flex items-center justify-between gap-2 w-full px-3 h-10 text-[13px] font-medium text-brand-blue hover:bg-brand-blue-50/60 border-t border-line text-left transition-colors duration-120',
+                    'flex h-10 w-full items-center justify-between gap-2 border-t border-line px-3 text-left text-[13px] font-medium text-brand-blue transition-colors duration-120 hover:bg-brand-blue-50/60',
                     rows[activeIndex]?.id === 'see-all' && 'bg-brand-blue-50/60',
                   )}
                 >

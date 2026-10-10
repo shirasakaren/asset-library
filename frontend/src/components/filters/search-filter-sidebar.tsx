@@ -57,7 +57,13 @@ const TARGETS: TargetPlatform[] = [
   'VR',
 ];
 
-const SORTS: SortOrder[] = ['newest', 'mostDownloaded', 'recentlyUpdated', 'alphabetical', 'mostSaved'];
+const SORTS: SortOrder[] = [
+  'newest',
+  'mostDownloaded',
+  'recentlyUpdated',
+  'alphabetical',
+  'mostSaved',
+];
 
 export function SearchFilterSidebar() {
   const t = useTranslations('search.filters');
@@ -98,11 +104,19 @@ export function SearchFilterSidebar() {
       targets.length +
       tags.length
     );
-  }, [engine, categoryIds.length, fileKinds.length, licenseSlug, renderPipelines.length, targets.length, tags.length]);
+  }, [
+    engine,
+    categoryIds.length,
+    fileKinds.length,
+    licenseSlug,
+    renderPipelines.length,
+    targets.length,
+    tags.length,
+  ]);
 
   return (
-    <aside className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto pr-1">
-      <div className="flex items-center justify-between mb-2">
+    <aside className="pr-1 lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto">
+      <div className="mb-2 flex items-center justify-between">
         <h2 className="text-h4 font-semibold text-ink">{t('title')}</h2>
         {activeCount > 0 ? (
           <button
@@ -115,7 +129,7 @@ export function SearchFilterSidebar() {
         ) : null}
       </div>
       {activeCount > 0 ? (
-        <p className="text-caption text-ink-3 mb-2 geist-tnum">
+        <p className="geist-tnum mb-2 text-caption text-ink-3">
           {t('activeCount', { count: activeCount })}
         </p>
       ) : null}
@@ -135,7 +149,7 @@ export function SearchFilterSidebar() {
           {ENGINES.map((e) => (
             <label
               key={e.value || 'any'}
-              className="inline-flex items-center gap-2.5 text-[13.5px] text-ink cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2.5 text-[13.5px] text-ink"
             >
               <input
                 type="radio"
@@ -171,9 +185,10 @@ export function SearchFilterSidebar() {
 
       <FilterSection title={t('license')} activeCount={licenseSlug ? 1 : 0}>
         <select
+          aria-label={t('license')}
           value={licenseSlug}
           onChange={(e) => setParams({ licenseSlug: e.target.value || null })}
-          className="w-full h-10 rounded-[10px] border border-line bg-surface text-[13.5px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          className="h-10 w-full rounded-[10px] border border-line bg-surface px-3 text-[13.5px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
         >
           <option value="">Any license</option>
           {(licensesQuery.data ?? []).map((l) => (
@@ -216,9 +231,10 @@ export function SearchFilterSidebar() {
 
       <FilterSection title={t('sort')} defaultOpen>
         <select
+          aria-label={t('sort')}
           value={sort}
           onChange={(e) => setParams({ sort: e.target.value === 'newest' ? null : e.target.value })}
-          className="w-full h-10 rounded-[10px] border border-line bg-surface text-[13.5px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          className="h-10 w-full rounded-[10px] border border-line bg-surface px-3 text-[13.5px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
         >
           {SORTS.map((s) => (
             <option key={s} value={s}>
