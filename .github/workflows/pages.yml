@@ -1,0 +1,214 @@
+# =============================================================================
+# Deploy preview — builds the static, login-free preview (frontend/, Next.js
+# static export in frontend/out) and publishes it to GitHub Pages at
+# https://asset.creations.ren (custom domain, served at the domain root).
+#
+#   build  — install, lint, typecheck, unit tests, static export, export
+#            verification, Playwright e2e against the export, Pages artifact
+#   deploy — actions/deploy-pages (environment: github-pages)
+#   verify — requests the deployed site (never fails the workflow, see below)
+#
+# One-time setup (done outside this file): Pages source = "GitHub Actions",
+# custom domain asset.creations.ren, DNS `CNAME asset -> shirasakaren.github.io`
+# on creations.ren, then "Enforce HTTPS" once the certificate is issued.
+#
+# The same checks (minus the deploy) run on pull requests in ci.yml.
+# =============================================================================
+
+name: Deploy preview to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - ".nvmrc"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a running deploy is allowed to finish, newer runs queue.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  FRONTEND: mgm-asset-library-frontend
+  SITE_URL: https://asset.creations.ren
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  build:
+    name: Build and test the static export
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      title: ${{ steps.export.outputs.title }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter "$FRONTEND" lint
+
+      - name: Lint e2e
+        run: pnpm --filter "$FRONTEND" lint:e2e
+
+      - name: Typecheck
+        run: pnpm --filter "$FRONTEND" typecheck
+
+      - name: Unit tests
+        run: pnpm --filter "$FRONTEND" test
+
+      - name: Build static export
+        env:
+          NEXT_PUBLIC_APP_URL: ${{ env.SITE_URL }}
+        run: pnpm --filter "$FRONTEND" build
+
+      # CNAME keeps the custom domain across deploys; .nojekyll stops any
+      # Jekyll processing of the `_next` folder. Both are dotfile-ish files that
+      # upload-pages-artifact@v3 includes (v4 would drop `.nojekyll`; harmless
+      # for an Actions deployment, but keep v3 in mind when bumping).
+      - name: Add CNAME and .nojekyll, verify the export
+        id: export
+        run: |
+          set -euo pipefail
+          out=frontend/out
+          printf '%s\n' "${SITE_URL#https://}" > "$out/CNAME"
+          : > "$out/.nojekyll"
+
+          missing=0
+          for f in index.html 404.html CNAME thumbs/manifest.json; do
+            if [ ! -s "$out/$f" ]; then
+              echo "::error::missing or empty export file: $out/$f"
+              missing=1
+            fi
+          done
+          if [ ! -e "$out/.nojekyll" ]; then
+            echo "::error::missing export file: $out/.nojekyll"
+            missing=1
+          fi
+          if [ ! -d "$out/_next/static" ]; then
+            echo "::error::$out/_next/static is missing"
+            missing=1
+          fi
+          if [ "$(cat "$out/CNAME")" != "asset.creations.ren" ]; then
+            echo "::error::CNAME content is wrong: $(cat "$out/CNAME")"
+            missing=1
+          fi
+          [ "$missing" = 0 ] || exit 1
+
+          # The <title> of the home page, used by the post-deploy check.
+          title="$(grep -o '<title>[^<]*</title>' "$out/index.html" | head -n 1 | sed -e 's#<title>##' -e 's#</title>##')"
+          if [ -z "$title" ]; then
+            echo "::error::no <title> in $out/index.html"
+            exit 1
+          fi
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+          echo "Export OK: $(find "$out" -type f | wc -l) files, title: $title"
+
+      - name: Install Chromium
+        run: pnpm --filter "$FRONTEND" exec playwright install --with-deps chromium
+
+      # playwright.config.ts serves frontend/out itself (scripts/serve-export.mjs
+      # on port 4317), so the tests run against the exact files that get deployed.
+      - name: End-to-end tests
+        env:
+          CI: "true"
+        run: pnpm --filter "$FRONTEND" test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # Pages is enabled once by hand (source: GitHub Actions); no `enablement`.
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/out
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Post-deploy check of the live site. Only `page_url` is checked: with a custom
+  # domain, https://<owner>.github.io/<repo>/ answers with a redirect to the custom
+  # domain, so there is no second origin to fall back to. While the DNS record or
+  # the TLS certificate is not ready, `page_url` may not resolve from the runner,
+  # so this job is advisory (continue-on-error): it reports, it does not fail the
+  # workflow. The deploy itself is confirmed by the `deploy` job.
+  verify:
+    name: Verify the deployed site
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    env:
+      PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+      EXPECTED_TITLE: ${{ needs.build.outputs.title }}
+    steps:
+      - name: Request the site
+        run: |
+          set -u
+          base="${PAGE_URL%/}"
+          echo "Checking $base (expecting title: $EXPECTED_TITLE)"
+
+          ok=0
+          for attempt in $(seq 1 12); do
+            code="$(curl -sS -L --max-time 20 -o home.html -w '%{http_code}' "$base/" || echo 000)"
+            mcode="$(curl -sS -L --max-time 20 -o manifest.json -w '%{http_code}' "$base/thumbs/manifest.json" || echo 000)"
+            if [ "$code" = 200 ] && [ "$mcode" = 200 ] && grep -qF "<title>$EXPECTED_TITLE</title>" home.html; then
+              ok=1
+              break
+            fi
+            echo "attempt $attempt/12: / -> $code, /thumbs/manifest.json -> $mcode; retrying in 10 s"
+            sleep 10
+          done
+
+          if [ "$ok" = 1 ]; then
+            echo "Verified: $base/ serves the preview and thumbs/manifest.json is reachable."
+          else
+            echo "::warning::Could not verify $base from the runner. If the custom domain DNS (CNAME asset -> shirasakaren.github.io) or the HTTPS certificate is not ready yet, this is expected; the deployment itself succeeded in the previous job."
+            exit 1
+          fi
