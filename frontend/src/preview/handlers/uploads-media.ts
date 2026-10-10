@@ -1,4 +1,4 @@
-import type { AssetRecord } from '../records';
+import type { AssetRecord, KvRecord } from '../records';
 import { route, type PreviewContext } from '../router/router';
 import { forbidden, notFound } from '../router/errors';
 import { IMAGE_CAPS, type EditorMediaPurpose } from '@/lib/upload/image-caps';
@@ -34,6 +34,44 @@ import { serialized } from './write-queue';
 
 const MAX_MEDIA_BYTES = BLOB_STORE_MAX_BYTES;
 
+/** A thumbnail upload that was initiated but not completed is dropped after this long. */
+const PENDING_THUMB_TTL_MS = 60 * 60 * 1000;
+const PENDING_THUMB_PREFIX = 'thumb-pending:';
+
+/**
+ * Content types editor media (TipTap embeds, preview media) may have: image, video, audio and 3D
+ * (`model/*`; the wizard's .glb/.fbx/.obj picker often reports no type, which the client turns
+ * into `application/octet-stream`). Anything else is not editor media.
+ */
+const MEDIA_TYPE = /^(?:image|video|audio|model)\/.+|^application\/octet-stream$/;
+const isMediaType = (type: string) => MEDIA_TYPE.test(type);
+
+/** Drops the blob of a thumbnail upload and its pending record. */
+async function dropPendingThumb(ctx: PreviewContext, blobId: string): Promise<void> {
+  await getBlobStore().delete(blobId);
+  await ctx.db.remove('kv', `${PENDING_THUMB_PREFIX}${blobId}`);
+}
+
+/**
+ * Thumbnail bytes arrive in the blob store before `complete`; one that is never completed would
+ * stay there. Each initiate leaves a `kv` record (survives reloads) and the next initiate or
+ * complete drops the blobs and records older than an hour (`ctx.now()`). `keep` is the upload
+ * being completed right now.
+ */
+async function prunePendingThumbs(ctx: PreviewContext, keep?: string): Promise<void> {
+  const cutoff = ctx.now().getTime() - PENDING_THUMB_TTL_MS;
+  const store = getBlobStore();
+  for (const rec of await ctx.db.list<KvRecord>('kv')) {
+    if (!rec.id.startsWith(PENDING_THUMB_PREFIX)) continue;
+    const blobId = rec.id.slice(PENDING_THUMB_PREFIX.length);
+    if (blobId === keep) continue;
+    const createdAt = Date.parse(String((rec.value as { createdAt?: unknown }).createdAt));
+    if (createdAt >= cutoff) continue;
+    await store.delete(blobId);
+    await ctx.db.remove('kv', rec.id);
+  }
+}
+
 const tooBig = () => invalid('bytes', 'The demo keeps images and media up to 5 MB.', 'too_large');
 
 /** The blob id that is the last segment of `<prefix>/<id>` (no further slashes allowed). */
@@ -57,7 +95,12 @@ route('POST', '/files/thumbnails/initiate', async (req, ctx) => {
   }
   if (bytes > IMAGE_CAPS.thumbnail) throw imageTooLarge('thumbnail', bytes, IMAGE_CAPS.thumbnail);
   const { asset } = await loadWritable(ctx, assetId);
+  await prunePendingThumbs(ctx);
   const id = newUploadId(ctx);
+  await ctx.db.put<KvRecord>('kv', {
+    id: `${PENDING_THUMB_PREFIX}${id}`,
+    value: { createdAt: ctx.now().toISOString() },
+  });
   return {
     putUrl: previewPutUrl(id),
     key: `thumbs/${asset.id}/${id}`,
@@ -81,12 +124,14 @@ route('POST', '/files/thumbnails/complete', (req, ctx) =>
       throw forbidden("Thumbnail key is not in this asset's prefix.", { code: 'auth.forbidden' });
     }
     const id = idAfter(key, prefix);
+    await prunePendingThumbs(ctx, id);
     if (asset.thumbnail?.key === key && asset.thumbnail.url) return undefined;
 
     const store = getBlobStore();
     const entry = await store.get(id);
     if (!entry) throw uploadNotFound(id);
     if (entry.size > IMAGE_CAPS.thumbnail) {
+      await dropPendingThumb(ctx, id);
       throw imageTooLarge('thumbnail', entry.size, IMAGE_CAPS.thumbnail);
     }
     if (!entry.blob) throw invalid('key', 'The thumbnail was not kept (over 5 MB).', 'too_large');
@@ -96,7 +141,7 @@ route('POST', '/files/thumbnails/complete', (req, ctx) =>
       thumbnail: { key, url },
       updatedAt: isoSeconds(ctx),
     });
-    await store.delete(id);
+    await dropPendingThumb(ctx, id);
     ctx.emit({ type: 'assets.changed' });
     return undefined;
   }),
@@ -120,6 +165,9 @@ function parsePurpose(raw: unknown): EditorMediaPurpose | undefined {
 route('POST', '/files/editor-media/initiate', (req, ctx) => {
   if (!isObject(req.body)) throw invalid('body', 'The request body must be a JSON object.');
   const contentType = parseString(req.body.contentType, 'contentType', 100);
+  if (!isMediaType(contentType)) {
+    throw invalid('contentType', 'Only images, video, audio and 3D files can be uploaded here.');
+  }
   const bytes = parseBytes(req.body.bytes, MAX_MEDIA_BYTES);
   const purpose = parsePurpose(req.body.purpose);
   if (contentType.startsWith('image/')) {
@@ -154,6 +202,9 @@ route('POST', '/files/editor-media/refresh', async (req, ctx: PreviewContext) =>
   const id = key.slice(key.lastIndexOf('/') + 1);
   if (!id) throw notFound('Editor media not found.', { code: 'file.upload_not_found' });
   const entry = await getBlobStore().get(id);
+  if (entry && !isMediaType(entry.type)) {
+    throw invalid('contentType', 'Only images, video, audio and 3D files can be shown here.');
+  }
   const viewUrl = entry?.blob
     ? await blobToDataUrl(entry.blob)
     : placeholderImageDataUrl('Image not available');

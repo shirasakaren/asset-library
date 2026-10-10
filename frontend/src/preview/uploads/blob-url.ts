@@ -31,6 +31,9 @@ export function blobToDataUrl(blob: Blob): Promise<string> {
 
 const objectUrls = new Map<string, string>();
 
+/** The cached `blob:` URL of `key`, when one was already created (no blob needed). */
+export const cachedObjectUrl = (key: string): string | null => objectUrls.get(key) ?? null;
+
 /**
  * A `blob:` URL for `blob`, cached under `key` (the first blob given for a key wins). `null` when
  * the environment has no `URL.createObjectURL` (server rendering, jsdom without a stub).

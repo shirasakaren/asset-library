@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { IDBFactory } from 'fake-indexeddb';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BLOB_STORE_MAX_BYTES, createBlobStore, getBlobStore } from '@/preview/uploads/blob-store';
 import {
   blobToDataUrl,
@@ -132,6 +132,136 @@ describe('blob store (no IndexedDB)', () => {
     const store = createBlobStore({ factory: hanging, openTimeoutMs: 20 });
     await store.put('m1', new Blob(['mem']));
     expect(store.persistent).toBe(false);
+  });
+});
+
+describe('blob store: buffers, closed connections, schema', () => {
+  const DB = 'mgm-preview-blobs';
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory();
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  /** A factory that remembers every connection it opened. */
+  function trackingFactory() {
+    const real = globalThis.indexedDB;
+    const dbs: IDBDatabase[] = [];
+    const factory = {
+      open(name: string, version?: number) {
+        const req = real.open(name, version);
+        req.addEventListener('success', () => dbs.push(req.result));
+        return req;
+      },
+    } as unknown as IDBFactory;
+    return { factory, dbs, real };
+  }
+
+  it('list and deleteByPrefix never read the buffers of the blobs store', async () => {
+    const store = createBlobStore();
+    await store.put('keep', bytes(64));
+    await store.put('up_1/part/1', bytes(64));
+    await store.put('up_1/part/2', bytes(64));
+    const reads: string[] = [];
+    for (const method of ['getAll', 'get', 'openCursor'] as const) {
+      const original = IDBObjectStore.prototype[method] as (...a: unknown[]) => unknown;
+      vi.spyOn(IDBObjectStore.prototype, method).mockImplementation(function (
+        this: IDBObjectStore,
+        ...a: unknown[]
+      ) {
+        if (this.name === 'blobs') reads.push(method);
+        return original.apply(this, a);
+      } as never);
+    }
+    expect((await store.list()).map((m) => m.id).sort()).toEqual([
+      'keep',
+      'up_1/part/1',
+      'up_1/part/2',
+    ]);
+    await store.deleteByPrefix('up_1/');
+    expect((await store.list()).map((m) => m.id)).toEqual(['keep']);
+    expect(reads).toEqual([]);
+    expect(await store.get('up_1/part/1')).toBeUndefined();
+    expect((await store.get('keep'))?.size).toBe(64);
+  });
+
+  it('migrates a v1 database (blobs only) to the metadata store', async () => {
+    await new Promise<void>((resolve, reject) => {
+      const req = indexedDB.open(DB, 1);
+      req.onupgradeneeded = () => {
+        req.result.createObjectStore('blobs', { keyPath: 'id' }).put({
+          id: 'old',
+          size: 3,
+          type: 'text/plain',
+          stored: true,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          buffer: new Uint8Array([97, 98, 99]).buffer,
+        });
+      };
+      req.onsuccess = () => {
+        req.result.close();
+        resolve();
+      };
+      req.onerror = () => reject(req.error);
+    });
+    const store = createBlobStore();
+    expect(await store.list()).toEqual([
+      {
+        id: 'old',
+        size: 3,
+        type: 'text/plain',
+        stored: true,
+        createdAt: '2026-01-01T00:00:00.000Z',
+      },
+    ]);
+    expect(await readText((await store.get('old'))!.blob!)).toBe('abc');
+    expect(store.persistent).toBe(true);
+  });
+
+  it('closes on versionchange (another tab upgrading) and keeps working afterwards', async () => {
+    const { factory, real } = trackingFactory();
+    const store = createBlobStore({ factory });
+    await store.put('a', bytes(8));
+    // Another connection asks for a newer version: without a versionchange handler the request
+    // stays blocked forever.
+    await new Promise<void>((resolve, reject) => {
+      const req = real.open(DB, 3);
+      req.onblocked = () => reject(new Error('the store did not close on versionchange'));
+      req.onupgradeneeded = () => undefined;
+      req.onsuccess = () => {
+        req.result.close();
+        resolve();
+      };
+      req.onerror = () => reject(req.error);
+    });
+    // Later operations must not throw (the reopen is refused, so the store runs in memory).
+    await expect(store.put('b', bytes(4))).resolves.toMatchObject({ id: 'b' });
+    expect((await store.get('b'))?.size).toBe(4);
+    await expect(store.list()).resolves.toHaveLength(1);
+    await expect(store.deleteByPrefix('b')).resolves.toBeUndefined();
+    await expect(store.clear()).resolves.toBeUndefined();
+  });
+
+  it('reopens after the browser closed the connection (onclose)', async () => {
+    const { factory, dbs } = trackingFactory();
+    const store = createBlobStore({ factory });
+    await store.put('a', bytes(8));
+    expect(dbs).toHaveLength(1);
+    dbs[0]!.close();
+    (dbs[0]!.onclose as (() => void) | null)?.();
+    await expect(store.put('b', bytes(4))).resolves.toMatchObject({ id: 'b' });
+    expect(dbs).toHaveLength(2);
+    expect(store.persistent).toBe(true);
+    expect((await store.list()).map((m) => m.id).sort()).toEqual(['a', 'b']);
+  });
+
+  it('retries once on a connection that was closed without any event', async () => {
+    const { factory, dbs } = trackingFactory();
+    const store = createBlobStore({ factory });
+    await store.put('a', bytes(8));
+    dbs[0]!.close(); // db.transaction() now throws InvalidStateError
+    expect((await store.get('a'))?.size).toBe(8);
+    expect(dbs).toHaveLength(2);
+    expect(store.persistent).toBe(true);
   });
 });
 

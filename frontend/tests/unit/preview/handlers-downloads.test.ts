@@ -185,6 +185,14 @@ describe('GET /downloads/options', () => {
     expect(placeholder).toContain('big.unitypackage');
     expect(placeholder).toMatch(/5 MB/);
     expect(placeholder).toContain(String(BLOB_STORE_MAX_BYTES + 1));
+
+    // A repeated request is answered from the object-URL cache without reading the blob again.
+    const read = vi.spyOn(getBlobStore(), 'get');
+    const again = await options(app, assetId, versionId);
+    expect(again.files.find((f) => f.id === smallId)!.getUrl).toBe(small.getUrl);
+    expect(again.files.find((f) => f.id === bigId)!.getUrl).toBe(big.getUrl);
+    expect(read).not.toHaveBeenCalled();
+    read.mockRestore();
   });
 
   it('validates the query and the target', async () => {

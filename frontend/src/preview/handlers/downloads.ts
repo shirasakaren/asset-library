@@ -3,7 +3,7 @@ import type { AssetFileRecord, AssetRecord, AssetVersionRecord, LibraryRecord } 
 import { route, type PreviewContext } from '../router/router';
 import { badRequest, forbidden, notFound } from '../router/errors';
 import { getBlobStore } from '../uploads/blob-store';
-import { objectUrlFor } from '../uploads/blob-url';
+import { cachedObjectUrl, objectUrlFor } from '../uploads/blob-url';
 import { recordDownloads } from './analytics';
 import { findAsset, getMe, normalizeReleaseNotes } from './helpers';
 import { expiresAtIso, uploadMetaOf } from './upload-core';
@@ -50,13 +50,15 @@ async function contentOf(file: AssetFileRecord): Promise<Blob | null> {
   return placeholderFor(file, upload.stored ? 'gone' : 'too-big');
 }
 
+const objectUrlOf = (key: string, blob: Blob | null) => (blob ? objectUrlFor(key, blob) : null);
+
 async function toDownloadFile(
   ctx: PreviewContext,
   file: AssetFileRecord,
 ): Promise<DownloadOptionsFile> {
   const key = `file:${file.id}`;
-  const blob = await contentOf(file);
-  const getUrl = blob ? objectUrlFor(key, blob) : null;
+  // The cached object URL answers first: no need to read (or build) the blob again.
+  const getUrl = cachedObjectUrl(key) ?? objectUrlOf(key, await contentOf(file));
   return {
     id: file.id,
     relativePath: file.relativePath,
