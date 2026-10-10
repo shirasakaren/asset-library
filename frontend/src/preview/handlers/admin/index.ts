@@ -3,3 +3,4 @@ import './dashboard';
 import './storage';
 import './analytics';
 import './queues';
+import './audit';
