@@ -12,7 +12,7 @@ const sortSelect = (page: Page) =>
 
 /** Types into the navbar search and follows the typeahead's "See all results" row. */
 async function searchFromNavbar(page: Page, text: string) {
-  const box = page.getByRole('banner').getByRole('searchbox', { name: 'Search' });
+  const box = page.getByRole('banner').getByRole('combobox', { name: 'Search' });
   await box.fill(text);
   await page.getByRole('option', { name: `See all results for "${text}"` }).click();
   await expect(page).toHaveURL(new RegExp('/search/?[?]q='));
@@ -118,7 +118,7 @@ test.describe('search and filters', () => {
     expect(asset, 'the seed has at least one asset with an originalTitle').toBeTruthy();
 
     await gotoApp(page, '/');
-    const box = page.getByRole('banner').getByRole('searchbox', { name: 'Search' });
+    const box = page.getByRole('banner').getByRole('combobox', { name: 'Search' });
     await box.fill(asset.originalTitle!);
     // The typeahead already offers the asset under its English title...
     await expect(page.getByRole('option').filter({ hasText: asset.title })).toBeVisible();
