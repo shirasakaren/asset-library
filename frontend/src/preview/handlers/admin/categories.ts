@@ -2,10 +2,12 @@ import type { AdminCategory } from '@/lib/api/admin-types';
 import type { AssetRecord, CategoryRecord } from '../../records';
 import { conflict, notFound } from '../../router/errors';
 import type { PreviewContext } from '../../router/router';
+import { IMAGE_CAPS } from '@/lib/upload/image-caps';
 import { BLOB_STORE_MAX_BYTES } from '../../uploads/blob-store';
 import { recordAudit } from '../audit-core';
 import {
   expiresAtIso,
+  imageTooLarge,
   invalid,
   isObject,
   newUploadId,
@@ -29,8 +31,6 @@ import {
 } from './input';
 import { renumber } from './ordering';
 
-/** The backend's limit for a category icon. */
-const ICON_MAX_BYTES = 256 * 1024;
 const NAME_MAX = 140;
 const ICON_KEY_MAX = 512;
 
@@ -267,8 +267,8 @@ adminRoute('POST', '/admin/categories/icon-uploads/initiate', (req, ctx) => {
   const contentType = parseString(req.body.contentType, 'contentType', 100);
   const bytes = parseBytes(req.body.bytes, BLOB_STORE_MAX_BYTES);
   if (!contentType.startsWith('image/')) throw invalid('contentType', 'An icon must be an image.');
-  if (bytes > ICON_MAX_BYTES) {
-    throw invalid('bytes', `Icon must be at most ${ICON_MAX_BYTES} bytes.`, 'too_large');
+  if (bytes > IMAGE_CAPS.categoryIcon) {
+    throw imageTooLarge('icon', bytes, IMAGE_CAPS.categoryIcon);
   }
   const id = newUploadId(ctx);
   return {

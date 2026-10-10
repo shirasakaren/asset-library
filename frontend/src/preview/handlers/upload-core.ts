@@ -1,6 +1,8 @@
 import type { AssetFileRecord, AssetRecord, AssetVersionRecord, KvRecord } from '../records';
 import type { PreviewContext } from '../router/router';
 import { badRequest, notFound } from '../router/errors';
+import { formatBytes } from '@/lib/format';
+import { formatCap } from '@/lib/upload/image-caps';
 import { PREVIEW_URL_SCHEME } from '@/lib/upload/put-with-progress';
 import { getBlobStore } from '../uploads/blob-store';
 import { revokeObjectUrl } from '../uploads/blob-url';
@@ -49,6 +51,21 @@ export const isObject = (v: unknown): v is Record<string, unknown> =>
 /** 400 with the ProblemDetail field list the UI reads. */
 export const invalid = (path: string, message: string, code = 'invalid') =>
   badRequest(message, { code: 'file.upload_init_failed', fields: [{ path, code, message }] });
+
+/**
+ * 400 for an image over its cap (see `IMAGE_CAPS`): images are kept inside records as data URLs.
+ * The message is what the upload components show in their toast.
+ */
+export const imageTooLarge = (
+  label: string /* singular noun, e.g. 'thumbnail' */,
+  bytes: number,
+  cap: number,
+) =>
+  invalid(
+    'bytes',
+    `This ${label} is ${formatBytes(bytes)}; the demo keeps ${label}s up to ${formatCap(cap)}. Choose a smaller image.`,
+    'too_large',
+  );
 
 export const uploadNotFound = (id: string) =>
   notFound(`Upload ${id} not found.`, { code: 'file.upload_not_found' });

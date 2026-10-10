@@ -41,6 +41,7 @@ import { useAuthedFetch } from '@/lib/api/client';
 import { uploadEditorMedia } from '@/components/rich-text/editor-media-upload';
 import { putWithProgress } from '@/lib/upload/put-with-progress';
 import { compressImage } from '@/lib/image/compress';
+import { IMAGE_CAPS } from '@/lib/upload/image-caps';
 import type { PreviewMediaItem, PreviewMediaVisibility } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
 
@@ -128,13 +129,22 @@ export function StepMedia() {
         // untouched original (full-resolution click-through).
         const display = await compressImage(file, { maxDimension: 1600, quality: 0.82 });
         const compressed = await uploadEditorMedia(display, session?.accessToken, {
+          purpose: 'display',
           onProgress: (loaded, total) =>
             setPreviewProgress(total ? Math.min(50, Math.round((loaded / total) * 50)) : null),
         });
-        const original = await uploadEditorMedia(file, session?.accessToken, {
-          onProgress: (loaded, total) =>
-            setPreviewProgress(total ? 50 + Math.min(50, Math.round((loaded / total) * 50)) : null),
-        });
+        // The demo keeps originals up to `IMAGE_CAPS.previewOriginal`; a bigger photo is shown (and
+        // opened full size) as its display copy instead of failing the whole upload.
+        const original =
+          file === display || file.size > IMAGE_CAPS.previewOriginal
+            ? compressed
+            : await uploadEditorMedia(file, session?.accessToken, {
+                purpose: 'original',
+                onProgress: (loaded, total) =>
+                  setPreviewProgress(
+                    total ? 50 + Math.min(50, Math.round((loaded / total) * 50)) : null,
+                  ),
+              });
         item = {
           id: cryptoRandomId(),
           kind: 'image',

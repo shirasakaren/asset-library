@@ -3,12 +3,14 @@ import type { LocaleCode } from '@/lib/api/types';
 import type { AssetRecord, FeaturedRecord } from '../../records';
 import { badRequest, conflict, notFound } from '../../router/errors';
 import type { PreviewContext } from '../../router/router';
+import { IMAGE_CAPS } from '@/lib/upload/image-caps';
 import { BLOB_STORE_MAX_BYTES, getBlobStore } from '../../uploads/blob-store';
 import { blobToDataUrl } from '../../uploads/blob-url';
 import { recordAudit } from '../audit-core';
 import { createNotification } from '../notifications';
 import {
   expiresAtIso,
+  imageTooLarge,
   invalid,
   isObject,
   newUploadId,
@@ -106,9 +108,12 @@ adminRoute('GET', '/admin/featured', async (_req, ctx): Promise<AdminFeaturedSlo
 adminRoute('POST', '/admin/featured/banner-uploads/initiate', (req, ctx) => {
   if (!isObject(req.body)) throw invalid('body', 'The request body must be a JSON object.');
   const contentType = parseString(req.body.contentType, 'contentType', 100);
-  parseBytes(req.body.bytes, BLOB_STORE_MAX_BYTES);
+  const bytes = parseBytes(req.body.bytes, BLOB_STORE_MAX_BYTES);
   if (!contentType.startsWith('image/')) {
     throw invalid('contentType', 'A banner must be an image.');
+  }
+  if (bytes > IMAGE_CAPS.featuredBanner) {
+    throw imageTooLarge('banner', bytes, IMAGE_CAPS.featuredBanner);
   }
   const id = newUploadId(ctx);
   return { putUrl: previewPutUrl(id), key: `${BANNER_PREFIX}${id}`, expiresAt: expiresAtIso(ctx) };
@@ -139,6 +144,9 @@ async function resolveBanner(
   if (!blobId || blobId.includes('/')) throw missing('customBannerKey is not a valid upload key.');
   const entry = await getBlobStore().get(blobId);
   if (!entry) throw missing('The banner upload was not found. Upload the image again.');
+  if (entry.size > IMAGE_CAPS.featuredBanner) {
+    throw imageTooLarge('banner', entry.size, IMAGE_CAPS.featuredBanner);
+  }
   if (!entry.blob) throw missing('The banner was not kept (over 5 MB).');
   if (!entry.type.startsWith('image/')) throw missing('The upload is not an image.');
   return { key, url: await blobToDataUrl(entry.blob), blobId };

@@ -479,10 +479,10 @@ describe('POST /admin/featured/banner-uploads/initiate', () => {
     expect(second.key).not.toBe(res.key);
   });
 
-  it('refuses images over 5 MB, non-images and malformed bodies', async () => {
+  it('refuses images over 1 MB, non-images and malformed bodies', async () => {
     const app = await featuredApp([]);
     await expect(
-      initiate(app, { contentType: 'image/png', bytes: 5 * 1024 * 1024 + 1 }),
+      initiate(app, { contentType: 'image/png', bytes: 1024 * 1024 + 1 }),
     ).rejects.toSatisfy(status(400));
     await expect(initiate(app, { contentType: 'application/zip', bytes: 10 })).rejects.toSatisfy(
       status(400),
@@ -492,7 +492,7 @@ describe('POST /admin/featured/banner-uploads/initiate', () => {
     );
     await expect(initiate(app, { contentType: 'image/png' })).rejects.toSatisfy(status(400));
     await expect(initiate(app, undefined)).rejects.toSatisfy(status(400));
-    expect(await initiate(app, { contentType: 'image/png', bytes: 5 * 1024 * 1024 })).toBeDefined();
+    expect(await initiate(app, { contentType: 'image/png', bytes: 1024 * 1024 })).toBeDefined();
   });
 });
 

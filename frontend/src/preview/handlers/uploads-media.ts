@@ -1,11 +1,13 @@
 import type { AssetRecord } from '../records';
 import { route, type PreviewContext } from '../router/router';
 import { forbidden, notFound } from '../router/errors';
+import { IMAGE_CAPS, type EditorMediaPurpose } from '@/lib/upload/image-caps';
 import { BLOB_STORE_MAX_BYTES, getBlobStore } from '../uploads/blob-store';
 import { blobRef, blobToDataUrl, placeholderImageDataUrl } from '../uploads/blob-url';
 import { isoSeconds, loadWritable } from './asset-write-core';
 import {
   expiresAtIso,
+  imageTooLarge,
   invalid,
   isObject,
   newUploadId,
@@ -20,8 +22,14 @@ import { serialized } from './write-queue';
  * Thumbnail and editor-media uploads. The image bytes land in the blob store (PUT to
  * `preview://<id>`) and are then turned into a self-contained `data:` URL that is what the
  * records keep: nothing ephemeral is ever persisted (a `blob:` URL would be dead after a reload)
- * and no component has to know about the blob store. The 5 MB blob limit also bounds the size of
- * such a record, which is why these two flows refuse bigger files at `initiate`.
+ * and no component has to know about the blob store. Because every list / detail read clones the
+ * records, images are capped well below the 5 MB blob limit at `initiate` (`IMAGE_CAPS`): 1 MB
+ * thumbnails, 1.5 MB preview-media display copies, 2 MB originals / embedded images. Video, audio
+ * and 3D keep the 5 MB blob limit.
+ *
+ * Originals are stored separately (their own editor-media upload, kept as `originalUrl`); the
+ * publish wizard skips the original and reuses the display copy when the file is over the original
+ * cap, so a big photo still uploads (as its compressed display copy).
  */
 
 const MAX_MEDIA_BYTES = BLOB_STORE_MAX_BYTES;
@@ -47,7 +55,7 @@ route('POST', '/files/thumbnails/initiate', async (req, ctx) => {
   if (!contentType.startsWith('image/')) {
     throw invalid('contentType', 'A thumbnail must be an image.');
   }
-  if (bytes > MAX_MEDIA_BYTES) throw tooBig();
+  if (bytes > IMAGE_CAPS.thumbnail) throw imageTooLarge('thumbnail', bytes, IMAGE_CAPS.thumbnail);
   const { asset } = await loadWritable(ctx, assetId);
   const id = newUploadId(ctx);
   return {
@@ -78,6 +86,9 @@ route('POST', '/files/thumbnails/complete', (req, ctx) =>
     const store = getBlobStore();
     const entry = await store.get(id);
     if (!entry) throw uploadNotFound(id);
+    if (entry.size > IMAGE_CAPS.thumbnail) {
+      throw imageTooLarge('thumbnail', entry.size, IMAGE_CAPS.thumbnail);
+    }
     if (!entry.blob) throw invalid('key', 'The thumbnail was not kept (over 5 MB).', 'too_large');
     if (!entry.type.startsWith('image/')) throw invalid('key', 'The upload is not an image.');
     const url = await blobToDataUrl(entry.blob);
@@ -95,11 +106,29 @@ route('POST', '/files/thumbnails/complete', (req, ctx) =>
  * Editor media (TipTap embeds, preview media)
  * -------------------------------------------------------------------------- */
 
+function parsePurpose(raw: unknown): EditorMediaPurpose | undefined {
+  if (raw === undefined) return undefined;
+  if (raw === 'display' || raw === 'original') return raw;
+  throw invalid('purpose', 'purpose must be "display" or "original".');
+}
+
+/**
+ * `purpose` is an optional hint of the publish wizard's gallery upload: a `display` copy has the
+ * smaller cap. Without it an image is capped like an original (2 MB), which is also what embedded
+ * editor images get.
+ */
 route('POST', '/files/editor-media/initiate', (req, ctx) => {
   if (!isObject(req.body)) throw invalid('body', 'The request body must be a JSON object.');
-  parseString(req.body.contentType, 'contentType', 100);
+  const contentType = parseString(req.body.contentType, 'contentType', 100);
   const bytes = parseBytes(req.body.bytes, MAX_MEDIA_BYTES);
-  if (bytes > MAX_MEDIA_BYTES) throw tooBig();
+  const purpose = parsePurpose(req.body.purpose);
+  if (contentType.startsWith('image/')) {
+    const display = purpose === 'display';
+    const cap = display ? IMAGE_CAPS.previewDisplay : IMAGE_CAPS.previewOriginal;
+    if (bytes > cap) throw imageTooLarge(display ? 'preview image' : 'image', bytes, cap);
+  } else if (bytes > MAX_MEDIA_BYTES) {
+    throw tooBig();
+  }
   const id = newUploadId(ctx);
   return {
     putUrl: previewPutUrl(id),

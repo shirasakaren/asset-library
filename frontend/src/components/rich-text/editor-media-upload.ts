@@ -1,6 +1,7 @@
 'use client';
 
 import { apiFetch } from '@/lib/api/fetcher';
+import type { EditorMediaPurpose } from '@/lib/upload/image-caps';
 import { PREVIEW_URL_SCHEME, putWithProgress } from '@/lib/upload/put-with-progress';
 
 interface InitiateResponse {
@@ -13,6 +14,8 @@ interface InitiateResponse {
 export interface UploadEditorMediaOptions {
   onProgress?: (loaded: number, total: number) => void;
   signal?: AbortSignal;
+  /** Gallery uploads of the publish wizard: a `display` copy has a smaller size cap than an `original`. */
+  purpose?: EditorMediaPurpose;
 }
 
 /**
@@ -31,7 +34,11 @@ export async function uploadEditorMedia(
 ): Promise<{ viewUrl: string; key: string }> {
   const initiate = await apiFetch<InitiateResponse>('/files/editor-media/initiate', {
     method: 'POST',
-    body: { contentType: file.type || 'application/octet-stream', bytes: file.size },
+    body: {
+      contentType: file.type || 'application/octet-stream',
+      bytes: file.size,
+      ...(options?.purpose ? { purpose: options.purpose } : {}),
+    },
     accessToken,
   });
 

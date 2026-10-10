@@ -28,4 +28,18 @@ describe('uploadEditorMedia against the preview handlers', () => {
     });
     expect(again.viewUrl).toBe(viewUrl);
   });
+
+  it('sends the purpose hint and surfaces the readable 400 for an oversized display copy', async () => {
+    const big = new File([new Uint8Array(1.5 * 1024 * 1024 + 1)], 'big.webp', {
+      type: 'image/webp',
+    });
+    await expect(uploadEditorMedia(big, undefined, { purpose: 'display' })).rejects.toThrow(
+      /preview image is 1.5 MB.*up to 1.5 MB/,
+    );
+    // the same file is fine as an original (cap 2 MB)
+    await previewFetch('/files/editor-media/initiate', {
+      method: 'POST',
+      body: { contentType: 'image/webp', bytes: big.size, purpose: 'original' },
+    });
+  });
 });
