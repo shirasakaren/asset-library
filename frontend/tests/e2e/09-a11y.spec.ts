@@ -1,17 +1,17 @@
 import { test, expect } from './helpers/test';
 import { gotoApp } from './helpers/app';
-import { expectNoSeriousA11yViolations } from './helpers/axe';
+import { expectAccessible } from './helpers/axe';
 import { pickOthersAsset } from './helpers/seed';
 
 /**
- * axe smoke on the five key pages. Fails on serious/critical violations except
- * the documented allowlist in helpers/axe.ts.
+ * axe on the five key pages (see helpers/axe.ts: all rules on, colour contrast against
+ * the committed baseline).
  */
 test.describe('accessibility (axe)', () => {
   test('home', async ({ page }) => {
     await gotoApp(page, '/');
     await expect(page.locator('main article').first()).toBeVisible();
-    await expectNoSeriousA11yViolations(page, '/');
+    await expectAccessible(page, 'home');
   });
 
   test('asset detail', async ({ page }) => {
@@ -20,25 +20,25 @@ test.describe('accessibility (axe)', () => {
     await expect(page.getByRole('heading', { level: 1, name: asset.title })).toBeVisible();
     // The comment composer is lazy-loaded: audit it too.
     await expect(page.locator('[contenteditable="true"].tiptap-prose').first()).toBeEditable();
-    await expectNoSeriousA11yViolations(page, '/assets/[slug]');
+    await expectAccessible(page, 'asset-detail');
   });
 
   test('library', async ({ page }) => {
     await gotoApp(page, '/library/');
     await expect(page.getByRole('heading', { level: 1, name: 'My Library' })).toBeVisible();
     await expect(page.locator('main article').first()).toBeVisible();
-    await expectNoSeriousA11yViolations(page, '/library');
+    await expectAccessible(page, 'library');
   });
 
   test('search', async ({ page }) => {
     await gotoApp(page, '/search/?q=unity');
     await expect(page.locator('main article').first()).toBeVisible();
-    await expectNoSeriousA11yViolations(page, '/search');
+    await expectAccessible(page, 'search');
   });
 
   test('admin dashboard', async ({ page }) => {
     await gotoApp(page, '/admin/');
     await expect(page.getByRole('heading', { level: 2, name: 'Downloads (30d)' })).toBeVisible();
-    await expectNoSeriousA11yViolations(page, '/admin');
+    await expectAccessible(page, 'admin-dashboard');
   });
 });

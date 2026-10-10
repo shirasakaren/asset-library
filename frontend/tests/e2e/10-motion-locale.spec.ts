@@ -1,4 +1,4 @@
-import { test, expect } from './helpers/test';
+import { test, expect, type Page } from './helpers/test';
 import { gotoApp } from './helpers/app';
 import { seedCategories } from './helpers/seed';
 import id from '../../messages/id.json';
@@ -6,39 +6,49 @@ import id from '../../messages/id.json';
 /** The carousel advances every 5 s (ROTATE_MS in featured-carousel.tsx). */
 const AFTER_ONE_ROTATION_MS = 6_000;
 
-test.describe('reduced motion', () => {
+/**
+ * Index of the active slide, read from the carousel's slide indicator
+ * (`role=tab`, `aria-selected`, label "Go to slide N").
+ */
+async function activeSlide(page: Page): Promise<number> {
+  const region = page.getByRole('region', { name: 'Featured' });
+  const label = await region.getByRole('tab', { selected: true }).getAttribute('aria-label');
+  return Number(/(\d+)$/.exec(label ?? '')?.[1]) - 1;
+}
+
+test.describe('carousel autoplay', () => {
   // A controllable clock instead of real waiting: the test jumps past the rotation interval.
-  test('the featured carousel rotates by itself', async ({ page }) => {
+  test('without reduced motion the featured carousel advances by itself (control)', async ({
+    page,
+  }) => {
     await page.clock.install();
     await gotoApp(page, '/');
-    const headline = page
-      .getByRole('region', { name: 'Featured' })
-      .getByRole('heading', { level: 2 });
-    await expect(headline).toBeVisible();
-    const first = await headline.innerText();
+    await expect(page.getByRole('region', { name: 'Featured' })).toBeVisible();
+    expect(await activeSlide(page)).toBe(0);
 
     await page.clock.fastForward(AFTER_ONE_ROTATION_MS);
-    await expect(headline).not.toHaveText(first);
+    await expect.poll(() => activeSlide(page)).toBe(1);
   });
 
-  test('prefers-reduced-motion stops the autoplay', async ({ page }) => {
+  test('prefers-reduced-motion keeps the carousel on its first slide, manual navigation still works', async ({
+    page,
+  }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.clock.install();
     await gotoApp(page, '/');
-    const headline = page
-      .getByRole('region', { name: 'Featured' })
-      .getByRole('heading', { level: 2 });
-    await expect(headline).toBeVisible();
-    const first = await headline.innerText();
+    await expect(page.getByRole('region', { name: 'Featured' })).toBeVisible();
+    expect(await activeSlide(page)).toBe(0);
 
-    // Several rotation intervals pass; with reduced motion the slide must not change...
-    await page.clock.fastForward(AFTER_ONE_ROTATION_MS);
-    await page.clock.fastForward(AFTER_ONE_ROTATION_MS);
-    await expect(headline).toHaveText(first);
+    // Three rotation intervals pass on the fake clock. The slide must stay on 0 for a real
+    // observation window; `not.toPass` fails if it moves at any poll (the control test above
+    // proves the same steps DO advance it without reduced motion).
+    for (let i = 0; i < 3; i++) await page.clock.fastForward(AFTER_ONE_ROTATION_MS);
+    await expect(async () => {
+      expect(await activeSlide(page)).not.toBe(0);
+    }).not.toPass({ timeout: 2_000, intervals: [100] });
 
-    // ...but manual navigation still works.
     await page.getByRole('button', { name: 'Next featured asset' }).click();
-    await expect(headline).not.toHaveText(first);
+    await expect.poll(() => activeSlide(page)).toBe(1);
   });
 });
 

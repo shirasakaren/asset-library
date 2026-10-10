@@ -62,7 +62,7 @@ pnpm --filter mgm-asset-library-frontend seed:build   # regenerate src/preview/s
 pnpm --filter mgm-asset-library-frontend seed:thumbs  # download and resize listing thumbnails into public/thumbs
 ```
 
-To try the export locally: `cd frontend && NEXT_PUBLIC_APP_URL=http://localhost:4173 pnpm build && node scripts/serve-export.mjs out 4173`.
+To try the export locally: `cd frontend && NEXT_PUBLIC_APP_URL=http://localhost:4317 pnpm build && node scripts/serve-export.mjs out 4317`.
 Build-time options (`NEXT_PUBLIC_BASE_PATH`, `NEXT_PUBLIC_PREVIEW_LATENCY`, ...)
 are listed in `frontend/.env.example`. Bumping `SEED_VERSION`
 (`src/preview/store/version.ts`) discards visitors' overlays on their next visit.

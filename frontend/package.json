@@ -20,6 +20,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "lint:e2e": "eslint tests/e2e playwright.config.ts --max-warnings=0",
     "analyze": "ANALYZE=true next build",
     "knip": "knip",
     "openapi:gen": "node ./scripts/openapi-gen.mjs",

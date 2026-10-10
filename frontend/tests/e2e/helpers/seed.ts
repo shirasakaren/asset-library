@@ -62,3 +62,13 @@ export const seedCategories = (): SeedCategory[] => read<SeedCategory[]>('catego
 /** Published assets only (what the catalog and search show). */
 export const publishedAssets = (): SeedAsset[] =>
   seedAssets().filter((a) => a.status === 'PUBLISHED');
+
+export interface SeedFeaturedSlot {
+  id: string;
+  assetId: string;
+  isActive: boolean;
+}
+export const seedFeatured = (): SeedFeaturedSlot[] => read<SeedFeaturedSlot[]>('featured');
+
+/** Number of records in a seed collection (users, licenses, ...). */
+export const seedCount = (name: string): number => read<unknown[]>(name).length;

@@ -7,7 +7,8 @@ test.describe('boot', () => {
 
     // No auth redirect of any kind.
     expect(new URL(page.url()).pathname).toBe('/');
-    await expect(page.getByText(/sign in|log in|masuk/i)).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /sign in|log in|masuk/i })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /sign in|log in|masuk/i })).toHaveCount(0);
 
     // Demo banner.
     const banner = page.getByRole('region', { name: 'Demo notice' });
@@ -23,7 +24,9 @@ test.describe('boot', () => {
     await page.keyboard.press('Escape');
 
     // Admin-only navigation is reachable (the persona is an admin).
-    await expect(page.getByRole('link', { name: /admin/i }).first()).toBeVisible();
+    await expect(
+      page.getByRole('banner').getByRole('link', { name: 'ADMIN', exact: true }),
+    ).toHaveAttribute('href', '/admin/');
   });
 
   test('discover renders asset cards with loaded thumbnails', async ({ page }) => {

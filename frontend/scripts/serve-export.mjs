@@ -2,7 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const [dir = 'out', port = '4173'] = process.argv.slice(2);
+const [dir = 'out', port = '4317'] = process.argv.slice(2);
 const root = path.resolve(dir);
 const types = {
   '.html': 'text/html',

@@ -1,6 +1,6 @@
 import { test, expect } from './helpers/test';
 import { gotoApp } from './helpers/app';
-import { seedUsers } from './helpers/seed';
+import { seedCategories, seedCount, seedFeatured, seedUsers } from './helpers/seed';
 import type { Page } from '@playwright/test';
 
 const toast = (page: Page, text: string | RegExp) => page.getByText(text).first();
@@ -132,27 +132,111 @@ test.describe('admin: moderation queues', () => {
 });
 
 test.describe('admin: every page loads', () => {
-  const PAGES = [
-    ['Dashboard', '/admin/', 'Admin'],
-    ['Assets', '/admin/assets/', 'Assets'],
-    ['Featured', '/admin/featured/', 'Featured'],
-    ['Categories', '/admin/categories/', 'Categories'],
-    ['Tags', '/admin/tags/', 'Tags'],
-    ['Licenses', '/admin/licenses/', 'Licenses'],
-    ['Reports', '/admin/reports/', 'Reports'],
-    ['Requests', '/admin/requests/', 'Asset requests'],
-    ['Storage', '/admin/storage/', 'Storage'],
-    ['Users', '/admin/users/', 'Users'],
-    ['Audit log', '/admin/audit/', 'Audit log'],
-    ['Webhooks', '/admin/webhooks/', 'Webhook deliveries'],
-  ] as const;
+  /** A table with at least one data row (header row excluded) holding a real cell. */
+  const dataRows = (page: Page) =>
+    page
+      .getByRole('main')
+      .getByRole('row')
+      .filter({ has: page.getByRole('cell') });
 
-  test('every sidebar link opens a page with content and no error state', async ({ page }) => {
+  /** [sidebar label, path, h1, a check that real data is on the page] */
+  const PAGES: [string, string, string, (page: Page) => Promise<void>][] = [
+    [
+      'Dashboard',
+      '/admin/',
+      'Admin',
+      async (page) => {
+        await expect(page.getByRole('link', { name: `Users ${seedCount('users')}` })).toBeVisible();
+        await expect(
+          page.getByRole('heading', { level: 2, name: 'Downloads (30d)' }),
+        ).toBeVisible();
+      },
+    ],
+    [
+      'Assets',
+      '/admin/assets/',
+      'Assets',
+      async (page) => expect(dataRows(page).nth(5)).toBeVisible(),
+    ],
+    [
+      'Featured',
+      '/admin/featured/',
+      'Featured',
+      async (page) =>
+        expect(page.getByRole('button', { name: 'Drag to reorder' })).toHaveCount(
+          seedFeatured().filter((f) => f.isActive).length,
+        ),
+    ],
+    [
+      'Categories',
+      '/admin/categories/',
+      'Categories',
+      async (page) => expect(page.getByText(`${seedCategories().length} categories`)).toBeVisible(),
+    ],
+    ['Tags', '/admin/tags/', 'Tags', async (page) => expect(dataRows(page).nth(5)).toBeVisible()],
+    [
+      'Licenses',
+      '/admin/licenses/',
+      'Licenses',
+      async (page) => expect(page.getByText(`${seedCount('licenses')} licenses`)).toBeVisible(),
+    ],
+    [
+      'Reports',
+      '/admin/reports/',
+      'Reports',
+      async (page) => expect(dataRows(page).nth(2)).toBeVisible(),
+    ],
+    [
+      'Requests',
+      '/admin/requests/',
+      'Asset requests',
+      async (page) => expect(dataRows(page).nth(2)).toBeVisible(),
+    ],
+    [
+      'Storage',
+      '/admin/storage/',
+      'Storage',
+      async (page) => {
+        await expect(page.getByText('Users tracked')).toBeVisible();
+        await expect(
+          dataRows(page)
+            .filter({ hasText: /\d+(\.\d+)? (MB|GB)/ })
+            .first(),
+        ).toBeVisible();
+      },
+    ],
+    [
+      'Users',
+      '/admin/users/',
+      'Users',
+      async (page) => expect(dataRows(page).nth(5)).toBeVisible(),
+    ],
+    [
+      'Audit log',
+      '/admin/audit/',
+      'Audit log',
+      async (page) =>
+        expect(page.getByRole('main').getByRole('list').getByRole('button').nth(5)).toBeVisible(),
+    ],
+    [
+      'Webhooks',
+      '/admin/webhooks/',
+      'Webhook deliveries',
+      async (page) =>
+        expect(
+          dataRows(page)
+            .filter({ hasText: /success|failure|pending/ })
+            .first(),
+        ).toBeVisible(),
+    ],
+  ];
+
+  test('every sidebar link opens a page with real data and no error state', async ({ page }) => {
     await gotoApp(page, '/admin/');
     const sidebar = page.getByRole('complementary', { name: 'Admin sections' });
     await expect(sidebar.getByRole('link')).toHaveCount(PAGES.length);
 
-    for (const [label, path, heading] of PAGES) {
+    for (const [label, path, heading, hasData] of PAGES) {
       await sidebar.getByRole('link', { name: label, exact: true }).click();
       await expect(page).toHaveURL(new RegExp(`${path}$`));
       await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
@@ -160,8 +244,7 @@ test.describe('admin: every page loads', () => {
       // No error / retry state and no forbidden screen (the audit page's own info notice is fine).
       await expect(main.getByRole('button', { name: /try again/i })).toHaveCount(0);
       await expect(main.getByText(/something went wrong|forbidden/i)).toHaveCount(0);
-      // Lists have rows, dashboards have cards: the page is not empty.
-      await expect(page.getByRole('main').locator('table, ul, article, svg').first()).toBeVisible();
+      await hasData(page);
     }
   });
 });

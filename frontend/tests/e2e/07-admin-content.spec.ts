@@ -1,6 +1,12 @@
 import { test, expect } from './helpers/test';
 import { gotoApp } from './helpers/app';
-import { publishedAssets, seedAssets, pickOthersAsset } from './helpers/seed';
+import {
+  pickOthersAsset,
+  publishedAssets,
+  seedAssets,
+  seedCategories,
+  seedFeatured,
+} from './helpers/seed';
 import type { Page } from '@playwright/test';
 
 /** A toast with this text (the live region may repeat it, hence `.first()`). */
@@ -69,9 +75,11 @@ test.describe('admin: dashboard and assets', () => {
 
 test.describe('admin: featured', () => {
   test('the 6th active slot is refused; freeing one lets a new asset in', async ({ page }) => {
-    const candidate = publishedAssets().find(
-      (a) => a.id !== 'a-ucupaint' && a.slug !== 'factory-kit',
-    )!;
+    // A published asset that is not featured yet, and the cap, both taken from the seed.
+    const featuredIds = new Set(seedFeatured().map((f) => f.assetId));
+    const candidate = publishedAssets().find((a) => !featuredIds.has(a.id))!;
+    const cap = seedFeatured().filter((f) => f.isActive).length;
+    expect(cap, 'the seed fills every featured slot').toBe(5);
     await gotoApp(page, '/admin/featured/');
     await expect(page.getByText('5 / 5 active')).toBeVisible();
 
@@ -141,10 +149,11 @@ test.describe('admin: categories and tags', () => {
     const items = page
       .getByRole('listitem')
       .filter({ has: page.getByRole('button', { name: 'Edit' }) });
-    await expect(items).toHaveCount(10);
+    const categoryCount = seedCategories().length;
+    await expect(items).toHaveCount(categoryCount);
     // Every seeded category has assets, so every Delete is disabled.
     const deletes = items.getByRole('button', { name: 'Delete' });
-    for (let i = 0; i < 10; i++) await expect(deletes.nth(i)).toBeDisabled();
+    for (let i = 0; i < categoryCount; i++) await expect(deletes.nth(i)).toBeDisabled();
 
     await page.getByRole('button', { name: 'New category' }).click();
     const dialog = page.getByRole('dialog');
@@ -163,7 +172,7 @@ test.describe('admin: categories and tags', () => {
     await expect(created.getByRole('button', { name: 'Delete' })).toBeEnabled();
     await created.getByRole('button', { name: 'Delete' }).click();
     await expect(items.filter({ hasText: 'E2E Temporary' })).toHaveCount(0);
-    await expect(items).toHaveCount(10);
+    await expect(items).toHaveCount(categoryCount);
   });
 
   test('merging two tags repoints their assets and removes the source tag', async ({ page }) => {

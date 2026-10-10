@@ -1,4 +1,4 @@
-import { test, expect } from './helpers/test';
+import { test, expect, expectNotFound, shellRoute } from './helpers/test';
 import { createDraft } from './helpers/publish';
 import { pickOthersAsset, seedUsers } from './helpers/seed';
 
@@ -8,6 +8,15 @@ import { pickOthersAsset, seedUsers } from './helpers/seed';
  * status 404 and the client-side 404 shell resolves the real route. These
  * tests use hard loads (`page.goto`), the case that exercises that path.
  */
+// Exactly the 404 documents this file loads on purpose, nothing broader.
+test.use(
+  expectNotFound(
+    shellRoute('/publish/:id'),
+    shellRoute('/assets/no-such-asset-e2e'),
+    shellRoute('/definitely/not/here'),
+  ),
+);
+
 test.describe('dynamic routes', () => {
   test('a seeded asset page is pre-rendered (200) and renders on a hard load', async ({ page }) => {
     const asset = pickOthersAsset();

@@ -1,11 +1,14 @@
 import { readFileSync } from 'node:fs';
 import type { Download, Page } from '@playwright/test';
-import { test, expect } from './helpers/test';
+import { test, expect, expectNotFound, shellRoute } from './helpers/test';
 import { gotoApp, reloadApp } from './helpers/app';
 import { makePackage, makePng } from './helpers/files';
 import { createDraft, openStep } from './helpers/publish';
 
 test.describe('publish wizard', () => {
+  // The new draft's wizard URL has no HTML file in the export (404 shell).
+  test.use(expectNotFound(shellRoute('/publish/:id')));
+
   test('cannot publish a draft without a thumbnail and a file', async ({ page }) => {
     await createDraft(page, { title: 'E2E Incomplete Draft' });
 
@@ -24,6 +27,15 @@ test.describe('publish wizard', () => {
 });
 
 test.describe('publish flow', () => {
+  // Browser-created ids: the wizard, the published asset page and its analytics page.
+  test.use(
+    expectNotFound(
+      shellRoute('/publish/:id'),
+      shellRoute('/assets/e2e-demo-pack'),
+      shellRoute('/publish/manage/:id/analytics'),
+    ),
+  );
+
   test('draft to published asset: upload, publish, download, persist, manage, analytics', async ({
     page,
   }) => {
@@ -80,7 +92,7 @@ test.describe('publish flow', () => {
 
     // Review, then publish once the analysis finished and the checklist is green.
     await openStep(page, 'Review');
-    await expect(page.getByText('1 files')).toBeVisible();
+    await expect(page.getByText(/^1 files? · /)).toBeVisible();
     const publish = page.getByRole('button', { name: /^Publish/ });
     await expect(publish).toBeEnabled({ timeout: 15_000 });
     await publish.click();
@@ -123,6 +135,8 @@ test.describe('publish flow', () => {
   });
 });
 
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /** Opens the download dialog, picks the file by name and returns the browser download. */
 async function downloadFile(page: Page, fileName: string): Promise<Download> {
   await page.getByRole('button', { name: 'Download', exact: true }).first().click();
@@ -130,7 +144,7 @@ async function downloadFile(page: Page, fileName: string): Promise<Download> {
   await expect(dialog).toBeVisible();
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    dialog.getByRole('button', { name: new RegExp(fileName.replace('.', '\.')) }).click(),
+    dialog.getByRole('button', { name: new RegExp(escapeRegExp(fileName)) }).click(),
   ]);
   await expect(dialog.getByText('Thank you for downloading.')).toBeVisible();
   await dialog.getByRole('button', { name: 'Close' }).first().click();
