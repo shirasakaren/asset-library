@@ -231,6 +231,9 @@ export interface AssetDetail {
   canEdit: boolean;
   canDelete: boolean;
   canArchive: boolean;
+  /** Original store listing (preview only; absent on assets created in the demo). */
+  storeName?: string;
+  storeUrl?: string;
 }
 
 export interface FeaturedSlot {

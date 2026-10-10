@@ -316,6 +316,8 @@ export async function toDetail(
     canEdit,
     canDelete: canEdit,
     canArchive: canEdit && a.status === 'PUBLISHED',
+    // Runtime-created assets store ''; leave the fields off instead of sending empty strings.
+    ...(a.storeName && a.storeUrl ? { storeName: a.storeName, storeUrl: a.storeUrl } : {}),
   };
 }
 

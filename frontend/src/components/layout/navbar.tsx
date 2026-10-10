@@ -68,7 +68,7 @@ export function Navbar({ user }: NavbarProps) {
 
 /** Stripped navbar used on the marketing /about route; its CTA opens the demo app. */
 export function MarketingNavbar() {
-  const t = useTranslations('nav');
+  const t = useTranslations('common');
   return (
     <ScrollAwareShell
       className="bg-bg/70 border-b border-transparent backdrop-blur-[6px]"
@@ -81,7 +81,7 @@ export function MarketingNavbar() {
             href="/"
             className="inline-flex h-10 items-center justify-center rounded-[12px] bg-ink px-4 text-[14px] font-medium text-white transition-colors hover:bg-[#1a1f29]"
           >
-            {t('discover')}
+            {t('openPreview')}
           </NextLink>
         </div>
       </Container>

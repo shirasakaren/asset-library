@@ -12,17 +12,9 @@ vi.mock('@/preview/session/me-provider', () => ({
   useMe: () => ({ id: 'me-1', isAdmin: true, displayName: 'Me' }),
 }));
 vi.mock('@/components/asset/asset-detail-shell', () => ({
-  AssetDetailShell: ({
-    asset,
-    currentUserId,
-    isAdmin,
-  }: {
-    asset: AssetDetail;
-    currentUserId: string;
-    isAdmin: boolean;
-  }) => (
+  AssetDetailShell: ({ asset, currentUserId }: { asset: AssetDetail; currentUserId: string }) => (
     <div data-testid="shell">
-      {asset.title}|{currentUserId}|{String(isAdmin)}
+      {asset.title}|{currentUserId}
     </div>
   ),
 }));
@@ -46,7 +38,7 @@ describe('AssetDetailPageClient', () => {
     fetchApi.mockResolvedValue({ id: 'a1', slug: 'cool-asset', title: 'Cool Asset' });
     renderWithProviders(<AssetDetailPageClient idOrSlug="cool-asset" />);
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
-    expect(await screen.findByTestId('shell')).toHaveTextContent('Cool Asset|me-1|true');
+    expect(await screen.findByTestId('shell')).toHaveTextContent('Cool Asset|me-1');
     expect(fetchApi).toHaveBeenCalledWith('/assets/cool-asset', { query: { locale: 'en' } });
     await waitFor(() => expect(document.title).toMatch(/^Cool Asset — /));
   });

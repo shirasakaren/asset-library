@@ -1,14 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Logo } from '@/components/brand/logo';
 import { Container } from './container';
 import { FooterStrip } from '@/components/brand/footer-strip';
 import { publicEnv } from '@/lib/env.public';
+import { AttributionNotice } from '@/components/preview/attribution-notice';
+import { ResetDemoDialog } from '@/components/preview/reset-demo-dialog';
 
 export function Footer() {
   const t = useTranslations('footer');
   const tnav = useTranslations('nav');
+  const tv = useTranslations('preview');
+  const [resetOpen, setResetOpen] = useState(false);
   const year = new Date().getFullYear();
 
   const cols = [
@@ -101,11 +106,21 @@ export function Footer() {
       </Container>
       <FooterStrip />
       <Container size="2xl">
-        <div className="flex flex-wrap items-center justify-between gap-2 py-6 text-caption text-ink-3">
-          <p className="geist-tnum">{t('copyright', { year: String(year) })}</p>
-          <p className="hidden md:block">v1 · Part 1 of 4</p>
+        <div className="flex flex-col gap-4 py-6 text-caption text-ink-3">
+          <AttributionNotice />
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <p className="geist-tnum">{t('copyright', { year: String(year) })}</p>
+            <button
+              type="button"
+              onClick={() => setResetOpen(true)}
+              className="text-ink-2 transition-colors duration-120 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              {tv('resetDemo')}
+            </button>
+          </div>
         </div>
       </Container>
+      <ResetDemoDialog open={resetOpen} onOpenChange={setResetOpen} />
     </footer>
   );
 }

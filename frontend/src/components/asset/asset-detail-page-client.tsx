@@ -63,5 +63,5 @@ export function AssetDetailPageClient({ idOrSlug }: { idOrSlug: string }) {
   }
   // The asset detail carries its own isSaved flag; the recommendations module
   // hydrates its card heart state client-side via useSavedIds().
-  return <AssetDetailShell asset={q.data} currentUserId={me.id} isAdmin={me.isAdmin} me={me} />;
+  return <AssetDetailShell asset={q.data} currentUserId={me.id} me={me} />;
 }
