@@ -1,3 +1,5 @@
+import { existsSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -44,4 +46,42 @@ describe('Footer', () => {
     await userEvent.setup().click(reset);
     expect(screen.getByText('preview.resetConfirmTitle')).toBeInTheDocument();
   });
+
+  it('has no dead links: every href is an existing route, an https URL or the takedown mailto', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <Footer />
+      </QueryClientProvider>,
+    );
+    const footer = screen.getByRole('contentinfo');
+    const hrefs = within(footer)
+      .getAllByRole('link')
+      .map((a) => a.getAttribute('href') ?? '');
+    expect(hrefs.length).toBeGreaterThan(4);
+    for (const href of hrefs) {
+      if (href.startsWith('https://') || href.startsWith('mailto:')) continue;
+      expect(href, 'no placeholder or fragment-only targets').toMatch(/^\/[^#]*$/);
+      expect(routeExists(href), `${href} is a page of the app`).toBe(true);
+    }
+    // Items without a page stay visible as plain text, not as links.
+    for (const key of ['team', 'press', 'privacy', 'terms', 'cookies']) {
+      expect(within(footer).getByText(`footer.${key}`).closest('a')).toBeNull();
+    }
+  });
 });
+
+/** True when `src/app` has a `page.tsx` for the path (route groups like `(app)` do not count). */
+function routeExists(path: string): boolean {
+  const segments = path.split('/').filter(Boolean);
+  const walk = (dir: string, rest: string[]): boolean => {
+    if (rest.length === 0 && existsSync(join(dir, 'page.tsx'))) return true;
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (rest.length === 0 && !/^\(.+\)$/.test(entry.name)) continue;
+      if (!entry.isDirectory()) continue;
+      if (/^\(.+\)$/.test(entry.name) && walk(join(dir, entry.name), rest)) return true;
+      if (entry.name === rest[0] && walk(join(dir, entry.name), rest.slice(1))) return true;
+    }
+    return false;
+  };
+  return walk(join(process.cwd(), 'src', 'app'), segments);
+}

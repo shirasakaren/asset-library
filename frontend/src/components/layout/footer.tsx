@@ -17,7 +17,9 @@ export function Footer() {
   const [resetOpen, setResetOpen] = useState(false);
   const year = new Date().getFullYear();
 
-  const allCols = [
+  // An item without `href` has no page in the static demo: it renders as muted text, not as a link.
+  type FooterLink = { label: string; href?: string; external?: true };
+  const allCols: { heading: string; links: FooterLink[] }[] = [
     {
       heading: t('product'),
       links: [
@@ -29,11 +31,7 @@ export function Footer() {
     },
     {
       heading: t('company'),
-      links: [
-        { label: t('about'), href: '/about' },
-        { label: t('team'), href: '/about#team' },
-        { label: t('press'), href: '/about#press' },
-      ],
+      links: [{ label: t('about'), href: '/about' }, { label: t('team') }, { label: t('press') }],
     },
     {
       heading: tnav('community'),
@@ -57,11 +55,7 @@ export function Footer() {
     },
     {
       heading: t('legal'),
-      links: [
-        { label: t('privacy'), href: '/about#privacy' },
-        { label: t('terms'), href: '/about#terms' },
-        { label: t('cookies'), href: '/about#cookies' },
-      ],
+      links: [{ label: t('privacy') }, { label: t('terms') }, { label: t('cookies') }],
     },
   ];
   // The community links are optional in the preview; drop the column instead of showing a bare heading.
@@ -90,7 +84,9 @@ export function Footer() {
               <ul className="flex flex-col gap-2.5">
                 {col.links.map((link) => (
                   <li key={`${col.heading}-${link.label}`}>
-                    {'external' in link && link.external ? (
+                    {!link.href ? (
+                      <span className="text-ink-3">{link.label}</span>
+                    ) : link.external ? (
                       <a
                         href={link.href}
                         target="_blank"
