@@ -91,9 +91,9 @@ export function AdminDashboardPageClient() {
           tone={data?.counts.pendingRequests ? 'warn' : 'neutral'}
         />
         <StatCard
+          // No `href`: the AV queue has no page (`/admin/av` is a 404), so the card only shows the count.
           label="AV infected"
           value={formatNumber(data?.counts.avInfected ?? 0, locale)}
-          href="/admin/av"
           tone={data?.counts.avInfected ? 'danger' : 'neutral'}
         />
       </section>

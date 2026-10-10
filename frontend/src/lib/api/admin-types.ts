@@ -142,11 +142,7 @@ export interface AdminLicense {
 
 export type ReportCategory = 'MALICIOUS_FILE' | 'BROKEN_ASSET';
 export type ReportStatus = 'OPEN' | 'REVIEWING' | 'ACTIONED' | 'DISMISSED';
-export type ReportAction =
-  | 'NOTHING'
-  | 'ARCHIVE_ASSET'
-  | 'DELETE_ASSET'
-  | 'FORCE_DELETE_ASSET';
+export type ReportAction = 'NOTHING' | 'ARCHIVE_ASSET' | 'DELETE_ASSET' | 'FORCE_DELETE_ASSET';
 
 export interface AdminReport {
   id: string;
@@ -236,6 +232,28 @@ export interface AdminWebhookDelivery {
 export interface AdminWebhookPage {
   items: AdminWebhookDelivery[];
   pageInfo: PageInfo;
+}
+
+/**
+ * A version the AV scanner flagged (`GET /admin/av/infected`). No screen reads it yet (the dashboard's
+ * "AV infected" card has no queue page); the shape is the preview's own.
+ */
+export interface AdminAvRow {
+  versionId: string;
+  semver: string;
+  avStatus: 'CLEAN' | 'INFECTED' | 'SKIPPED_SIZE';
+  /** When an admin marked it as a false positive (the version is CLEAN from then on). */
+  acknowledgedAt: string | null;
+  /** Creation time of the version. */
+  createdAt: string;
+  assetId: string;
+  assetSlug: string;
+  assetTitle: string;
+  assetStatus: AssetStatus;
+  ownerId: string;
+  ownerDisplayName: string;
+  ownerEmail: string | null;
+  files: { id: string; relativePath: string; bytes: string }[];
 }
 
 /* ------------- shared inputs ------------- */

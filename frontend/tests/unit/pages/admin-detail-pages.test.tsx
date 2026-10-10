@@ -112,6 +112,20 @@ describe('AdminDashboardPageClient', () => {
     expect(fetchApi).toHaveBeenCalledWith('/admin/dashboard');
   });
 
+  it('shows the AV infected count on a card that is not a link (there is no AV page)', async () => {
+    fetchApi.mockResolvedValue({ ...dashboard, counts: { ...dashboard.counts, avInfected: 3 } });
+    renderWithProviders(<AdminDashboardPageClient />);
+    const label = await screen.findByText('AV infected');
+    expect(label.parentElement).toHaveTextContent('3');
+    expect(label.closest('a')).toBeNull();
+    expect(document.querySelector('a[href="/admin/av"]')).toBeNull();
+    // the other cards that do have a page stay links
+    expect(screen.getByText('Reports').closest('a')).toHaveAttribute(
+      'href',
+      '/admin/reports?status=OPEN',
+    );
+  });
+
   it('a failed load renders zeroed counts (non-fatal), as the server page did', async () => {
     fetchApi.mockRejectedValue(new ApiError(problem(500)));
     renderWithProviders(<AdminDashboardPageClient />);
