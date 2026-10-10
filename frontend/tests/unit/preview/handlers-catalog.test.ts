@@ -490,7 +490,11 @@ describe('GET /assets/{idOrSlug}', () => {
     });
     expect(bySlug).not.toHaveProperty('ownerId');
     expect(bySlug).not.toHaveProperty('titleI18n');
-    expect(bySlug).not.toHaveProperty('storeUrl');
+    // storeName/storeUrl are public on purpose now (the "View on <store>" link)
+    expect(bySlug).toMatchObject({
+      storeName: 'Test Store',
+      storeUrl: 'https://store.example.test/x',
+    });
   });
 
   it('is a 404 ApiError for unknown, deleted and invisible assets', async () => {
