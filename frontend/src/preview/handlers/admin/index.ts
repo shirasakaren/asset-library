@@ -12,3 +12,4 @@ import './requests';
 import './featured';
 import './categories';
 import './licenses';
+import './tags';
