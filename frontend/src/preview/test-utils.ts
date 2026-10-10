@@ -1,6 +1,7 @@
 import type { CollectionName, Db, Doc, SeedSource } from './types';
 import { createDb } from './store/db';
 import { createSeedSource } from './store/seed-source';
+import { SEED_ANCHOR } from './store/version';
 import { dispatch, type PreviewContext, type PreviewRequest } from './router/router';
 import { createContext } from './router/context';
 import { toSearchParams } from './router/query';
@@ -22,11 +23,20 @@ export interface TestApp {
 
 async function buildApp(
   source: SeedSource,
-  opts: { meId?: string; timers?: boolean },
+  opts: { meId?: string; timers?: boolean; now?: string },
 ): Promise<TestApp> {
   // overlay: null => in-memory only, so `db.persistent === false` in tests.
-  const db = await createDb({ seed: source, overlay: null, seedVersion: 'test' });
+  // `now` fixes the clock and rebases the seed on it, like production (the seed moves forward by
+  // the whole days since its anchor).
+  const at = opts.now ? new Date(opts.now) : undefined;
+  const db = await createDb({
+    seed: source,
+    overlay: null,
+    seedVersion: 'test',
+    rebase: at ? { anchor: SEED_ANCHOR, now: () => new Date(at) } : undefined,
+  });
   const ctx = createContext(db, { meId: opts.meId, timers: opts.timers ?? true });
+  if (at) ctx.now = () => new Date(at);
   return {
     db,
     ctx,
@@ -60,7 +70,7 @@ export async function createTestApp(
 
 /** An app over the REAL committed seed JSON (`src/preview/seed-data/*.json`), in-memory overlay. */
 export async function createSeededTestApp(
-  opts: { meId?: string; timers?: boolean } = {},
+  opts: { meId?: string; timers?: boolean; now?: string } = {},
 ): Promise<TestApp> {
   return buildApp(createSeedSource(), opts);
 }

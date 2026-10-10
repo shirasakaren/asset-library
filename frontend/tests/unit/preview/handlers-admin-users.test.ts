@@ -1,13 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import type { AdminUserPage } from '@/lib/api/admin-types';
-import type { AuditRecord, UserRecord } from '@/preview/records';
-import { adminApp, assetsApp, FX_OTHER, FX_PERSONA, moreUsers, status } from './admin-fixtures';
+import type { UserRecord } from '@/preview/records';
+import {
+  adminApp,
+  assetsApp,
+  FX_OTHER,
+  FX_PERSONA,
+  moreUsers,
+  status,
+  newAudits,
+} from './admin-fixtures';
 
 type App = Awaited<ReturnType<typeof assetsApp>>;
 const list = (app: App, query: Record<string, unknown> = {}) =>
   app.call<AdminUserPage>('GET', '/admin/users', { query });
-const audits = async (app: App) =>
-  (await app.db.list<AuditRecord>('audit')).filter((r) => !r.id.startsWith('au-0'));
+const audits = (app: App) => newAudits(app);
 const body = (over: Record<string, unknown> = {}) => ({
   confirm: 'I understand',
   confirmedAt: '2026-06-10T11:59:40.000Z',

@@ -2,7 +2,7 @@ import type { Db } from './types';
 import { createDb } from './store/db';
 import { createIdbOverlay } from './store/overlay';
 import { createSeedSource } from './store/seed-source';
-import { SEED_VERSION } from './store/version';
+import { SEED_ANCHOR, SEED_VERSION } from './store/version';
 import { dispatch, type PreviewContext, type PreviewRequest } from './router/router';
 import { createContext } from './router/context';
 import { internalError } from './router/errors';
@@ -21,6 +21,8 @@ export function getDb(): Promise<Db> {
       seed: createSeedSource(),
       overlay: createIdbOverlay(),
       seedVersion: SEED_VERSION,
+      // The seed moves with the visitor's clock: one stable offset per visitor (see store/rebase.ts).
+      rebase: { anchor: SEED_ANCHOR, now: () => new Date() },
     }).catch((e) => {
       dbPromise = null;
       throw e;

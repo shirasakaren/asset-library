@@ -18,12 +18,9 @@ import type {
   UserRecord,
 } from '@/preview/records';
 
-/** The seed is anchored at 2026-10-01; the clock stands a few days later, like a real visit. */
-const app = async (meId?: string): Promise<TestApp> => {
-  const a = await createSeededTestApp({ timers: false, meId });
-  a.ctx.now = () => new Date('2026-10-10T12:00:00.000Z');
-  return a;
-};
+/** The seed is anchored at 2026-10-01 and rebased onto the clock (9 days later): like a real visit. */
+const app = (meId?: string): Promise<TestApp> =>
+  createSeededTestApp({ timers: false, meId, now: '2026-10-10T12:00:00.000Z' });
 
 describe('admin dashboard over the real seed', () => {
   it('counts the seeded data and keeps the exact stored last-30-day downloads', async () => {
@@ -46,10 +43,10 @@ describe('admin dashboard over the real seed', () => {
     )) as PlatformAnalyticsRecord;
     const last30 = platform.downloads.slice(-30);
     expect(d.counts.downloads30d).toBe(last30.reduce((s, n) => s + n, 0));
-    // far later than the anchor, the charts still show the seeded days (window ends 2026-09-30)
-    expect(d.charts.downloads30d.map((p) => p.count)).toEqual(last30);
-    expect(d.charts.downloads30d[29]!.date).toBe('2026-09-30');
-    expect(d.charts.downloads30d[0]!.date).toBe('2026-09-01');
+    // rebased seed: its series end yesterday, the chart ends today (a 0 for today)
+    expect(d.charts.downloads30d.map((p) => p.count)).toEqual([...last30.slice(-29), 0]);
+    expect(d.charts.downloads30d[29]!.date).toBe('2026-10-10');
+    expect(d.charts.downloads30d[0]!.date).toBe('2026-09-11');
   });
 
   it('has publishes and sign-ups in the window, a leaderboard and ten audit rows', async () => {
@@ -90,10 +87,10 @@ describe('admin dashboard over the real seed', () => {
 describe('admin storage over the real seed', () => {
   it('derives the user rows from their assets and matches every stored user rollup', async () => {
     const a = await app();
-    const rows = await a.call<AdminStorageUserRow[]>('GET', '/admin/storage/users', {
-      query: { date: '2026-09-30', limit: 200 },
-    });
     const stored = (await a.db.list<StorageRecord>('storage')).filter((s) => s.kind === 'user');
+    const rows = await a.call<AdminStorageUserRow[]>('GET', '/admin/storage/users', {
+      query: { date: stored[0]!.asOfDate, limit: 200 },
+    });
     expect(rows).toHaveLength(stored.length);
     for (const s of stored) {
       const row = rows.find((r) => r.userId === s.refId)!;
@@ -120,7 +117,7 @@ describe('admin storage over the real seed', () => {
     expect(page[0]!.title).toBeTruthy();
     // a past date inside the series still has rows
     const past = await a.call<AdminStorageAssetRow[]>('GET', '/admin/storage/assets', {
-      query: { date: '2026-09-15', limit: 200 },
+      query: { date: '2026-09-24', limit: 200 },
     });
     expect(past.length).toBeGreaterThan(100);
   });
@@ -269,9 +266,7 @@ describe('admin assets and users over the real seed', () => {
     ]);
     expect(log.items.every((x) => x.actorDisplayName === 'Aria Wijaya')).toBe(true);
     // a seeded row, for the shape
-    const seededRow = (
-      await a.call<AdminAuditPage>('GET', '/admin/audit', { query: { limit: 100 } })
-    ).items.find((x) => x.id.startsWith('au-0'))!;
+    const seededRow = await a.call<AdminAuditPage['items'][number]>('GET', '/admin/audit/au-001');
     expect(Object.keys(log.items[0]!).sort()).toEqual(Object.keys(seededRow).sort());
     const sorted = (
       await a.call<AdminAuditPage>('GET', '/admin/audit', { query: { limit: 100 } })

@@ -5,7 +5,7 @@ import {
   FX_OTHER,
   FX_PERSONA,
   PLATFORM_LAST30,
-  SEED_END,
+  REBASED_TODAY,
   status,
 } from './admin-fixtures';
 
@@ -21,11 +21,11 @@ const platform = (app: App, query: Record<string, unknown> = {}) =>
 
 describe('GET /admin/analytics/platform', () => {
   it('defaults to the 30 days of the dashboard window, zero-filled', async () => {
-    const app = await adminApp();
+    const app = await adminApp({ now: REBASED_TODAY });
     const r = await platform(app);
     expect(r.daily).toHaveLength(30);
-    expect(r.daily[29]!.date).toBe(SEED_END);
-    expect(r.totals).toEqual({ downloads: PLATFORM_LAST30, publishes: 0, newUsers: 0 });
+    expect(r.daily[29]!.date).toBe('2026-06-01');
+    expect(r.totals).toEqual({ downloads: PLATFORM_LAST30 - 60, publishes: 0, newUsers: 0 });
     expect(r.bySource).toEqual({});
   });
 

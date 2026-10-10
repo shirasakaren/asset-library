@@ -1,16 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import type { AdminAssetListPage, AdminAssetRow } from '@/lib/api/admin-types';
 import type { AssetDetail } from '@/lib/api/types';
-import type { AssetRecord, AuditRecord, TagRecord } from '@/preview/records';
+import type { AssetRecord, TagRecord } from '@/preview/records';
 import { recordEvents } from './publish-fixtures';
-import { assetsApp, FX_OTHER, FX_PERSONA, status } from './admin-fixtures';
+import { assetsApp, FX_OTHER, FX_PERSONA, status, newAudits } from './admin-fixtures';
 
 type App = Awaited<ReturnType<typeof assetsApp>>;
 const list = (app: App, query: Record<string, unknown> = {}) =>
   app.call<AdminAssetListPage>('GET', '/admin/assets', { query });
 const ids = (p: { items: Array<{ id: string }> }) => p.items.map((x) => x.id);
-const audits = async (app: App) =>
-  (await app.db.list<AuditRecord>('audit')).filter((r) => !r.id.startsWith('au-0'));
+const audits = (app: App) => newAudits(app);
 const stored = async (app: App, id: string) =>
   (await app.db.get<AssetRecord>('assets', id)) as AssetRecord;
 const tagUsage = async (app: App, id: string) =>

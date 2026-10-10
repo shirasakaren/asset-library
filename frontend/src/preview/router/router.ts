@@ -31,6 +31,7 @@ export type Handler = (req: PreviewRequest, ctx: PreviewContext) => unknown | Pr
 
 interface Route {
   method: PreviewRequest['method'];
+  pattern: string;
   regex: RegExp;
   names: string[];
   handler: Handler;
@@ -66,7 +67,12 @@ function compile(rawPattern: string): { regex: RegExp; names: string[] } {
 /** Register a handler. First match wins, so register specific routes before parameterized ones. */
 export function route(method: PreviewRequest['method'], pattern: string, handler: Handler): void {
   const { regex, names } = compile(pattern);
-  routes.push({ method, regex, names, handler });
+  routes.push({ method, pattern: normalizePath(pattern), regex, names, handler });
+}
+
+/** Every registered route (method and normalized pattern), in registration order. For tests. */
+export function registeredRoutes(): Array<{ method: PreviewRequest['method']; pattern: string }> {
+  return routes.map(({ method, pattern }) => ({ method, pattern }));
 }
 
 const safeDecode = (s: string) => {

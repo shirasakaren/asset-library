@@ -14,9 +14,12 @@ import { findAnyAsset, findLiveAsset } from './assets';
  * depends on it, like the backend's cascades:
  *  - its versions and files (and the stored bytes of files the visitor uploaded),
  *  - comments and replies, the library entry, featured slots,
- *  - the analytics and storage rollup rows of the asset,
+ *  - the analytics rollup row of the asset (`an-<id>`),
  *  - one tag usage per tag, unless it was already soft-deleted (that already released them).
- * Kept on purpose: notifications (no relation in the backend) and reports (the backend has no
+ * Kept on purpose: the seeded storage row `st-asset-<id>` (it is what lets the dashboard `source`
+ * bucket subtract the asset's seeded bytes, exactly once, whether it was live or already soft-deleted;
+ * every storage list is derived from the assets that exist, so the orphan row never shows),
+ * notifications (no relation in the backend) and reports (the backend has no
  * cascade either; readers must cope with a report whose asset is gone). `an-platform`, the user
  * rollups and the bucket rollups are derived at read time, so they follow without a write.
  */
@@ -59,9 +62,6 @@ export async function purgeAsset(ctx: PreviewContext, asset: AssetRecord): Promi
   for (const s of slots) if (s.assetId === asset.id) await ctx.db.remove('featured', s.id);
   if (await ctx.db.get('analytics', `an-${asset.id}`)) {
     await ctx.db.remove('analytics', `an-${asset.id}`);
-  }
-  if (await ctx.db.get('storage', `st-asset-${asset.id}`)) {
-    await ctx.db.remove('storage', `st-asset-${asset.id}`);
   }
   if (asset.status !== 'DELETED') await adjustTagUsage(ctx, asset.tagIds, -1);
   await ctx.db.remove('assets', asset.id);

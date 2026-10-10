@@ -1,6 +1,9 @@
 import type { CollectionName, Db, Doc, OverlayEntry, OverlayStore, SeedSource } from '../types';
+import { rebaseOffsetDays, shiftSeedValue } from './rebase';
 
 const clone = <T>(v: T): T => structuredClone(v);
+
+const OFFSET_META = 'rebaseOffsetDays';
 
 const isEntry = (k: string, e: unknown): e is OverlayEntry => {
   if (!e || typeof e !== 'object') return false;
@@ -15,8 +18,16 @@ export async function createDb(opts: {
   seed: SeedSource;
   overlay: OverlayStore | null;
   seedVersion: string;
+  /**
+   * Moves every seed date forward by the whole days between `anchor` and `now()`, computed once per
+   * visitor and kept in the overlay meta (`rebaseOffsetDays`; in memory without an overlay) so it never
+   * drifts; `reset()` and a seedVersion bump compute a fresh one. Absent: the seed is used as is.
+   */
+  rebase?: { anchor: string; now: () => Date };
 }): Promise<Db> {
-  const { seed, seedVersion } = opts;
+  const { seed, seedVersion, rebase } = opts;
+  const freshOffset = () => (rebase ? rebaseOffsetDays(rebase.anchor, rebase.now()) : 0);
+  let offsetDays = freshOffset();
   let overlay = opts.overlay;
   let entries = new Map<string, OverlayEntry>();
   let nextSeq = 1;
@@ -28,7 +39,13 @@ export async function createDb(opts: {
       if ((await overlay.getMeta('seedVersion')) !== seedVersion) {
         await overlay.clear();
         await overlay.setMeta('seedVersion', seedVersion);
+        if (rebase) await overlay.setMeta(OFFSET_META, String(offsetDays));
       } else {
+        if (rebase) {
+          const stored = Number(await overlay.getMeta(OFFSET_META));
+          if (Number.isInteger(stored) && stored >= 0) offsetDays = stored;
+          else await overlay.setMeta(OFFSET_META, String(offsetDays));
+        }
         const valid = [...raw].filter(([k, e]) => isEntry(k, e));
         valid.sort(([, a], [, b]) => (a.seq ?? 0) - (b.seq ?? 0));
         for (const [k, e] of valid) {
@@ -50,7 +67,7 @@ export async function createDb(opts: {
     const cached = seedCache.get(coll);
     if (cached) return cached;
     try {
-      const docs = (await seed.load(coll)).map(clone);
+      const docs = (await seed.load(coll)).map((d) => shiftSeedValue(clone(d), offsetDays));
       seedCache.set(coll, docs);
       return docs;
     } catch (e) {
@@ -139,10 +156,13 @@ export async function createDb(opts: {
     async reset() {
       entries = new Map();
       nextSeq = 1;
+      seedCache.clear();
+      offsetDays = freshOffset();
       if (!overlay) return;
       try {
         await overlay.clear();
         await overlay.setMeta('seedVersion', seedVersion);
+        if (rebase) await overlay.setMeta(OFFSET_META, String(offsetDays));
       } catch {
         persistent = false;
         overlay = null;

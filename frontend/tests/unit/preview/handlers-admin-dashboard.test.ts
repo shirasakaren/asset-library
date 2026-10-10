@@ -20,6 +20,7 @@ import {
   patchAsset,
   published,
   SEED_END,
+  REBASED_TODAY,
   status,
   uploadedFile,
   withUploadedFile,
@@ -86,8 +87,8 @@ describe('GET /admin/dashboard counts', () => {
     expect(counts.archivedAssets).toBe(1);
   });
 
-  it('downloads30d is the sum of the last 30 platform values', async () => {
-    const app = await adminApp();
+  it('downloads30d is the sum of the 30 days before today plus today (rebased seed: the stored last 30)', async () => {
+    const app = await adminApp({ now: REBASED_TODAY });
     expect((await dash(app)).counts.downloads30d).toBe(PLATFORM_LAST30);
   });
 
@@ -158,6 +159,55 @@ describe('GET /admin/dashboard storage', () => {
     expect(after.storage.totalBytes).toBe(5700 + 500 + 200 + 50 + 25);
   });
 
+  describe('after a force delete', () => {
+    const forceDelete = (app: Awaited<ReturnType<typeof adminApp>>, id: string) =>
+      app.call('POST', `/admin/assets/${id}/force-delete`, {
+        body: {
+          reason: 'Legal takedown',
+          confirm: 'I understand',
+          confirmedAt: '2026-06-10T11:59:50.000Z',
+        },
+      });
+    const source = async (app: Awaited<ReturnType<typeof adminApp>>) =>
+      (await dash(app)).storage.byBucket[0]!.bytes;
+
+    it('a live asset leaves the source bucket once (its seeded 1000 bytes)', async () => {
+      const app = await adminApp();
+      expect(await source(app)).toBe(6000);
+      await forceDelete(app, 'a-fx-003');
+      expect(await source(app)).toBe(5000);
+      expect((await dash(app)).storage.totalBytes).toBe(5000 + 500 + 200 + 50 + 25);
+    });
+
+    it('a soft-deleted asset that is force-deleted afterwards does not add its bytes back', async () => {
+      const app = await adminApp();
+      await app.call('DELETE', '/admin/assets/a-fx-003', { body: { reason: 'Takedown request' } });
+      expect(await source(app)).toBe(5000);
+      await forceDelete(app, 'a-fx-003');
+      expect(await source(app)).toBe(5000);
+    });
+
+    it('an asset created in the browser and force-deleted leaves nothing behind', async () => {
+      const mine = withUploadedFile(
+        published('a-up', '2026-06-05T00:00:00.000Z'),
+        uploadedFile('f-up', 700),
+      );
+      const app = await adminApp({ assets: [mine] });
+      expect(await source(app)).toBe(6700);
+      await forceDelete(app, 'a-up');
+      expect(await source(app)).toBe(6000);
+    });
+
+    it('keeps the asset out of the per-asset and per-user lists', async () => {
+      const app = await adminApp();
+      await forceDelete(app, 'a-fx-001');
+      const rows = await app.call<Array<{ assetId: string }>>('GET', '/admin/storage/assets');
+      expect(rows.map((r) => r.assetId)).toEqual(['a-fx-002', 'a-fx-003']);
+      const users = await app.call<Array<{ bytes: number }>>('GET', '/admin/storage/users');
+      expect(users[0]!.bytes).toBe(3000);
+    });
+  });
+
   it('is all zeros without rollups', async () => {
     const app = await adminApp({}, { storage: [] });
     const { storage } = await dash(app);
@@ -169,24 +219,24 @@ describe('GET /admin/dashboard storage', () => {
 describe('GET /admin/dashboard charts: the 30-day window', () => {
   const dateOf = (s: { date: string }) => s.date;
 
-  it('ends on the last day of the seeded series (anchor - 1) while the clock is later', async () => {
-    const app = await adminApp({ now: '2026-06-10T12:00:00.000Z' });
+  it('ends today: the seeded series (rebased, ending yesterday) fill the first 29 days', async () => {
+    const app = await adminApp({ now: REBASED_TODAY });
     const { charts } = await dash(app);
     expect(charts.downloads30d).toHaveLength(30);
-    expect(charts.downloads30d[0]!.date).toBe('2026-05-02');
-    expect(charts.downloads30d[29]!.date).toBe(SEED_END);
+    expect(charts.downloads30d[0]!.date).toBe('2026-05-03');
+    expect(charts.downloads30d[29]!.date).toBe('2026-06-01');
     // the same 30 days in all three series
     expect(charts.publishes30d.map(dateOf)).toEqual(charts.downloads30d.map(dateOf));
     expect(charts.newUsers30d.map(dateOf)).toEqual(charts.downloads30d.map(dateOf));
-    // values are the stored last 30
-    expect(charts.downloads30d.map((p) => p.count)).toEqual(PLATFORM_DOWNLOADS.slice(-30));
+    expect(charts.downloads30d.map((p) => p.count)).toEqual([...PLATFORM_DOWNLOADS.slice(-29), 0]);
   });
 
-  it('keeps showing the seeded data months after the anchor when nothing happened since', async () => {
-    const app = await adminApp({ now: '2027-01-05T09:00:00.000Z' });
-    const { charts, counts } = await dash(app);
-    expect(charts.downloads30d[29]!.date).toBe(SEED_END);
-    expect(counts.downloads30d).toBe(PLATFORM_LAST30);
+  it('follows the clock: seeded days stay while they are inside the window', async () => {
+    const app = await adminApp({ now: '2026-06-10T12:00:00.000Z' });
+    const { charts } = await dash(app);
+    expect(charts.downloads30d[29]!.date).toBe('2026-06-10');
+    expect(charts.downloads30d.find((p) => p.date === SEED_END)!.count).toBe(89);
+    expect(charts.downloads30d.find((p) => p.date === '2026-06-05')!.count).toBe(0);
   });
 
   it('is capped at the clock when it stands before the seeded series end', async () => {
@@ -197,7 +247,7 @@ describe('GET /admin/dashboard charts: the 30-day window', () => {
     expect(charts.downloads30d[29]!.count).toBe(PLATFORM_DOWNLOADS[89 - 11]);
   });
 
-  it('moves to the day of a visitor-created event (publish) and merges with the seeded days', async () => {
+  it('a visitor-created event (publish) lands on today and merges with the seeded days', async () => {
     const app = await adminApp({ now: '2026-06-10T12:00:00.000Z' });
     await app.db.put('assets', published('a-new', '2026-06-10T10:00:00.000Z'));
     const { charts } = await dash(app);
@@ -209,7 +259,7 @@ describe('GET /admin/dashboard charts: the 30-day window', () => {
     expect(charts.downloads30d.find((p) => p.date === '2026-05-12')!.count).toBe(70);
   });
 
-  it('lets seeded data fall out only when real events happen more than 30 days later', async () => {
+  it('seeded data falls out of the window when the clock is more than 30 days past it', async () => {
     const app = await adminApp({ now: '2027-01-05T09:00:00.000Z' });
     await app.db.put('assets', published('a-late', '2027-01-05T08:00:00.000Z'));
     const { charts, counts } = await dash(app);
@@ -260,8 +310,8 @@ describe('GET /admin/dashboard charts: the 30-day window', () => {
     await recordDownloads(app.ctx, { asset, version, files: version.files, source: 'WEB' });
     const { charts, counts } = await dash(app);
     expect(charts.downloads30d[29]).toEqual({ date: '2026-06-10', count: 1 });
-    // window now starts 10 days later: 20 seeded days (05-12..05-31) + today
-    expect(counts.downloads30d).toBe(PLATFORM_DOWNLOADS.slice(-20).reduce((a, b) => a + b, 0) + 1);
+    // rolling 30 days = 05-11..06-10: 21 seeded days + today
+    expect(counts.downloads30d).toBe(PLATFORM_DOWNLOADS.slice(-21).reduce((a, b) => a + b, 0) + 1);
     const platform = (await app.db.get('analytics', 'an-platform')) as PlatformAnalyticsRecord;
     expect(platform.endDate).toBe('2026-06-10');
     expect(platform.downloads).toHaveLength(100);

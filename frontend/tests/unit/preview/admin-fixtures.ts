@@ -29,6 +29,8 @@ export const status = (s: number, code?: string) => (e: unknown) =>
 export const ANCHOR = '2026-06-01T00:00:00.000Z';
 /** Last day of the fixture platform series and of the storage snapshot (anchor - 1 day). */
 export const SEED_END = '2026-05-31';
+/** A clock on which the fixture seed is "fresh": the day after the seed series end (the anchor day). */
+export const REBASED_TODAY = '2026-06-01T12:00:00.000Z';
 export const NOW = '2026-06-10T12:00:00.000Z';
 
 /** Platform downloads: 90 values, value = index (so the last 30 are 60..89, sum 2235). */
@@ -268,3 +270,9 @@ export async function assetsApp(
     extra,
   );
 }
+
+const FIXTURE_AUDIT_IDS = new Set(fixtureAudit(12).map((r) => r.id));
+
+/** Audit rows written during the test (everything but the 12 fixture rows, by id). */
+export const newAudits = async (app: TestApp): Promise<AuditRecord[]> =>
+  (await app.db.list<AuditRecord>('audit')).filter((r) => !FIXTURE_AUDIT_IDS.has(r.id));

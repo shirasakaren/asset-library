@@ -53,9 +53,12 @@ export async function buildDashboard(ctx: PreviewContext): Promise<DashboardResp
   ]);
   const { platform, assets, users } = series;
 
-  const end = await chartWindowEnd(ctx, series);
+  const end = chartWindowEnd(ctx);
   const days = daysEndingOn(end, CHART_DAYS);
-  const downloads30d = pointsFrom(days, platformByDay(platform));
+  const platformDays = platformByDay(platform);
+  const downloads30d = pointsFrom(days, platformDays);
+  // The backend counts downloads since now - 30 days: today and the 30 days before it.
+  const rolling30d = pointsFrom(daysEndingOn(end, CHART_DAYS + 1), platformDays);
   const published = assets.filter((a) => a.status === 'PUBLISHED');
 
   const usersById = new Map<string, UserRecord>(users.map((u) => [u.id, u]));
@@ -84,7 +87,7 @@ export async function buildDashboard(ctx: PreviewContext): Promise<DashboardResp
       publishedAssets: published.length,
       draftAssets: assets.filter((a) => a.status === 'DRAFT').length,
       archivedAssets: assets.filter((a) => a.status === 'ARCHIVED').length,
-      downloads30d: downloads30d.reduce((sum, p) => sum + p.count, 0),
+      downloads30d: rolling30d.reduce((sum, p) => sum + p.count, 0),
       pendingReports: reports.filter((r) => PENDING_REPORTS.includes(r.status)).length,
       pendingRequests: requests.filter((r) => PENDING_REQUESTS.includes(r.status)).length,
       avInfected: infectedVersions(assets),

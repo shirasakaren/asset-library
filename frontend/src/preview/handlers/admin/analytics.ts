@@ -37,7 +37,7 @@ function dayParam(query: URLSearchParams, name: string): string | undefined {
  */
 adminRoute('GET', '/admin/analytics/platform', async (req, ctx) => {
   const data = await loadSeriesData(ctx);
-  const defaultTo = dayFromNumber(dayNumber(await chartWindowEnd(ctx, data)) + 1);
+  const defaultTo = dayFromNumber(dayNumber(chartWindowEnd(ctx)) + 1);
   const to = dayParam(req.query, 'to') ?? defaultTo;
   const from = dayParam(req.query, 'from') ?? dayFromNumber(dayNumber(to) - CHART_DAYS);
   const span = dayNumber(to) - dayNumber(from);

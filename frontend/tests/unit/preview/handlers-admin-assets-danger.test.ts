@@ -3,7 +3,6 @@ import type { MeResponse } from '@/lib/api/types';
 import type {
   AnalyticsRecord,
   AssetRecord,
-  AuditRecord,
   FeaturedRecord,
   LibraryRecord,
   NotificationRecord,
@@ -13,11 +12,10 @@ import type {
   CommentRecord,
 } from '@/preview/records';
 import { cm } from './social-fixtures';
-import { assetsApp, FX_OTHER, FX_PERSONA, status } from './admin-fixtures';
+import { assetsApp, FX_OTHER, FX_PERSONA, status, newAudits } from './admin-fixtures';
 
 type App = Awaited<ReturnType<typeof assetsApp>>;
-const audits = async (app: App) =>
-  (await app.db.list<AuditRecord>('audit')).filter((r) => !r.id.startsWith('au-0'));
+const audits = (app: App) => newAudits(app);
 const confirm = (over: Record<string, unknown> = {}) => ({
   confirm: 'I understand',
   confirmedAt: new Date('2026-06-10T11:59:30.000Z').toISOString(),
@@ -158,7 +156,10 @@ describe('POST /admin/assets/{id}/force-delete', () => {
     expect((await app.db.list<LibraryRecord>('library')).map((l) => l.id)).toEqual(['a-fx-001']);
     expect((await app.db.list<FeaturedRecord>('featured')).map((f) => f.id)).toEqual(['fs-2']);
     expect(await app.db.get('analytics', 'an-a-mine')).toBeUndefined();
-    expect(await app.db.get('storage', 'st-asset-a-mine')).toBeUndefined();
+    // the seeded rollup row stays (the dashboard bucket subtracts it); it is not listed anywhere
+    expect(await app.db.get('storage', 'st-asset-a-mine')).toBeDefined();
+    const listed = await app.call<Array<{ assetId: string }>>('GET', '/admin/storage/assets');
+    expect(listed.some((r) => r.assetId === 'a-mine')).toBe(false);
     // tag usage released (tag-lava 2 -> 1), category and owner flags follow
     expect(((await app.db.get<TagRecord>('tags', 'tag-lava')) as TagRecord).usageCount).toBe(1);
     expect(await cats()).toBe(2);
