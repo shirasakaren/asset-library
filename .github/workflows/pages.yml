@@ -202,8 +202,10 @@ jobs:
               ok=1
               break
             fi
-            echo "attempt $attempt/12: / -> $code, /thumbs/manifest.json -> $mcode; retrying in 10 s"
-            sleep 10
+            echo "attempt $attempt/12: / -> $code, /thumbs/manifest.json -> $mcode"
+            if [ "$attempt" -lt 12 ]; then
+              sleep 10
+            fi
           done
 
           if [ "$ok" = 1 ]; then
