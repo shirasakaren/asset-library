@@ -30,7 +30,7 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
       {/* Eight cards share one row on wide screens: scale the figure down so "34,948" is never clipped. */}
       <p
         title={value}
-        className="geist-tnum mt-2 truncate font-display text-[1.75rem] leading-none tracking-[-0.02em] text-ink md:text-[2rem] xl:text-display-lg 2xl:text-[2rem]"
+        className="geist-tnum mt-2 truncate font-display text-[1.75rem] leading-none tracking-[-0.02em] text-ink md:text-[2rem] xl:text-display-lg"
       >
         {value}
       </p>

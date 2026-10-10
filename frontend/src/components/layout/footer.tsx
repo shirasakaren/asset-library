@@ -6,6 +6,7 @@ import { Logo } from '@/components/brand/logo';
 import { Container } from './container';
 import { FooterStrip } from '@/components/brand/footer-strip';
 import { publicEnv } from '@/lib/env.public';
+import { cn } from '@/lib/utils';
 import { AttributionNotice } from '@/components/preview/attribution-notice';
 import { ResetDemoDialog } from '@/components/preview/reset-demo-dialog';
 
@@ -16,7 +17,7 @@ export function Footer() {
   const [resetOpen, setResetOpen] = useState(false);
   const year = new Date().getFullYear();
 
-  const cols = [
+  const allCols = [
     {
       heading: t('product'),
       links: [
@@ -63,11 +64,20 @@ export function Footer() {
       ],
     },
   ];
+  // The community links are optional in the preview; drop the column instead of showing a bare heading.
+  const cols = allCols.filter((c) => c.links.length > 0);
 
   return (
     <footer className="mt-24 border-t border-line bg-bg">
       <Container size="2xl">
-        <div className="grid grid-cols-2 gap-10 py-14 md:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))]">
+        <div
+          className={cn(
+            'grid grid-cols-2 gap-10 py-14',
+            cols.length === 4
+              ? 'md:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))]'
+              : 'md:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]',
+          )}
+        >
           <div className="col-span-2 md:col-span-1">
             <Logo size="md" href="/" />
             <p className="mt-4 max-w-[280px] text-body-sm text-ink-3">{t('tagline')}</p>

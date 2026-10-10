@@ -38,6 +38,8 @@ describe('Footer', () => {
       'href',
       'mailto:it@labmgm.org',
     );
+    // no community URLs configured in the preview: no bare heading either
+    expect(within(footer).queryByText('nav.community')).not.toBeInTheDocument();
     const reset = within(footer).getByRole('button', { name: 'preview.resetDemo' });
     await userEvent.setup().click(reset);
     expect(screen.getByText('preview.resetConfirmTitle')).toBeInTheDocument();
