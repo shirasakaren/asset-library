@@ -52,3 +52,13 @@ export function pickOthersAsset(skip = 0): SeedAsset {
   if (!match) throw new Error('no suitable seeded asset');
   return match;
 }
+
+export interface SeedCategory {
+  id: string;
+  name: { en: string; id: string };
+}
+export const seedCategories = (): SeedCategory[] => read<SeedCategory[]>('categories');
+
+/** Published assets only (what the catalog and search show). */
+export const publishedAssets = (): SeedAsset[] =>
+  seedAssets().filter((a) => a.status === 'PUBLISHED');
