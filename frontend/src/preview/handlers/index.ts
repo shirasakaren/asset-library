@@ -17,3 +17,4 @@ import './requests';
 import './reports';
 import './me';
 import './users';
+import './admin';

@@ -6,6 +6,7 @@ import type {
   AssetFileRecord,
   AssetRecord,
   AssetVersionRecord,
+  PlatformAnalyticsRecord,
 } from '../records';
 import { route, type PreviewContext } from '../router/router';
 import { loadWritable } from './asset-write-core';
@@ -163,6 +164,44 @@ const bump = <T extends { downloads: number }>(
   else rows.push({ ...make(), downloads: n });
 };
 
+/** Longest platform series kept (the admin views never ask for more than a year). */
+const PLATFORM_KEEP_DAYS = 400;
+
+/**
+ * Adds `n` downloads to today's bucket of the platform series (`an-platform`), padding the days
+ * since its `endDate` with zeros, so the admin dashboard sees what the visitor downloads. Without
+ * a platform record one is created (90 zero days ending today).
+ */
+export async function bumpPlatformDownloads(ctx: PreviewContext, n: number): Promise<void> {
+  const today = dayOf(ctx.now());
+  const rec = (await ctx.db.get<AnalyticsRecord>('analytics', 'an-platform')) as
+    PlatformAnalyticsRecord | undefined;
+  if (!rec) {
+    const downloads = new Array<number>(WINDOW_DAYS).fill(0);
+    downloads[WINDOW_DAYS - 1] = n;
+    await ctx.db.put<AnalyticsRecord>('analytics', {
+      id: 'an-platform',
+      kind: 'platform',
+      endDate: today,
+      downloads,
+    });
+    return;
+  }
+  const downloads = [...rec.downloads];
+  let endDate = rec.endDate;
+  const gap = dayNumber(today) - dayNumber(rec.endDate);
+  if (gap > 0) {
+    downloads.push(...new Array<number>(Math.min(gap, MAX_GAP_DAYS)).fill(0));
+    endDate = today;
+  }
+  const idx = downloads.length - 1 + Math.min(0, gap);
+  if (idx >= 0) downloads[idx]! += n;
+  await ctx.db.patch<AnalyticsRecord>('analytics', rec.id, {
+    endDate,
+    downloads: downloads.slice(-PLATFORM_KEEP_DAYS),
+  } as Partial<PlatformAnalyticsRecord>);
+}
+
 /**
  * Adds the downloads of `files` to the asset's analytics: today's bucket (the series is padded
  * with zero days up to today, so every date stays consistent), the country (`unknown`: nothing
@@ -183,6 +222,7 @@ export async function recordDownloads(
   const { asset, version, files, source } = args;
   const n = files.length;
   if (n === 0) return;
+  await bumpPlatformDownloads(ctx, n);
   const today = dayOf(ctx.now());
   let rec = await getAssetRecord(ctx, asset.id);
   const isNew = !rec;
