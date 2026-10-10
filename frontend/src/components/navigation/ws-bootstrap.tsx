@@ -13,11 +13,12 @@ import type { NotificationItem } from '@/lib/api/types';
 
 type Fetcher = ReturnType<typeof useAuthedFetch>;
 
-/** Query-key prefixes that depend on the catalog and must refresh when it changes. */
 /**
- * Query prefixes refetched on `assets.changed`: the catalog itself plus the reference lists (categories,
- * licenses, tags) that the admin screens edit, whose long `staleTime` would otherwise keep showing
- * the old names for the rest of the visit.
+ * Query prefixes refetched on `assets.changed`: the catalog itself, the reference lists
+ * (categories, licenses, tags) whose long `staleTime` would otherwise keep showing old names, and
+ * every `['admin', ...]` query (dashboard counts, assets, reports, requests, featured ...), which
+ * all derive from the same records. Only active queries refetch; the rest are marked stale. Reads
+ * never emit the event, so the refetches cannot loop.
  */
 const CATALOG_PREFIXES = [
   'assets',
@@ -28,6 +29,7 @@ const CATALOG_PREFIXES = [
   'categories',
   'licenses',
   'tags',
+  'admin',
 ] as const;
 
 const COMMENT_EVENTS: Record<string, string> = {

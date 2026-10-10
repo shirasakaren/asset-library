@@ -27,7 +27,7 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
       )}
     >
       <p className="truncate text-eyebrow uppercase tracking-[0.12em] text-ink-3">{label}</p>
-      {/* Eight cards share one row on wide screens: scale the figure down so "34,948" is never clipped. */}
+      {/* Four cards share a row (2-up on phones): scale the figure down so "34,948" is never clipped. */}
       <p
         title={value}
         className="geist-tnum mt-2 truncate font-display text-[1.75rem] leading-none tracking-[-0.02em] text-ink md:text-[2rem] xl:text-display-lg"

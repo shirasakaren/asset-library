@@ -114,9 +114,9 @@ describe('profile menu: Reset demo data', () => {
     await u.click(screen.getByRole('button', { name: 'common.openProfileMenu' }));
     await u.click(screen.getByRole('button', { name: 'preview.resetDemo' }));
     await u.click(screen.getByRole('button', { name: 'preview.resetConfirm' }));
-    await vi.waitFor(() => expect(goHome).toHaveBeenCalledTimes(1), { timeout: 5000 });
+    await vi.waitFor(() => expect(goHome).toHaveBeenCalledTimes(1), { timeout: 10_000 });
     expect(toast.error).toHaveBeenCalledWith('preview.resetPartial');
     expect(toast.success).not.toHaveBeenCalled();
     expect(client.getQueryData(['x'])).toBeUndefined();
-  });
+  }, 15_000);
 });

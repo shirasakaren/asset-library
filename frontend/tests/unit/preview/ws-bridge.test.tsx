@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, QueryObserver } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queries';
 import type { NotificationItem } from '@/lib/api/types';
 
 const apiFetch = vi.fn();
@@ -172,9 +173,26 @@ describe('WsBootstrap (event bus bridge)', () => {
       'categories',
       'licenses',
       'tags',
+      'admin',
     ]) {
       expect(keys()).toContainEqual([p]);
     }
+  });
+
+  it('assets.changed: refetches the active admin queries once and does not loop', async () => {
+    const { qc: client } = setup();
+    let calls = 0;
+    const observer = new QueryObserver(client, {
+      queryKey: queryKeys.adminDashboard,
+      queryFn: async () => ++calls,
+    });
+    const unsubscribe = observer.subscribe(() => {});
+    await vi.waitFor(() => expect(client.getQueryData(queryKeys.adminDashboard)).toBe(1));
+    bus.emit({ type: 'assets.changed' });
+    await vi.waitFor(() => expect(calls).toBe(2));
+    await new Promise((r) => setTimeout(r, 50));
+    expect(calls).toBe(2); // refetching did not emit another event
+    unsubscribe();
   });
 
   it('stops listening on unmount', () => {

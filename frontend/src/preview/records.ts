@@ -159,9 +159,10 @@ export interface LicenseRecord extends Doc {
  *
  * Consumed by: `GET /tags`, `GET /search/tags`, `GET /admin/tags` (+ merge/patch/delete),
  * asset filters and `AssetDetail.tags`.
- * `usageCount` = number of assets (any status; the seed has no DELETED ones) whose
- * `tagIds` contains this tag. It is a stored counter: tag merge sums it, asset
- * create/delete adjusts it. `createdAt` = creation time of the oldest asset using it.
+ * `usageCount` = number of live assets (not DELETED; the seed has none of those) whose
+ * `tagIds` contains this tag. It is a stored counter: asset create/delete adjusts it, and a tag
+ * merge grows the target by the live assets that gain it (a delta, not the sum of the counters,
+ * which would count an asset carrying several of the merged tags more than once). `createdAt` = creation time of the oldest asset using it.
  */
 export interface TagRecord extends Doc {
   id: string;
