@@ -16,8 +16,7 @@ test.describe('boot', () => {
     await expect(banner).toContainText('Aria Wijaya');
 
     // Persona + role in the profile menu.
-    await openProfileMenu(page);
-    const menu = page.getByRole('dialog');
+    const menu = await openProfileMenu(page);
     await expect(menu.getByText('Aria Wijaya')).toBeVisible();
     await expect(menu.getByText('Admin', { exact: true })).toBeVisible();
     await expect(menu.getByRole('button', { name: 'Reset demo data' })).toBeVisible();
