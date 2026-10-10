@@ -35,6 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Auth.js / Keycloak sign-in, the API proxy routes and the WebSocket transport
   from the frontend.
 
+### CI/CD
+
+- New `pages.yml` workflow deploys the static preview to GitHub Pages on pushes
+  to `main` that touch `frontend/` (lint, typecheck, unit and Playwright e2e
+  tests against the export, then `actions/deploy-pages`); `CNAME` and
+  `.nojekyll` are written into the export.
+- The `frontend` CI job now matches it: static export plus Playwright e2e, and
+  no Keycloak/NextAuth build variables.
+- The web Docker image jobs were removed from `production.yml` and
+  `staging.yml` (API and worker images are unchanged); `frontend/Dockerfile` and
+  the `web` compose services are kept as legacy references.
+
 ## [1.0.0] - 2026-04-30
 
 ### Added

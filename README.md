@@ -2,7 +2,9 @@
 
 ## Static preview
 
-**Live demo: [asset.creations.ren](https://asset.creations.ren)**
+**Demo URL: [asset.creations.ren](https://asset.creations.ren)** (deployed to
+GitHub Pages by `.github/workflows/pages.yml`; see [Deployment](#deployment-github-pages)
+for the one-time DNS setup the domain needs before it resolves).
 
 `frontend/` is now a static, login-free preview of the asset library. You are
 signed in as a fake admin persona (Aria Wijaya) and every page works: browse
@@ -57,7 +59,7 @@ pnpm install
 pnpm --filter mgm-asset-library-frontend dev        # http://localhost:3000
 pnpm --filter mgm-asset-library-frontend build      # static export to frontend/out
 pnpm --filter mgm-asset-library-frontend test       # Vitest unit tests
-pnpm --filter mgm-asset-library-frontend test:e2e   # Playwright
+pnpm --filter mgm-asset-library-frontend test:e2e   # Playwright against frontend/out (build first; `pnpm --filter mgm-asset-library-frontend exec playwright install chromium` once)
 pnpm --filter mgm-asset-library-frontend seed:build   # regenerate src/preview/seed-data from scripts/seed/assets.yaml
 pnpm --filter mgm-asset-library-frontend seed:thumbs  # download and resize listing thumbnails into public/thumbs
 ```
@@ -74,12 +76,30 @@ thumbnails and listings belong to their respective creators and stores; every
 asset page links back to the original ("View on ..."). To request removal of a
 listing or thumbnail, contact [it@labmgm.org](mailto:it@labmgm.org).
 
-### Custom domain (DNS)
+### Deployment (GitHub Pages)
 
-The site is served from GitHub Pages at the domain root. Create a `CNAME` record
-`asset` pointing to `shirasakaren.github.io` on `creations.ren`
-(`asset.creations.ren` -> `shirasakaren.github.io`), then enable "Enforce HTTPS"
-in the repository's Pages settings once it propagates.
+- `.github/workflows/pages.yml` runs on every push to `main` that touches
+  `frontend/` (or the workspace/lock files or the workflow itself) and on manual
+  dispatch. It installs, lints, typechecks, runs the unit tests, builds the
+  static export (`frontend/out`), runs the Playwright suite against that export,
+  uploads it as the Pages artifact and deploys it with `actions/deploy-pages`.
+  Pull requests run the same checks (without deploying) in `ci.yml`.
+- The workflow writes a `CNAME` file (`asset.creations.ren`) and `.nojekyll`
+  into the export, so the custom domain is part of every deployment. The site is
+  served at the domain root.
+- GitHub Pages must be enabled once with source "GitHub Actions" (repository
+  Settings, Pages). The custom domain is `asset.creations.ren`.
+- **DNS (needed once, outside this repository):** create a `CNAME` record
+  `asset` pointing to `shirasakaren.github.io` on `creations.ren`
+  (`asset.creations.ren` -> `shirasakaren.github.io`). Until it resolves the
+  domain does not load; GitHub issues the HTTPS certificate afterwards, and
+  "Enforce HTTPS" can then be switched on in the Pages settings.
+- After a deploy the workflow requests the site once as a check. That check is
+  advisory (it does not fail the workflow), because it cannot succeed before the
+  DNS record exists.
+- The old web Docker image jobs were removed from `production.yml` and
+  `staging.yml`; `frontend/Dockerfile` and the `web` compose services are legacy
+  references to the original full stack.
 
 ---
 
