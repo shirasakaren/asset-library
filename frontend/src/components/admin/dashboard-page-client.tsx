@@ -52,7 +52,7 @@ export function AdminDashboardPageClient() {
         description="Snapshot of platform health, recent activity, and pending work."
       />
 
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-8">
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-4 2xl:grid-cols-8">
         <StatCard
           label="Users"
           value={formatNumber(data?.counts.users ?? 0, locale)}

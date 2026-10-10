@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { RequestDecisionForm } from '@/components/admin/request-decision-form';
 import { useAuthedFetch } from '@/lib/api/client';
 import { queryKeys } from '@/lib/api/queries';
-import { formatDate } from '@/lib/format';
+import { formatDate, formatUsd } from '@/lib/format';
 import type { AssetRequest, LocaleCode } from '@/lib/api/types';
 
 /** Body of `/admin/requests/[id]` (the admin layout / `withAdminChrome` supplies the chrome). */
@@ -77,7 +77,7 @@ export function AdminRequestPageClient({ id }: { id: string }) {
               {req.price !== null ? (
                 <Card padding="lg">
                   <p className="mb-2 text-eyebrow uppercase tracking-[0.12em] text-ink-3">Price</p>
-                  <p className="geist-tnum text-body text-ink">${req.price}</p>
+                  <p className="geist-tnum text-body text-ink">{formatUsd(req.price)}</p>
                 </Card>
               ) : null}
               {req.notes ? (

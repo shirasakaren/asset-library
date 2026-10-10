@@ -28,6 +28,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
 import { VersionBadge } from './version-badge';
+import { DownloadThankYouBody } from './download-thank-you';
 import { useAuthedFetch } from '@/lib/api/client';
 import { ApiError } from '@/lib/api/errors';
 import { queryKeys } from '@/lib/api/queries';
@@ -229,14 +230,7 @@ export function DownloadPopup({
                 {t('thankYouTitle')}
               </h3>
               <p className="mt-2 text-body-sm text-ink-2">
-                {t.rich('thankYouBody', {
-                  link: (chunks) => (
-                    <a className="link-inline" href={state.url} download={state.fileName}>
-                      {t('thankYouLink')}
-                      <span className="sr-only">{chunks}</span>
-                    </a>
-                  ),
-                })}
+                <DownloadThankYouBody url={state.url} fileName={state.fileName} />
               </p>
               <div className="mt-6 flex items-center justify-center gap-2">
                 <Button variant="secondary" onClick={() => setState({ step: 'browse' })}>

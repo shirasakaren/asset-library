@@ -30,6 +30,7 @@ import { toast } from '@/components/ui/toaster';
 import { ApiError } from '@/lib/api/errors';
 import type { AdminCategory } from '@/lib/api/admin-types';
 import { cn } from '@/lib/utils';
+import { CategoryIcon } from './category-icon';
 
 export function AdminCategoriesSurface() {
   const fetcher = useAuthedFetch();
@@ -97,11 +98,14 @@ export function AdminCategoriesSurface() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-caption text-ink-3 geist-tnum">
+      <div className="mb-4 flex items-center justify-between">
+        <p className="geist-tnum text-caption text-ink-3">
           {list.isPending ? 'Loading…' : `${list.data?.length ?? 0} categories`}
         </p>
-        <Button leadingIcon={<Plus className="h-4 w-4" strokeWidth={2.25} />} onClick={() => setCreating(true)}>
+        <Button
+          leadingIcon={<Plus className="h-4 w-4" strokeWidth={2.25} />}
+          onClick={() => setCreating(true)}
+        >
           New category
         </Button>
       </div>
@@ -110,7 +114,8 @@ export function AdminCategoriesSurface() {
         <AdminListSkeleton rows={6} />
       ) : list.isError ? (
         <Card padding="md" className="text-caption text-brand-red">
-          Failed to load categories: {list.error instanceof Error ? list.error.message : String(list.error)}
+          Failed to load categories:{' '}
+          {list.error instanceof Error ? list.error.message : String(list.error)}
         </Card>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
@@ -135,7 +140,7 @@ export function AdminCategoriesSurface() {
         </DndContext>
       )}
 
-      {(editing || creating) ? (
+      {editing || creating ? (
         <CategoryEditModal
           category={editing}
           onOpenChange={(o) => {
@@ -174,17 +179,14 @@ function SortableRow({
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn(
-        'flex items-center gap-3 px-4 py-3',
-        isDragging && 'bg-surface-muted/50',
-      )}
+      className={cn('flex items-center gap-3 px-4 py-3', isDragging && 'bg-surface-muted/50')}
     >
       <button
         {...attributes}
         {...listeners}
         type="button"
         aria-label="Drag"
-        className="cursor-grab active:cursor-grabbing text-ink-3 hover:text-ink"
+        className="cursor-grab text-ink-3 hover:text-ink active:cursor-grabbing"
       >
         <GripVertical className="h-4 w-4" strokeWidth={2.25} />
       </button>
@@ -192,19 +194,24 @@ function SortableRow({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={cat.iconUrl} alt="" className="h-7 w-7 rounded-[6px]" />
       ) : (
-        <span className="h-7 w-7 rounded-[6px] bg-surface-muted border border-line" />
+        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-line bg-surface-muted text-ink-2">
+          <CategoryIcon iconKey={cat.iconKey} className="h-4 w-4" />
+        </span>
       )}
-      <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-medium text-ink truncate">
-          {cat.name.en || cat.slug} <span className="text-ink-3 ml-1">· {cat.name.id ?? '—'}</span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[14px] font-medium text-ink">
+          {cat.name.en || cat.slug} <span className="ml-1 text-ink-3">· {cat.name.id ?? '—'}</span>
         </p>
-        <p className="text-caption text-ink-3 font-mono truncate">{cat.slug}</p>
+        <p className="truncate font-mono text-caption text-ink-3">{cat.slug}</p>
       </div>
-      <Badge variant={cat.assetCount > 0 ? 'info' : 'neutral'}>
-        {cat.assetCount} assets
-      </Badge>
+      <Badge variant={cat.assetCount > 0 ? 'info' : 'neutral'}>{cat.assetCount} assets</Badge>
       <Switch checked={cat.isActive} onCheckedChange={(c) => onToggle(c === true)} />
-      <Button variant="ghost" size="sm" onClick={onEdit} leadingIcon={<Pencil className="h-3.5 w-3.5" strokeWidth={2.25} />}>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onEdit}
+        leadingIcon={<Pencil className="h-3.5 w-3.5" strokeWidth={2.25} />}
+      >
         Edit
       </Button>
       <button
@@ -215,7 +222,9 @@ function SortableRow({
         title={canDelete ? 'Delete category' : 'Cannot delete a category with published assets.'}
         className={cn(
           'inline-flex h-8 w-8 items-center justify-center rounded-[8px] transition-colors',
-          canDelete ? 'text-ink-3 hover:bg-brand-red-50 hover:text-brand-red' : 'text-ink-4 cursor-not-allowed',
+          canDelete
+            ? 'text-ink-3 hover:bg-brand-red-50 hover:text-brand-red'
+            : 'cursor-not-allowed text-ink-4',
         )}
       >
         <Trash2 className="h-4 w-4" strokeWidth={2.25} />

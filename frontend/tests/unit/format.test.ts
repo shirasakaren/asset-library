@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatBytes, formatNumber, formatDate } from '@/lib/format';
+import { formatBytes, formatNumber, formatDate, formatUsd } from '@/lib/format';
 
 describe('formatBytes', () => {
   it('handles bytes / KB / MB / GB', () => {
@@ -26,5 +26,16 @@ describe('formatDate', () => {
   it('formats with medium date style', () => {
     const out = formatDate('2026-01-15T00:00:00Z', 'en');
     expect(out).toMatch(/2026/);
+  });
+});
+
+describe('formatUsd', () => {
+  it('always shows two decimals', () => {
+    expect(formatUsd(12.5)).toBe('$12.50');
+    expect(formatUsd(12)).toBe('$12.00');
+    expect(formatUsd(0.1 + 0.2)).toBe('$0.30');
+  });
+  it('groups thousands', () => {
+    expect(formatUsd(1234.5)).toBe('$1,234.50');
   });
 });

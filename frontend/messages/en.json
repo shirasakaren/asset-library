@@ -242,8 +242,7 @@
     "noFiles": "No downloadable files in this version.",
     "downloadAnother": "Download another file",
     "thankYouTitle": "Thank you for downloading.",
-    "thankYouBody": "If your download didn't start automatically, {link}.",
-    "thankYouLink": "click here",
+    "thankYouBody": "If your download didn't start automatically, <link>click here</link>.",
     "failedTitle": "Couldn't start your download",
     "failedBody": "Try again in a moment. If it keeps happening, the file may be quarantined."
   },

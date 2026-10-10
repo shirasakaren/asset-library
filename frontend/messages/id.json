@@ -242,8 +242,7 @@
     "noFiles": "Tidak ada berkas yang bisa diunduh di versi ini.",
     "downloadAnother": "Unduh berkas lain",
     "thankYouTitle": "Terima kasih sudah mengunduh.",
-    "thankYouBody": "Jika unduhan tidak otomatis berjalan, {link}.",
-    "thankYouLink": "klik di sini",
+    "thankYouBody": "Jika unduhan tidak otomatis berjalan, <link>klik di sini</link>.",
     "failedTitle": "Tidak bisa memulai unduhan",
     "failedBody": "Coba lagi sebentar. Kalau terus terjadi, berkasnya mungkin dikarantina."
   },
