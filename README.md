@@ -231,6 +231,9 @@ SMTP and an n8n webhook are optional outbound integrations.
 
 ## 2. Getting started
 
+> Original full stack. For the static preview see the top of this file; it needs
+> only `pnpm install` and `pnpm --filter mgm-asset-library-frontend dev`.
+
 ```bash
 git clone git@github.com:MGM-Laboratory/mgm-asset-library.git
 cd mgm-asset-library
@@ -397,6 +400,9 @@ in production.
 ---
 
 ## 6. Environment reference
+
+> Original full stack. The preview frontend reads only the optional `NEXT_PUBLIC_*`
+> values in `frontend/.env.example`; Keycloak/NextAuth variables are unused.
 
 Both apps validate their environment at boot and fail fast with an
 aggregated error. Canonical, commented lists live in
