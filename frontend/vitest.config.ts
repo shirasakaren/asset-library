@@ -9,6 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/unit/**/*.{test,spec}.{ts,tsx}'],
+    // Playwright specs live in tests/e2e and run with `pnpm test:e2e`.
+    exclude: ['tests/e2e/**', 'node_modules/**'],
     css: false,
   },
   resolve: {
