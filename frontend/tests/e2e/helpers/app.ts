@@ -33,17 +33,12 @@ export async function openProfileMenu(page: Page): Promise<Locator> {
   return menu;
 }
 
-/** A valid 1x1 PNG, enough for the thumbnail uploader. */
-export const TINY_PNG = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-  'base64',
-);
-
 /**
  * The primary Save/Saved toggle of an asset detail page. Scoped to the sidebar
  * (`aside`) because the related-assets cards below carry their own Save buttons.
  */
-export function detailSaveButton(page: Page, state: 'Save' | 'Saved'): Locator {
+/** `state` is the visible label: Save or Saved (Simpan or Tersimpan in Indonesian). */
+export function detailSaveButton(page: Page, state: string): Locator {
   return page.getByRole('complementary').getByRole('button', { name: state, exact: true });
 }
 
