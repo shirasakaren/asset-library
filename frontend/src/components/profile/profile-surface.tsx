@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Cpu, LogOut } from 'lucide-react';
+import { Cpu, RotateCcw } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,7 @@ import { useAuthedFetch } from '@/lib/api/client';
 import { queryKeys } from '@/lib/api/queries';
 import { toast } from '@/components/ui/toaster';
 import { formatDate, formatRelative } from '@/lib/format';
-import { signOut } from '@/preview/session/me-provider';
+import { ResetDemoDialog } from '@/components/preview/reset-demo-dialog';
 import type { LocaleCode } from '@/lib/api/types';
 
 export interface PluginDevice {
@@ -39,7 +39,9 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
   const t = useTranslations('profile');
   const fetcher = useAuthedFetch();
   const queryClient = useQueryClient();
+  const tv = useTranslations('preview');
   const [confirmRevoke, setConfirmRevoke] = useState<PluginDevice | null>(null);
+  const [resetOpen, setResetOpen] = useState(false);
 
   const list = useQuery({
     queryKey: queryKeys.myDevices,
@@ -57,10 +59,6 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
       }),
     onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.myDevices }),
   });
-
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/about' });
-  };
 
   return (
     <>
@@ -109,12 +107,13 @@ export function ProfileSurface({ devices: initial, locale }: Props) {
         <p className="mt-1 text-body-sm text-ink-3">{t('accountBody')}</p>
         <Button
           variant="ghost"
-          className="mt-4 !text-brand-red hover:!bg-brand-red-50"
-          onClick={handleSignOut}
-          leadingIcon={<LogOut className="h-4 w-4" strokeWidth={2.25} />}
+          className="mt-4"
+          onClick={() => setResetOpen(true)}
+          leadingIcon={<RotateCcw className="h-4 w-4" strokeWidth={2.25} />}
         >
-          Sign out
+          {tv('resetDemo')}
         </Button>
+        <ResetDemoDialog open={resetOpen} onOpenChange={setResetOpen} />
       </Card>
 
       {confirmRevoke ? (

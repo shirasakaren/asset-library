@@ -13,7 +13,6 @@
     "goHome": "Ke beranda",
     "seeAll": "Lihat semua",
     "signIn": "Masuk",
-    "signOut": "Keluar",
     "openMenu": "Buka menu",
     "openNotifications": "Buka notifikasi",
     "openProfileMenu": "Buka menu profil",
@@ -29,6 +28,7 @@
     "less": "Lebih sedikit",
     "by": "oleh",
     "noResults": "Tidak ada hasil",
+    "openPreview": "Buka pratinjau",
     "all": "Semua"
   },
   "nav": {
@@ -62,6 +62,23 @@
     "english": "English",
     "indonesian": "Bahasa Indonesia",
     "updated": "Bahasa diperbarui"
+  },
+  "preview": {
+    "bannerLabel": "Pemberitahuan demo",
+    "bannerText": "Pratinjau — kamu sedang menjelajahi demo sebagai {name}. Semua perubahan hanya disimpan di browser ini.",
+    "bannerNotPersistent": "Perubahan tidak dapat disimpan di browser ini (penyimpanan tidak tersedia) — akan hilang saat kamu meninggalkan halaman ini.",
+    "resetDemo": "Setel ulang data demo",
+    "dismiss": "Tutup",
+    "storageFullToast": "Penyimpanan browser penuh atau tidak tersedia — perubahanmu tidak dapat disimpan",
+    "resetConfirmTitle": "Setel ulang data demo?",
+    "resetConfirmBody": "Ini menghapus semua yang kamu ubah di browser ini dan mengembalikan data asli demo. Lanjutkan?",
+    "resetConfirm": "Setel ulang",
+    "resetDone": "Data demo disetel ulang",
+    "resetFailed": "Data demo tidak dapat disetel ulang. Coba lagi.",
+    "attributionLead": "Thumbnail dan daftar aset adalah milik para kreator dan toko masing-masing, dan hanya ditampilkan untuk keperluan demonstrasi. Untuk meminta penghapusan, hubungi",
+    "staticDemo": "Ini adalah demo statis — tanpa akun, tanpa server.",
+    "sourceOnGithub": "Kode sumber di GitHub",
+    "viewOnStore": "Lihat di {store}"
   },
   "footer": {
     "tagline": "Sebuah produk MGM Laboratory. Dibuat oleh dan untuk lab.",
@@ -385,8 +402,7 @@
     "revokeConfirmBody": "Plugin akan langsung keluar. Kamu bisa autentikasi ulang dari Unity atau Unreal nanti.",
     "revoked": "Perangkat dicabut",
     "accountTitle": "Akun",
-    "accountBody": "Ini adalah pratinjau, jadi fitur keluar dinonaktifkan.",
-    "signOut": "Keluar"
+    "accountBody": "Ini adalah pratinjau tanpa akun: perubahanmu hanya tersimpan di browser ini dan bisa disetel ulang kapan saja."
   },
   "errorPages": {
     "forbiddenTitle": "Kamu tidak punya akses ke halaman ini.",

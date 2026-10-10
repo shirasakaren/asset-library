@@ -60,6 +60,20 @@ export async function createDb(opts: {
   }
 
   let persistent = overlay !== null;
+  const listeners = new Set<(persistent: boolean) => void>();
+  /** Drops the overlay after a failed write and tells subscribers (once; it never flips back). */
+  const markNonPersistent = () => {
+    overlay = null;
+    if (!persistent) return;
+    persistent = false;
+    for (const l of [...listeners]) {
+      try {
+        l(false);
+      } catch {
+        // a broken subscriber must not break the write path
+      }
+    }
+  };
   const seedCache = new Map<CollectionName, Doc[]>();
 
   // A failed seed load is not cached, so the next call retries.
@@ -83,8 +97,7 @@ export async function createDb(opts: {
     try {
       await overlay.set(k, entry);
     } catch {
-      persistent = false;
-      overlay = null;
+      markNonPersistent();
     }
   };
 
@@ -164,13 +177,19 @@ export async function createDb(opts: {
         await overlay.setMeta('seedVersion', seedVersion);
         if (rebase) await overlay.setMeta(OFFSET_META, String(offsetDays));
       } catch {
-        persistent = false;
-        overlay = null;
+        markNonPersistent();
       }
     },
 
     get persistent() {
       return persistent;
+    },
+
+    onPersistenceChange(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
     },
   };
 }

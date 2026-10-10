@@ -13,7 +13,6 @@ import {
 import { Loader2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api/fetcher';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/toaster';
 import type { MeResponse } from '@/lib/api/types';
 
 interface MeContextValue {
@@ -141,9 +140,4 @@ export function useSession(): PreviewSession {
 /** Stand-in for `next-auth/react`'s `getSession()`; resolves to the static placeholder token. */
 export async function getPreviewAccessToken(): Promise<'preview'> {
   return 'preview';
-}
-
-/** Stand-in for `next-auth/react`'s `signOut()`: there is no session to end in the preview. */
-export async function signOut(_opts?: { callbackUrl?: string }): Promise<void> {
-  toast.info('Preview mode: sign-out is disabled');
 }

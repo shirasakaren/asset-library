@@ -51,4 +51,9 @@ export interface Db {
   reset(): Promise<void>;
   /** false => in-memory fallback (IndexedDB unavailable or failing) */
   readonly persistent: boolean;
+  /**
+   * Subscribes to persistence flips (currently only `true -> false`, e.g. a quota error on a
+   * write). Returns the unsubscribe function. Optional so other `Db` implementations stay valid.
+   */
+  onPersistenceChange?(listener: (persistent: boolean) => void): () => void;
 }

@@ -20,7 +20,6 @@ vi.mock('@/preview/session/me-provider', () => ({
     avatar: { initials: 'DU', bgColor: 'brand-blue', fgColor: 'ink-white' },
     createdAt: '2026-01-02T00:00:00.000Z',
   }),
-  signOut: vi.fn(),
 }));
 vi.mock('@/components/notifications/notification-inbox', () => ({
   NotificationInbox: ({

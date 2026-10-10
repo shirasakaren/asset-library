@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { Navbar } from '@/components/layout/navbar';
+import { PreviewBanner } from '@/components/preview/preview-banner';
 import { Footer } from '@/components/layout/footer';
 import { WsBootstrap } from '@/components/navigation/ws-bootstrap';
 import { NotificationsLive } from '@/components/notifications/notification-live';
@@ -17,6 +18,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const me = useMe();
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
+      <PreviewBanner />
       <Navbar user={me} />
       <main className="flex-1">{children}</main>
       <Footer />
