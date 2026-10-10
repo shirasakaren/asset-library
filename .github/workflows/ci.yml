@@ -3,8 +3,10 @@
 #
 #   * backend  — NestJS API + workers (lint, typecheck, unit tests, build,
 #                OpenAPI export check)
-#   * frontend — Next.js web client (lint, typecheck, OpenAPI sync check,
-#                unit tests, production build)
+#   * frontend — static, login-free preview (lint, e2e lint, typecheck, OpenAPI
+#                types check, unit tests, static export, Playwright e2e against
+#                the export). The same checks gate the GitHub Pages deploy in
+#                pages.yml.
 #
 # Jobs are path-filtered so a frontend-only PR does not rebuild the API and
 # vice versa. Root-level changes (workspace files, workflows, compose) run both.
@@ -17,7 +19,7 @@ on:
   push:
     branches: [main, staging, production]
   pull_request:
-    branches: ['**']
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -140,23 +142,15 @@ jobs:
           path: backend/coverage/
 
   frontend:
-    name: Frontend — lint, typecheck, test, build
+    name: Frontend — lint, typecheck, test, build, e2e
     needs: changes-frontend
     if: needs.changes-frontend.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # The static preview reads only NEXT_PUBLIC_* values at build time.
     env:
-      NEXT_PUBLIC_APP_URL: https://app-url.placeholder.invalid
-      NEXT_PUBLIC_API_URL: https://app-url.placeholder.invalid
-      NEXT_PUBLIC_WS_URL: ws://ws-url.placeholder.invalid
-      NEXT_PUBLIC_COMMUNITY_DOCS_URL: https://docs-url.placeholder.invalid
-      NEXT_PUBLIC_COMMUNITY_LEARNING_URL: https://learn-url.placeholder.invalid
-      NEXT_PUBLIC_COMMUNITY_HELP_URL: https://help-url.placeholder.invalid
-      NEXTAUTH_URL: https://nextauth.placeholder.invalid
-      NEXTAUTH_SECRET: placeholder-secret-placeholder-secret
-      KEYCLOAK_CLIENT_ID: placeholder-client-id
-      KEYCLOAK_CLIENT_SECRET: placeholder-client-secret
-      KEYCLOAK_ISSUER: https://keycloak.placeholder.invalid/realms/placeholder
-      KEYCLOAK_LOGOUT_REDIRECT: https://nextauth.placeholder.invalid
+      NEXT_PUBLIC_APP_URL: https://asset.creations.ren
+      NEXT_TELEMETRY_DISABLED: "1"
 
     steps:
       - name: Checkout code
@@ -168,7 +162,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: pnpm
 
       - name: Install workspace dependencies
@@ -178,24 +172,46 @@ jobs:
         working-directory: frontend
         run: pnpm lint
 
+      - name: Lint e2e
+        working-directory: frontend
+        run: pnpm lint:e2e
+
       - name: Typecheck
         working-directory: frontend
         run: pnpm typecheck
 
-      - name: OpenAPI schema is current
+      # frontend/src/lib/api/schema.ts (generated from backend/openapi.json) is
+      # still the contract for the API types the preview handlers are typed against.
+      - name: OpenAPI types are current
         working-directory: frontend
-        run: |
-          if [ -f ../backend/openapi.json ] || [ -n "$OPENAPI_SOURCE_URL" ]; then
-            pnpm openapi:gen
-            git diff --exit-code src/lib/api/schema.ts || (echo "Run 'pnpm openapi:gen' and commit." && exit 1)
-          else
-            echo "Skipping openapi sync — no source available in CI"
-          fi
+        run: pnpm openapi:check
 
       - name: Unit tests
         working-directory: frontend
         run: pnpm test
 
-      - name: Build
+      - name: Build static export
         working-directory: frontend
         run: pnpm build
+
+      - name: Install Chromium
+        working-directory: frontend
+        run: pnpm exec playwright install --with-deps chromium
+
+      # playwright.config.ts serves frontend/out itself on port 4317.
+      - name: End-to-end tests
+        working-directory: frontend
+        env:
+          CI: "true"
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-playwright-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
