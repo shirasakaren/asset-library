@@ -13,3 +13,4 @@ import './uploads';
 import './downloads';
 import './gifs';
 import './analytics';
+import './requests';
