@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { createSeededTestApp, type TestApp } from '@/preview/test-utils';
 import type {
+  AdminAssetListPage,
   AdminAuditPage,
   AdminStorageAssetRow,
   AdminStorageUserRow,
+  AdminUserPage,
   DashboardResponse,
 } from '@/lib/api/admin-types';
 import type {
@@ -12,6 +14,7 @@ import type {
   AuditRecord,
   PlatformAnalyticsRecord,
   StorageRecord,
+  TagRecord,
   UserRecord,
 } from '@/preview/records';
 
@@ -196,5 +199,142 @@ describe('admin analytics and queues over the real seed', () => {
     const plain = users.find((u) => !u.isAdmin)!;
     const a = await app(plain.id);
     await expect(a.call('GET', '/admin/dashboard')).rejects.toMatchObject({ status: 403 });
+  });
+});
+
+describe('admin assets and users over the real seed', () => {
+  const confirm = () => ({ confirm: 'I understand', confirmedAt: '2026-10-10T11:59:50.000Z' });
+
+  it('lists all 151 assets with the global counts and pages without duplicates', async () => {
+    const a = await app();
+    const first = await a.call<AdminAssetListPage>('GET', '/admin/assets', {
+      query: { limit: 50 },
+    });
+    expect(first.counts).toEqual({ DRAFT: 12, PUBLISHED: 132, ARCHIVED: 7, DELETED: 0 });
+    const ids: string[] = [];
+    let page = first;
+    for (;;) {
+      ids.push(...page.items.map((x) => x.id));
+      if (!page.pageInfo.hasMore) break;
+      page = await a.call<AdminAssetListPage>('GET', '/admin/assets', {
+        query: { limit: 50, cursor: page.pageInfo.nextCursor },
+      });
+    }
+    expect(ids).toHaveLength(151);
+    expect(new Set(ids).size).toBe(151);
+    expect(first.items.every((r) => r.ownerEmail && r.categoryName && r.ownerDisplayName)).toBe(
+      true,
+    );
+    const published = await a.call<AdminAssetListPage>('GET', '/admin/assets', {
+      query: { status: 'PUBLISHED', limit: 100, sort: 'mostDownloaded' },
+    });
+    expect(published.items).toHaveLength(100);
+    const dl = published.items.map((r) => r.totalDownloads);
+    expect(dl).toEqual([...dl].sort((x, y) => y - x));
+    const search = await a.call<AdminAssetListPage>('GET', '/admin/assets', {
+      query: { q: 'ultimate prop' },
+    });
+    expect(search.items.length).toBeGreaterThan(0);
+  });
+
+  it('archive, restore and transfer keep the dashboard and the audit log consistent', async () => {
+    const a = await app();
+    const assets = await a.db.list<AssetRecord>('assets');
+    const target = assets.find((x) => x.status === 'PUBLISHED' && x.ownerId !== 'u-persona')!;
+    const dash = () => a.call<DashboardResponse>('GET', '/admin/dashboard');
+    const before = (await dash()).counts;
+
+    await a.call('POST', `/admin/assets/${target.id}/archive`, {
+      body: { reason: 'Outdated page' },
+    });
+    const mid = (await dash()).counts;
+    expect(mid.publishedAssets).toBe(before.publishedAssets - 1);
+    expect(mid.archivedAssets).toBe(before.archivedAssets + 1);
+    await a.call('POST', `/admin/assets/${target.id}/restore`);
+    expect((await dash()).counts.publishedAssets).toBe(before.publishedAssets);
+
+    await a.call('POST', `/admin/assets/${target.id}/transfer`, {
+      body: { newOwnerId: 'u-persona', ...confirm() },
+    });
+    const owned = await a.call<AdminAssetListPage>('GET', '/admin/assets', {
+      query: { ownerId: 'u-persona', limit: 100 },
+    });
+    expect(owned.items.some((r) => r.id === target.id)).toBe(true);
+
+    const log = await a.call<AdminAuditPage>('GET', '/admin/audit', { query: { limit: 3 } });
+    expect(log.items.map((x) => x.action)).toEqual([
+      'asset.transfer',
+      'asset.admin_restore',
+      'asset.admin_archive',
+    ]);
+    expect(log.items.every((x) => x.actorDisplayName === 'Aria Wijaya')).toBe(true);
+    // a seeded row, for the shape
+    const seededRow = (
+      await a.call<AdminAuditPage>('GET', '/admin/audit', { query: { limit: 100 } })
+    ).items.find((x) => x.id.startsWith('au-0'))!;
+    expect(Object.keys(log.items[0]!).sort()).toEqual(Object.keys(seededRow).sort());
+    const sorted = (
+      await a.call<AdminAuditPage>('GET', '/admin/audit', { query: { limit: 100 } })
+    ).items.map((x) => x.createdAt);
+    expect(sorted).toEqual([...sorted].sort().reverse());
+  });
+
+  it('force delete removes the asset everywhere and releases its tags', async () => {
+    const a = await app();
+    const assets = await a.db.list<AssetRecord>('assets');
+    const target = assets.find((x) => x.status === 'PUBLISHED' && x.tagIds.length > 0)!;
+    const tag = target.tagIds[0]!;
+    const usage = async () => ((await a.db.get<TagRecord>('tags', tag)) as TagRecord).usageCount;
+    const before = await usage();
+    await a.call('POST', `/admin/assets/${target.id}/force-delete`, {
+      body: { reason: 'Legal takedown', ...confirm() },
+    });
+    expect(await usage()).toBe(before - 1);
+    await expect(a.call('GET', `/assets/${target.id}`)).rejects.toMatchObject({ status: 404 });
+    const rows = await a.call<AdminAssetListPage>('GET', '/admin/assets', {
+      query: { limit: 100 },
+    });
+    expect(rows.counts.PUBLISHED).toBe(131);
+    const storage = await a.call<AdminStorageAssetRow[]>('GET', '/admin/storage/assets', {
+      query: { limit: 200 },
+    });
+    expect(storage.some((r) => r.assetId === target.id)).toBe(false);
+  });
+
+  it('lists the 25 users, three admins, and promotes and demotes with the guards', async () => {
+    const a = await app();
+    const all: string[] = [];
+    let cursor: string | undefined;
+    do {
+      const page: AdminUserPage = await a.call('GET', '/admin/users', {
+        query: { limit: 10, cursor },
+      });
+      all.push(...page.items.map((u) => u.id));
+      cursor = page.pageInfo.hasMore ? (page.pageInfo.nextCursor ?? undefined) : undefined;
+    } while (cursor);
+    expect(all).toHaveLength(25);
+    expect(new Set(all).size).toBe(25);
+    const admins = await a.call<AdminUserPage>('GET', '/admin/users', {
+      query: { isAdmin: 'true', limit: 50 },
+    });
+    expect(admins.items.map((u) => u.id).sort()).toEqual(
+      ['u-kenji-matsuda', 'u-persona', 'u-siti-rahmawati'].sort(),
+    );
+
+    await a.call('POST', '/admin/users/u-kenji-matsuda/demote', { body: confirm() });
+    await expect(
+      a.call('POST', '/admin/users/u-persona/demote', { body: confirm() }),
+    ).rejects.toMatchObject({ status: 409, code: 'users.self_demote_preview' });
+    await a.call('POST', '/admin/users/u-siti-rahmawati/demote', { body: confirm() });
+    await expect(
+      a.call('POST', '/admin/users/u-persona/demote', { body: confirm() }),
+    ).rejects.toMatchObject({ status: 409, code: 'admin.cannot_remove_last_admin' });
+    await a.call('POST', '/admin/users/u-kenji-matsuda/promote', { body: confirm() });
+    const now = await a.call<AdminUserPage>('GET', '/admin/users', {
+      query: { isAdmin: 'true', limit: 50 },
+    });
+    expect(now.items.map((u) => u.id).sort()).toEqual(['u-kenji-matsuda', 'u-persona']);
+    const me = await a.call<{ role: string }>('GET', '/auth/me');
+    expect(me.role).toBe('admin');
   });
 });

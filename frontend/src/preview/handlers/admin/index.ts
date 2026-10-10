@@ -6,3 +6,4 @@ import './queues';
 import './audit';
 import './assets';
 import './assets-danger';
+import './users';
