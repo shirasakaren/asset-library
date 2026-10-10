@@ -8,3 +8,4 @@ import './assets';
 import './assets-danger';
 import './users';
 import './reports';
+import './requests';
