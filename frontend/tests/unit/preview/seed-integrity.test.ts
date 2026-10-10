@@ -481,6 +481,13 @@ describe('cross-collection references', () => {
       const a = assetById.get(s.assetId);
       expect(a?.status, s.id).toBe('PUBLISHED');
       expect(s.customBannerUrl, s.id).toBe(a!.thumbnail.url);
+      // The edit modal's custom-banner mode needs both languages, so a seeded slot must be savable.
+      for (const lang of ['en', 'id'] as const) {
+        expect(
+          s.customShortDescription?.[lang]?.trim(),
+          `${s.id} ${lang} description`,
+        ).toBeTruthy();
+      }
     }
     expect(new Set(f.map((s) => s.assetId)).size).toBe(5);
     expect(f.some((s) => assetById.get(s.assetId)?.ownerId === PERSONA)).toBe(true);

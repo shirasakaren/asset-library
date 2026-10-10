@@ -1394,13 +1394,16 @@ function build(): SeedData {
       customBannerKey: `featured/${w.entry.slug}.webp`,
       customBannerUrl: `/thumbs/${w.entry.slug}.webp`,
       customTitle: custom ? `Staff pick: ${w.title}` : null,
+      // Every slot carries a description in both languages (the admin edit modal's custom-banner
+      // mode requires both, so a seeded slot has to be savable as it is). Derived from the asset's
+      // own short description; slot 4 keeps its "hand-picked" suffix.
       customShortDescription:
         i === 3
           ? {
               en: `${w.entry.short} Hand-picked by the team this month.`,
               id: `${w.entry.short_id} Dipilih langsung oleh tim bulan ini.`,
             }
-          : null,
+          : { en: w.entry.short, id: w.entry.short_id },
       sortOrder: i + 1,
       isActive: true,
       createdAt: iso(createdMs),
