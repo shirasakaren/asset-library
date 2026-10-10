@@ -52,16 +52,28 @@ describe('Db.onPersistenceChange', () => {
     expect(db.persistent).toBe(true);
   });
 
-  it('notifies when reset() cannot reach the overlay', async () => {
+  it('reset() rejects when the overlay cannot be cleared, changes nothing and works on retry', async () => {
     const overlay = createIdbOverlay();
     const db = await createDb({ seed, overlay, seedVersion: '1' });
+    await db.put('assets', { id: 'keep' } as never);
     const listener = vi.fn();
     db.onPersistenceChange!(listener);
+    const clear = overlay.clear;
     overlay.clear = async () => {
       throw new Error('blocked');
     };
+    await expect(db.reset()).rejects.toThrow('blocked');
+    // The old overlay is still what a reload would bring back, so memory must still match it.
+    expect(await db.get('assets', 'keep')).toBeTruthy();
+    expect(db.persistent).toBe(true);
+    expect(listener).not.toHaveBeenCalled();
+
+    overlay.clear = clear;
     await db.reset();
-    expect(listener).toHaveBeenCalledWith(false);
+    expect(await db.get('assets', 'keep')).toBeUndefined();
+    const reopened = createIdbOverlay();
+    await reopened.open();
+    expect((await reopened.all()).size).toBe(0);
   });
 });
 

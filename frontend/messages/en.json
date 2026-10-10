@@ -75,6 +75,7 @@
     "resetConfirm": "Reset",
     "resetDone": "Demo data reset",
     "resetFailed": "Couldn't reset the demo data. Please try again.",
+    "resetPartial": "Demo data was reset, but some uploaded files could not be removed from this browser.",
     "attributionLead": "Thumbnails and listings belong to their respective creators and stores and are shown for demonstration only. To request removal, contact",
     "staticDemo": "This is a static demo — no account, no server.",
     "sourceOnGithub": "Source on GitHub",

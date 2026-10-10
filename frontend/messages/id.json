@@ -75,6 +75,7 @@
     "resetConfirm": "Setel ulang",
     "resetDone": "Data demo disetel ulang",
     "resetFailed": "Data demo tidak dapat disetel ulang. Coba lagi.",
+    "resetPartial": "Data demo sudah disetel ulang, tetapi beberapa berkas unggahan tidak dapat dihapus dari browser ini.",
     "attributionLead": "Thumbnail dan daftar aset adalah milik para kreator dan toko masing-masing, dan hanya ditampilkan untuk keperluan demonstrasi. Untuk meminta penghapusan, hubungi",
     "staticDemo": "Ini adalah demo statis — tanpa akun, tanpa server.",
     "sourceOnGithub": "Kode sumber di GitHub",

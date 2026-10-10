@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { resetDemo } from '@/preview';
 import { goHomeWithReload } from '@/preview/navigate';
+import { ResetPartialError } from '@/preview/reset-error';
 import { clearBannerDismissed } from '@/preview/banner-storage';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +20,8 @@ import { toast } from '@/components/ui/toaster';
 
 /** Gives the success toast a moment on screen before the page reloads. */
 const RELOAD_DELAY_MS = 600;
+/** A partial-failure message needs longer to be read. */
+const PARTIAL_RELOAD_DELAY_MS = 3000;
 
 interface ResetDemoDialogProps {
   open: boolean;
@@ -38,19 +41,27 @@ export function ResetDemoDialog({ open, onOpenChange }: ResetDemoDialogProps) {
 
   const confirm = async () => {
     setBusy(true);
+    let partial = false;
     try {
       await resetDemo();
     } catch (err) {
       console.error('[preview] reset failed', err);
-      toast.error(t('resetFailed'));
-      setBusy(false);
-      return;
+      if (!(err instanceof ResetPartialError)) {
+        // Nothing was reset (the stored data would come back after a reload): stay here.
+        toast.error(t('resetFailed'));
+        setBusy(false);
+        return;
+      }
+      partial = true;
     }
     queryClient.clear();
     clearBannerDismissed();
-    toast.success(t('resetDone'));
+    // A partial reset did wipe the records (only orphaned upload bytes remain), so the page still
+    // refreshes; the message just stays up longer.
+    if (partial) toast.error(t('resetPartial'));
+    else toast.success(t('resetDone'));
     // Stay busy: the page is about to reload.
-    setTimeout(goHomeWithReload, RELOAD_DELAY_MS);
+    setTimeout(goHomeWithReload, partial ? PARTIAL_RELOAD_DELAY_MS : RELOAD_DELAY_MS);
   };
 
   return (

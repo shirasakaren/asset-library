@@ -1,6 +1,7 @@
 import type { AssetRecord } from '../records';
 import type { PreviewContext } from '../router/router';
 import type { Db } from '../types';
+import { scheduleSimulation } from '../simulations';
 import { serialized } from './write-queue';
 
 /** How long the simulated analyzer takes (the real one is a background job). */
@@ -31,12 +32,16 @@ export function scheduleAnalysis(ctx: PreviewContext, assetId: string, versionId
   if (keys.has(key)) return false;
   keys.add(key);
   const owner = keys;
-  setTimeout(() => {
-    owner.delete(key);
-    void finishAnalysis(ctx, assetId, versionId).catch((err) => {
-      console.error('[preview] analysis failed', assetId, versionId, err);
-    });
-  }, SCHEDULED_ANALYSIS_MS);
+  scheduleSimulation(
+    () => {
+      owner.delete(key);
+      void finishAnalysis(ctx, assetId, versionId).catch((err) => {
+        console.error('[preview] analysis failed', assetId, versionId, err);
+      });
+    },
+    SCHEDULED_ANALYSIS_MS,
+    () => owner.delete(key),
+  );
   return true;
 }
 

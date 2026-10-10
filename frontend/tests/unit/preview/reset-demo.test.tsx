@@ -11,6 +11,7 @@ vi.mock('@/preview/navigate', () => ({ goHomeWithReload: () => goHome() }));
 const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn(), info: vi.fn() }));
 vi.mock('@/components/ui/toaster', () => ({ toast }));
 
+import { ResetPartialError } from '@/preview/reset-error';
 import { ProfileMenu } from '@/components/navigation/profile-menu';
 
 const me: MeResponse = {
@@ -90,5 +91,32 @@ describe('profile menu: Reset demo data', () => {
     await vi.waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
     expect(goHome).not.toHaveBeenCalled();
     expect(screen.getByText('preview.resetConfirmTitle')).toBeInTheDocument();
+  });
+
+  it('closes the profile popover when the confirm dialog opens', async () => {
+    const { u } = setup();
+    await u.click(screen.getByRole('button', { name: 'common.openProfileMenu' }));
+    await u.click(screen.getByRole('button', { name: 'preview.resetDemo' }));
+    expect(screen.getByText('preview.resetConfirmTitle')).toBeInTheDocument();
+    // hidden: true also finds content Radix marks aria-hidden behind the modal
+    expect(
+      screen.queryByRole('button', { name: 'preview.resetDemo', hidden: true }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Aria Wijaya')).not.toBeInTheDocument();
+  });
+
+  it('a partial reset (files not removed) says so, but still refreshes the page', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    resetDemo.mockRejectedValueOnce(new ResetPartialError());
+    const client = new QueryClient();
+    client.setQueryData(['x'], 1);
+    const { u } = setup(client);
+    await u.click(screen.getByRole('button', { name: 'common.openProfileMenu' }));
+    await u.click(screen.getByRole('button', { name: 'preview.resetDemo' }));
+    await u.click(screen.getByRole('button', { name: 'preview.resetConfirm' }));
+    await vi.waitFor(() => expect(goHome).toHaveBeenCalledTimes(1), { timeout: 5000 });
+    expect(toast.error).toHaveBeenCalledWith('preview.resetPartial');
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(client.getQueryData(['x'])).toBeUndefined();
   });
 });

@@ -166,14 +166,20 @@ export async function createDb(opts: {
       await persist(key(coll, id), { op: 'del', seq: nextSeq++ });
     },
 
+    /**
+     * Wipes the visitor's changes. Rejects when the stored overlay cannot be cleared: the old
+     * overlay would come back on the next load, so pretending to succeed would be a lie. Nothing
+     * is changed in that case (memory still matches the overlay) and a retry is safe. Once the
+     * overlay IS clear, a failure to write the meta rows only costs persistence.
+     */
     async reset() {
+      if (overlay) await overlay.clear();
       entries = new Map();
       nextSeq = 1;
       seedCache.clear();
       offsetDays = freshOffset();
       if (!overlay) return;
       try {
-        await overlay.clear();
         await overlay.setMeta('seedVersion', seedVersion);
         if (rebase) await overlay.setMeta(OFFSET_META, String(offsetDays));
       } catch {

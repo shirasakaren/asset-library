@@ -20,6 +20,7 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
   const tp = useTranslations('profileMenu');
   const tv = useTranslations('preview');
   const [resetOpen, setResetOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const tokens = avatarFromServer(user.avatar);
   const roleLabel =
     user.role === 'admin'
@@ -33,7 +34,7 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
 
   return (
     <>
-      <Popover>
+      <Popover open={menuOpen} onOpenChange={setMenuOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
@@ -67,7 +68,11 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
           <div className="p-1.5">
             <button
               type="button"
-              onClick={() => setResetOpen(true)}
+              onClick={() => {
+                // One overlay at a time: the dialog replaces the popover.
+                setMenuOpen(false);
+                setResetOpen(true);
+              }}
               className="flex h-9 w-full items-center gap-2.5 rounded-[8px] px-2.5 text-[13.5px] text-ink transition-colors hover:bg-surface-muted focus-visible:bg-surface-muted focus-visible:outline-none"
             >
               <RotateCcw className="h-4 w-4 text-ink-3" strokeWidth={2.25} />

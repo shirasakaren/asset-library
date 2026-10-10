@@ -6,6 +6,7 @@ import type { Db } from '../../types';
 import { archiveAsset } from '../asset-lifecycle';
 import { isoSeconds } from '../asset-write-core';
 import { recordAudit } from '../audit-core';
+import { scheduleSimulation } from '../../simulations';
 import { serialized } from '../write-queue';
 import { adminRoute, cmpStr } from './common';
 
@@ -162,12 +163,16 @@ function scheduleRescan(ctx: PreviewContext, versionId: string): boolean {
   if (keys.has(versionId)) return false;
   keys.add(versionId);
   const owner = keys;
-  setTimeout(() => {
-    owner.delete(versionId);
-    void finishRescan(ctx, versionId).catch((err) => {
-      console.error('[preview] AV rescan failed', versionId, err);
-    });
-  }, SCHEDULED_RESCAN_MS);
+  scheduleSimulation(
+    () => {
+      owner.delete(versionId);
+      void finishRescan(ctx, versionId).catch((err) => {
+        console.error('[preview] AV rescan failed', versionId, err);
+      });
+    },
+    SCHEDULED_RESCAN_MS,
+    () => owner.delete(versionId),
+  );
   return true;
 }
 

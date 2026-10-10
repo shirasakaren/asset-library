@@ -10,6 +10,8 @@ import { toSearchParams } from './router/query';
 import { ApiError } from '@/lib/api/errors';
 import { getBlobStore } from './uploads/blob-store';
 import { clearObjectUrls } from './uploads/blob-url';
+import { ResetPartialError } from './reset-error';
+import { cancelPendingSimulations } from './simulations';
 import './handlers';
 
 let dbPromise: Promise<Db> | null = null;
@@ -32,14 +34,30 @@ export function getDb(): Promise<Db> {
 }
 
 /**
- * Wipes the visitor's changes: the record overlay AND every uploaded blob (they live in a
- * separate IndexedDB, `mgm-preview-blobs`), and revokes the `blob:` download URLs handed out so far.
+ * Wipes the visitor's changes: pending simulations (analysis, AV rescan, simulated replies are
+ * cancelled first so none writes into the fresh data), the record overlay AND every uploaded blob
+ * (they live in a separate IndexedDB, `mgm-preview-blobs`), and revokes the `blob:` download URLs
+ * handed out so far.
+ *
+ * Rejects with the original error when the overlay cannot be cleared (nothing was reset). When the
+ * records are reset but the blob store cannot be cleared (retried once), rejects with
+ * `ResetPartialError`: the demo data is fresh, only orphaned upload bytes remain.
  */
 export async function resetDemo(): Promise<void> {
   const db = await getDb();
+  cancelPendingSimulations();
   await db.reset();
-  await getBlobStore().clear();
   clearObjectUrls();
+  const blobs = getBlobStore();
+  try {
+    await blobs.clear();
+  } catch {
+    try {
+      await blobs.clear();
+    } catch (err) {
+      throw new ResetPartialError(err);
+    }
+  }
 }
 
 let ctxPromise: Promise<PreviewContext> | null = null;

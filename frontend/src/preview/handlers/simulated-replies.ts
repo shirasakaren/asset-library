@@ -2,6 +2,7 @@ import type { CommentKind, Engine, TipTapDoc } from '@/lib/api/types';
 import type { AssetRecord, CommentRecord, UserRecord } from '../records';
 import type { Db } from '../types';
 import type { PreviewContext } from '../router/router';
+import { scheduleSimulation } from '../simulations';
 import { insertComment, MAX_DEPTH, notifyPersonaOfComment, plainText } from './comment-core';
 
 /**
@@ -180,10 +181,14 @@ export function scheduleSimulatedReply(
   const handled = handledFor(ctx.db);
   if (ctx.timers === false || handled.has(parentCommentId)) return false;
   handled.add(parentCommentId);
-  setTimeout(() => {
-    deliverReply(ctx, parentCommentId).catch((err: unknown) => {
-      console.error('[preview] simulated reply failed', err);
-    });
-  }, opts.delayMs ?? SIMULATED_REPLY_DELAY_MS);
+  scheduleSimulation(
+    () => {
+      deliverReply(ctx, parentCommentId).catch((err: unknown) => {
+        console.error('[preview] simulated reply failed', err);
+      });
+    },
+    opts.delayMs ?? SIMULATED_REPLY_DELAY_MS,
+    () => handled.delete(parentCommentId),
+  );
   return true;
 }

@@ -1,11 +1,13 @@
 import 'fake-indexeddb/auto';
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { getDb, resetDemo, previewFetch } from '@/preview';
 import { route } from '@/preview/router/router';
 import { createIdbOverlay } from '@/preview/store/overlay';
 import { ApiError } from '@/lib/api/errors';
 import { getBlobStore } from '@/preview/uploads/blob-store';
 import { objectUrlFor } from '@/preview/uploads/blob-url';
+import { ResetPartialError } from '@/preview/reset-error';
+import { cancelPendingSimulations, scheduleSimulation } from '@/preview/simulations';
 
 describe('preview index singleton', () => {
   it('concurrent first calls to getDb share one instance', async () => {
@@ -93,5 +95,66 @@ describe('previewFetch', () => {
     expect(args).toContain('/t-idx-unclonable');
     expect(args.some((a) => a instanceof Error)).toBe(true);
     spy.mockRestore();
+  });
+});
+
+describe('resetDemo failure handling', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    cancelPendingSimulations();
+  });
+
+  it('rejects when the overlay cannot be cleared, and leaves the blobs alone', async () => {
+    const db = await getDb();
+    await db.put('kv', { id: 'survivor', v: 1 } as never);
+    const store = getBlobStore();
+    await store.put('up-kept', new Blob(['b']));
+    const original = IDBObjectStore.prototype.clear;
+    vi.spyOn(IDBObjectStore.prototype, 'clear').mockImplementation(function (this: IDBObjectStore) {
+      if (this.name === 'overlay') throw new Error('clear blocked');
+      return original.call(this);
+    });
+    await expect(resetDemo()).rejects.toThrow('clear blocked');
+    expect(await db.get('kv', 'survivor')).toBeDefined();
+    expect((await store.list()).map((m) => m.id)).toContain('up-kept');
+    vi.restoreAllMocks();
+    await resetDemo(); // a retry works
+    expect(await db.get('kv', 'survivor')).toBeUndefined();
+  });
+
+  it('retries a failing blob clear once', async () => {
+    const store = getBlobStore();
+    const real = store.clear.bind(store);
+    const clear = vi
+      .spyOn(store, 'clear')
+      .mockRejectedValueOnce(new Error('blob db busy'))
+      .mockImplementation(real);
+    await expect(resetDemo()).resolves.toBeUndefined();
+    expect(clear).toHaveBeenCalledTimes(2);
+  });
+
+  it('reports a ResetPartialError when the records are reset but the blobs cannot be cleared', async () => {
+    const db = await getDb();
+    await db.put('kv', { id: 'gone-after', v: 1 } as never);
+    vi.spyOn(getBlobStore(), 'clear').mockRejectedValue(new Error('blob db broken'));
+    const err = await resetDemo().then(
+      () => null,
+      (e: unknown) => e,
+    );
+    expect(err).toBeInstanceOf(ResetPartialError);
+    expect(await db.get('kv', 'gone-after')).toBeUndefined();
+  });
+
+  it('cancels pending simulations first', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      const fired = vi.fn();
+      scheduleSimulation(fired, 100);
+      await resetDemo();
+      await vi.advanceTimersByTimeAsync(500);
+      expect(fired).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
