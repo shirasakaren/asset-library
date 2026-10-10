@@ -14,3 +14,4 @@ import './downloads';
 import './gifs';
 import './analytics';
 import './requests';
+import './reports';
