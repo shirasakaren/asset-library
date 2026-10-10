@@ -19,9 +19,17 @@ import AxeBuilder from '@axe-core/playwright';
  * file is not written concurrently):
  *
  *   A11Y_UPDATE_BASELINE=1 pnpm exec playwright test 09-a11y --workers=1
+ *
+ * The flag is refused when `CI` is set (GitHub Actions sets it): a CI run must
+ * never rewrite the baseline and turn a regression green.
  */
 const BASELINE_FILE = join(__dirname, '..', 'a11y-contrast-baseline.json');
 const UPDATE = !!process.env.A11Y_UPDATE_BASELINE;
+if (UPDATE && process.env.CI) {
+  throw new Error(
+    'A11Y_UPDATE_BASELINE is not allowed when CI is set: update the contrast baseline locally and commit the diff.',
+  );
+}
 
 interface BaselineEntry {
   /** axe selector of the failing node (dynamic ids stripped). */

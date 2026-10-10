@@ -12,7 +12,7 @@ pnpm lint:e2e             # eslint on tests/e2e and playwright.config.ts (not co
 pnpm exec playwright test tests/e2e/05-search-filters.spec.ts   # one file
 ```
 
-`playwright.config.ts` starts `scripts/serve-export.mjs out 4317` itself (an uncommon port on purpose) (it behaves like GitHub Pages: files first, unknown paths answered with `/404.html` and status 404) and reuses a server that is already running locally. Nothing else is needed, no env vars.
+`playwright.config.ts` starts `scripts/serve-export.mjs out 4317` itself (an uncommon port on purpose; it behaves like GitHub Pages: files first, unknown paths answered with `/404.html` and status 404) and reuses a server that is already running locally. Nothing else is needed, no env vars.
 
 Against an already deployed site:
 
@@ -59,7 +59,7 @@ With `E2E_BASE_URL` set no local server is started and `out/` is not needed. The
   | white on brand-red `#f94141`                    | 3.58:1                 | notification count, red avatar                                |
   | ink-4 `#9aa1ad` on white                        | 2.6:1                  | "0 chars" helper in the editor                                |
 
-  Others in the baseline: a lighter brand-blue `#4c7aca` on brand-blue-50 (3.74:1, the LATEST tag) and ink-3 `#6b7280` on the tinted dashboard stat cards (green-50, yellow-50, red-50: 4.04 to 4.48:1). Regenerate after an intentional change with `A11Y_UPDATE_BASELINE=1 pnpm exec playwright test 09-a11y --workers=1` and review the diff.
+  Others in the baseline: a lighter brand-blue `#4c7aca` on brand-blue-50 (3.74:1, the LATEST tag) and ink-3 `#6b7280` on the tinted dashboard stat cards (green-50, yellow-50, red-50: 4.04 to 4.48:1). Regenerate after an intentional change with `A11Y_UPDATE_BASELINE=1 pnpm exec playwright test 09-a11y --workers=1` and review the diff. The flag is refused (the spec throws) when `CI` is set, so a CI run can never rewrite the baseline.
 
 ## Adding a test
 
