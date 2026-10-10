@@ -4,3 +4,5 @@ import './storage';
 import './analytics';
 import './queues';
 import './audit';
+import './assets';
+import './assets-danger';

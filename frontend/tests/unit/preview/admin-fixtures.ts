@@ -216,3 +216,55 @@ export const published = (id: string, publishedAt: string, over: Partial<AssetRe
 /** `db.patch` of an asset (typed). */
 export const patchAsset = (app: TestApp, id: string, partial: Partial<AssetRecord>) =>
   app.db.patch<AssetRecord>('assets', id, partial);
+
+/**
+ * Admin asset fixture world on top of `adminApp`: the 3 published assets of `u-other`
+ * (`a-fx-001` 3d-models, `-002` 2d-art, `-003` 3d-models + tag-lowpoly), plus
+ * `a-mine` (PUBLISHED, persona, tag-lava), `a-arch` (ARCHIVED, u-other), `a-draft` (DRAFT,
+ * u-third) and `a-gone` (DELETED, u-third, tag-lava). `updatedAt` descends in that order.
+ */
+export async function assetsApp(
+  opts: Omit<AdminAppOpts, 'assets'> = {},
+  extra: Partial<Record<CollectionName, Doc[]>> = {},
+): Promise<TestApp> {
+  const t = (day: number) => `2026-05-${String(day).padStart(2, '0')}T10:00:00.000Z`;
+  return adminApp(
+    {
+      ...opts,
+      assets: [
+        fixtureAsset('a-mine', {
+          ownerId: FX_PERSONA,
+          slug: 'mine',
+          title: 'My Own Asset',
+          tagIds: ['tag-lava'],
+          createdAt: '2026-04-01T00:00:00.000Z',
+          publishedAt: '2026-04-01T00:00:00.000Z',
+          updatedAt: t(10),
+          totalDownloads: 9,
+          totalSaves: 5,
+        }),
+        fixtureAsset('a-arch', {
+          status: 'ARCHIVED',
+          title: 'Archived Alpha',
+          publishedAt: '2026-04-02T00:00:00.000Z',
+          updatedAt: t(9),
+        }),
+        fixtureAsset('a-draft', {
+          status: 'DRAFT',
+          ownerId: 'u-third',
+          title: 'Draft Zeta',
+          updatedAt: t(8),
+        }),
+        fixtureAsset('a-gone', {
+          status: 'DELETED',
+          ownerId: 'u-third',
+          title: 'Gone Beta',
+          publishedAt: null,
+          tagIds: ['tag-lava'],
+          updatedAt: t(7),
+        }),
+      ],
+    },
+    extra,
+  );
+}

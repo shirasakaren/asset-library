@@ -6,32 +6,33 @@ import type {
   TagRecord,
 } from '../records';
 import { route, type PreviewContext } from '../router/router';
-import { badRequest, conflict, notFound } from '../router/errors';
-import { parseCreate, parseUpdate } from './asset-input';
+import { badRequest, notFound } from '../router/errors';
+import { parseCreate } from './asset-input';
+import { applyAssetUpdate } from './asset-update';
 import {
-  adjustTagUsage,
+  archiveAsset,
+  auditAdminAction,
+  auditAdminEdit,
+  restoreAsset,
+  softDeleteAsset,
+} from './asset-lifecycle';
+import {
   applyTranslations,
   commitTags,
   isoSeconds,
   loadWritable,
   planTags,
-  resolvePreviewMedia,
   slugifyTitle,
   takenSlugs,
-  type TagPlan,
   uniqueSlug,
 } from './asset-write-core';
 import { evaluateChecklist, newestCreated, toProblemFields } from './publish-checklist';
-import { markLatest, wizardVersion } from './version-core';
+import { markLatest } from './version-core';
 import { serialized } from './write-queue';
 
 const changed = (ctx: PreviewContext) => ctx.emit({ type: 'assets.changed' });
 
 const blocked = (message: string) => badRequest(message, { code: 'asset.publish_blocked' });
-const archiveBlocked = (message: string) => badRequest(message, { code: 'asset.archive_blocked' });
-
-/** Prerelease suffixes are accepted here (the backend's looser PATCH regex); the checklist is strict. */
-const PATCH_SEMVER = /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/;
 
 /**
  * Create a DRAFT owned by the persona with its first version (analysis PENDING until a file is
@@ -116,91 +117,11 @@ route('POST', '/assets', (req, ctx) =>
   }),
 );
 
-/**
- * Partial update (`UpdateAssetDto`): everything is validated first and then written in one go,
- * so a rejected request changes nothing. `semver` and `requiresEmptyProject` belong to the
- * versions (see below); `slug`, `engine` and the latest `semver` are locked after publish.
- */
+/** Partial update (see `applyAssetUpdate`). An admin editing another owner's asset is audited. */
 route('PATCH', '/assets/{id}', (req, ctx) =>
   serialized(async () => {
-    const input = parseUpdate(req.body);
-    const { asset, assets } = await loadWritable(ctx, req.params.id!);
-    const patch: Partial<AssetRecord> = {};
-    let versions = asset.versions;
-
-    if (input.title !== undefined && input.title !== asset.title) {
-      patch.title = input.title;
-      patch.titleI18n = { en: input.title, id: input.title };
-    }
-    if (input.slug !== undefined && input.slug !== asset.slug) {
-      if (asset.status === 'PUBLISHED') throw blocked('Slug is locked once an asset is published.');
-      if (takenSlugs(assets, asset.id).has(input.slug)) {
-        throw conflict(`Slug "${input.slug}" is already taken.`, { code: 'asset.slug_taken' });
-      }
-      patch.slug = input.slug;
-    }
-    if (input.engine !== undefined && input.engine !== asset.engine) {
-      if (asset.status === 'PUBLISHED')
-        throw blocked('Engine is locked once an asset is published.');
-      patch.engine = input.engine;
-    }
-    if (input.categoryId) {
-      if (!(await ctx.db.get<CategoryRecord>('categories', input.categoryId))) {
-        throw notFound(`Category ${input.categoryId} not found.`, { code: 'category.not_found' });
-      }
-      if (input.categoryId !== asset.categoryId) patch.categoryId = input.categoryId;
-    }
-    if (input.licenseId) {
-      if (!(await ctx.db.get<LicenseRecord>('licenses', input.licenseId))) {
-        throw notFound(`License ${input.licenseId} not found.`, { code: 'license.not_found' });
-      }
-      if (input.licenseId !== asset.licenseId) patch.licenseId = input.licenseId;
-    }
-    if (input.translations) {
-      Object.assign(patch, applyTranslations(asset, input.translations));
-    }
-    if (input.previewMedia) {
-      patch.previewMedia = resolvePreviewMedia(input.previewMedia, asset.previewMedia);
-    }
-
-    // The wizard sends the version fields with the asset's. `semver` goes to the latest version
-    // row; `requiresEmptyProject` is an asset-level flag in the backend, so every version gets it.
-    const latest = wizardVersion(versions);
-    if (input.semver !== undefined && latest && input.semver !== latest.semver) {
-      if (latest.publishedAt) throw blocked('Semver is locked once a version is published.');
-      if (!PATCH_SEMVER.test(input.semver)) {
-        throw blocked(`"${input.semver}" is not a valid semver string.`);
-      }
-      if (versions.some((v) => v.id !== latest.id && v.semver === input.semver)) {
-        throw conflict(`Version ${input.semver} already exists for this asset.`, {
-          code: 'version.duplicate',
-        });
-      }
-      versions = versions.map((v) => (v.id === latest.id ? { ...v, semver: input.semver! } : v));
-    }
-    if (
-      input.requiresEmptyProject !== undefined &&
-      versions.some((v) => v.requiresEmptyProject !== input.requiresEmptyProject)
-    ) {
-      versions = versions.map((v) => ({ ...v, requiresEmptyProject: input.requiresEmptyProject! }));
-    }
-    if (versions !== asset.versions) patch.versions = versions;
-
-    let tagPlan: TagPlan | undefined;
-    if (input.tags) {
-      tagPlan = planTags(ctx, input.tags, await ctx.db.list<TagRecord>('tags'), isoSeconds(ctx));
-      const same =
-        tagPlan.tagIds.length === asset.tagIds.length &&
-        tagPlan.tagIds.every((id, i) => id === asset.tagIds[i]);
-      if (!same) patch.tagIds = tagPlan.tagIds;
-      else tagPlan = undefined;
-    }
-
-    if (Object.keys(patch).length === 0) return undefined;
-    patch.updatedAt = isoSeconds(ctx);
-    if (tagPlan) await commitTags(ctx, tagPlan, asset.tagIds);
-    await ctx.db.patch<AssetRecord>('assets', asset.id, patch);
-    changed(ctx);
+    const { writable, changed: fields } = await applyAssetUpdate(ctx, req.params.id!, req.body);
+    await auditAdminEdit(ctx, writable, fields);
     return undefined;
   }),
 );
@@ -208,13 +129,9 @@ route('PATCH', '/assets/{id}', (req, ctx) =>
 /** Soft delete: status DELETED (404 everywhere), tag usage released. Owner or admin. */
 route('DELETE', '/assets/{id}', (req, ctx) =>
   serialized(async () => {
-    const { asset } = await loadWritable(ctx, req.params.id!);
-    await ctx.db.patch<AssetRecord>('assets', asset.id, {
-      status: 'DELETED',
-      updatedAt: isoSeconds(ctx),
-    });
-    await adjustTagUsage(ctx, asset.tagIds, -1);
-    changed(ctx);
+    const w = await loadWritable(ctx, req.params.id!);
+    await softDeleteAsset(ctx, w.asset);
+    await auditAdminAction(ctx, w, 'asset.admin_delete', { previousStatus: w.asset.status });
     return undefined;
   }),
 );
@@ -251,29 +168,18 @@ route('POST', '/assets/{id}/publish', (req, ctx) =>
 
 route('POST', '/assets/{id}/archive', (req, ctx) =>
   serialized(async () => {
-    const { asset } = await loadWritable(ctx, req.params.id!);
-    if (asset.status !== 'PUBLISHED')
-      throw archiveBlocked('Only a published asset can be archived.');
-    await ctx.db.patch<AssetRecord>('assets', asset.id, {
-      status: 'ARCHIVED',
-      updatedAt: isoSeconds(ctx),
-    });
-    changed(ctx);
+    const w = await loadWritable(ctx, req.params.id!);
+    await archiveAsset(ctx, w.asset);
+    await auditAdminAction(ctx, w, 'asset.admin_archive', { previousStatus: w.asset.status });
     return undefined;
   }),
 );
 
 route('POST', '/assets/{id}/restore', (req, ctx) =>
   serialized(async () => {
-    const { asset } = await loadWritable(ctx, req.params.id!);
-    if (asset.status !== 'ARCHIVED') throw archiveBlocked('Asset is not archived.');
-    const now = isoSeconds(ctx);
-    await ctx.db.patch<AssetRecord>('assets', asset.id, {
-      status: 'PUBLISHED',
-      publishedAt: asset.publishedAt ?? now,
-      updatedAt: now,
-    });
-    changed(ctx);
+    const w = await loadWritable(ctx, req.params.id!);
+    await restoreAsset(ctx, w.asset);
+    await auditAdminAction(ctx, w, 'asset.admin_restore', { previousStatus: w.asset.status });
     return undefined;
   }),
 );
