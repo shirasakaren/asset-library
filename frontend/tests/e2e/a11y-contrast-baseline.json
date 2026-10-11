@@ -24,7 +24,7 @@
         "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
       },
       {
-        "target": ".top-1\\.5",
+        "target": ".right-1\\.5",
         "contrast": "#ffffff on #f94141 = 3.58:1"
       },
       {
@@ -53,7 +53,7 @@
         "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
       },
       {
-        "target": ".top-1\\.5",
+        "target": ".right-1\\.5",
         "contrast": "#ffffff on #f94141 = 3.58:1"
       },
       {
@@ -70,7 +70,7 @@
         "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
       },
       {
-        "target": ".top-1\\.5",
+        "target": ".right-1\\.5",
         "contrast": "#ffffff on #f94141 = 3.58:1"
       },
       {
@@ -87,7 +87,7 @@
         "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
       },
       {
-        "target": ".top-1\\.5",
+        "target": ".right-1\\.5",
         "contrast": "#ffffff on #f94141 = 3.58:1"
       },
       {
