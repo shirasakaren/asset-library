@@ -26,6 +26,11 @@ describe('AttributionNotice', () => {
     expect(gh).toHaveAttribute('rel', 'noopener noreferrer');
     expect(screen.getByText(/preview\.staticDemo/)).toBeInTheDocument();
   });
+
+  it('states that the people, comments, issues and versions are fictional', () => {
+    render(<AttributionNotice />);
+    expect(screen.getByText('preview.attributionFictional')).toBeInTheDocument();
+  });
 });
 
 describe('Footer', () => {

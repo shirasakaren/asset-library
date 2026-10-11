@@ -139,6 +139,7 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
         {t('heading')}
         <span className="geist-tnum text-caption font-medium text-ink-3">{totalCount}</span>
       </h2>
+      <p className="mb-4 text-caption text-ink-3">{t('fictionalNote')}</p>
 
       <Tabs value={kind} onValueChange={(v) => setKind(v as FilterKind)} className="mb-6">
         <TabsList>

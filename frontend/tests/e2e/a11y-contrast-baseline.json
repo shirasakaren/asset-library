@@ -91,19 +91,19 @@
         "contrast": "#ffffff on #f94141 = 3.58:1"
       },
       {
-        "target": ".bg-brand-green-50 > .text-eyebrow.tracking-\\[0\\.12em\\]",
+        "target": ".bg-brand-green-50 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
         "contrast": "#6b7280 on #e2f1ea = 4.14:1"
       },
       {
-        "target": "a[href=\"/admin/reports/?status=OPEN\"] > .bg-brand-yellow-50.border-brand-yellow\\/30.hover\\:border-ink\\/20 > .text-eyebrow.tracking-\\[0\\.12em\\]",
+        "target": "a[href=\"/admin/reports/?status=OPEN\"] > .bg-brand-yellow-50.border-brand-yellow\\/30.hover\\:border-ink\\/20 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
         "contrast": "#6b7280 on #fef6e0 = 4.48:1"
       },
       {
-        "target": ".rounded-\\[16px\\].block[href$=\"requests/\"] > .bg-brand-yellow-50.border-brand-yellow\\/30.hover\\:border-ink\\/20 > .text-eyebrow.tracking-\\[0\\.12em\\]",
+        "target": ".rounded-\\[16px\\].block[href$=\"requests/\"] > .bg-brand-yellow-50.border-brand-yellow\\/30.hover\\:border-ink\\/20 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
         "contrast": "#6b7280 on #fef6e0 = 4.48:1"
       },
       {
-        "target": ".bg-brand-red-50 > .text-eyebrow.tracking-\\[0\\.12em\\]",
+        "target": ".bg-brand-red-50 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
         "contrast": "#6b7280 on #fee5e5 = 4.04:1"
       }
     ]

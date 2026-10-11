@@ -79,7 +79,9 @@
     "attributionLead": "Thumbnail dan daftar aset adalah milik para kreator dan toko masing-masing, dan hanya ditampilkan untuk keperluan demonstrasi. Untuk meminta penghapusan, hubungi",
     "staticDemo": "Ini adalah demo statis — tanpa akun, tanpa server.",
     "sourceOnGithub": "Kode sumber di GitHub",
-    "viewOnStore": "Lihat di {store}"
+    "viewOnStore": "Lihat di {store}",
+    "fictionalData": "Pemilik, versi, komentar, dan issue yang ditampilkan di sini adalah data demo fiktif.",
+    "attributionFictional": "Semua orang, komentar, issue, dan versi dalam demo ini bersifat fiktif."
   },
   "footer": {
     "tagline": "Sebuah produk MGM Laboratory. Dibuat oleh dan untuk lab.",
@@ -624,6 +626,7 @@
   },
   "comments": {
     "heading": "Komentar",
+    "fictionalNote": "Komentar dan issue di sini adalah data demo fiktif.",
     "tabs": { "all": "Semua", "comments": "Komentar", "issues": "Issue" },
     "filter": {
       "open": "Terbuka",

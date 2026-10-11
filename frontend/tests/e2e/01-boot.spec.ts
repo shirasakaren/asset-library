@@ -1,5 +1,6 @@
 import { test, expect } from './helpers/test';
 import { gotoApp, openProfileMenu } from './helpers/app';
+import { pickOthersAsset } from './helpers/seed';
 
 test.describe('boot', () => {
   test('opens straight into the app as the demo admin, no sign-in', async ({ page }) => {
@@ -54,6 +55,25 @@ test.describe('boot', () => {
     const footer = page.getByRole('contentinfo');
     await expect(footer).toContainText(/belong to their (respective )?creators/i);
     await expect(footer.locator('a[href^="mailto:it@labmgm.org"]')).toBeVisible();
+  });
+
+  test('an asset page says the owner, versions, comments and issues are fictional', async ({
+    page,
+  }) => {
+    await gotoApp(page, `/assets/${pickOthersAsset().slug}/`);
+    // Rendered twice (phones: under the breadcrumbs; desktop: in the sidebar), one is hidden.
+    const note = page
+      .getByText('Owner, versions, comments and issues shown here are fictional demo data.')
+      .locator('visible=true');
+    await expect(note).toBeVisible();
+    // Next to the "View on <store>" link, above the fold.
+    await expect(page.getByRole('link', { name: /^View on / })).toBeVisible();
+    await expect(note).toBeInViewport();
+    await expect(page.getByText('Comments and issues here are fictional demo data.')).toBeVisible();
+    // The footer notice says it too.
+    await expect(page.getByRole('contentinfo')).toContainText(
+      'All people, comments, issues and versions in this demo are fictional.',
+    );
   });
 
   test('is not indexable', async ({ page }) => {

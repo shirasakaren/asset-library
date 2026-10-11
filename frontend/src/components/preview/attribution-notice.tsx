@@ -18,6 +18,7 @@ export function AttributionNotice() {
         </a>
         .
       </p>
+      <p>{t('attributionFictional')}</p>
       <p>
         {t('staticDemo')}{' '}
         <a className="link-inline" href={SOURCE_URL} target="_blank" rel="noopener noreferrer">

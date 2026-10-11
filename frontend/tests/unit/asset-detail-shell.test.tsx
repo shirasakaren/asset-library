@@ -88,6 +88,22 @@ describe('AssetDetailShell: View on store', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
+  it('is followed by the fictional-data disclaimer', () => {
+    render(
+      <AssetDetailShell
+        asset={asset({ storeName: 'Fab', storeUrl: 'https://www.fab.com/listings/abc' })}
+        currentUserId="me-1"
+      />,
+    );
+    // Twice in the DOM: under the breadcrumbs (phones, lg:hidden) and in the sidebar (desktop).
+    expect(screen.getAllByText('preview.fictionalData')).toHaveLength(2);
+  });
+
+  it('shows the fictional-data disclaimer for user-created assets too', () => {
+    render(<AssetDetailShell asset={asset()} currentUserId="me-1" />);
+    expect(screen.getAllByText('preview.fictionalData')).toHaveLength(2);
+  });
+
   it('is absent for assets without a store (user-created)', () => {
     render(<AssetDetailShell asset={asset()} currentUserId="me-1" />);
     expect(screen.queryByRole('link', { name: /preview\.viewOnStore/ })).not.toBeInTheDocument();

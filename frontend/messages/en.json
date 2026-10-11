@@ -79,7 +79,9 @@
     "attributionLead": "Thumbnails and listings belong to their respective creators and stores and are shown for demonstration only. To request removal, contact",
     "staticDemo": "This is a static demo — no account, no server.",
     "sourceOnGithub": "Source on GitHub",
-    "viewOnStore": "View on {store}"
+    "viewOnStore": "View on {store}",
+    "fictionalData": "Owner, versions, comments and issues shown here are fictional demo data.",
+    "attributionFictional": "All people, comments, issues and versions in this demo are fictional."
   },
   "footer": {
     "tagline": "An MGM Laboratory product. Built for the lab, by the lab.",
@@ -624,6 +626,7 @@
   },
   "comments": {
     "heading": "Comments",
+    "fictionalNote": "Comments and issues here are fictional demo data.",
     "tabs": {
       "all": "All",
       "comments": "Comments",

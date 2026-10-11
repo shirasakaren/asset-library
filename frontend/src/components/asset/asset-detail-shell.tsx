@@ -117,6 +117,9 @@ export function AssetDetailShell({ asset, currentUserId, me }: AssetDetailShellP
               { label: asset.title },
             ]}
           />
+          <p className="-mt-3 mb-5 text-caption text-ink-3 lg:hidden">
+            {tPreview('fictionalData')}
+          </p>
 
           <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:gap-12">
             <div className="min-w-0">
@@ -176,12 +179,18 @@ export function AssetDetailShell({ asset, currentUserId, me }: AssetDetailShellP
                     href={storeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1.5 text-body-sm text-brand-blue underline-offset-2 hover:underline"
+                    className="mt-2 flex w-fit items-center gap-1.5 text-body-sm text-brand-blue underline-offset-2 hover:underline"
                   >
                     {tPreview('viewOnStore', { store: asset.storeName ?? '' })}
                     <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden="true" />
                   </a>
                 ) : null}
+
+                {/* Desktop: next to the store link. On a phone this sidebar sits far below the gallery,
+                    so the same line is shown right under the breadcrumbs instead (see above). */}
+                <p className="mt-2 hidden text-caption text-ink-3 lg:block">
+                  {tPreview('fictionalData')}
+                </p>
 
                 <div className="mt-5 flex items-center gap-2">
                   {!isOwner ? (
