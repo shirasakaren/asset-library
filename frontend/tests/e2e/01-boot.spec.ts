@@ -61,4 +61,14 @@ test.describe('boot', () => {
     const robots = page.locator('meta[name="robots"]');
     await expect(robots).toHaveAttribute('content', /noindex/);
   });
+
+  test('the About page is not indexable either (a page-level robots entry would override the layout)', async ({
+    page,
+  }) => {
+    await page.goto('/about/');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    const robots = page.locator('meta[name="robots"]');
+    await expect(robots).toHaveCount(1);
+    await expect(robots).toHaveAttribute('content', /noindex/);
+  });
 });

@@ -8,29 +8,18 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { GeometricPattern } from '@/components/brand/geometric-pattern';
 import { publicEnv } from '@/lib/env.public';
-import { absoluteAssetUrl } from '@/lib/base-path';
 
 export const metadata: Metadata = {
   title: 'About',
   description:
     'MGM Asset Library is the lab’s centralized home for game, web, and mobile assets — versioned, searchable, and ready to drop into any engine.',
-  robots: { index: true, follow: true },
   openGraph: {
     title: `About · ${publicEnv.NEXT_PUBLIC_APP_NAME}`,
     description:
       'A quiet place for our digital tools — built for the MGM research lab and partners.',
     type: 'website',
-    images: [
-      {
-        url: absoluteAssetUrl('/brand/og-default.png', publicEnv.NEXT_PUBLIC_APP_URL),
-        width: 1200,
-        height: 630,
-      },
-    ],
   },
 };
-
-export const revalidate = 3600;
 
 export default function AboutPage() {
   return (

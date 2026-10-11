@@ -36,19 +36,6 @@ export function withBasePath(url: string, basePath: string = getBasePath()): str
   return `${basePath}${url}`;
 }
 
-/**
- * Absolute URL of a `public/` file, for metadata (Open Graph) that crawlers resolve out of
- * context: the origin of `appUrl` plus the base path. Any path inside `appUrl` is ignored so the
- * result never depends on whether `NEXT_PUBLIC_APP_URL` carries the sub-path.
- */
-export function absoluteAssetUrl(
-  path: string,
-  appUrl: string,
-  basePath: string = getBasePath(),
-): string {
-  return `${new URL(appUrl).origin}${withBasePath(path, basePath)}`;
-}
-
 const SEED_PREFIX = '/thumbs/';
 
 /**

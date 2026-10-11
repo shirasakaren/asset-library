@@ -252,6 +252,10 @@ jobs:
             fi
           fi
 
+          # The preview must never be indexed: every page (and the 404 shell) needs a
+          # robots meta with noindex; a page-level `robots` entry would override the layout's.
+          node frontend/scripts/check-noindex.mjs "$out"
+
           # The <title> of the home page, used by the post-deploy check.
           title="$(grep -o '<title>[^<]*</title>' "$out/index.html" | head -n 1 | sed -e 's#<title>##' -e 's#</title>##')"
           if [ -z "$title" ]; then

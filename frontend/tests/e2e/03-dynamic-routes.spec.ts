@@ -52,6 +52,8 @@ test.describe('dynamic routes', () => {
     const res = await page.goto('/definitely/not/here/');
     expect(res?.status()).toBe(404);
     await expect(page.getByText(/we couldn['’]t find that/i)).toBeVisible();
+    // The 404 shell is a document of its own: it must not be indexable either.
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   });
 
   test('an unknown asset slug shows the not-found state inside the app chrome', async ({

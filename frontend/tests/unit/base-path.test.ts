@@ -1,11 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  absoluteAssetUrl,
-  getBasePath,
-  normalizeBasePath,
-  prefixSeedAssetUrls,
-  withBasePath,
-} from '@/lib/base-path';
+import { getBasePath, normalizeBasePath, prefixSeedAssetUrls, withBasePath } from '@/lib/base-path';
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -81,20 +75,6 @@ describe('withBasePath', () => {
     expect(withBasePath('/patterns/p-1.svg')).toBe('/asset-library/patterns/p-1.svg');
     vi.stubEnv('NEXT_PUBLIC_BASE_PATH', '');
     expect(withBasePath('/patterns/p-1.svg')).toBe('/patterns/p-1.svg');
-  });
-});
-
-describe('absoluteAssetUrl', () => {
-  it('joins the origin of the app URL with the base path, ignoring a path in the app URL', () => {
-    expect(
-      absoluteAssetUrl('/brand/og.png', 'https://u.github.io/asset-library', '/asset-library'),
-    ).toBe('https://u.github.io/asset-library/brand/og.png');
-    expect(absoluteAssetUrl('/brand/og.png', 'https://u.github.io', '/asset-library')).toBe(
-      'https://u.github.io/asset-library/brand/og.png',
-    );
-    expect(absoluteAssetUrl('/brand/og.png', 'https://asset.creations.ren/', '')).toBe(
-      'https://asset.creations.ren/brand/og.png',
-    );
   });
 });
 

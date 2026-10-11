@@ -199,6 +199,11 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: ""
         run: pnpm build
 
+      # Every page of the export (and the 404 shell) must carry a robots meta with noindex.
+      - name: Check noindex (root export)
+        working-directory: frontend
+        run: node scripts/check-noindex.mjs out
+
       - name: Install Chromium
         working-directory: frontend
         run: pnpm exec playwright install --with-deps chromium
@@ -222,6 +227,10 @@ jobs:
         run: |
           rm -rf .next out
           pnpm build
+
+      - name: Check noindex (base path export)
+        working-directory: frontend
+        run: node scripts/check-noindex.mjs out
 
       - name: End-to-end smoke under the base path
         working-directory: frontend
