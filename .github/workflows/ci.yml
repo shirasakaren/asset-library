@@ -5,7 +5,9 @@
 #                OpenAPI export check)
 #   * frontend — static, login-free preview (lint, e2e lint, typecheck, OpenAPI
 #                types check, unit tests, static export, Playwright e2e against
-#                the export). The same checks gate the GitHub Pages deploy in
+#                the export, in BOTH deployment modes: the full suite on the host-root
+#                build and the base-path smoke suite on a build for the GitHub project
+#                Pages sub-path). The same checks gate the GitHub Pages deploy in
 #                pages.yml.
 #
 # Jobs are path-filtered so a frontend-only PR does not rebuild the API and
@@ -142,11 +144,11 @@ jobs:
           path: backend/coverage/
 
   frontend:
-    name: Frontend — lint, typecheck, test, build, e2e
+    name: Frontend — lint, typecheck, test, build (root and base path), e2e
     needs: changes-frontend
     if: needs.changes-frontend.outputs.changed == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     # The static preview reads only NEXT_PUBLIC_* values at build time.
     env:
       NEXT_PUBLIC_APP_URL: https://asset.creations.ren
@@ -190,8 +192,11 @@ jobs:
         working-directory: frontend
         run: pnpm test
 
-      - name: Build static export
+      # Mode 1: the host root (custom domain). NEXT_PUBLIC_BASE_PATH is empty.
+      - name: Build static export (root)
         working-directory: frontend
+        env:
+          NEXT_PUBLIC_BASE_PATH: ""
         run: pnpm build
 
       - name: Install Chromium
@@ -199,11 +204,30 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       # playwright.config.ts serves frontend/out itself on port 4317.
-      - name: End-to-end tests
+      - name: End-to-end tests (full suite, root build)
         working-directory: frontend
         env:
           CI: "true"
         run: pnpm test:e2e
+
+      # Mode 2: the GitHub project Pages sub-path (https://<owner>.github.io/asset-library/).
+      # Rebuilds into out/ after the root tests are done; .next is removed so nothing
+      # compiled for the other base path is reused. The smoke suite serves out/ under
+      # /asset-library (scripts/serve-export.mjs --base) on port 4318.
+      - name: Build static export (base path /asset-library)
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_BASE_PATH: /asset-library
+          NEXT_PUBLIC_APP_URL: https://shirasakaren.github.io/asset-library
+        run: |
+          rm -rf .next out
+          pnpm build
+
+      - name: End-to-end smoke under the base path
+        working-directory: frontend
+        env:
+          CI: "true"
+        run: pnpm test:e2e:basepath
 
       - name: Upload Playwright report
         if: failure()

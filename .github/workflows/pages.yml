@@ -1,18 +1,34 @@
 # =============================================================================
 # Deploy preview — builds the static, login-free preview (frontend/, Next.js
-# static export in frontend/out) and publishes it to GitHub Pages at
-# https://asset.creations.ren (custom domain, served at the domain root).
+# static export in frontend/out) and publishes it to GitHub Pages.
 #
-#   build  — install, lint, typecheck, unit tests, static export, export
-#            verification, Playwright e2e against the export, Pages artifact
+# The app works in two deployment modes, chosen automatically from the
+# repository's real Pages settings (actions/configure-pages, step `pages`):
+#
+#   custom domain   Pages has a custom domain (final: https://asset.creations.ren)
+#                   -> served at the host root, base_path is empty, a CNAME file
+#                      with the domain is written into the export;
+#   project site    no custom domain (interim: https://shirasakaren.github.io/asset-library/)
+#                   -> served under a sub-path, base_path is `/asset-library`.
+#
+# Going from the interim URL to the custom domain needs no code change: add the
+# DNS record, set the custom domain in Settings > Pages, re-run this workflow
+# (workflow_dispatch). configure-pages then reports an empty base_path and the
+# same job builds for the root again. See README.md "Deployment (GitHub Pages)".
+#
+#   build  — Pages settings, install, lint, typecheck, unit tests, then
+#            (A) a TEST build (root, NEXT_PUBLIC_BASE_PATH='') and the full
+#                Playwright suite against it, then
+#            (B) the DEPLOYMENT build for the real base path (rebuilt into
+#                frontend/out after the tests; skipped when it would equal the
+#                test build), export verification, the base-path smoke suite
+#                (only when base_path is not empty) and the Pages artifact
 #   deploy — actions/deploy-pages (environment: github-pages)
 #   verify — requests the deployed site (never fails the workflow, see below)
 #
-# One-time setup (done outside this file): Pages source = "GitHub Actions",
-# custom domain asset.creations.ren, DNS `CNAME asset -> shirasakaren.github.io`
-# on creations.ren, then "Enforce HTTPS" once the certificate is issued.
+# One-time setup (outside this file): Pages source = "GitHub Actions".
 #
-# The same checks (minus the deploy) run on pull requests in ci.yml.
+# The same checks (minus the deploy) run on pull requests in ci.yml, for both modes.
 # =============================================================================
 
 name: Deploy preview to GitHub Pages
@@ -29,10 +45,9 @@ on:
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
+# Least privilege: each job asks for what it needs.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One deploy at a time; a running deploy is allowed to finish, newer runs queue.
 concurrency:
@@ -41,20 +56,79 @@ concurrency:
 
 env:
   FRONTEND: mgm-asset-library-frontend
-  SITE_URL: https://asset.creations.ren
+  # NEXT_PUBLIC_APP_URL of the TEST build only (metadata; any URL works for the tests).
+  TEST_APP_URL: https://asset.creations.ren
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
   build:
     name: Build and test the static export
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
+    # configure-pages only READS the Pages settings; its documentation example
+    # grants pages: write, which is kept here because a missing scope would fail
+    # the run and cannot be checked offline.
+    permissions:
+      contents: read
+      pages: write
     outputs:
       title: ${{ steps.export.outputs.title }}
+      base_path: ${{ steps.target.outputs.base_path }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # base_path / origin / host come from the repo's real Pages settings:
+      # base_path is empty for a custom domain (or a user site) and
+      # `/<repo>` for a project site; host is the custom domain when one is set.
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Resolve the deployment target
+        id: target
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          PAGES_ORIGIN: ${{ steps.pages.outputs.origin }}
+          PAGES_HOST: ${{ steps.pages.outputs.host }}
+        run: |
+          set -euo pipefail
+          # Normalise to '' or /segment (no trailing slash), as Next's basePath requires.
+          base_path="$(printf '%s' "$PAGES_BASE_PATH" | sed -e 's#/*$##')"
+          case "$base_path" in
+            '' | /*) ;;
+            *) base_path="/$base_path" ;;
+          esac
+          origin="${PAGES_ORIGIN%/}"
+          if [ -z "$origin" ] || [ -z "$PAGES_HOST" ]; then
+            echo "::error::configure-pages reported no origin/host (origin='$PAGES_ORIGIN', host='$PAGES_HOST'). Is Pages enabled with source GitHub Actions?"
+            exit 1
+          fi
+
+          case "$PAGES_HOST" in
+            *.github.io)
+              custom=false
+              if [ -n "$base_path" ]; then mode="project site under $base_path"; else mode="user site at the github.io root"; fi
+              ;;
+            *)
+              custom=true
+              mode="custom domain $PAGES_HOST"
+              ;;
+          esac
+
+          app_url="${origin}${base_path}"
+          # The deployment build equals the test build (root, same app URL) -> no rebuild.
+          if [ -z "$base_path" ] && [ "$app_url" = "$TEST_APP_URL" ]; then reuse=true; else reuse=false; fi
+
+          {
+            echo "base_path=$base_path"
+            echo "app_url=$app_url"
+            echo "host=$PAGES_HOST"
+            echo "custom=$custom"
+            echo "reuse=$reuse"
+          } >> "$GITHUB_OUTPUT"
+          echo "::notice title=Deployment target::Public URL: ${app_url}/ — mode: ${mode} (base path: '${base_path}', rebuild for deployment: $([ "$reuse" = true ] && echo no || echo yes))"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -80,25 +154,58 @@ jobs:
       - name: Unit tests
         run: pnpm --filter "$FRONTEND" test
 
-      - name: Build static export
+      # (A) TEST build: always for the host root, so the full e2e suite (which
+      # navigates to absolute paths like /admin/) runs against it.
+      - name: Build static export for the tests (root)
         env:
-          NEXT_PUBLIC_APP_URL: ${{ env.SITE_URL }}
+          NEXT_PUBLIC_BASE_PATH: ""
+          NEXT_PUBLIC_APP_URL: ${{ env.TEST_APP_URL }}
         run: pnpm --filter "$FRONTEND" build
 
-      # CNAME keeps the custom domain across deploys; .nojekyll stops any
-      # Jekyll processing of the `_next` folder. Both are dotfile-ish files that
-      # upload-pages-artifact@v3 includes (v4 would drop `.nojekyll`; harmless
+      - name: Install Chromium
+        run: pnpm --filter "$FRONTEND" exec playwright install --with-deps chromium
+
+      # playwright.config.ts serves frontend/out itself (scripts/serve-export.mjs
+      # on port 4317), so the tests run against the exact files built above.
+      - name: End-to-end tests (full suite, root build)
+        env:
+          CI: "true"
+        run: pnpm --filter "$FRONTEND" test:e2e
+
+      # (B) DEPLOYMENT build. The tests are done with the root build in
+      # frontend/out, so it is simply rebuilt in place (`next build` always
+      # writes `out/`); .next is removed so nothing compiled with the other
+      # NEXT_PUBLIC_* values can be reused.
+      - name: Build static export for deployment
+        if: steps.target.outputs.reuse != 'true'
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.target.outputs.base_path }}
+          NEXT_PUBLIC_APP_URL: ${{ steps.target.outputs.app_url }}
+        run: |
+          set -euo pipefail
+          rm -rf frontend/.next frontend/out
+          pnpm --filter "$FRONTEND" build
+
+      # .nojekyll stops any Jekyll processing of `_next`; CNAME keeps a custom
+      # domain across deploys and is written ONLY for one (never for *.github.io).
+      # upload-pages-artifact@v3 includes dotfiles (v4 drops `.nojekyll`; harmless
       # for an Actions deployment, but keep v3 in mind when bumping).
-      - name: Add CNAME and .nojekyll, verify the export
+      - name: Add .nojekyll (and CNAME), verify the export
         id: export
+        env:
+          BASE_PATH: ${{ steps.target.outputs.base_path }}
+          HOST: ${{ steps.target.outputs.host }}
+          CUSTOM: ${{ steps.target.outputs.custom }}
         run: |
           set -euo pipefail
           out=frontend/out
-          printf '%s\n' "${SITE_URL#https://}" > "$out/CNAME"
           : > "$out/.nojekyll"
+          if [ "$CUSTOM" = true ]; then
+            printf '%s\n' "$HOST" > "$out/CNAME"
+          fi
 
           missing=0
-          for f in index.html 404.html CNAME thumbs/manifest.json; do
+          for f in index.html 404.html thumbs/manifest.json; do
             if [ ! -s "$out/$f" ]; then
               echo "::error::missing or empty export file: $out/$f"
               missing=1
@@ -112,11 +219,38 @@ jobs:
             echo "::error::$out/_next/static is missing"
             missing=1
           fi
-          if [ "$(cat "$out/CNAME")" != "asset.creations.ren" ]; then
-            echo "::error::CNAME content is wrong: $(cat "$out/CNAME")"
+          if [ "$CUSTOM" = true ]; then
+            if [ "$(cat "$out/CNAME")" != "$HOST" ]; then
+              echo "::error::CNAME content is wrong: $(cat "$out/CNAME")"
+              missing=1
+            fi
+          elif [ -e "$out/CNAME" ]; then
+            echo "::error::a CNAME file must not be deployed without a custom domain"
             missing=1
           fi
           [ "$missing" = 0 ] || exit 1
+
+          # The assets of index.html must live under the base path: `${BASE_PATH}/_next/`.
+          # With a sub-path that includes `${BASE_PATH}/_next/static`, the favicon
+          # and no bare `/_next/` reference.
+          if ! grep -qF "src=\"${BASE_PATH}/_next/" "$out/index.html"; then
+            echo "::error::index.html does not reference ${BASE_PATH}/_next/"
+            exit 1
+          fi
+          if [ -n "$BASE_PATH" ]; then
+            if ! grep -qF "${BASE_PATH}/_next/static" "$out/index.html"; then
+              echo "::error::index.html does not reference ${BASE_PATH}/_next/static"
+              exit 1
+            fi
+            if ! grep -qF "href=\"${BASE_PATH}/brand/favicon.svg\"" "$out/index.html"; then
+              echo "::error::the favicon link is not under ${BASE_PATH}"
+              exit 1
+            fi
+            if grep -qE '(src|href)="/_next/' "$out/index.html"; then
+              echo "::error::index.html still references /_next/ outside ${BASE_PATH}"
+              exit 1
+            fi
+          fi
 
           # The <title> of the home page, used by the post-deploy check.
           title="$(grep -o '<title>[^<]*</title>' "$out/index.html" | head -n 1 | sed -e 's#<title>##' -e 's#</title>##')"
@@ -125,17 +259,17 @@ jobs:
             exit 1
           fi
           echo "title=$title" >> "$GITHUB_OUTPUT"
-          echo "Export OK: $(find "$out" -type f | wc -l) files, title: $title"
+          echo "Export OK (base path '${BASE_PATH}'): $(find "$out" -type f | wc -l) files, title: $title"
 
-      - name: Install Chromium
-        run: pnpm --filter "$FRONTEND" exec playwright install --with-deps chromium
-
-      # playwright.config.ts serves frontend/out itself (scripts/serve-export.mjs
-      # on port 4317), so the tests run against the exact files that get deployed.
-      - name: End-to-end tests
+      # Only for a sub-path deployment: the exact files that get uploaded, served
+      # under their base path by scripts/serve-export.mjs --base. With an empty
+      # base_path the deployment is the root build the full suite already tested.
+      - name: End-to-end smoke under the base path
+        if: steps.target.outputs.base_path != ''
         env:
           CI: "true"
-        run: pnpm --filter "$FRONTEND" test:e2e
+          E2E_BASE_PATH: ${{ steps.target.outputs.base_path }}
+        run: pnpm --filter "$FRONTEND" test:e2e:basepath
 
       - name: Upload Playwright report
         if: failure()
@@ -148,10 +282,6 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      # Pages is enabled once by hand (source: GitHub Actions); no `enablement`.
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -162,6 +292,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -172,45 +305,52 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # Post-deploy check of the live site. Only `page_url` is checked: with a custom
-  # domain, https://<owner>.github.io/<repo>/ answers with a redirect to the custom
+  # Post-deploy check of the live site. Only `page_url` is checked (it already
+  # carries the base path of a project site): with a custom domain,
+  # https://<owner>.github.io/<repo>/ answers with a redirect to the custom
   # domain, so there is no second origin to fall back to. While the DNS record or
   # the TLS certificate is not ready, `page_url` may not resolve from the runner,
   # so this job is advisory (continue-on-error): it reports, it does not fail the
   # workflow. The deploy itself is confirmed by the `deploy` job.
+  # Worst case: 12 attempts x (2 requests x 10 s + 10 s pause) = about 6 minutes
+  # (the pause is skipped after the last attempt), inside the 10 minute limit.
   verify:
     name: Verify the deployed site
     needs: [build, deploy]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     continue-on-error: true
+    permissions: {}
     env:
       PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+      BASE_PATH: ${{ needs.build.outputs.base_path }}
       EXPECTED_TITLE: ${{ needs.build.outputs.title }}
     steps:
       - name: Request the site
         run: |
           set -u
           base="${PAGE_URL%/}"
-          echo "Checking $base (expecting title: $EXPECTED_TITLE)"
+          echo "Checking $base/ (expecting title: $EXPECTED_TITLE, base path: '${BASE_PATH}')"
 
           ok=0
           for attempt in $(seq 1 12); do
-            code="$(curl -sS -L --max-time 20 -o home.html -w '%{http_code}' "$base/" || echo 000)"
-            mcode="$(curl -sS -L --max-time 20 -o manifest.json -w '%{http_code}' "$base/thumbs/manifest.json" || echo 000)"
-            if [ "$code" = 200 ] && [ "$mcode" = 200 ] && grep -qF "<title>$EXPECTED_TITLE</title>" home.html; then
+            code="$(curl -sS -L --max-time 10 -o home.html -w '%{http_code}' "$base/" || echo 000)"
+            mcode="$(curl -sS -L --max-time 10 -o manifest.json -w '%{http_code}' "$base/thumbs/manifest.json" || echo 000)"
+            if [ "$code" = 200 ] && [ "$mcode" = 200 ] \
+              && grep -qF "<title>$EXPECTED_TITLE</title>" home.html \
+              && grep -qF "src=\"${BASE_PATH}/_next/" home.html; then
               ok=1
               break
             fi
-            echo "attempt $attempt/12: / -> $code, /thumbs/manifest.json -> $mcode"
+            echo "attempt $attempt/12: $base/ -> $code, $base/thumbs/manifest.json -> $mcode"
             if [ "$attempt" -lt 12 ]; then
               sleep 10
             fi
           done
 
           if [ "$ok" = 1 ]; then
-            echo "Verified: $base/ serves the preview and thumbs/manifest.json is reachable."
+            echo "::notice title=Site verified::$base/ serves the preview (assets under '${BASE_PATH}/_next/') and thumbs/manifest.json is reachable."
           else
-            echo "::warning::Could not verify $base from the runner. If the custom domain DNS (CNAME asset -> shirasakaren.github.io) or the HTTPS certificate is not ready yet, this is expected; the deployment itself succeeded in the previous job."
+            echo "::warning::Could not verify $base/ from the runner. With a custom domain this is expected while its DNS record (CNAME asset -> shirasakaren.github.io) or HTTPS certificate is not ready; for a project site, check the deploy job and the Pages settings. The deployment itself succeeded in the previous job."
             exit 1
           fi
