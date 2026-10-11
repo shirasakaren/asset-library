@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { cn, hashString } from '@/lib/utils';
+import { withBasePath } from '@/lib/base-path';
 
 const TOTAL_TILES = 80;
 
@@ -16,7 +17,7 @@ interface GeometricPatternProps {
 }
 
 function tileUrl(n: number): string {
-  return `/patterns/p-${n}.svg`;
+  return withBasePath(`/patterns/p-${n}.svg`);
 }
 
 function pickTiles(seed: string, count: number): number[] {
@@ -50,7 +51,10 @@ export function GeometricPattern({
   cols,
   ariaHidden = true,
 }: GeometricPatternProps) {
-  const grid = { rows: rows ?? VARIANT_GRID[variant].rows, cols: cols ?? VARIANT_GRID[variant].cols };
+  const grid = {
+    rows: rows ?? VARIANT_GRID[variant].rows,
+    cols: cols ?? VARIANT_GRID[variant].cols,
+  };
   const tiles = pickTiles(seed, grid.rows * grid.cols);
   return (
     <div

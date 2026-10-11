@@ -145,13 +145,13 @@ export function SearchBar({ className }: SearchBarProps) {
   return (
     <div ref={containerRef} className={cn('relative', className)}>
       {/* Mobile: collapsed icon link */}
-      <a
+      <NextLink
         href="/search"
         aria-label={t('search')}
         className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 transition-colors duration-120 hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 lg:hidden"
       >
         <Search className="h-5 w-5" strokeWidth={2.25} />
-      </a>
+      </NextLink>
 
       {/* Desktop: inline input */}
       <form role="search" onSubmit={onSubmit} className="relative hidden w-[300px] lg:flex">

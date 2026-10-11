@@ -60,11 +60,14 @@ export function LibraryGrid() {
       fetcher<LibraryPage>('/library', {
         query: { ...filters, limit: 24, cursor: pageParam, locale },
       }),
-    getNextPageParam: (last) => (last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined),
+    getNextPageParam: (last) =>
+      last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined,
     staleTime: STALE_TIMES.library,
   });
 
-  const { ref: sentinelRef, isIntersecting } = useIntersection<HTMLDivElement>({ rootMargin: '320px' });
+  const { ref: sentinelRef, isIntersecting } = useIntersection<HTMLDivElement>({
+    rootMargin: '320px',
+  });
 
   useEffect(() => {
     if (isIntersecting && query.hasNextPage && !query.isFetchingNextPage) {
@@ -131,21 +134,25 @@ export function LibraryGrid() {
     },
   });
 
-  const [downloadFor, setDownloadFor] = useState<{ id: string; title: string; versionId: string } | null>(
-    null,
-  );
+  const [downloadFor, setDownloadFor] = useState<{
+    id: string;
+    title: string;
+    versionId: string;
+  } | null>(null);
 
   const items = query.data?.pages.flatMap((p) => p.items) ?? [];
-  const allFilters = Object.keys(filters).filter((k) => filters[k] && (Array.isArray(filters[k]) ? (filters[k] as unknown[]).length : true));
+  const allFilters = Object.keys(filters).filter(
+    (k) => filters[k] && (Array.isArray(filters[k]) ? (filters[k] as unknown[]).length : true),
+  );
   const isFiltered = allFilters.some((k) => k !== 'hidden') || filters.hidden !== 'false';
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-baseline gap-3">
-          <h1 className="font-display text-h1 text-ink tracking-[-0.015em]">{t('title')}</h1>
+          <h1 className="font-display text-h1 tracking-[-0.015em] text-ink">{t('title')}</h1>
           {!query.isPending ? (
-            <p className="text-body-sm text-ink-3 geist-tnum">{items.length}</p>
+            <p className="geist-tnum text-body-sm text-ink-3">{items.length}</p>
           ) : null}
         </div>
         <div className="inline-flex rounded-[10px] border border-line p-1">
@@ -177,7 +184,13 @@ export function LibraryGrid() {
       </div>
 
       {query.isPending ? (
-        <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'flex flex-col gap-3'}>
+        <div
+          className={
+            view === 'grid'
+              ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              : 'flex flex-col gap-3'
+          }
+        >
           {Array.from({ length: 8 }).map((_, i) => (
             <AssetCardSkeleton key={i} variant={view === 'grid' ? 'grid' : 'row'} />
           ))}
@@ -190,7 +203,7 @@ export function LibraryGrid() {
           primaryAction={
             isFiltered ? (
               <Button asChild variant="ghost">
-                <a href="/library">{tCommon('clearFilters')}</a>
+                <NextLink href="/library">{tCommon('clearFilters')}</NextLink>
               </Button>
             ) : (
               <Button asChild>
@@ -200,7 +213,7 @@ export function LibraryGrid() {
           }
         />
       ) : view === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {items.map((item) => (
             <AssetCard
               key={item.asset.id}
@@ -230,7 +243,7 @@ export function LibraryGrid() {
               }
               trailingAction={
                 newVersionIds.has(item.asset.id) ? (
-                  <span className="ml-2 inline-flex items-center h-6 px-2 rounded-full bg-brand-yellow-50 text-ink text-[11px] font-medium border border-brand-yellow/40">
+                  <span className="ml-2 inline-flex h-6 items-center rounded-full border border-brand-yellow/40 bg-brand-yellow-50 px-2 text-[11px] font-medium text-ink">
                     {t('newVersionAvailable')}
                   </span>
                 ) : null
@@ -240,9 +253,15 @@ export function LibraryGrid() {
         </div>
       )}
 
-      <div ref={sentinelRef} className="h-12 mt-6">
+      <div ref={sentinelRef} className="mt-6 h-12">
         {query.isFetchingNextPage ? (
-          <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'flex flex-col gap-3'}>
+          <div
+            className={
+              view === 'grid'
+                ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                : 'flex flex-col gap-3'
+            }
+          >
             {Array.from({ length: 4 }).map((_, i) => (
               <AssetCardSkeleton key={i} variant={view === 'grid' ? 'grid' : 'row'} />
             ))}

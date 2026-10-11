@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { withBasePath } from '@/lib/base-path';
 
 type LogoSize = 'sm' | 'md' | 'lg';
 
@@ -24,7 +25,7 @@ export function Logo({
   const px = sizePx[size];
   const mark = (
     <Image
-      src="/brand/mgm-logo.svg"
+      src={withBasePath('/brand/mgm-logo.svg')}
       alt="MGM"
       width={px}
       height={px}

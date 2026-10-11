@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import NextLink from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Logo } from '@/components/brand/logo';
 import { Container } from './container';
@@ -96,12 +97,12 @@ export function Footer() {
                         {link.label}
                       </a>
                     ) : (
-                      <a
+                      <NextLink
                         href={link.href}
                         className="text-ink-2 transition-colors duration-120 hover:text-ink"
                       >
                         {link.label}
-                      </a>
+                      </NextLink>
                     )}
                   </li>
                 ))}

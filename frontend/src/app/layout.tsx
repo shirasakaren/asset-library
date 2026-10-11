@@ -6,6 +6,7 @@ import { MeProvider } from '@/preview/session/me-provider';
 import { PrimaryButtonGuard } from '@/providers/primary-button-guard';
 import { Toaster } from '@/components/ui/toaster';
 import { publicEnv } from '@/lib/env.public';
+import { withBasePath } from '@/lib/base-path';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
   applicationName: publicEnv.NEXT_PUBLIC_APP_NAME,
   metadataBase: new URL(publicEnv.NEXT_PUBLIC_APP_URL),
   icons: {
-    icon: [{ url: '/brand/favicon.svg', type: 'image/svg+xml' }],
+    icon: [{ url: withBasePath('/brand/favicon.svg'), type: 'image/svg+xml' }],
   },
   openGraph: {
     type: 'website',

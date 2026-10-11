@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { GeometricPattern } from '@/components/brand/geometric-pattern';
 import { publicEnv } from '@/lib/env.public';
+import { absoluteAssetUrl } from '@/lib/base-path';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -19,7 +20,13 @@ export const metadata: Metadata = {
     description:
       'A quiet place for our digital tools — built for the MGM research lab and partners.',
     type: 'website',
-    images: [{ url: '/brand/og-default.png', width: 1200, height: 630 }],
+    images: [
+      {
+        url: absoluteAssetUrl('/brand/og-default.png', publicEnv.NEXT_PUBLIC_APP_URL),
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
