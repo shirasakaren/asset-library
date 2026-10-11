@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Static, login-free preview of the web client at `asset.creations.ren`:
+- Static, login-free preview of the web client, deployed to GitHub Pages
+  (live at `https://shirasakaren.github.io/asset-library/`; planned final URL
+  `asset.creations.ren` once its DNS record exists):
   the backend runs inside the browser (mock API in `frontend/src/preview`,
   rebased JSON seed data, per-visitor IndexedDB overlay and blob store), with
   the demo persona signed in as an admin.
@@ -39,7 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New `pages.yml` workflow deploys the static preview to GitHub Pages on pushes
   to `main` that touch `frontend/` (lint, typecheck, unit and Playwright e2e
-  tests against the export, then `actions/deploy-pages`); `CNAME` and
+  tests against the export, then `actions/deploy-pages`); `CNAME` is only
+  written when a custom domain is set in the Pages settings, and
   `.nojekyll` are written into the export.
 - The `frontend` CI job now matches it: static export plus Playwright e2e, and
   no Keycloak/NextAuth build variables.

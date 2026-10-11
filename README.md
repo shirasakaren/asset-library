@@ -5,7 +5,7 @@
 **URLs.** Deployed to GitHub Pages by `.github/workflows/pages.yml`; see the
 [Deployment](#deployment-github-pages) section for the two modes:
 
-- interim, no DNS needed: `https://shirasakaren.github.io/asset-library/`
+- **live now** (interim, no DNS needed): `https://shirasakaren.github.io/asset-library/`
   (served under the `/asset-library` sub-path);
 - final: `https://asset.creations.ren`, once the DNS record and the custom domain
   exist.
