@@ -1,51 +1,68 @@
-import NextLink from 'next/link';
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import { Suspense, useSyncExternalStore } from 'react';
+import { usePathname } from 'next/navigation';
+import { matchDynamicRoute } from '@/preview/router/dynamic-route';
+import { getDynamicPage } from '@/preview/router/dynamic-pages';
+import { AppShell } from '@/components/layout/app-shell';
+import { NotFoundContent } from '@/components/layout/not-found-content';
 import { Logo } from '@/components/brand/logo';
 import { Container } from '@/components/layout/container';
-import { Button } from '@/components/ui/button';
-import { GeometricPattern } from '@/components/brand/geometric-pattern';
 import { FooterStrip } from '@/components/brand/footer-strip';
+import { useDocumentTitle } from '@/lib/hooks/use-document-title';
 
-export const metadata = { title: 'Not found' };
+const noopSubscribe = () => () => {};
 
-export default async function NotFound() {
-  const t = await getTranslations('notFound');
+/**
+ * False while rendering on the server / during hydration, true afterwards.
+ * The exported 404.html is prerendered for "/_not-found", but is served for
+ * ANY unknown URL, so the first client render must not depend on the real
+ * pathname (otherwise React throws hydration error #418).
+ */
+function useHydrated() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+}
+
+function Placeholder() {
+  return <div className="min-h-dvh bg-bg" />;
+}
+
+function NotFoundPage() {
+  useDocumentTitle('Page not found');
   return (
-    <div className="min-h-dvh flex flex-col bg-bg">
+    <div className="flex min-h-dvh flex-col bg-bg">
       <header className="border-b border-line">
         <Container size="2xl">
-          <div className="h-16 flex items-center">
+          <div className="flex h-16 items-center">
             <Logo size="sm" href="/" />
           </div>
         </Container>
       </header>
-      <main className="flex-1 flex items-center">
-        <Container size="md">
-          <div className="grid md:grid-cols-[1fr_auto] gap-12 items-center py-20">
-            <div>
-              <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3 geist-tnum">
-                {t('eyebrow')}
-              </p>
-              <h1 className="display-xl text-ink">{t('title')}</h1>
-              <p className="text-body-lg text-ink-2 mt-4 max-w-prose">{t('body')}</p>
-              <div className="mt-8 flex flex-wrap items-center gap-2">
-                <Button size="lg" asChild>
-                  <NextLink href="/">{t('goHome')}</NextLink>
-                </Button>
-                <Button size="lg" variant="ghost" asChild>
-                  <a href="/search">{t('searchAssets')}</a>
-                </Button>
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <div className="overflow-hidden rounded-[20px] border border-line">
-                <GeometricPattern variant="corner" size={72} seed="404" />
-              </div>
-            </div>
-          </div>
-        </Container>
+      <main className="flex flex-1 items-center">
+        <NotFoundContent />
       </main>
       <FooterStrip />
     </div>
+  );
+}
+
+export default function NotFound() {
+  const pathname = usePathname();
+  const hydrated = useHydrated();
+  if (!hydrated) return <Placeholder />;
+  const match = matchDynamicRoute(pathname);
+  const Page = match ? getDynamicPage(match.route) : null;
+  // A matched route without a registered page (or an unknown URL) is a real 404.
+  if (!match || !Page) return <NotFoundPage />;
+  return (
+    <AppShell>
+      <Suspense fallback={<div className="min-h-[60dvh]" />}>
+        <Page params={match.params} />
+      </Suspense>
+    </AppShell>
   );
 }

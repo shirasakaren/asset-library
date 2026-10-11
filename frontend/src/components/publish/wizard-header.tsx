@@ -44,7 +44,15 @@ export function WizardHeader({ variant = 'edit' }: WizardHeaderProps) {
     setPublishing(true);
     logEvent('publish.publish_clicked', { assetId: wiz.asset.id });
     try {
-      await fetcher(`/assets/${wiz.asset.id}/publish`, {
+      // An already published asset with an unpublished working version (the "new version" flow)
+      // publishes THAT version, which also makes it the latest. Everything else goes through the
+      // asset publish, which runs the full checklist.
+      const draftVersion = wiz.latestVersion;
+      const target =
+        isPublished && draftVersion && !draftVersion.publishedAt
+          ? `/assets/${wiz.asset.id}/versions/${draftVersion.id}/publish`
+          : `/assets/${wiz.asset.id}/publish`;
+      await fetcher(target, {
         method: 'POST',
         body: {},
       });
@@ -53,15 +61,24 @@ export function WizardHeader({ variant = 'edit' }: WizardHeaderProps) {
     } catch (err) {
       if (ApiError.isApiError(err) && err.code === 'asset.publish_blocked' && err.fields) {
         toast.error(t('publishBlocked'));
-        const firstField = err.fields[0]?.path;
-        if (firstField?.startsWith('thumbnail') || firstField?.startsWith('thumb')) {
+        // Paths are `thumbnail`, `license`, `version.files`, `version.compatibility`, ...
+        const firstField = err.fields[0]?.path ?? '';
+        if (firstField.startsWith('thumb')) {
           wiz.setStep('media');
-        } else if (firstField?.startsWith('files') || firstField?.startsWith('version.files')) {
+        } else if (firstField.includes('files')) {
           wiz.setStep('files');
-        } else if (firstField?.startsWith('compatibility')) {
+        } else if (firstField.includes('compatibility')) {
           wiz.setStep('compatibility');
-        } else if (firstField?.startsWith('license')) {
+        } else if (firstField.startsWith('license')) {
           wiz.setStep('license');
+        } else if (firstField.startsWith('translations')) {
+          wiz.setStep('description');
+        } else if (
+          firstField.startsWith('title') ||
+          firstField.startsWith('category') ||
+          firstField.includes('semver')
+        ) {
+          wiz.setStep('basics');
         }
       } else {
         toast.error(t('saveFailed'));
@@ -72,25 +89,18 @@ export function WizardHeader({ variant = 'edit' }: WizardHeaderProps) {
   };
 
   return (
-    <header className="border-b border-line bg-bg/85 backdrop-blur-[8px] sticky top-16 z-30">
-      <div className="px-6 lg:px-10 py-4">
+    <header className="bg-bg/85 sticky top-16 z-30 border-b border-line backdrop-blur-[8px]">
+      <div className="px-6 py-4 lg:px-10">
         <Breadcrumbs
-          items={[
-            { label: 'Publish', href: '/publish' },
-            { label: wiz.asset.title || 'Untitled' },
-          ]}
+          items={[{ label: 'Publish', href: '/publish' }, { label: wiz.asset.title || 'Untitled' }]}
         />
-        <div className="mt-3 flex flex-wrap items-center gap-3 justify-between">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="mb-1 flex items-center gap-2">
               <StatusPill status={wiz.asset.status} />
-              <SaveIndicator
-                saving={wiz.saving}
-                lastSavedAt={wiz.lastSavedAt}
-                locale={locale}
-              />
+              <SaveIndicator saving={wiz.saving} lastSavedAt={wiz.lastSavedAt} locale={locale} />
             </div>
-            <h1 className="font-display text-h1 text-ink tracking-[-0.015em] truncate max-w-[60vw]">
+            <h1 className="max-w-[60vw] truncate font-display text-h1 tracking-[-0.015em] text-ink">
               {wiz.asset.title || 'Untitled asset'}
             </h1>
           </div>
@@ -130,9 +140,7 @@ function StatusPill({ status }: { status: string }) {
           ? 'neutral'
           : 'danger';
   return (
-    <Badge variant={variant as 'success'}>
-      {status.charAt(0) + status.slice(1).toLowerCase()}
-    </Badge>
+    <Badge variant={variant as 'success'}>{status.charAt(0) + status.slice(1).toLowerCase()}</Badge>
   );
 }
 

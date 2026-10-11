@@ -15,8 +15,13 @@ import { useLocale } from 'next-intl';
 import type { AdminReport, AdminReportPage, ReportStatus } from '@/lib/api/admin-types';
 import type { LocaleCode } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
+import { withBasePath } from '@/lib/base-path';
 
-const STATUSES: { value: ReportStatus | 'ALL'; label: string; tone: 'neutral' | 'info' | 'warning' | 'success' | 'danger' }[] = [
+const STATUSES: {
+  value: ReportStatus | 'ALL';
+  label: string;
+  tone: 'neutral' | 'info' | 'warning' | 'success' | 'danger';
+}[] = [
   { value: 'ALL', label: 'All', tone: 'neutral' },
   { value: 'OPEN', label: 'Open', tone: 'warning' },
   { value: 'REVIEWING', label: 'Reviewing', tone: 'info' },
@@ -44,7 +49,8 @@ export default function AdminReportsPage() {
       fetcher<AdminReportPage>('/admin/reports', {
         query: { status: status === 'ALL' ? undefined : status, cursor: pageParam, limit: 50 },
       }),
-    getNextPageParam: (last) => (last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined),
+    getNextPageParam: (last) =>
+      last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined,
     staleTime: 15_000,
   });
 
@@ -58,19 +64,21 @@ export default function AdminReportsPage() {
   return (
     <>
       <AdminPageHeader title="Reports" description="Triage user reports about assets." />
-      <div className="flex items-center gap-1 mb-4">
+      <div className="mb-4 flex items-center gap-1">
         {STATUSES.map((s) => {
           const active = status === s.value;
           return (
             <button
               key={s.value}
               type="button"
-              onClick={() => setParams({ status: s.value === 'ALL' ? null : s.value, cursor: null })}
+              onClick={() =>
+                setParams({ status: s.value === 'ALL' ? null : s.value, cursor: null })
+              }
               className={cn(
-                'inline-flex items-center h-8 px-3 rounded-full text-[12.5px] font-medium border transition-colors',
+                'inline-flex h-8 items-center rounded-full border px-3 text-[12.5px] font-medium transition-colors',
                 active
-                  ? 'bg-ink text-white border-ink'
-                  : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink',
+                  ? 'border-ink bg-ink text-white'
+                  : 'hover:border-ink/30 border-line bg-surface text-ink-2 hover:text-ink',
               )}
             >
               {s.label}
@@ -83,7 +91,7 @@ export default function AdminReportsPage() {
         rows={rows as (AdminReport & { id: string })[]}
         empty="No reports."
         onRowClick={(r) => {
-          window.location.href = `/admin/reports/${r.id}`;
+          window.location.href = withBasePath(`/admin/reports/${r.id}`);
         }}
         columns={[
           { key: 'reporter', header: 'Reporter', cell: (r) => r.reporter.displayName },
@@ -91,7 +99,10 @@ export default function AdminReportsPage() {
             key: 'asset',
             header: 'Asset',
             cell: (r) => (
-              <NextLink href={`/assets/${r.assetSlug || r.assetId}`} className="font-medium text-ink hover:underline">
+              <NextLink
+                href={`/assets/${r.assetSlug || r.assetId}`}
+                className="font-medium text-ink hover:underline"
+              >
                 {r.assetTitle}
               </NextLink>
             ),
@@ -105,7 +116,9 @@ export default function AdminReportsPage() {
             key: 'submitted',
             header: 'Submitted',
             cell: (r) => (
-              <span className="text-caption text-ink-3 geist-tnum">{formatRelative(r.createdAt, locale)}</span>
+              <span className="geist-tnum text-caption text-ink-3">
+                {formatRelative(r.createdAt, locale)}
+              </span>
             ),
           },
           {
@@ -115,7 +128,7 @@ export default function AdminReportsPage() {
           },
         ]}
       />
-      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
+      <div ref={sentinelRef} className="mt-3 h-10 text-center text-caption text-ink-3">
         {list.isFetchingNextPage ? 'Loading…' : null}
       </div>
     </>

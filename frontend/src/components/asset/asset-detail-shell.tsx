@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import NextLink from 'next/link';
-import { Share2, Flag, Download } from 'lucide-react';
+import { Share2, Flag, Download, ExternalLink } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Container } from '@/components/layout/container';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
@@ -31,19 +31,14 @@ import type { AssetDetail, AssetVersionPayload, LocaleCode, MeResponse } from '@
 interface AssetDetailShellProps {
   asset: AssetDetail;
   currentUserId: string;
-  isAdmin: boolean;
   me?: MeResponse;
 }
 
-export function AssetDetailShell({
-  asset,
-  currentUserId,
-  isAdmin,
-  me,
-}: AssetDetailShellProps) {
+export function AssetDetailShell({ asset, currentUserId, me }: AssetDetailShellProps) {
   const meForComments = me;
   const t = useTranslations('asset');
   const tCommon = useTranslations('common');
+  const tPreview = useTranslations('preview');
   const locale = useLocale() as LocaleCode;
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -58,7 +53,10 @@ export function AssetDetailShell({
   );
 
   const isOwner = asset.owner.id === currentUserId;
-  const showReport = !isOwner && !isAdmin;
+  // The demo persona is an admin, so admins can report too (otherwise the flow is unreachable).
+  const showReport = !isOwner;
+  const storeUrl =
+    asset.storeName && asset.storeUrl?.startsWith('https://') ? asset.storeUrl : null;
 
   const mediaItems = useMemo<MediaItem[]>(() => {
     const items: MediaItem[] = [];
@@ -101,13 +99,16 @@ export function AssetDetailShell({
   const openDownload = (versionId?: string) => {
     setRequestedVersionId(versionId ?? latestVersion?.id ?? null);
     setDownloadOpen(true);
-    logEvent('asset.download_open', { assetId: asset.id, versionId: versionId ?? latestVersion?.id });
+    logEvent('asset.download_open', {
+      assetId: asset.id,
+      versionId: versionId ?? latestVersion?.id,
+    });
   };
 
   return (
     <>
       <Container size="2xl">
-        <div className="pt-6 pb-20">
+        <div className="pb-20 pt-6">
           <Breadcrumbs
             className="mb-6"
             items={[
@@ -116,8 +117,11 @@ export function AssetDetailShell({
               { label: asset.title },
             ]}
           />
+          <p className="-mt-3 mb-5 text-caption text-ink-3 lg:hidden">
+            {tPreview('fictionalData')}
+          </p>
 
-          <div className="grid lg:grid-cols-[1fr_360px] gap-8 lg:gap-12">
+          <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:gap-12">
             <div className="min-w-0">
               <MediaGallery
                 thumbnailUrl={asset.thumbnail.url}
@@ -148,9 +152,7 @@ export function AssetDetailShell({
                 </Alert>
               )}
 
-              {meForComments ? (
-                <CommentsSection asset={asset} me={meForComments} />
-              ) : null}
+              {meForComments ? <CommentsSection asset={asset} me={meForComments} /> : null}
 
               <RecommendedAssets assetId={asset.id} />
             </div>
@@ -158,18 +160,37 @@ export function AssetDetailShell({
             {/* Right rail */}
             <aside className="lg:sticky lg:top-24 lg:self-start">
               <Card variant="outlined" padding="lg" className="!shadow-2">
-                <h1 className="font-display text-h1 text-ink tracking-[-0.015em] leading-[1.15]">
+                <h1 className="font-display text-h1 leading-[1.15] tracking-[-0.015em] text-ink">
                   {asset.title}
                 </h1>
                 <NextLink
                   href={`/?ownerId=${asset.owner.id}`}
-                  className="mt-3 inline-flex items-center gap-2 text-body-sm text-ink-2 hover:text-ink transition-colors duration-120"
+                  className="mt-3 inline-flex items-center gap-2 text-body-sm text-ink-2 transition-colors duration-120 hover:text-ink"
                 >
                   <Avatar data={avatarFromServer(asset.owner.avatar)} size={24} />
                   <span>
-                    {t('by')} <span className="font-medium text-ink">{asset.owner.displayName}</span>
+                    {t('by')}{' '}
+                    <span className="font-medium text-ink">{asset.owner.displayName}</span>
                   </span>
                 </NextLink>
+
+                {storeUrl ? (
+                  <a
+                    href={storeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 flex w-fit items-center gap-1.5 text-body-sm text-brand-blue underline-offset-2 hover:underline"
+                  >
+                    {tPreview('viewOnStore', { store: asset.storeName ?? '' })}
+                    <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden="true" />
+                  </a>
+                ) : null}
+
+                {/* Desktop: next to the store link. On a phone this sidebar sits far below the gallery,
+                    so the same line is shown right under the breadcrumbs instead (see above). */}
+                <p className="mt-2 hidden text-caption text-ink-3 lg:block">
+                  {tPreview('fictionalData')}
+                </p>
 
                 <div className="mt-5 flex items-center gap-2">
                   {!isOwner ? (
@@ -181,7 +202,7 @@ export function AssetDetailShell({
                     type="button"
                     onClick={() => setShareOpen(true)}
                     aria-label={t('share')}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 transition-colors duration-120 hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
                   >
                     <Share2 className="h-4 w-4" strokeWidth={2.25} />
                   </button>
@@ -190,7 +211,7 @@ export function AssetDetailShell({
                       type="button"
                       onClick={() => setReportOpen(true)}
                       aria-label={t('report')}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-ink-2 transition-colors duration-120 hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
                     >
                       <Flag className="h-4 w-4" strokeWidth={2.25} />
                     </button>
@@ -211,7 +232,7 @@ export function AssetDetailShell({
                       <NextLink
                         key={tag.id}
                         href={`/search?tags=${tag.slug}`}
-                        className="inline-flex items-center h-6 px-2.5 rounded-full bg-surface-muted text-[12px] font-medium text-ink-2 border border-line hover:border-ink/30 hover:text-ink transition-colors duration-120"
+                        className="hover:border-ink/30 inline-flex h-6 items-center rounded-full border border-line bg-surface-muted px-2.5 text-[12px] font-medium text-ink-2 transition-colors duration-120 hover:text-ink"
                       >
                         {tag.displayName}
                       </NextLink>
@@ -222,13 +243,13 @@ export function AssetDetailShell({
                 <dl className="mt-5 grid grid-cols-2 gap-3 text-caption">
                   <div>
                     <dt className="text-ink-3">{t('downloadsLifetime', { n: '' }).trim()}</dt>
-                    <dd className="text-ink font-semibold text-[20px] geist-tnum">
+                    <dd className="geist-tnum text-[20px] font-semibold text-ink">
                       {formatNumber(asset.totalDownloads, locale)}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-ink-3">{t('saves', { n: '' }).trim()}</dt>
-                    <dd className="text-ink font-semibold text-[20px] geist-tnum">
+                    <dd className="geist-tnum text-[20px] font-semibold text-ink">
                       {formatNumber(asset.totalSaves, locale)}
                     </dd>
                   </div>
@@ -236,11 +257,11 @@ export function AssetDetailShell({
 
                 {latestVersion ? (
                   <>
-                    <div className="mt-6 pt-5 border-t border-line">
-                      <p className="text-caption text-ink-3 mb-2">{t('latestVersion')}</p>
+                    <div className="mt-6 border-t border-line pt-5">
+                      <p className="mb-2 text-caption text-ink-3">{t('latestVersion')}</p>
                       <div className="flex items-center justify-between gap-2">
                         <VersionBadge semver={latestVersion.semver} isLatest size="md" />
-                        <span className="text-caption text-ink-3 geist-tnum">
+                        <span className="geist-tnum text-caption text-ink-3">
                           {latestVersion.publishedAt
                             ? formatDate(latestVersion.publishedAt, locale, { dateStyle: 'medium' })
                             : '—'}
@@ -282,9 +303,13 @@ export function AssetDetailShell({
               </Card>
 
               {/* Mobile-only sticky bottom CTA */}
-              <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-bg/95 backdrop-blur-[8px] border-t border-line p-3 flex items-center gap-2">
+              <div className="bg-bg/95 fixed bottom-0 left-0 right-0 z-30 flex items-center gap-2 border-t border-line p-3 backdrop-blur-[8px] lg:hidden">
                 {!isOwner ? (
-                  <SaveButton assetId={asset.id} initialSaved={asset.isSaved} variant="ghost-pill" />
+                  <SaveButton
+                    assetId={asset.id}
+                    initialSaved={asset.isSaved}
+                    variant="ghost-pill"
+                  />
                 ) : null}
                 <Button
                   fullWidth
@@ -325,4 +350,3 @@ export function AssetDetailShell({
     </>
   );
 }
-

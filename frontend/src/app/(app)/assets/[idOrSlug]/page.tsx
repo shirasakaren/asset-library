@@ -1,44 +1,22 @@
-import { notFound } from 'next/navigation';
-import { getLocale } from 'next-intl/server';
-import { requireSession, fetchMe } from '@/lib/auth/server';
-import { apiFetch } from '@/lib/api/fetcher';
-import { ApiError } from '@/lib/api/errors';
-import type { AssetDetail, LocaleCode } from '@/lib/api/types';
-import { AssetDetailShell } from '@/components/asset/asset-detail-shell';
+import seed from '@/preview/seed-data/assets.json';
+import { AssetDetailPageClient } from '@/components/asset/asset-detail-page-client';
 
 interface PageProps {
   params: Promise<{ idOrSlug: string }>;
 }
 
-export const revalidate = 60;
-
-export async function generateMetadata({ params }: PageProps) {
-  const { idOrSlug } = await params;
-  return { title: `${idOrSlug.replace(/-/g, ' ')}` };
+/**
+ * Pre-render every seeded asset. Slugs created at runtime are rendered by the
+ * exported `not-found` shell (see `src/preview/router/dynamic-pages.tsx`).
+ */
+export function generateStaticParams() {
+  const assets = seed as Array<{ id: string; slug?: string }>;
+  const params = assets.map((a) => ({ idOrSlug: a.slug ?? a.id }));
+  // An empty list would fail the export build ("missing generateStaticParams").
+  return params.length > 0 ? params : [{ idOrSlug: '_placeholder' }];
 }
 
 export default async function AssetDetailPage({ params }: PageProps) {
   const { idOrSlug } = await params;
-  const session = await requireSession();
-  const locale = (await getLocale()) as LocaleCode;
-  const me = await fetchMe(session);
-
-  let asset: AssetDetail;
-  try {
-    asset = await apiFetch<AssetDetail>(`/assets/${encodeURIComponent(idOrSlug)}`, {
-      accessToken: session.accessToken,
-      locale,
-      query: { locale },
-      cache: 'no-store',
-    });
-  } catch (err) {
-    if (ApiError.isApiError(err) && err.status === 404) notFound();
-    throw err;
-  }
-
-  // The asset detail carries its own isSaved flag; the recommendations module
-  // hydrates its card heart state client-side via useSavedIds().
-  return (
-    <AssetDetailShell asset={asset} currentUserId={me.id} isAdmin={me.isAdmin} me={me} />
-  );
+  return <AssetDetailPageClient idOrSlug={idOrSlug} />;
 }

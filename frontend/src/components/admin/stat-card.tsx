@@ -21,19 +21,23 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
   const body = (
     <div
       className={cn(
-        'rounded-[16px] border p-4 transition-all duration-200 ease-out-soft',
+        'min-w-0 rounded-[16px] border p-4 transition-all duration-200 ease-out-soft',
         TONE[tone],
-        href && 'hover:-translate-y-px hover:shadow-2 hover:border-ink/20 cursor-pointer',
+        href && 'hover:border-ink/20 cursor-pointer hover:-translate-y-px hover:shadow-2',
       )}
     >
-      <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 whitespace-nowrap">{label}</p>
-      <p className="mt-2 font-display text-display-lg text-ink geist-tnum tracking-[-0.02em] leading-none">
+      <p className="truncate text-eyebrow uppercase tracking-[0.12em] text-ink-3">{label}</p>
+      {/* Four cards share a row (2-up on phones): scale the figure down so "34,948" is never clipped. */}
+      <p
+        title={value}
+        className="geist-tnum mt-2 truncate font-display text-[1.75rem] leading-none tracking-[-0.02em] text-ink md:text-[2rem] xl:text-display-lg"
+      >
         {value}
       </p>
       {trend ? (
         <p
           className={cn(
-            'mt-2 inline-flex items-center gap-1 text-caption font-medium geist-tnum',
+            'geist-tnum mt-2 inline-flex items-center gap-1 text-caption font-medium',
             trend.delta >= 0 ? 'text-brand-green' : 'text-brand-red',
           )}
         >
@@ -52,7 +56,7 @@ export function StatCard({ label, value, trend, href, tone = 'neutral' }: StatCa
   return (
     <NextLink
       href={href}
-      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 rounded-[16px]"
+      className="block rounded-[16px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
     >
       {body}
     </NextLink>

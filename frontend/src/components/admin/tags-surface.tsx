@@ -46,7 +46,8 @@ export function AdminTagsSurface() {
       fetcher<AdminTagPage>('/admin/tags', {
         query: { q: debounced || undefined, cursor: pageParam, limit: 50 },
       }),
-    getNextPageParam: (last) => (last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined),
+    getNextPageParam: (last) =>
+      last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined,
     staleTime: 30_000,
   });
 
@@ -72,7 +73,7 @@ export function AdminTagsSurface() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         <Input
           inputSize="sm"
           type="search"
@@ -93,67 +94,69 @@ export function AdminTagsSurface() {
       {list.isPending && rows.length === 0 ? (
         <AdminListSkeleton rows={8} />
       ) : (
-      <DataTable
-        rows={rows}
-        empty="No tags yet."
-        columns={[
-          {
-            key: 'slug',
-            header: 'Slug',
-            cell: (r) => <code className="font-mono text-[12.5px] text-ink-2">{r.slug}</code>,
-          },
-          { key: 'name', header: 'Display name', cell: (r) => r.displayName },
-          {
-            key: 'usage',
-            header: 'Usage',
-            align: 'right',
-            cell: (r) => (
-              <Badge variant={r.usageCount > 0 ? 'info' : 'neutral'}>{r.usageCount}</Badge>
-            ),
-          },
-          {
-            key: 'created',
-            header: 'Created',
-            cell: (r) => (
-              <span className="text-caption text-ink-3 geist-tnum">{formatDate(r.createdAt, locale)}</span>
-            ),
-          },
-          {
-            key: 'actions',
-            header: '',
-            align: 'right',
-            cell: (r) => (
-              <div className="inline-flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setEditing(r)}
-                  aria-label="Rename"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-ink-2 hover:bg-surface-muted hover:text-ink"
-                >
-                  <Pencil className="h-3.5 w-3.5" strokeWidth={2.25} />
-                </button>
-                <button
-                  type="button"
-                  disabled={r.usageCount > 0}
-                  onClick={() => remove.mutate(r.id)}
-                  aria-label="Delete"
-                  title={r.usageCount > 0 ? 'Only unused tags can be deleted.' : 'Delete tag'}
-                  className={cn(
-                    'inline-flex h-8 w-8 items-center justify-center rounded-[8px]',
-                    r.usageCount === 0
-                      ? 'text-ink-3 hover:bg-brand-red-50 hover:text-brand-red'
-                      : 'text-ink-4 cursor-not-allowed',
-                  )}
-                >
-                  <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
-                </button>
-              </div>
-            ),
-          },
-        ]}
-      />
+        <DataTable
+          rows={rows}
+          empty="No tags yet."
+          columns={[
+            {
+              key: 'slug',
+              header: 'Slug',
+              cell: (r) => <code className="font-mono text-[12.5px] text-ink-2">{r.slug}</code>,
+            },
+            { key: 'name', header: 'Display name', cell: (r) => r.displayName },
+            {
+              key: 'usage',
+              header: 'Usage',
+              align: 'right',
+              cell: (r) => (
+                <Badge variant={r.usageCount > 0 ? 'info' : 'neutral'}>{r.usageCount}</Badge>
+              ),
+            },
+            {
+              key: 'created',
+              header: 'Created',
+              cell: (r) => (
+                <span className="geist-tnum text-caption text-ink-3">
+                  {formatDate(r.createdAt, locale)}
+                </span>
+              ),
+            },
+            {
+              key: 'actions',
+              header: '',
+              align: 'right',
+              cell: (r) => (
+                <div className="inline-flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setEditing(r)}
+                    aria-label="Rename"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-ink-2 hover:bg-surface-muted hover:text-ink"
+                  >
+                    <Pencil className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={r.usageCount > 0}
+                    onClick={() => remove.mutate(r.id)}
+                    aria-label="Delete"
+                    title={r.usageCount > 0 ? 'Only unused tags can be deleted.' : 'Delete tag'}
+                    className={cn(
+                      'inline-flex h-8 w-8 items-center justify-center rounded-[8px]',
+                      r.usageCount === 0
+                        ? 'text-ink-3 hover:bg-brand-red-50 hover:text-brand-red'
+                        : 'cursor-not-allowed text-ink-4',
+                    )}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
-      <div ref={sentinelRef} className="h-10 mt-3 text-center text-caption text-ink-3">
+      <div ref={sentinelRef} className="mt-3 h-10 text-center text-caption text-ink-3">
         {list.isFetchingNextPage ? 'Loading…' : null}
       </div>
 
@@ -201,7 +204,9 @@ function RenameTagModal({
       toast.success('Tag renamed');
       onDone();
     } catch (err) {
-      toast.error('Could not rename', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Could not rename', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -218,7 +223,11 @@ function RenameTagModal({
             <Input id="t-slug" value={slug} onChange={(e) => setSlug(e.target.value)} />
           </Field>
           <Field id="t-name" label="Display name" required>
-            <Input id="t-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+            <Input
+              id="t-name"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
           </Field>
         </div>
         <ModalFooter>
@@ -242,6 +251,7 @@ function MergeTagsModal({
   onDone: () => void;
 }) {
   const fetcher = useAuthedFetch();
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState('');
   const debounced = useDebouncedValue(query, 200);
   const [from, setFrom] = useState<Tag[]>([]);
@@ -266,9 +276,17 @@ function MergeTagsModal({
         body: { fromTagIds: from.map((t) => t.id), intoTagId: into.id },
       });
       toast.success(`Merged ${from.length} tag(s) into ${into.displayName}`);
+      // The source tags are gone and the target's count changed: mark the cached suggestions
+      // stale (no refetch, the modal closes; the next open fetches fresh ones).
+      void queryClient.invalidateQueries({
+        queryKey: ['admin', 'tag-suggest'],
+        refetchType: 'none',
+      });
       onDone();
     } catch (err) {
-      toast.error('Merge failed', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Merge failed', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -280,11 +298,16 @@ function MergeTagsModal({
         <ModalHeader>
           <ModalTitle>Merge tags</ModalTitle>
           <ModalDescription>
-            Pick the tag(s) to merge from, then a single tag to merge into. Every asset using a source tag will be re-tagged.
+            Pick the tag(s) to merge from, then a single tag to merge into. Every asset using a
+            source tag will be re-tagged.
           </ModalDescription>
         </ModalHeader>
         <Field label="Search">
-          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Type a tag…" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Type a tag…"
+          />
         </Field>
         {suggestions.data?.length ? (
           <ul className="mt-2 max-h-[200px] overflow-y-auto rounded-[12px] border border-line bg-surface">
@@ -293,8 +316,8 @@ function MergeTagsModal({
               const isInto = into?.id === t.id;
               return (
                 <li key={t.id} className="flex items-center gap-2 px-3 py-1.5">
-                  <span className="font-medium text-[13.5px] text-ink">{t.displayName}</span>
-                  <code className="text-caption text-ink-3 font-mono">{t.slug}</code>
+                  <span className="text-[13.5px] font-medium text-ink">{t.displayName}</span>
+                  <code className="font-mono text-caption text-ink-3">{t.slug}</code>
                   <Badge variant="neutral" size="sm" className="ml-auto">
                     {t.usageCount}
                   </Badge>

@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { Field, Textarea } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuthedFetch } from '@/lib/api/client';
+import { queryKeys } from '@/lib/api/queries';
 import { toast } from '@/components/ui/toaster';
 import type { AssetRequest, AssetRequestStatus } from '@/lib/api/types';
 
@@ -17,6 +19,7 @@ interface Props {
 export function RequestDecisionForm({ request }: Props) {
   const fetcher = useAuthedFetch();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<AssetRequestStatus>(request.status);
   const [comment, setComment] = useState(request.adminComment ?? '');
   const [busy, setBusy] = useState(false);
@@ -33,9 +36,15 @@ export function RequestDecisionForm({ request }: Props) {
         body: { status, adminComment: comment || undefined },
       });
       toast.success('Saved');
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.adminAssetRequest(request.id) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.adminAssetRequests() }),
+      ]);
       router.push('/admin/requests');
     } catch (err) {
-      toast.error('Could not save', { description: err instanceof Error ? err.message : String(err) });
+      toast.error('Could not save', {
+        description: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setBusy(false);
     }
@@ -44,14 +53,14 @@ export function RequestDecisionForm({ request }: Props) {
   return (
     <div className="space-y-4">
       <Field label="Status">
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           {STATUSES.map((s) => {
             const active = status === s;
             return (
               <label
                 key={s}
-                className={`inline-flex items-center gap-2.5 px-3 h-9 rounded-[10px] border cursor-pointer transition-colors ${
-                  active ? 'border-ink bg-surface-muted/60' : 'border-line hover:border-ink/40'
+                className={`inline-flex h-9 cursor-pointer items-center gap-2.5 rounded-[10px] border px-3 transition-colors ${
+                  active ? 'bg-surface-muted/60 border-ink' : 'hover:border-ink/40 border-line'
                 }`}
               >
                 <input

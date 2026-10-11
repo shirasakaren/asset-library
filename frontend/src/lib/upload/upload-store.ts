@@ -3,6 +3,7 @@
 import { create } from 'zustand';
 import { apiFetch } from '@/lib/api/fetcher';
 import { logEvent } from '@/lib/logger.events';
+import { PREVIEW_URL_SCHEME, putWithProgress as putToUrl } from './put-with-progress';
 import { logger } from '@/lib/logger';
 import type { LocaleCode } from '@/lib/api/types';
 import type {
@@ -227,6 +228,16 @@ export const useUploadStore = create<UploadStoreState>((set, get) => {
     ctrl: AbortController,
     onProgress: (loaded: number) => void,
   ): Promise<void> {
+    // Static preview: `preview://` URLs are simulated (no XHR), see put-with-progress.ts.
+    if (url.startsWith(PREVIEW_URL_SCHEME)) {
+      return putToUrl({
+        url,
+        body: blob,
+        contentType: contentType || 'application/octet-stream',
+        onProgress: (loaded) => onProgress(loaded),
+        signal: ctrl.signal,
+      });
+    }
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       controllers.get(taskId)?.xhrs.add(xhr);

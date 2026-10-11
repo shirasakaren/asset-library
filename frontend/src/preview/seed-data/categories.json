@@ -1,0 +1,12 @@
+[
+{"id":"cat-3d-models","slug":"3d-models","name":{"en":"3D Models","id":"Model 3D"},"iconKey":"box","sortOrder":10,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-2d-art","slug":"2d-art","name":{"en":"2D Art & Sprites","id":"Seni 2D & Sprite"},"iconKey":"image","sortOrder":20,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-audio","slug":"audio","name":{"en":"Audio & Music","id":"Audio & Musik"},"iconKey":"music","sortOrder":30,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-vfx","slug":"vfx","name":{"en":"VFX & Particles","id":"VFX & Partikel"},"iconKey":"sparkles","sortOrder":40,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-animation","slug":"animation","name":{"en":"Animations","id":"Animasi"},"iconKey":"film","sortOrder":50,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-tools","slug":"tools","name":{"en":"Tools & Plugins","id":"Alat & Plugin"},"iconKey":"wrench","sortOrder":60,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-scripts","slug":"scripts","name":{"en":"Scripts & Snippets","id":"Skrip & Cuplikan"},"iconKey":"code","sortOrder":70,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-templates","slug":"templates","name":{"en":"Project Templates","id":"Template Proyek"},"iconKey":"layout-template","sortOrder":80,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-shaders","slug":"shaders","name":{"en":"Shaders & Materials","id":"Shader & Material"},"iconKey":"palette","sortOrder":90,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"},
+{"id":"cat-documents","slug":"documents","name":{"en":"Documents & Guides","id":"Dokumen & Panduan"},"iconKey":"book-open","sortOrder":100,"isActive":true,"createdAt":"2025-01-15T00:00:00.000Z","updatedAt":"2025-01-15T00:00:00.000Z"}
+]

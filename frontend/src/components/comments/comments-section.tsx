@@ -47,7 +47,8 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
       fetcher<CommentListResponse>(`/assets/${asset.id}/comments`, {
         query: { kind, cursor: pageParam, limit: 20 },
       }),
-    getNextPageParam: (last) => (last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined),
+    getNextPageParam: (last) =>
+      last.pageInfo.hasMore ? (last.pageInfo.nextCursor ?? undefined) : undefined,
     staleTime: 30_000,
   });
 
@@ -102,8 +103,7 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) =>
-      fetcher(`/comments/${id}`, { method: 'DELETE' }),
+    mutationFn: async (id: string) => fetcher(`/comments/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.comments(asset.id, { kind }) });
     },
@@ -135,10 +135,11 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
 
   return (
     <section className="mt-16">
-      <h2 className="font-display text-h1 text-ink tracking-[-0.015em] mb-2 inline-flex items-center gap-2">
+      <h2 className="mb-2 inline-flex items-center gap-2 font-display text-h1 tracking-[-0.015em] text-ink">
         {t('heading')}
-        <span className="text-caption text-ink-3 geist-tnum font-medium">{totalCount}</span>
+        <span className="geist-tnum text-caption font-medium text-ink-3">{totalCount}</span>
       </h2>
+      <p className="mb-4 text-caption text-ink-3">{t('fictionalNote')}</p>
 
       <Tabs value={kind} onValueChange={(v) => setKind(v as FilterKind)} className="mb-6">
         <TabsList>
@@ -148,7 +149,7 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
         </TabsList>
         {kind === 'ISSUE' ? (
           <TabsContent value="ISSUE" className="mt-3">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="mb-2 flex items-center gap-2">
               {(
                 [
                   { value: 'ALL', label: t('filter.all') },
@@ -163,10 +164,10 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
                     key={opt.value}
                     type="button"
                     onClick={() => setIssueStatus(opt.value as IssueStatus | 'ALL')}
-                    className={`inline-flex items-center h-7 px-2.5 rounded-full text-[12.5px] font-medium border transition-colors ${
+                    className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[12.5px] font-medium transition-colors ${
                       active
-                        ? 'bg-ink text-white border-ink'
-                        : 'bg-surface text-ink-2 border-line hover:border-ink/30 hover:text-ink'
+                        ? 'border-ink bg-ink text-white'
+                        : 'hover:border-ink/30 border-line bg-surface text-ink-2 hover:text-ink'
                     }`}
                   >
                     {opt.label}
@@ -175,13 +176,13 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
               })}
             </div>
           </TabsContent>
-        ) : null}
+        ) : (
+          // The active trigger always needs the panel it controls (aria-controls), even when empty.
+          <TabsContent value={kind} className="mt-0" />
+        )}
       </Tabs>
 
-      <CommentComposer
-        me={me}
-        onSubmit={(input) => submitMutation.mutateAsync(input)}
-      />
+      <CommentComposer me={me} onSubmit={(input) => submitMutation.mutateAsync(input)} />
 
       {pendingNew > 0 ? (
         <button
@@ -190,7 +191,7 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
             void query.refetch();
             setPendingNew(0);
           }}
-          className="mt-4 w-full inline-flex items-center justify-center h-9 rounded-[10px] bg-brand-blue-50 text-brand-blue font-medium text-[13.5px] hover:bg-brand-blue-50/80 transition-colors"
+          className="mt-4 inline-flex h-9 w-full items-center justify-center rounded-[10px] bg-brand-blue-50 text-[13.5px] font-medium text-brand-blue transition-colors hover:bg-brand-blue-50/80"
         >
           {t('newCommentsBanner', { count: pendingNew })}
         </button>
@@ -198,7 +199,7 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
 
       <div className="mt-6">
         {query.isPending ? (
-          <div className="py-8 text-center text-ink-3 inline-flex items-center justify-center w-full gap-2">
+          <div className="inline-flex w-full items-center justify-center gap-2 py-8 text-center text-ink-3">
             <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
             Loading…
           </div>
@@ -237,7 +238,11 @@ export function CommentsSection({ asset, me }: CommentsSectionProps) {
 
         {query.hasNextPage ? (
           <div className="mt-6 flex justify-center">
-            <Button variant="ghost" onClick={() => query.fetchNextPage()} loading={query.isFetchingNextPage}>
+            <Button
+              variant="ghost"
+              onClick={() => query.fetchNextPage()}
+              loading={query.isFetchingNextPage}
+            >
               {t('loadOlder')}
             </Button>
           </div>

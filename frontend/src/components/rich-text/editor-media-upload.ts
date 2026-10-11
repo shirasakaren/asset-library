@@ -1,7 +1,8 @@
 'use client';
 
 import { apiFetch } from '@/lib/api/fetcher';
-import { putWithProgress } from '@/lib/upload/put-with-progress';
+import type { EditorMediaPurpose } from '@/lib/upload/image-caps';
+import { PREVIEW_URL_SCHEME, putWithProgress } from '@/lib/upload/put-with-progress';
 
 interface InitiateResponse {
   putUrl: string;
@@ -13,6 +14,8 @@ interface InitiateResponse {
 export interface UploadEditorMediaOptions {
   onProgress?: (loaded: number, total: number) => void;
   signal?: AbortSignal;
+  /** Gallery uploads of the publish wizard: a `display` copy has a smaller size cap than an `original`. */
+  purpose?: EditorMediaPurpose;
 }
 
 /**
@@ -31,7 +34,11 @@ export async function uploadEditorMedia(
 ): Promise<{ viewUrl: string; key: string }> {
   const initiate = await apiFetch<InitiateResponse>('/files/editor-media/initiate', {
     method: 'POST',
-    body: { contentType: file.type || 'application/octet-stream', bytes: file.size },
+    body: {
+      contentType: file.type || 'application/octet-stream',
+      bytes: file.size,
+      ...(options?.purpose ? { purpose: options.purpose } : {}),
+    },
     accessToken,
   });
 
@@ -42,6 +49,18 @@ export async function uploadEditorMedia(
     onProgress: options?.onProgress,
     signal: options?.signal,
   });
+
+  // Static preview: the bytes went to the local blob store, so `initiate.viewUrl` is only a
+  // reference. `refresh` (a real endpoint of the API) returns the URL the editor can display and
+  // that is safe to persist in the document.
+  if (initiate.putUrl.startsWith(PREVIEW_URL_SCHEME)) {
+    const fresh = await apiFetch<{ viewUrl: string }>('/files/editor-media/refresh', {
+      method: 'POST',
+      body: { key: initiate.key },
+      accessToken,
+    });
+    return { viewUrl: fresh.viewUrl, key: initiate.key };
+  }
 
   return { viewUrl: initiate.viewUrl, key: initiate.key };
 }

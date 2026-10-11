@@ -1,24 +1,35 @@
 'use client';
 
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useState, type RefCallback } from 'react';
 
+/**
+ * Tracks whether an element is (nearly) in the viewport. Pass the returned `ref` to the element.
+ *
+ * `ref` is a callback ref on purpose: list pages render their sentinel only after the first page
+ * of data arrived, i.e. after this hook's first effect ran. An object ref read once on mount would
+ * never see that element and infinite scroll would silently never load a second page.
+ */
 export function useIntersection<T extends Element>(
   options: IntersectionObserverInit = { rootMargin: '200px' },
-): { ref: RefObject<T>; isIntersecting: boolean } {
-  const ref = useRef<T | null>(null);
+): { ref: RefCallback<T>; isIntersecting: boolean } {
+  const [node, setNode] = useState<T | null>(null);
   const [isIntersecting, setIntersecting] = useState(false);
+  const { root, rootMargin, threshold } = options;
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    if (!node) {
+      setIntersecting(false);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => setIntersecting(entry?.isIntersecting ?? false),
-      options,
+      { root, rootMargin, threshold },
     );
-    observer.observe(el);
+    observer.observe(node);
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [node, root, rootMargin, threshold]);
 
-  return { ref: ref as RefObject<T>, isIntersecting };
+  const ref = useCallback<RefCallback<T>>((el) => setNode(el), []);
+
+  return { ref, isIntersecting };
 }

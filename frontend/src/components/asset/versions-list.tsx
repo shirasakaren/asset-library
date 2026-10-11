@@ -5,17 +5,20 @@ import { Button } from '@/components/ui/button';
 import { VersionBadge } from './version-badge';
 import { TipTapRenderer } from '@/components/rich-text/tiptap-renderer';
 import { formatBytes, formatDate } from '@/lib/format';
-import type { AssetVersionPayload, LocaleCode, TipTapDoc } from '@/lib/api/types';
+import type { AssetVersionPayload, LocaleCode, ReleaseNotes, TipTapDoc } from '@/lib/api/types';
 
 interface VersionsListProps {
   versions: AssetVersionPayload[];
   onDownload: (versionId: string) => void;
 }
 
-function pickReleaseNotes(notes: unknown, locale: LocaleCode): TipTapDoc | null {
+/** The notes in the UI locale, falling back to English, then Indonesian. */
+export function pickReleaseNotes(
+  notes: ReleaseNotes | null | undefined,
+  locale: LocaleCode,
+): TipTapDoc | null {
   if (!notes || typeof notes !== 'object') return null;
-  const map = notes as Record<string, TipTapDoc | undefined>;
-  return map[locale] ?? map['en'] ?? map['id'] ?? null;
+  return notes[locale] ?? notes.en ?? notes.id ?? null;
 }
 
 export function VersionsList({ versions, onDownload }: VersionsListProps) {
@@ -28,22 +31,21 @@ export function VersionsList({ versions, onDownload }: VersionsListProps) {
   return (
     <ul className="space-y-3">
       {versions.map((v) => {
-        const notes = pickReleaseNotes(v.releaseNotes as unknown, locale);
+        const notes = pickReleaseNotes(v.releaseNotes, locale);
         return (
-          <li
-            key={v.id}
-            className="rounded-[16px] border border-line p-5 bg-surface"
-          >
-            <div className="flex flex-wrap items-center gap-3 justify-between">
+          <li key={v.id} className="rounded-[16px] border border-line bg-surface p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <VersionBadge semver={v.semver} isLatest={v.isLatest} />
-                <span className="text-caption text-ink-3 geist-tnum">
+                <span className="geist-tnum text-caption text-ink-3">
                   {v.publishedAt
-                    ? t('publishedAt', { when: formatDate(v.publishedAt, locale, { dateStyle: 'medium' }) })
+                    ? t('publishedAt', {
+                        when: formatDate(v.publishedAt, locale, { dateStyle: 'medium' }),
+                      })
                     : null}
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-caption text-ink-3 geist-tnum">
+              <div className="geist-tnum flex items-center gap-3 text-caption text-ink-3">
                 <span>{v.fileCount} files</span>
                 <span aria-hidden>·</span>
                 <span>{formatBytes(v.bytesTotal, locale)}</span>
@@ -53,7 +55,7 @@ export function VersionsList({ versions, onDownload }: VersionsListProps) {
               </div>
             </div>
             {notes ? (
-              <div className="mt-4 pt-4 border-t border-line">
+              <div className="mt-4 border-t border-line pt-4">
                 <TipTapRenderer doc={notes} variant="lite" />
               </div>
             ) : null}

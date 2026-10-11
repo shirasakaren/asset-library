@@ -52,8 +52,8 @@ export function LibraryFilters() {
     (hidden !== 'false' ? 1 : 0);
 
   return (
-    <aside className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto pr-1">
-      <div className="flex items-center justify-between mb-2">
+    <aside className="pr-1 lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto">
+      <div className="mb-2 flex items-center justify-between">
         <h2 className="text-h4 font-semibold text-ink">{t('title')}</h2>
         {activeCount > 0 ? (
           <button
@@ -80,7 +80,7 @@ export function LibraryFilters() {
           {ENGINES.map((e) => (
             <label
               key={e.value || 'any'}
-              className="inline-flex items-center gap-2.5 text-[13.5px] text-ink cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2.5 text-[13.5px] text-ink"
             >
               <input
                 type="radio"
@@ -116,7 +116,7 @@ export function LibraryFilters() {
           {HIDDEN.map((h) => (
             <label
               key={h.value}
-              className="inline-flex items-center gap-2.5 text-[13.5px] text-ink cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2.5 text-[13.5px] text-ink"
             >
               <input
                 type="radio"
@@ -137,9 +137,12 @@ export function LibraryFilters() {
 
       <FilterSection title={t('sort')} defaultOpen>
         <select
+          aria-label={t('sort')}
           value={sort}
-          onChange={(e) => setParams({ sort: e.target.value === 'savedAt' ? null : e.target.value })}
-          className="w-full h-10 rounded-[10px] border border-line bg-surface text-[13.5px] text-ink px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          onChange={(e) =>
+            setParams({ sort: e.target.value === 'savedAt' ? null : e.target.value })
+          }
+          className="h-10 w-full rounded-[10px] border border-line bg-surface px-3 text-[13.5px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
         >
           {SORTS.map((s) => (
             <option key={s} value={s}>

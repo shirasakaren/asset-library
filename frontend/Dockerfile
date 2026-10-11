@@ -1,4 +1,9 @@
 # syntax=docker/dockerfile:1.7
+# NOTE: legacy. This image targets the original full stack (standalone Next.js
+# server, Keycloak/NextAuth, API proxy). It is NOT used by the static preview,
+# which is exported to frontend/out and deployed to GitHub Pages by
+# .github/workflows/pages.yml. It is not maintained and is not expected to build
+# against the current frontend.
 # =============================================================================
 # MGM Asset Library — web client image (multi-stage, monorepo).
 #

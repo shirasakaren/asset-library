@@ -29,6 +29,16 @@ export function formatNumber(value: number, locale: Locale = 'en'): string {
   return new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-US').format(value);
 }
 
+/** Prices are USD; the symbol and separators stay US-style in every UI locale. */
+export function formatUsd(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
 const RELATIVE_UNITS: Array<[Intl.RelativeTimeFormatUnit, number]> = [
   ['year', 60 * 60 * 24 * 365],
   ['month', 60 * 60 * 24 * 30],

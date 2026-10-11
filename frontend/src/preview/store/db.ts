@@ -1,0 +1,201 @@
+import type { CollectionName, Db, Doc, OverlayEntry, OverlayStore, SeedSource } from '../types';
+import { rebaseOffsetDays, shiftSeedValue } from './rebase';
+
+const clone = <T>(v: T): T => structuredClone(v);
+
+const OFFSET_META = 'rebaseOffsetDays';
+
+const isEntry = (k: string, e: unknown): e is OverlayEntry => {
+  if (!e || typeof e !== 'object') return false;
+  const { op, doc } = e as OverlayEntry;
+  if (op === 'del') return true;
+  if (op !== 'put' || !doc || typeof doc.id !== 'string') return false;
+  // key is `${coll}/${id}`; the stored doc must agree with it.
+  return k.slice(k.indexOf('/') + 1) === doc.id;
+};
+
+export async function createDb(opts: {
+  seed: SeedSource;
+  overlay: OverlayStore | null;
+  seedVersion: string;
+  /**
+   * Moves every seed date forward by the whole days between `anchor` and `now()`, computed once per
+   * visitor and kept in the overlay meta (`rebaseOffsetDays`; in memory without an overlay) so it never
+   * drifts; `reset()` and a seedVersion bump compute a fresh one. Absent: the seed is used as is.
+   */
+  rebase?: { anchor: string; now: () => Date };
+}): Promise<Db> {
+  const { seed, seedVersion, rebase } = opts;
+  const freshOffset = () => (rebase ? rebaseOffsetDays(rebase.anchor, rebase.now()) : 0);
+  let offsetDays = freshOffset();
+  let overlay = opts.overlay;
+  let entries = new Map<string, OverlayEntry>();
+  let nextSeq = 1;
+
+  if (overlay) {
+    try {
+      await overlay.open();
+      const raw = await overlay.all();
+      if ((await overlay.getMeta('seedVersion')) !== seedVersion) {
+        await overlay.clear();
+        await overlay.setMeta('seedVersion', seedVersion);
+        if (rebase) await overlay.setMeta(OFFSET_META, String(offsetDays));
+      } else {
+        if (rebase) {
+          const stored = Number(await overlay.getMeta(OFFSET_META));
+          if (Number.isInteger(stored) && stored >= 0) offsetDays = stored;
+          else await overlay.setMeta(OFFSET_META, String(offsetDays));
+        }
+        const valid = [...raw].filter(([k, e]) => isEntry(k, e));
+        valid.sort(([, a], [, b]) => (a.seq ?? 0) - (b.seq ?? 0));
+        for (const [k, e] of valid) {
+          entries.set(k, e);
+          if (typeof e.seq === 'number' && e.seq >= nextSeq) nextSeq = e.seq + 1;
+        }
+      }
+    } catch {
+      overlay = null;
+      entries = new Map();
+    }
+  }
+
+  let persistent = overlay !== null;
+  const listeners = new Set<(persistent: boolean) => void>();
+  /** Drops the overlay after a failed write and tells subscribers (once; it never flips back). */
+  const markNonPersistent = () => {
+    overlay = null;
+    if (!persistent) return;
+    persistent = false;
+    for (const l of [...listeners]) {
+      try {
+        l(false);
+      } catch {
+        // a broken subscriber must not break the write path
+      }
+    }
+  };
+  const seedCache = new Map<CollectionName, Doc[]>();
+
+  // A failed seed load is not cached, so the next call retries.
+  const loadSeed = async (coll: CollectionName): Promise<Doc[]> => {
+    const cached = seedCache.get(coll);
+    if (cached) return cached;
+    try {
+      const docs = (await seed.load(coll)).map((d) => shiftSeedValue(clone(d), offsetDays));
+      seedCache.set(coll, docs);
+      return docs;
+    } catch (e) {
+      console.warn(`[preview] failed to load seed "${coll}"`, e);
+      return [];
+    }
+  };
+
+  /** Synchronously updates memory, then writes through to the overlay (never throws). */
+  const persist = async (k: string, entry: OverlayEntry): Promise<void> => {
+    entries.set(k, entry);
+    if (!overlay) return;
+    try {
+      await overlay.set(k, entry);
+    } catch {
+      markNonPersistent();
+    }
+  };
+
+  const key = (coll: CollectionName, id: string) => `${coll}/${id}`;
+
+  /** Synchronous lookup; the seed collection must already be loaded. */
+  const lookup = (coll: CollectionName, id: string, base: Doc[]): Doc | undefined => {
+    const e = entries.get(key(coll, id));
+    if (e) return e.op === 'put' ? e.doc : undefined;
+    return base.find((d) => d.id === id);
+  };
+
+  const putEntry = (coll: CollectionName, doc: Doc): Promise<void> => {
+    const k = key(coll, doc.id);
+    const prev = entries.get(k);
+    const seq = prev?.op === 'put' && prev.seq !== undefined ? prev.seq : nextSeq++;
+    return persist(k, { op: 'put', doc, seq });
+  };
+
+  return {
+    async list<T extends Doc>(coll: CollectionName): Promise<T[]> {
+      const base = await loadSeed(coll);
+      const prefix = `${coll}/`;
+      const seen = new Set<string>();
+      const out: Doc[] = [];
+      for (const doc of base) {
+        seen.add(doc.id);
+        const e = entries.get(prefix + doc.id);
+        if (!e) out.push(doc);
+        else if (e.op === 'put' && e.doc) out.push(e.doc);
+      }
+      const extra: OverlayEntry[] = [];
+      for (const [k, e] of entries) {
+        if (!k.startsWith(prefix) || e.op !== 'put' || !e.doc || seen.has(e.doc.id)) continue;
+        extra.push(e);
+      }
+      extra.sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0));
+      for (const e of extra) out.push(e.doc as Doc);
+      return clone(out) as T[];
+    },
+
+    async get<T extends Doc>(coll: CollectionName, id: string): Promise<T | undefined> {
+      const base = await loadSeed(coll);
+      const found = lookup(coll, id, base);
+      return found ? (clone(found) as T) : undefined;
+    },
+
+    async put<T extends Doc>(coll: CollectionName, doc: T): Promise<T> {
+      await putEntry(coll, clone(doc));
+      return clone(doc);
+    },
+
+    async patch<T extends Doc>(coll: CollectionName, id: string, partial: Partial<T>): Promise<T> {
+      const base = await loadSeed(coll);
+      // Everything from here to putEntry() is synchronous, so concurrent patches
+      // each merge against the latest in-memory state.
+      const current = lookup(coll, id, base);
+      if (!current) throw new Error('not found');
+      const next = { ...clone(current), ...clone(partial), id } as T;
+      const written = putEntry(coll, next);
+      await written;
+      return clone(next);
+    },
+
+    async remove(coll, id) {
+      await persist(key(coll, id), { op: 'del', seq: nextSeq++ });
+    },
+
+    /**
+     * Wipes the visitor's changes. Rejects when the stored overlay cannot be cleared: the old
+     * overlay would come back on the next load, so pretending to succeed would be a lie. Nothing
+     * is changed in that case (memory still matches the overlay) and a retry is safe. Once the
+     * overlay IS clear, a failure to write the meta rows only costs persistence.
+     */
+    async reset() {
+      if (overlay) await overlay.clear();
+      entries = new Map();
+      nextSeq = 1;
+      seedCache.clear();
+      offsetDays = freshOffset();
+      if (!overlay) return;
+      try {
+        await overlay.setMeta('seedVersion', seedVersion);
+        if (rebase) await overlay.setMeta(OFFSET_META, String(offsetDays));
+      } catch {
+        markNonPersistent();
+      }
+    },
+
+    get persistent() {
+      return persistent;
+    },
+
+    onPersistenceChange(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
+}

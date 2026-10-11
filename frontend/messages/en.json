@@ -13,7 +13,6 @@
     "goHome": "Go home",
     "seeAll": "See all",
     "signIn": "Sign in",
-    "signOut": "Sign out",
     "openMenu": "Open menu",
     "openNotifications": "Open notifications",
     "openProfileMenu": "Open profile menu",
@@ -29,6 +28,7 @@
     "less": "Less",
     "by": "by",
     "noResults": "No results",
+    "openPreview": "Open the preview",
     "all": "All"
   },
   "nav": {
@@ -62,6 +62,26 @@
     "english": "English",
     "indonesian": "Bahasa Indonesia",
     "updated": "Language updated"
+  },
+  "preview": {
+    "bannerLabel": "Demo notice",
+    "bannerText": "Preview — you're exploring a demo as {name}. Everything you change is saved only in this browser.",
+    "bannerNotPersistent": "Changes can't be saved in this browser (storage unavailable) — they will be lost when you leave this page.",
+    "resetDemo": "Reset demo data",
+    "dismiss": "Dismiss",
+    "storageFullToast": "Browser storage is full or unavailable — your changes can't be saved",
+    "resetConfirmTitle": "Reset demo data?",
+    "resetConfirmBody": "This clears everything you changed in this browser and restores the demo's original data. Continue?",
+    "resetConfirm": "Reset",
+    "resetDone": "Demo data reset",
+    "resetFailed": "Couldn't reset the demo data. Please try again.",
+    "resetPartial": "Demo data was reset, but some uploaded files could not be removed from this browser.",
+    "attributionLead": "Thumbnails and listings belong to their respective creators and stores and are shown for demonstration only. To request removal, contact",
+    "staticDemo": "This is a static demo — no account, no server.",
+    "sourceOnGithub": "Source on GitHub",
+    "viewOnStore": "View on {store}",
+    "fictionalData": "Owner, versions, comments and issues shown here are fictional demo data.",
+    "attributionFictional": "All people, comments, issues and versions in this demo are fictional."
   },
   "footer": {
     "tagline": "An MGM Laboratory product. Built for the lab, by the lab.",
@@ -225,8 +245,7 @@
     "noFiles": "No downloadable files in this version.",
     "downloadAnother": "Download another file",
     "thankYouTitle": "Thank you for downloading.",
-    "thankYouBody": "If your download didn't start automatically, {link}.",
-    "thankYouLink": "click here",
+    "thankYouBody": "If your download didn't start automatically, <link>click here</link>.",
     "failedTitle": "Couldn't start your download",
     "failedBody": "Try again in a moment. If it keeps happening, the file may be quarantined."
   },
@@ -385,8 +404,7 @@
     "revokeConfirmBody": "The plugin will sign out immediately. You can re-authenticate it from inside Unity or Unreal later.",
     "revoked": "Device revoked",
     "accountTitle": "Account",
-    "accountBody": "Signing out also revokes the active Keycloak session.",
-    "signOut": "Sign out"
+    "accountBody": "This is a preview with no account: your changes live only in this browser, and you can reset them any time."
   },
   "errorPages": {
     "forbiddenTitle": "You don't have access to this page.",
@@ -608,6 +626,7 @@
   },
   "comments": {
     "heading": "Comments",
+    "fictionalNote": "Comments and issues here are fictional demo data.",
     "tabs": {
       "all": "All",
       "comments": "Comments",

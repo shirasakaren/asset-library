@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { TipTapRenderer } from '@/components/rich-text/tiptap-renderer';
@@ -23,6 +23,7 @@ type TabKey = (typeof VALID)[number];
 export function AssetTabs({ asset, activeVersion, onDownloadVersion }: AssetTabsProps) {
   const t = useTranslations('asset.tabs');
   const router = useRouter();
+  const pathname = usePathname();
   const [value, setValue] = useState<TabKey>('description');
 
   useEffect(() => {
@@ -40,7 +41,9 @@ export function AssetTabs({ asset, activeVersion, onDownloadVersion }: AssetTabs
 
   const handleChange = (next: string) => {
     setValue(next as TabKey);
-    const url = `${window.location.pathname}${window.location.search}#${next}`;
+    // usePathname() excludes the base path, which router.replace adds again;
+    // window.location.pathname would include it and double it under a sub-path.
+    const url = `${pathname}${window.location.search}#${next}`;
     router.replace(url, { scroll: false });
   };
 

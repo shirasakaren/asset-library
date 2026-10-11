@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthedFetch } from '@/lib/api/client';
 import { queryKeys } from '@/lib/api/queries';
@@ -20,14 +21,7 @@ import { useUploadStore, selectCompletedFileIdsFor } from '@/lib/upload/upload-s
 import type { AssetDetail, AssetVersionPayload, LocaleCode } from '@/lib/api/types';
 
 export type WizardStep =
-  | 'basics'
-  | 'media'
-  | 'files'
-  | 'description'
-  | 'compatibility'
-  | 'tags'
-  | 'license'
-  | 'review';
+  'basics' | 'media' | 'files' | 'description' | 'compatibility' | 'tags' | 'license' | 'review';
 
 export const WIZARD_STEPS: WizardStep[] = [
   'basics',
@@ -46,6 +40,11 @@ interface PendingPatch {
 
 interface WizardCtxValue {
   asset: AssetDetail;
+  /**
+   * The version the Files / Compatibility / Basics-semver steps, the checklist and Publish work
+   * on: the one named by `?version=<id>` (the "new version" flow) when the asset has it,
+   * otherwise the `isLatest` one (first version as a fallback).
+   */
   latestVersion: AssetVersionPayload | null;
   step: WizardStep;
   setStep: (step: WizardStep) => void;
@@ -114,10 +113,25 @@ export function WizardProvider({ initialAsset, locale, children }: WizardProvide
     staleTime: 60_000,
   });
   const asset = assetQuery.data ?? initialAsset;
-  const latestVersion = useMemo(
-    () => asset.versions.find((v) => v.isLatest) ?? asset.versions[0] ?? null,
-    [asset.versions],
+  const requestedVersionId = useSearchParams()?.get('version') ?? null;
+  const requestedVersion = useMemo(
+    () =>
+      requestedVersionId ? asset.versions.find((v) => v.id === requestedVersionId) : undefined,
+    [asset.versions, requestedVersionId],
   );
+  const latestVersion = useMemo(
+    () => requestedVersion ?? asset.versions.find((v) => v.isLatest) ?? asset.versions[0] ?? null,
+    [requestedVersion, asset.versions],
+  );
+
+  // Arriving from "New version" lands on the Files step, once the version is known (the asset
+  // may still be the pre-creation copy for a moment).
+  const openedFilesFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!requestedVersion || openedFilesFor.current === requestedVersion.id) return;
+    openedFilesFor.current = requestedVersion.id;
+    setStep('files');
+  }, [requestedVersion]);
 
   const flush = useCallback(async () => {
     if (timerRef.current) {

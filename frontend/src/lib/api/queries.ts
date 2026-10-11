@@ -41,9 +41,9 @@ export const STALE_TIMES = {
 
 export const queryKeys = {
   me: ['me'] as const,
+  myDevices: ['me', 'devices'] as const,
 
-  notifications: (params: { unreadOnly?: boolean } = {}) =>
-    ['notifications', params] as const,
+  notifications: (params: { unreadOnly?: boolean } = {}) => ['notifications', params] as const,
   notificationsUnreadCount: ['notifications', 'unread-count'] as const,
 
   discover: (locale: LocaleCode) => ['discover', locale] as const,
@@ -77,8 +77,7 @@ export const queryKeys = {
   notificationsInbox: (params: { unreadOnly?: boolean } = {}) =>
     ['notifications-inbox', params] as const,
 
-  assetRequests: (filters: Record<string, unknown> = {}) =>
-    ['asset-requests', filters] as const,
+  assetRequests: (filters: Record<string, unknown> = {}) => ['asset-requests', filters] as const,
 
   myAnalyticsSummary: ['analytics', 'me', 'summary'] as const,
   myAnalyticsAsset: (assetId: string) => ['analytics', 'me', assetId] as const,
@@ -88,8 +87,7 @@ export const queryKeys = {
 
   /* ---------- admin ---------- */
   adminDashboard: ['admin', 'dashboard'] as const,
-  adminAssets: (filters: Record<string, unknown> = {}) =>
-    ['admin', 'assets', filters] as const,
+  adminAssets: (filters: Record<string, unknown> = {}) => ['admin', 'assets', filters] as const,
   adminFeatured: ['admin', 'featured'] as const,
   adminCategories: ['admin', 'categories'] as const,
   adminTags: (filters: Record<string, unknown> = {}) => ['admin', 'tags', filters] as const,
@@ -106,6 +104,5 @@ export const queryKeys = {
   adminUser: (id: string) => ['admin', 'user', id] as const,
   adminAudit: (filters: Record<string, unknown> = {}) => ['admin', 'audit', filters] as const,
   adminAuditEntry: (id: string) => ['admin', 'audit', id] as const,
-  adminWebhooks: (filters: Record<string, unknown> = {}) =>
-    ['admin', 'webhooks', filters] as const,
+  adminWebhooks: (filters: Record<string, unknown> = {}) => ['admin', 'webhooks', filters] as const,
 };

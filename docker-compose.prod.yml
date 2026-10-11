@@ -13,10 +13,14 @@ services:
     environment:
       PROCESS_ROLE: api
     ports:
-      - '${API_PORT:-4000}:4000'
+      - "${API_PORT:-4000}:4000"
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:${API_PORT:-4000}/healthz || exit 1']
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:${API_PORT:-4000}/healthz || exit 1",
+        ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -27,27 +31,30 @@ services:
     env_file: backend/.env
     environment:
       PROCESS_ROLE: worker
-      PORT: '4001'
+      PORT: "4001"
     ports:
-      - '4001:4001'
+      - "4001:4001"
     restart: unless-stopped
     tmpfs:
       - /tmp/mgm-analyze:size=4g
     healthcheck:
-      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:4001/healthz || exit 1']
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4001/healthz || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 30s
 
+  # NOTE: legacy. `web` targets the original full stack image, which is no longer
+  # built. The static preview does not use it; it is deployed to GitHub Pages by
+  # .github/workflows/pages.yml.
   web:
     image: ${WEB_IMAGE:-ghcr.io/mgm-laboratory/mgm-asset-library-web:latest}
     env_file: frontend/.env.local
     ports:
-      - '${WEB_PORT:-3000}:3000'
+      - "${WEB_PORT:-3000}:3000"
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:3000/health || exit 1']
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/health || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3

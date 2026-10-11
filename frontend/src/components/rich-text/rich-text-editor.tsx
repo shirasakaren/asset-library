@@ -15,7 +15,7 @@ import TableRow from '@tiptap/extension-table-row';
 import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
 import Youtube from '@tiptap/extension-youtube';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/preview/session/me-provider';
 import {
   Bold,
   Italic,
@@ -45,11 +45,7 @@ import { uploadEditorMedia } from './editor-media-upload';
 import { toast } from '@/components/ui/toaster';
 import type { TipTapDoc } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
-import {
-  LITE_ALLOWED_NODES,
-  LITE_ALLOWED_MARKS,
-  stripDisallowedLiteNodes,
-} from './lite-nodes';
+import { LITE_ALLOWED_NODES, LITE_ALLOWED_MARKS, stripDisallowedLiteNodes } from './lite-nodes';
 
 // Re-exported from the pure `lite-nodes` module so existing import sites that
 // reference these from the editor still resolve. Prefer importing them from
@@ -128,7 +124,8 @@ export function RichTextEditor({
   const [busyUploading, setBusyUploading] = useState(false);
 
   const extensions = useMemo(
-    () => buildExtensions(mode, placeholder ?? (mode === 'full' ? FULL_PLACEHOLDER : LITE_PLACEHOLDER)),
+    () =>
+      buildExtensions(mode, placeholder ?? (mode === 'full' ? FULL_PLACEHOLDER : LITE_PLACEHOLDER)),
     [mode, placeholder],
   );
 
@@ -140,7 +137,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class: cn(
-          'tiptap-prose max-w-none focus:outline-none px-4 py-3',
+          'tiptap-prose max-w-none px-4 py-3 focus:outline-none',
           'prose-headings:font-display',
         ),
       },
@@ -211,7 +208,7 @@ export function RichTextEditor({
   if (!editor) {
     return (
       <div
-        className={cn('border border-line rounded-[14px] bg-surface', className)}
+        className={cn('rounded-[14px] border border-line bg-surface', className)}
         style={{ minHeight }}
         aria-busy
       />
@@ -221,7 +218,7 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        'rich-text-editor flex flex-col rounded-[14px] border border-line bg-surface focus-within:border-ink/30 focus-within:ring-2 focus-within:ring-focus focus-within:ring-offset-2 transition-colors duration-120',
+        'rich-text-editor focus-within:border-ink/30 flex flex-col rounded-[14px] border border-line bg-surface transition-colors duration-120 focus-within:ring-2 focus-within:ring-focus focus-within:ring-offset-2',
         className,
       )}
     >
@@ -235,7 +232,7 @@ export function RichTextEditor({
         onGif={() => setGifOpen(true)}
       />
       <div
-        className="relative overflow-y-auto cursor-text"
+        className="relative cursor-text overflow-y-auto"
         style={{ minHeight, maxHeight }}
         onMouseDown={(e) => {
           // ProseMirror only fills the height of its own content, so a click
@@ -253,7 +250,7 @@ export function RichTextEditor({
         {busyUploading ? (
           <div
             aria-live="polite"
-            className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-ink text-white text-[12px] font-medium px-2.5 h-7 shadow-2"
+            className="absolute right-3 top-3 inline-flex h-7 items-center gap-2 rounded-full bg-ink px-2.5 text-[12px] font-medium text-white shadow-2"
           >
             <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2.25} />
             Uploading…
@@ -318,7 +315,7 @@ interface ToolbarProps {
 
 function Toolbar({ editor, mode, onLink, onImage, onEmbed, onGif }: ToolbarProps) {
   return (
-    <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 border-b border-line bg-surface/95 backdrop-blur-[6px] p-1.5 rounded-t-[14px]">
+    <div className="bg-surface/95 sticky top-0 z-10 flex flex-wrap items-center gap-1 rounded-t-[14px] border-b border-line p-1.5 backdrop-blur-[6px]">
       {mode === 'full' ? (
         <>
           <BlockDropdown editor={editor} />
@@ -359,7 +356,12 @@ function Toolbar({ editor, mode, onLink, onImage, onEmbed, onGif }: ToolbarProps
         label="Inline code"
         icon={Code}
       />
-      <ToolButton active={editor.isActive('link')} onClick={onLink} label="Link (⌘K)" icon={LinkIcon} />
+      <ToolButton
+        active={editor.isActive('link')}
+        onClick={onLink}
+        label="Link (⌘K)"
+        icon={LinkIcon}
+      />
       <Divider />
       <ToolButton
         active={editor.isActive('bulletList')}
@@ -392,7 +394,7 @@ function Toolbar({ editor, mode, onLink, onImage, onEmbed, onGif }: ToolbarProps
         </>
       ) : null}
       <div className="ml-auto flex items-center gap-2">
-        <span className="text-caption text-ink-4 geist-tnum hidden sm:inline">
+        <span className="geist-tnum hidden text-caption text-ink-4 sm:inline">
           {editor.storage.characterCount?.characters?.() ?? plainTextLength(editor)} chars
         </span>
       </div>
@@ -401,7 +403,12 @@ function Toolbar({ editor, mode, onLink, onImage, onEmbed, onGif }: ToolbarProps
 }
 
 function BlockDropdown({ editor }: { editor: Editor }) {
-  const options: { label: string; check: () => boolean; apply: () => void; icon: typeof Heading1 }[] = [
+  const options: {
+    label: string;
+    check: () => boolean;
+    apply: () => void;
+    icon: typeof Heading1;
+  }[] = [
     {
       label: 'Paragraph',
       icon: Type,
@@ -445,7 +452,7 @@ function BlockDropdown({ editor }: { editor: Editor }) {
       value={active.label}
       onChange={(e) => options.find((o) => o.label === e.target.value)?.apply()}
       aria-label="Block type"
-      className="h-7 rounded-[8px] border border-line bg-surface text-[12.5px] px-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+      className="h-7 rounded-[8px] border border-line bg-surface px-2 text-[12.5px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
     >
       {options.map((o) => (
         <option key={o.label} value={o.label}>
@@ -475,7 +482,7 @@ function ToolButton({
       aria-label={label}
       aria-pressed={active}
       className={cn(
-        'inline-flex h-7 w-7 items-center justify-center rounded-[8px] text-ink-2 hover:bg-surface-muted hover:text-ink transition-colors duration-120',
+        'inline-flex h-7 w-7 items-center justify-center rounded-[8px] text-ink-2 transition-colors duration-120 hover:bg-surface-muted hover:text-ink',
         active && 'bg-ink text-white hover:bg-ink hover:text-white',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-1',
       )}

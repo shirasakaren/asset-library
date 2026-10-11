@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Container } from '@/components/layout/container';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
-import { captureException } from '@/lib/sentry';
+import { logger } from '@/lib/logger';
 
 export default function LibraryErrorPage({
   error,
@@ -17,7 +17,11 @@ export default function LibraryErrorPage({
 }) {
   const t = useTranslations('errors');
   useEffect(() => {
-    void captureException(error, { digest: error.digest, scope: 'library' });
+    logger.error('error.boundary', {
+      message: error.message,
+      digest: error.digest,
+      scope: 'library',
+    });
   }, [error]);
   return (
     <Container size="lg">

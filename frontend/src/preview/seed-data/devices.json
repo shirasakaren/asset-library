@@ -1,0 +1,4 @@
+[
+{"id":"dev-1","userId":"u-persona","deviceLabel":"Aria's Workstation - Unity 2022.3","createdAt":"2026-07-19T00:00:00.000Z","lastUsedAt":"2026-09-28T19:00:00.000Z","expiresAt":"2027-01-15T00:00:00.000Z","revokedAt":null},
+{"id":"dev-2","userId":"u-persona","deviceLabel":"Studio Laptop - Unreal Engine 5.4","createdAt":"2026-05-13T00:00:00.000Z","lastUsedAt":"2026-09-12T00:00:00.000Z","expiresAt":"2026-11-09T00:00:00.000Z","revokedAt":"2026-09-18T21:00:00.000Z"}
+]

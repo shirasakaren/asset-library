@@ -22,7 +22,7 @@ services:
       dockerfile: backend/Dockerfile
     env_file: backend/.env
     ports:
-      - '${API_PORT:-4000}:4000'
+      - "${API_PORT:-4000}:4000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,9 +43,9 @@ services:
     env_file: backend/.env
     environment:
       PROCESS_ROLE: worker
-      PORT: '4001'
+      PORT: "4001"
     ports:
-      - '4001:4001' # /healthz + /metrics
+      - "4001:4001" # /healthz + /metrics
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,6 +62,9 @@ services:
     tmpfs:
       - /tmp/mgm-analyze:size=4g
 
+  # NOTE: legacy. `web` targets the original full stack (standalone Next.js
+  # server with Keycloak sign-in). The static preview does not use it; it is
+  # deployed to GitHub Pages by .github/workflows/pages.yml.
   web:
     build:
       context: .
@@ -69,7 +72,7 @@ services:
     image: mgm-asset-library-frontend:local
     env_file: frontend/.env.local
     ports:
-      - '${WEB_PORT:-3000}:3000'
+      - "${WEB_PORT:-3000}:3000"
     depends_on:
       api:
         condition: service_started
@@ -82,11 +85,11 @@ services:
       POSTGRES_PASSWORD: mgm
       POSTGRES_DB: mgm_asset_library
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U mgm -d mgm_asset_library']
+      test: ["CMD-SHELL", "pg_isready -U mgm -d mgm_asset_library"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -94,11 +97,12 @@ services:
   mongo:
     image: mongo:7
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
-      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.adminCommand(\'ping\').ok']
+      test:
+        ["CMD", "mongosh", "--quiet", "--eval", 'db.adminCommand("ping").ok']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -106,11 +110,11 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -118,14 +122,14 @@ services:
   meilisearch:
     image: getmeili/meilisearch:v1.10
     environment:
-      MEILI_NO_ANALYTICS: 'true'
+      MEILI_NO_ANALYTICS: "true"
       MEILI_ENV: development
     ports:
-      - '7700:7700'
+      - "7700:7700"
     volumes:
       - meili_data:/meili_data
     healthcheck:
-      test: ['CMD', 'curl', '-fsS', 'http://localhost:7700/health']
+      test: ["CMD", "curl", "-fsS", "http://localhost:7700/health"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -137,12 +141,12 @@ services:
       MINIO_ROOT_USER: mgm
       MINIO_ROOT_PASSWORD: mgm-secret
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - minio_data:/data
     healthcheck:
-      test: ['CMD', 'curl', '-fsS', 'http://localhost:9000/minio/health/live']
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/minio/health/live"]
       interval: 5s
       timeout: 5s
       retries: 10

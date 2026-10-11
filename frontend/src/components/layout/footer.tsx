@@ -1,15 +1,26 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import { useState } from 'react';
+import NextLink from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Logo } from '@/components/brand/logo';
 import { Container } from './container';
 import { FooterStrip } from '@/components/brand/footer-strip';
 import { publicEnv } from '@/lib/env.public';
+import { cn } from '@/lib/utils';
+import { AttributionNotice } from '@/components/preview/attribution-notice';
+import { ResetDemoDialog } from '@/components/preview/reset-demo-dialog';
 
-export async function Footer() {
-  const t = await getTranslations('footer');
-  const tnav = await getTranslations('nav');
+export function Footer() {
+  const t = useTranslations('footer');
+  const tnav = useTranslations('nav');
+  const tv = useTranslations('preview');
+  const [resetOpen, setResetOpen] = useState(false);
   const year = new Date().getFullYear();
 
-  const cols = [
+  // An item without `href` has no page in the static demo: it renders as muted text, not as a link.
+  type FooterLink = { label: string; href?: string; external?: true };
+  const allCols: { heading: string; links: FooterLink[] }[] = [
     {
       heading: t('product'),
       links: [
@@ -21,11 +32,7 @@ export async function Footer() {
     },
     {
       heading: t('company'),
-      links: [
-        { label: t('about'), href: '/about' },
-        { label: t('team'), href: '/about#team' },
-        { label: t('press'), href: '/about#press' },
-      ],
+      links: [{ label: t('about'), href: '/about' }, { label: t('team') }, { label: t('press') }],
     },
     {
       heading: tnav('community'),
@@ -36,7 +43,11 @@ export async function Footer() {
           ? { label: t('docs'), href: publicEnv.NEXT_PUBLIC_COMMUNITY_DOCS_URL, external: true }
           : null,
         publicEnv.NEXT_PUBLIC_COMMUNITY_LEARNING_URL
-          ? { label: t('learning'), href: publicEnv.NEXT_PUBLIC_COMMUNITY_LEARNING_URL, external: true }
+          ? {
+              label: t('learning'),
+              href: publicEnv.NEXT_PUBLIC_COMMUNITY_LEARNING_URL,
+              external: true,
+            }
           : null,
         publicEnv.NEXT_PUBLIC_COMMUNITY_HELP_URL
           ? { label: t('help'), href: publicEnv.NEXT_PUBLIC_COMMUNITY_HELP_URL, external: true }
@@ -45,46 +56,53 @@ export async function Footer() {
     },
     {
       heading: t('legal'),
-      links: [
-        { label: t('privacy'), href: '/about#privacy' },
-        { label: t('terms'), href: '/about#terms' },
-        { label: t('cookies'), href: '/about#cookies' },
-      ],
+      links: [{ label: t('privacy') }, { label: t('terms') }, { label: t('cookies') }],
     },
   ];
+  // The community links are optional in the preview; drop the column instead of showing a bare heading.
+  const cols = allCols.filter((c) => c.links.length > 0);
 
   return (
     <footer className="mt-24 border-t border-line bg-bg">
       <Container size="2xl">
-        <div className="grid grid-cols-2 md:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))] gap-10 py-14">
+        <div
+          className={cn(
+            'grid grid-cols-2 gap-10 py-14',
+            cols.length === 4
+              ? 'md:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))]'
+              : 'md:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]',
+          )}
+        >
           <div className="col-span-2 md:col-span-1">
             <Logo size="md" href="/" />
             <p className="mt-4 max-w-[280px] text-body-sm text-ink-3">{t('tagline')}</p>
           </div>
           {cols.map((col) => (
             <nav key={col.heading} aria-label={col.heading} className="text-body-sm">
-              <h3 className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-3">
+              <h3 className="mb-3 text-eyebrow uppercase tracking-[0.12em] text-ink-3">
                 {col.heading}
               </h3>
               <ul className="flex flex-col gap-2.5">
                 {col.links.map((link) => (
                   <li key={`${col.heading}-${link.label}`}>
-                    {'external' in link && link.external ? (
+                    {!link.href ? (
+                      <span className="text-ink-3">{link.label}</span>
+                    ) : link.external ? (
                       <a
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-ink-2 hover:text-ink transition-colors duration-120"
+                        className="text-ink-2 transition-colors duration-120 hover:text-ink"
                       >
                         {link.label}
                       </a>
                     ) : (
-                      <a
+                      <NextLink
                         href={link.href}
-                        className="text-ink-2 hover:text-ink transition-colors duration-120"
+                        className="text-ink-2 transition-colors duration-120 hover:text-ink"
                       >
                         {link.label}
-                      </a>
+                      </NextLink>
                     )}
                   </li>
                 ))}
@@ -95,11 +113,21 @@ export async function Footer() {
       </Container>
       <FooterStrip />
       <Container size="2xl">
-        <div className="flex flex-wrap items-center justify-between gap-2 py-6 text-caption text-ink-3">
-          <p className="geist-tnum">{t('copyright', { year: String(year) })}</p>
-          <p className="hidden md:block">v1 · Part 1 of 4</p>
+        <div className="flex flex-col gap-4 py-6 text-caption text-ink-3">
+          <AttributionNotice />
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <p className="geist-tnum">{t('copyright', { year: String(year) })}</p>
+            <button
+              type="button"
+              onClick={() => setResetOpen(true)}
+              className="text-ink-2 transition-colors duration-120 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              {tv('resetDemo')}
+            </button>
+          </div>
         </div>
       </Container>
+      <ResetDemoDialog open={resetOpen} onOpenChange={setResetOpen} />
     </footer>
   );
 }

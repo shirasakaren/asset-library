@@ -28,10 +28,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
 import { VersionBadge } from './version-badge';
+import { DownloadThankYouBody } from './download-thank-you';
 import { useAuthedFetch } from '@/lib/api/client';
 import { ApiError } from '@/lib/api/errors';
 import { queryKeys } from '@/lib/api/queries';
 import { formatBytes } from '@/lib/format';
+import { triggerDownload, downloadFileName } from '@/lib/download/trigger-download';
 import { logEvent } from '@/lib/logger.events';
 import { cn } from '@/lib/utils';
 import type {
@@ -64,14 +66,22 @@ const LATEST_SENTINEL = 'latest';
 type State =
   | { step: 'browse' }
   | { step: 'downloading'; fileId: string }
-  | { step: 'thank-you'; url: string }
+  | { step: 'thank-you'; url: string; fileName: string }
   | { step: 'error'; message: string };
 
 const kindIcon = (kind: string) => {
   const k = kind.toUpperCase();
   if (k.includes('UNITY') || k.includes('UPLUGIN')) return Package;
-  if (k.includes('GLB') || k.includes('FBX') || k.includes('OBJ') || k === 'PREFAB' || k === 'SCENE') return FileBox;
-  if (k.includes('TEXTURE') || k === 'SPRITE' || k.includes('IMAGE') || k.includes('NORMAL')) return ImageIcon;
+  if (
+    k.includes('GLB') ||
+    k.includes('FBX') ||
+    k.includes('OBJ') ||
+    k === 'PREFAB' ||
+    k === 'SCENE'
+  )
+    return FileBox;
+  if (k.includes('TEXTURE') || k === 'SPRITE' || k.includes('IMAGE') || k.includes('NORMAL'))
+    return ImageIcon;
   if (k.includes('AUDIO')) return Music;
   if (k.includes('VIDEO')) return Video;
   if (k.includes('SCRIPT') || k.includes('SHADER') || k.includes('MATERIAL')) return FileCode;
@@ -79,7 +89,11 @@ const kindIcon = (kind: string) => {
   return Package;
 };
 
-const friendlyKind = (kind: string) => kind.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+const friendlyKind = (kind: string) =>
+  kind
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 
 export function DownloadPopup({
   open,
@@ -165,8 +179,8 @@ export function DownloadPopup({
       });
       const url = response.files.find((f) => f.id === file.id)?.getUrl;
       if (url) {
-        window.location.href = url;
-        setState({ step: 'thank-you', url });
+        triggerDownload(url, file.relativePath);
+        setState({ step: 'thank-you', url, fileName: downloadFileName(file.relativePath) });
       } else {
         setState({ step: 'error', message: t('failedBody') });
       }
@@ -174,9 +188,7 @@ export function DownloadPopup({
       queryClient.invalidateQueries({ queryKey: queryKeys.libraryAll });
     } catch (err) {
       const message =
-        ApiError.isApiError(err) && err.code === 'av.infected'
-          ? t('failedBody')
-          : t('failedBody');
+        ApiError.isApiError(err) && err.code === 'av.infected' ? t('failedBody') : t('failedBody');
       setState({ step: 'error', message });
     }
   };
@@ -214,16 +226,11 @@ export function DownloadPopup({
               <div className="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand-green-50 text-brand-green">
                 <CheckCircle2 className="h-7 w-7" strokeWidth={2.25} />
               </div>
-              <h3 className="font-display text-h2 text-ink tracking-[-0.01em]">{t('thankYouTitle')}</h3>
+              <h3 className="font-display text-h2 tracking-[-0.01em] text-ink">
+                {t('thankYouTitle')}
+              </h3>
               <p className="mt-2 text-body-sm text-ink-2">
-                {t.rich('thankYouBody', {
-                  link: (chunks) => (
-                    <a className="link-inline" href={state.url}>
-                      {t('thankYouLink')}
-                      <span className="sr-only">{chunks}</span>
-                    </a>
-                  ),
-                })}
+                <DownloadThankYouBody url={state.url} fileName={state.fileName} />
               </p>
               <div className="mt-6 flex items-center justify-center gap-2">
                 <Button variant="secondary" onClick={() => setState({ step: 'browse' })}>
@@ -242,7 +249,11 @@ export function DownloadPopup({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.18 }}
             >
-              <Alert variant="danger" title={t('failedTitle')} icon={<AlertTriangle className="h-5 w-5 text-brand-red" strokeWidth={2.25} />}>
+              <Alert
+                variant="danger"
+                title={t('failedTitle')}
+                icon={<AlertTriangle className="h-5 w-5 text-brand-red" strokeWidth={2.25} />}
+              >
                 {state.message}
               </Alert>
               <div className="mt-5 flex items-center justify-end gap-2">
@@ -261,7 +272,7 @@ export function DownloadPopup({
               transition={{ duration: 0.18 }}
             >
               {versionsQuery.isPending && needsLatestLookup ? (
-                <div className="py-10 text-center text-ink-3 inline-flex items-center justify-center w-full gap-2">
+                <div className="inline-flex w-full items-center justify-center gap-2 py-10 text-center text-ink-3">
                   <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
                   {tCommon('loading')}
                 </div>
@@ -270,7 +281,7 @@ export function DownloadPopup({
                   {t('failedBody')}
                 </Alert>
               ) : options.isPending ? (
-                <div className="py-10 text-center text-ink-3 inline-flex items-center justify-center w-full gap-2">
+                <div className="inline-flex w-full items-center justify-center gap-2 py-10 text-center text-ink-3">
                   <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
                   {tCommon('loading')}
                 </div>
@@ -284,13 +295,14 @@ export function DownloadPopup({
                 <div className="space-y-5">
                   {filesGrouped.map(([groupName, files]) => (
                     <div key={groupName}>
-                      <p className="text-eyebrow uppercase tracking-[0.12em] text-ink-3 mb-2">
+                      <p className="mb-2 text-eyebrow uppercase tracking-[0.12em] text-ink-3">
                         {groupName}
                       </p>
                       <ul className="flex flex-col gap-1.5">
                         {files.map((file) => {
                           const Icon = kindIcon(file.kind);
-                          const downloading = state.step === 'downloading' && state.fileId === file.id;
+                          const downloading =
+                            state.step === 'downloading' && state.fileId === file.id;
                           const disabled = state.step === 'downloading';
                           return (
                             <li key={file.id}>
@@ -299,27 +311,33 @@ export function DownloadPopup({
                                 onClick={() => handlePick(file)}
                                 disabled={disabled}
                                 className={cn(
-                                  'group w-full flex items-center gap-4 p-3 rounded-[14px] border border-line bg-surface text-left',
+                                  'group flex w-full items-center gap-4 rounded-[14px] border border-line bg-surface p-3 text-left',
                                   'hover:border-ink/30 hover:bg-surface-muted/40 transition-colors duration-120',
                                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2',
-                                  disabled && !downloading && 'opacity-60 cursor-not-allowed',
+                                  disabled && !downloading && 'cursor-not-allowed opacity-60',
                                 )}
                               >
-                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-surface-muted text-ink-2 shrink-0">
+                                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-surface-muted text-ink-2">
                                   <Icon className="h-4 w-4" strokeWidth={2.25} />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className="block text-[14px] font-medium text-ink truncate">
+                                  <span className="block truncate text-[14px] font-medium text-ink">
                                     {file.relativePath}
                                   </span>
-                                  <span className="block text-caption text-ink-3 geist-tnum">
+                                  <span className="geist-tnum block text-caption text-ink-3">
                                     {formatBytes(file.bytes, locale)} · {friendlyKind(file.kind)}
                                   </span>
                                 </span>
                                 {downloading ? (
-                                  <Loader2 className="h-4 w-4 animate-spin text-ink-2" strokeWidth={2.25} />
+                                  <Loader2
+                                    className="h-4 w-4 animate-spin text-ink-2"
+                                    strokeWidth={2.25}
+                                  />
                                 ) : (
-                                  <Download className="h-4 w-4 text-ink-3 group-hover:text-ink transition-colors duration-120" strokeWidth={2.25} />
+                                  <Download
+                                    className="h-4 w-4 text-ink-3 transition-colors duration-120 group-hover:text-ink"
+                                    strokeWidth={2.25}
+                                  />
                                 )}
                               </button>
                             </li>
@@ -330,14 +348,17 @@ export function DownloadPopup({
                   ))}
 
                   {options.data.olderVersions.length > 0 ? (
-                    <div className="pt-3 border-t border-line">
+                    <div className="border-t border-line pt-3">
                       <button
                         type="button"
                         onClick={() => setShowOlder((s) => !s)}
-                        className="inline-flex items-center gap-1 text-[13px] font-medium text-ink-2 hover:text-ink transition-colors duration-120"
+                        className="inline-flex items-center gap-1 text-[13px] font-medium text-ink-2 transition-colors duration-120 hover:text-ink"
                       >
                         <ChevronDown
-                          className={cn('h-3.5 w-3.5 transition-transform duration-200', showOlder && 'rotate-180')}
+                          className={cn(
+                            'h-3.5 w-3.5 transition-transform duration-200',
+                            showOlder && 'rotate-180',
+                          )}
                           strokeWidth={2.25}
                         />
                         {showOlder ? t('hideOlderVersions') : t('showOlderVersions')}
@@ -350,12 +371,12 @@ export function DownloadPopup({
                                 type="button"
                                 onClick={() => setVersionId(v.id)}
                                 className={cn(
-                                  'w-full flex items-center justify-between p-2.5 rounded-[10px] border border-line text-left text-[13.5px]',
+                                  'flex w-full items-center justify-between rounded-[10px] border border-line p-2.5 text-left text-[13.5px]',
                                   'hover:bg-surface-muted/60 transition-colors duration-120',
                                 )}
                               >
                                 <VersionBadge semver={v.semver} size="sm" />
-                                <span className="text-caption text-ink-3 geist-tnum">
+                                <span className="geist-tnum text-caption text-ink-3">
                                   {v.publishedAt
                                     ? new Date(v.publishedAt).toLocaleDateString(
                                         locale === 'id' ? 'id-ID' : 'en-US',

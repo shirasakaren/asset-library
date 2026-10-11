@@ -5,6 +5,56 @@ All notable changes to the MGM Asset Library are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Static, login-free preview of the web client at `asset.creations.ren`:
+  the backend runs inside the browser (mock API in `frontend/src/preview`,
+  rebased JSON seed data, per-visitor IndexedDB overlay and blob store), with
+  the demo persona signed in as an admin.
+- Preview banner (dismissible), warning banner and one-time toast when browser
+  storage is unavailable or full, and **Reset demo data** (profile menu, banner,
+  footer).
+- Attribution notice with a takedown contact in the footer, and a "View on
+  <store>" link to the original listing on asset pages.
+- Seed generation scripts (`seed:build`, `seed:thumbs`) and real store
+  thumbnails.
+
+### Changed
+
+- `frontend/` no longer talks to the backend or Keycloak; "Sign out" is replaced
+  by "Reset demo data". The report button is now shown to admins on other
+  users' assets.
+- Marketing page CTA reads "Open the preview"; request prices show two decimals;
+  the download thank-you message reads correctly; category icons show in the
+  admin categories list; the admin dashboard figures no longer clip.
+
+### Removed
+
+- Auth.js / Keycloak sign-in, the API proxy routes and the WebSocket transport
+  from the frontend.
+
+### CI/CD
+
+- New `pages.yml` workflow deploys the static preview to GitHub Pages on pushes
+  to `main` that touch `frontend/` (lint, typecheck, unit and Playwright e2e
+  tests against the export, then `actions/deploy-pages`); `CNAME` and
+  `.nojekyll` are written into the export.
+- The `frontend` CI job now matches it: static export plus Playwright e2e, and
+  no Keycloak/NextAuth build variables.
+- The static preview now works both at a host root (custom domain) and under a
+  sub-path (`https://shirasakaren.github.io/asset-library/`, the interim public
+  URL): every static asset, thumbnail and in-app link honours
+  `NEXT_PUBLIC_BASE_PATH`, `serve-export.mjs` can serve `out/` under a prefix
+  (`--base`), a base-path smoke suite (`pnpm test:e2e:basepath`) covers the
+  sub-path, and `pages.yml` picks the mode from the repository's Pages settings
+  (`actions/configure-pages`), building for the root again as soon as a custom
+  domain is configured. `ci.yml` exercises both modes on pull requests.
+- The web Docker image jobs were removed from `production.yml` and
+  `staging.yml` (API and worker images are unchanged); `frontend/Dockerfile` and
+  the `web` compose services are kept as legacy references.
+
 ## [1.0.0] - 2026-04-30
 
 ### Added

@@ -1,0 +1,111 @@
+{
+  "home": {
+    "reason": "Design-token contrast failures (brand-blue on brand-blue-50 4.43:1, white on brand-red 3.58:1, ink-3 on the tinted dashboard cards 4.04-4.48:1, ink-4 helper text 2.6:1, lighter brand-blue 3.74:1). To be fixed in the tokens by the design owner, then removed from this file.",
+    "entries": [
+      {
+        "target": ".link-inline.font-medium",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      },
+      {
+        "target": ".min-w-\\[18px\\]",
+        "contrast": "#ffffff on #f94141 = 3.58:1"
+      },
+      {
+        "target": ".border-brand-blue\\/20",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      }
+    ]
+  },
+  "asset-detail": {
+    "reason": "Design-token contrast failures (brand-blue on brand-blue-50 4.43:1, white on brand-red 3.58:1, ink-3 on the tinted dashboard cards 4.04-4.48:1, ink-4 helper text 2.6:1, lighter brand-blue 3.74:1). To be fixed in the tokens by the design owner, then removed from this file.",
+    "entries": [
+      {
+        "target": ".link-inline.font-medium",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      },
+      {
+        "target": ".right-1\\.5",
+        "contrast": "#ffffff on #f94141 = 3.58:1"
+      },
+      {
+        "target": ".md\\:inline-flex",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      },
+      {
+        "target": ".sm\\:inline",
+        "contrast": "#9aa1ad on #ffffff = 2.6:1"
+      },
+      {
+        "target": ".font-mono > .geist-tnum",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      },
+      {
+        "target": ".opacity-90",
+        "contrast": "#4c7aca on #ecf1fa = 3.74:1"
+      }
+    ]
+  },
+  "library": {
+    "reason": "Design-token contrast failures (brand-blue on brand-blue-50 4.43:1, white on brand-red 3.58:1, ink-3 on the tinted dashboard cards 4.04-4.48:1, ink-4 helper text 2.6:1, lighter brand-blue 3.74:1). To be fixed in the tokens by the design owner, then removed from this file.",
+    "entries": [
+      {
+        "target": ".link-inline.font-medium",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      },
+      {
+        "target": ".right-1\\.5",
+        "contrast": "#ffffff on #f94141 = 3.58:1"
+      },
+      {
+        "target": ".md\\:inline-flex",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      }
+    ]
+  },
+  "search": {
+    "reason": "Design-token contrast failures (brand-blue on brand-blue-50 4.43:1, white on brand-red 3.58:1, ink-3 on the tinted dashboard cards 4.04-4.48:1, ink-4 helper text 2.6:1, lighter brand-blue 3.74:1). To be fixed in the tokens by the design owner, then removed from this file.",
+    "entries": [
+      {
+        "target": ".link-inline.font-medium",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      },
+      {
+        "target": ".right-1\\.5",
+        "contrast": "#ffffff on #f94141 = 3.58:1"
+      },
+      {
+        "target": ".md\\:inline-flex",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      }
+    ]
+  },
+  "admin-dashboard": {
+    "reason": "Design-token contrast failures (brand-blue on brand-blue-50 4.43:1, white on brand-red 3.58:1, ink-3 on the tinted dashboard cards 4.04-4.48:1, ink-4 helper text 2.6:1, lighter brand-blue 3.74:1). To be fixed in the tokens by the design owner, then removed from this file.",
+    "entries": [
+      {
+        "target": ".sm\\:flex-none > .link-inline",
+        "contrast": "#3a6dc5 on #ecf1fa = 4.43:1"
+      },
+      {
+        "target": ".right-1\\.5",
+        "contrast": "#ffffff on #f94141 = 3.58:1"
+      },
+      {
+        "target": ".bg-brand-green-50 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
+        "contrast": "#6b7280 on #e2f1ea = 4.14:1"
+      },
+      {
+        "target": "a[href=\"/admin/reports/?status=OPEN\"] > .bg-brand-yellow-50.border-brand-yellow\\/30.hover\\:border-ink\\/20 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
+        "contrast": "#6b7280 on #fef6e0 = 4.48:1"
+      },
+      {
+        "target": ".rounded-\\[16px\\].block[href$=\"requests/\"] > .bg-brand-yellow-50.border-brand-yellow\\/30.hover\\:border-ink\\/20 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
+        "contrast": "#6b7280 on #fef6e0 = 4.48:1"
+      },
+      {
+        "target": ".bg-brand-red-50 > .text-eyebrow.tracking-\\[0\\.12em\\].uppercase",
+        "contrast": "#6b7280 on #fee5e5 = 4.04:1"
+      }
+    ]
+  }
+}
