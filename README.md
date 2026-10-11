@@ -2,9 +2,13 @@
 
 ## Static preview
 
-**Demo URL: [asset.creations.ren](https://asset.creations.ren)** (deployed to
-GitHub Pages by `.github/workflows/pages.yml`; see [Deployment](#deployment-github-pages)
-for the one-time DNS setup the domain needs before it resolves).
+**Planned URLs** (deployed to GitHub Pages by `.github/workflows/pages.yml`; the
+first deployment has not happened yet, see [Deployment](#deployment-github-pages)):
+
+- interim, no DNS needed: `https://shirasakaren.github.io/asset-library/`
+  (served under the `/asset-library` sub-path);
+- final: `https://asset.creations.ren`, once the DNS record and the custom domain
+  exist.
 
 `frontend/` is now a static, login-free preview of the asset library. You are
 signed in as a fake admin persona (Aria Wijaya) and every page works: browse
@@ -65,6 +69,13 @@ pnpm --filter mgm-asset-library-frontend seed:thumbs  # download and resize list
 ```
 
 To try the export locally: `cd frontend && NEXT_PUBLIC_APP_URL=http://localhost:4317 pnpm build && node scripts/serve-export.mjs out 4317`.
+To try it under a sub-path, like the project Pages URL:
+`NEXT_PUBLIC_BASE_PATH=/asset-library pnpm build && node scripts/serve-export.mjs out 4318 --base /asset-library`
+and open `http://localhost:4318/asset-library/`. `NEXT_PUBLIC_BASE_PATH` is
+inlined at build time (and passed to Next's `basePath`); empty means the host root.
+Git Bash on Windows rewrites arguments and variables that look like POSIX paths
+(`/asset-library` becomes `C:/Program Files/Git/asset-library`); run
+`export MSYS_NO_PATHCONV=1 MSYS2_ENV_CONV_EXCL='NEXT_PUBLIC_BASE_PATH;E2E_BASE_PATH'` first.
 Build-time options (`NEXT_PUBLIC_BASE_PATH`, `NEXT_PUBLIC_PREVIEW_LATENCY`, ...)
 are listed in `frontend/.env.example`. Bumping `SEED_VERSION`
 (`src/preview/store/version.ts`) discards visitors' overlays on their next visit.
@@ -80,23 +91,50 @@ listing or thumbnail, contact [it@labmgm.org](mailto:it@labmgm.org).
 
 - `.github/workflows/pages.yml` runs on every push to `main` that touches
   `frontend/` (or the workspace/lock files or the workflow itself) and on manual
-  dispatch. It installs, lints, typechecks, runs the unit tests, builds the
-  static export (`frontend/out`), runs the Playwright suite against that export,
-  uploads it as the Pages artifact and deploys it with `actions/deploy-pages`.
-  Pull requests run the same checks (without deploying) in `ci.yml`.
-- The workflow writes a `CNAME` file (`asset.creations.ren`) and `.nojekyll`
-  into the export, so the custom domain is part of every deployment. The site is
-  served at the domain root.
+  dispatch. It reads the repository's real Pages settings
+  (`actions/configure-pages`), installs, lints, typechecks, runs the unit tests,
+  builds a root export and runs the full Playwright suite against it, then builds
+  the export for the real deployment (see the two modes below), verifies it, uploads
+  it as the Pages artifact and deploys it with `actions/deploy-pages`.
+  Pull requests run the same checks (without deploying) in `ci.yml`, for both modes.
 - GitHub Pages must be enabled once with source "GitHub Actions" (repository
-  Settings, Pages). The custom domain is `asset.creations.ren`.
-- **DNS (needed once, outside this repository):** create a `CNAME` record
-  `asset` pointing to `shirasakaren.github.io` on `creations.ren`
-  (`asset.creations.ren` -> `shirasakaren.github.io`). Until it resolves the
-  domain does not load; GitHub issues the HTTPS certificate afterwards, and
-  "Enforce HTTPS" can then be switched on in the Pages settings.
-- After a deploy the workflow requests the site once as a check. That check is
-  advisory (it does not fail the workflow), because it cannot succeed before the
-  DNS record exists.
+  Settings, Pages).
+
+**Two deployment modes, chosen automatically.** The app works at a host root and
+under a sub-path, so the site is reachable before the custom domain exists:
+
+| Mode                   | When                                      | URL                                             | `NEXT_PUBLIC_BASE_PATH` | `CNAME` file |
+| ---------------------- | ----------------------------------------- | ----------------------------------------------- | ----------------------- | ------------ |
+| project site (interim) | Pages has no custom domain                | `https://shirasakaren.github.io/asset-library/` | `/asset-library`        | not written  |
+| custom domain (final)  | a custom domain is set in Settings, Pages | `https://asset.creations.ren`                   | empty                   | the domain   |
+
+The workflow takes `base_path`, `origin` and `host` from `configure-pages` and
+builds accordingly, so nothing in the code changes between the two. While no
+custom domain is configured the default project URL is the public address (a
+configured custom domain would redirect the default URL to it, so it is only set
+once the domain resolves). In project mode the workflow also runs the base-path
+smoke suite (`pnpm test:e2e:basepath`) against the exact files it deploys.
+
+**Switching to `asset.creations.ren`** (needs someone who can edit the DNS of
+`creations.ren`):
+
+1. Create a `CNAME` record `asset` pointing to `shirasakaren.github.io`
+   (`asset.creations.ren` -> `shirasakaren.github.io`).
+2. Set the custom domain `asset.creations.ren` in the repository's Settings, Pages,
+   then re-run the "Deploy preview to GitHub Pages" workflow (Actions, Run
+   workflow, branch `main`). It now builds for the root and writes the `CNAME` file.
+3. When GitHub has issued the certificate, switch on "Enforce HTTPS".
+
+Notes: visitors' demo data is per browser and per origin, so it does not carry over
+from the `github.io` URL to the custom domain. On the interim URL the storage origin
+is `https://shirasakaren.github.io`, shared with other project sites of the same
+account; the preview's IndexedDB databases (`mgm-preview`, `mgm-preview-blobs`) and
+`preview.*` localStorage keys are namespaced for that reason. After a deploy the workflow
+requests the site once as a check (the home page, its assets under the base path
+and `thumbs/manifest.json`). That check is advisory (it does not fail the
+workflow), because with a custom domain it cannot succeed before the DNS record
+and the certificate exist.
+
 - The old web Docker image jobs were removed from `production.yml` and
   `staging.yml`; `frontend/Dockerfile` and the `web` compose services are legacy
   references to the original full stack.

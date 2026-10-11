@@ -8,7 +8,8 @@ These specs run in a real Chromium against the static export in `out/`, the same
 pnpm build                # writes out/ (NEXT_PUBLIC_APP_URL only affects metadata, any value works)
 pnpm test:e2e             # desktop Chromium + the @mobile smoke on a Pixel 7 viewport
 pnpm test:e2e:ui          # Playwright UI mode
-pnpm lint:e2e             # eslint on tests/e2e and playwright.config.ts (not covered by `pnpm lint`)
+pnpm test:e2e:basepath    # the small base-path smoke suite (needs a build with NEXT_PUBLIC_BASE_PATH=/asset-library, see below)
+pnpm lint:e2e             # eslint on tests/e2e, tests/e2e-basepath and both Playwright configs (not covered by `pnpm lint`)
 pnpm exec playwright test tests/e2e/05-search-filters.spec.ts   # one file
 ```
 
@@ -20,7 +21,20 @@ Against an already deployed site:
 E2E_BASE_URL=https://asset.creations.ren pnpm test:e2e
 ```
 
-With `E2E_BASE_URL` set no local server is started and `out/` is not needed. The site must be served at the host root (`https://host/`), not under a sub-path, because the specs navigate to absolute paths like `/admin/`. Reports: `playwright-report/` (HTML, CI only) and `test-results/` (traces and screenshots of failures, both git-ignored). Open a trace with `pnpm exec playwright show-trace test-results/<test>/trace.zip`.
+With `E2E_BASE_URL` set no local server is started and `out/` is not needed. The site must be served at the host root (`https://host/`), not under a sub-path, because the specs navigate to absolute paths like `/admin/` (a site under a sub-path is what the base-path suite below is for). Reports: `playwright-report/` (HTML, CI only) and `test-results/` (traces and screenshots of failures, both git-ignored). Open a trace with `pnpm exec playwright show-trace test-results/<test>/trace.zip`.
+
+## Base-path smoke suite (`tests/e2e-basepath`)
+
+The app is deployed in two modes: at a host root (custom domain `asset.creations.ren`) and under a sub-path (the GitHub project Pages URL `https://shirasakaren.github.io/asset-library/`, the interim public address). The 46 specs above assume the root. A second, small suite (8 tests, `basepath.spec.ts`, config `playwright.basepath.config.ts`) runs against an export built for the sub-path and checks that nothing escapes it:
+
+```bash
+NEXT_PUBLIC_BASE_PATH=/asset-library pnpm build
+pnpm test:e2e:basepath
+```
+
+`webServer` is `node scripts/serve-export.mjs out 4318 --base /asset-library`, which behaves like a project Pages site: files below `/asset-library/`, `/asset-library` redirects (301) to `/asset-library/`, unknown paths below the prefix get `/404.html` with status 404 (the 404 shell that renders browser-created ids), and every path OUTSIDE the prefix also gets the 404 shell, so a URL that lost its prefix fails the shared request guard. (Git Bash on Windows rewrites values that look like POSIX paths: `export MSYS_NO_PATHCONV=1 MSYS2_ENV_CONV_EXCL='NEXT_PUBLIC_BASE_PATH;E2E_BASE_PATH'` first.) `E2E_BASE_PATH` overrides the prefix (it must equal the `NEXT_PUBLIC_BASE_PATH` of the build; the deploy workflow passes the value `configure-pages` reports). Specs use paths WITHOUT a leading slash (`gotoApp(page, 'library/')`), which resolve against the baseURL `http://localhost:4318/asset-library/`; a leading slash would escape the prefix. The same `helpers/test.ts` guard applies (the hard-loaded new draft declares `expectNotFound(shellRoute('/asset-library/publish/:id'))`).
+
+It covers: home with 8+ cards, decoded thumbnails and no request outside the prefix; library and an asset page on a hard load; clicking through header, card, tabs, breadcrumb and footer keeps the prefix; an admin table row opens its page; a browser-created draft on a hard load through the 404 shell; logo, favicon, pattern tiles and `thumbs/manifest.json` are served below the prefix (and nothing at the root); a seeded asset download; "Reset demo data" reloads onto `/asset-library/`. CI runs it in `ci.yml` (always) and in `pages.yml` (when the Pages settings give a non-empty base path).
 
 ## Conventions
 

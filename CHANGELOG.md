@@ -43,6 +43,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `.nojekyll` are written into the export.
 - The `frontend` CI job now matches it: static export plus Playwright e2e, and
   no Keycloak/NextAuth build variables.
+- The static preview now works both at a host root (custom domain) and under a
+  sub-path (`https://shirasakaren.github.io/asset-library/`, the interim public
+  URL): every static asset, thumbnail and in-app link honours
+  `NEXT_PUBLIC_BASE_PATH`, `serve-export.mjs` can serve `out/` under a prefix
+  (`--base`), a base-path smoke suite (`pnpm test:e2e:basepath`) covers the
+  sub-path, and `pages.yml` picks the mode from the repository's Pages settings
+  (`actions/configure-pages`), building for the root again as soon as a custom
+  domain is configured. `ci.yml` exercises both modes on pull requests.
 - The web Docker image jobs were removed from `production.yml` and
   `staging.yml` (API and worker images are unchanged); `frontend/Dockerfile` and
   the `web` compose services are kept as legacy references.
