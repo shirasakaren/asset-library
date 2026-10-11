@@ -13,14 +13,15 @@ export interface DraftInput {
  * Returns the draft's id taken from the resulting `/publish/<id>/` URL.
  */
 export async function createDraft(page: Page, input: DraftInput): Promise<string> {
-  await gotoApp(page, '/publish/new/');
+  // No leading slash: the path resolves against the baseURL, which may carry a base path.
+  await gotoApp(page, 'publish/new/');
   await page.getByLabel('Title', { exact: false }).first().fill(input.title);
   if (input.engine) await page.getByRole('radio', { name: input.engine }).check();
   await selectFirstOption(page, 'Category');
   await selectFirstOption(page, 'License');
   await page.getByRole('button', { name: 'Create draft' }).click();
   await page.waitForURL(/\/publish\/(?!new\b)[^/]+\/?$/);
-  const id = new URL(page.url()).pathname.split('/').filter(Boolean)[1]!;
+  const id = /\/publish\/([^/]+)\/?$/.exec(new URL(page.url()).pathname)![1]!;
   await expect(page.getByRole('navigation', { name: 'Publish steps' })).toBeVisible();
   return id;
 }
